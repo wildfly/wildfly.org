@@ -1,0 +1,237 @@
+---
+layout: base
+---
+
+.row
+  .span12
+
+    .hero-unit
+      %h1 Announcing WildFly
+      %br
+      %h3.pull-right The Open Source Java application server reignited
+.row
+  .span10
+
+    %p
+    %ul
+      %li Designed for Flexibility
+      %li Amped with electrifying speed
+      %li Launch your JavaEE applications in a flash
+
+    %h5
+      %b Lightening fast...
+      startup / deployment / configuration / performance
+
+    %br
+
+    %ul
+      %li
+        %a{ :href=>"#speed"}Even Faster
+      %li
+        %a{ :href=>"#modular"}Modular Design
+      %li
+        %a{ :href=>"#light"}Exceptionally Lightweight
+      %li
+        %a{ :href=>"#admin"}Elegant Administration
+      %li
+        %a{ :href=>"#compliant"}Strict Compliance
+      %li
+        %a{ :href=>"#testable"}Easily Testable
+      %li
+        %a{ :href=>"#bestof"}First class, modern components
+
+    .clearfix
+    %a(name="#speed" )
+    %h4
+      %img{:src=>"https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-bolt_45px.png", :style=>"margin: 0pt 0pt -10px -15px"}
+      Unparalleled Speed
+    .row
+      .span5
+        %h5 Blazing fast start-up
+        %p Experience ground breaking startup speed!
+        %p In the highly optimized boot process of WildFly 8, services are started concurrently to eliminate unnecessary waits and to tap into the power of multi-core processors. Non-critical services are kept on ice until first use.
+        %p Subsequent boots save additional time by leveraging cached or indexed metadata.
+        %p As a result, WildFly offers a 10-fold reduction in startup time over previous versions and even gives Jetty and Tomcat a run for their money.
+
+      .span5
+        %h5 Quicker turnaround
+        %p Enjoy efficient development as a result of fast, concurrent deployment and the ability to edit static resources without redeployment in a flexible deployment structure.
+        %p
+          Achieve an even tighter change-compile-test cycle by leveraging
+          %a{:href=>"http://www.arquillian.org"}Arquillian
+          to execute tests inside your target runtime environment, all from the convenience of your IDE or build tool.
+
+    %a(name="#modular")
+    %h4
+      %img{:src=>"https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-plugin_45px.png", :style=>"margin: 0pt 0pt -10px -15px;"}
+      Modular Design
+    .row
+      .span5
+        %h5 No more jar hell!
+        %p Hierarchical classloaders are problematic, often causing failed deployments and quirky behavior. The time has come to say goodbye to the parent delegation model and find the path to modularity (i.e. sane classloading).
+        %p WildFly does classloading right. It uses JBoss Modules to provide true application isolation, hiding server implementation classes from the application and only loading the classes your application needs. Modules, packaged as collections of classes, are peers that remain isolated unless explicitly defined as a dependency of another module. Visibility rules have sensible defaults, yet can be customized.
+      .span5
+        %h5 Load classes on demand
+        %p JBoss Modules can load only the classes you need and does so with extremely fast, O(1) resolution. In addition, classes can be loaded concurrently, making use of that multi-core processor once again.
+        %br
+        %h5 OSGi? Elementary!
+        %p Thanks to the similarity in the design, OSGi support is available out of the box, built as a layer above JBoss Modules and the Module Service Container (MSC).
+
+    %a(name="#light")
+    %h4
+      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-feather_45px.png" alt="")
+      Exceptionally Lightweight
+    .row
+      .span5
+        %h5 Memory Diet
+        %p WildFly takes an aggressive approach to memory management to minimize garbage collector pauses, only loads JAR files it needs and uses indexed metadata over full parses. All this keeps the memory footprint exceptionally small.
+        %p These optimizations enable AS 7 to run with stock JVM settings and on small devices. It also leaves more headroom for application data and supports higher scalability.
+        %p Server profiles can be used to trim unneeded capabilities, allowing you to make the server as lean as possible.
+
+      .span5
+        %h5 Modular services container
+        %p The capabilities of WildFly are arranged into distinct services, organized and managed by the runtime. Each service can be started and stopped in isolation. Minimal dependencies between services, which are coordinated by the runtime, allow them to be controlled concurrently (yeah multi-core!).
+        %p The modular services container (MSC) architecture is a key reason why the boot and deployment processes are so fast.
+
+    %a(name="#admin")
+    %h4
+      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-admin_45px.png" alt="")
+      Elegant Administration
+    .row
+      .span5
+        %h5 Unified configuration & management
+        %p Rather than sending you on a wild goose chase to change a setting in the application server, configuration in WildFly is centralized, simple and user-focused. The configuration file is based on a straightforward domain model that you can easily comprehend and no internal wiring is exposed.
+        %p The centralized configuration also unifies management. The same configuration file can be used for multiple servers in domain mode. In contrast, standalone mode controls a single instance, similar to how previous versions of JBoss AS were launched.
+
+      .span5
+        %h5 Command Central
+        %p Consistent and powerful management is available out of the box, including a polished, user-friendly web console, Java and HTTP APIs and a command line tool (CLI). The web console provides a clear perspective into the server runtime, while the programmatic APIs can be leveraged by tools, scripts and geeks.
+        %p What makes the interfaces especially useful is that changes are persistent, so you have the option to avoid fiddling with the configuration file directly.
+
+    %a(name="#compliant")
+    %h4
+      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-compliant_45px.png" alt="")
+      Strict Compliance
+    .row
+      .span5
+        %h5 Targeting Java EE7
+        %p JBoss has always been committed to application portability to prevent vendor lock-in. That's why we are aiming to make WildFly Java EE 7 certified. But we didn't stop there!
+        %p WildFly boasts an internal test suite based on Arquillian that achieves even more strict compliance to the portability expectations of our community of users.
+        %p TODO:  Add polyglot section here.
+      .span5
+        %h5 OSGi Core 4.2
+        %p WildFly is geared toward OSGi development as much as it is to Java EE.
+        %p Thanks to the modular design of the WildFly core, adding OSGi compliance is a natural fit. Not only does WildFly provide OSGi compliance, it also offers integration between the OSGi and Java EE component models.
+
+    %a(name="#testable")
+    %h4
+      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-testable_45px.png" alt="")
+      Easily Testable
+    .row
+      .span5
+        %h5 Arquillian
+        %p
+          From the very start, WildFly has been designed with testability in mind. The secret to that fidelity is
+          %a{:href=>"www.arquillian.org"}Arquillian
+          a component model for integration tests that execute inside the real runtime environment.
+        %p  By removing the clutter from your tests and handling deployment and test execution, Arquillian enables you to write tests for just about any use case your application encounters: real tests.
+
+        %p Thanks to the speed of WildFly, Arquillian tests run nearly as fast as unit tests.
+        %p
+          %b TODO:  replace with OpenShift (when available)
+
+      .span5
+        %h5 Smarter Development
+        %p Using Arquillian for development gives you an extremely fast change, compile, test cycle for any component model. This strategy allows you to take Test Driven Development (TDD) further than ever before.
+        %p WildFly is a testament to how efficiently you can develop with Arquillian, and how robust your software will be.
+
+
+    %a(name="#bestof")
+    %h4
+      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-bestof_45px.png" alt="best of breed components")
+      First class, modern components
+    .row
+      .span10
+        %p WildFly builds on many best of breed standalone OSS projects, many of which you're likely to recognize:
+    .row
+      .span5
+        %ul
+          %li
+            %a{ :href=>"http://www.hibernate.org"}
+              %span.project-icon-med.hibernate_icon_16x
+                Hibernate
+          %li
+            %img{ :src=>"http://design.jboss.org/narayana/logo/final/narayana_icon_16px.png"}
+            %a{ :href=>"http://www.jboss.org/jbosstm"} Narayana
+
+          %li
+            %a{ :href=>"http://www.jboss.org/infinispan"}
+              %span.project-icon-med.infinispan_icon_16x
+                Infinispan
+
+          %li
+            %a{ :href=>"http://www.jboss.org/ironjacamar"}
+              %span.project-icon-med.ironjacamar_icon_16x
+                IronJacamar
+
+          %li
+            %a{ :href=>"http://www.jboss.org/resteasy"}
+              %span.project-icon-med.resteasy_icon_16x
+                RESTEasy
+          %li
+            %a{ :href=>"http://www.jboss.org/weld"}
+              %span.project-icon-med.weld_icon_16x
+                Weld
+      .span5
+        %ul
+          %li
+            %a{ :href=>"http://www.jboss.org/hornetq"}
+              %span.project-icon-med.hornetq_icon_16x
+                HornetQ
+          %li
+            %a{ :href=>"http://www.jboss.org/jgroups"}
+              %span.project-icon-med.jgroups_icon_16x
+                JGroups
+          %li
+            %a{ :href=>"http://java.net/projects/mojarra/"}
+              %span.project-icon-med.blank_icon_16x
+                Mojarra
+          %li
+            %a{ :href=>"http://cxf.apache.org/"}
+              %span.project-icon-med.blank_icon_16x
+                ApacheCXF
+          %li
+            %a{ :href=>"http://www.arquillian.org"}
+              %span.project-icon-med.arquillian_icon_16x
+                Arquillian
+          %li
+            and more ...
+    %a(name="#heritage")
+    %h4
+      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-bestof_45px.png" alt="best of breed components")
+      A Strong Heritage
+    .row
+      .span5
+        %h5 A new name
+        %p While the name may be new, WildFly is the eigth version of the project previously known as JBoss AS.
+        %p Picking up where JBoss AS 7 left off, Wildfly 8 is JBoss' new community project for rapidly driving forward java application server innovation.
+      .span5
+        %h5 Committed to Java
+        %p Red Hat is committed to Java.  WildFly 8 will focus on quickly delivering an open-source implementation of Java EE 7.
+        %br
+    %h4
+      Community Powered Innovation
+    .row
+      .span5
+        %h5 Your voice, your choice!
+        %p When the JBoss Application Server (JBoss AS) project was launched in 1999, no one would have ever guessed at how successful the project would become.
+        %p Thank You, the community, in helping the JBoss AS project find a new name WildFly via an election process.
+        %p The JBoss name still represents a large and vibrant community (the JBoss Community), and a successful commercial product (JBoss Enterprise Application Platform).
+
+
+      .span5
+
+        %h5 Community matters
+        %p WildFly is a community driven project geared towards rapid innovation. To support that WildFly is seeking input from a wider range of developers and ecosystems.
+        %p Contributors should consider the team's commitment to a rapid delivery cadence as well as, a higher degree of transparency in it's deliverables and roadmap.
+        %p TODO:  Add link to governance here.
