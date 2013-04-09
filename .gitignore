@@ -2,4 +2,5 @@ _site
 _tmp
 .sass-cache
 .awestruct
+.idea
 *.swp
