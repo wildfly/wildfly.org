@@ -51,6 +51,21 @@
               %ul.dropdown-menu
                 %li{ :role=>"presentation"}
                   %a{ :role=>"menuitem", :tabindex=>"-1", :href=>"#{site.github_url}"} GitHub
+          %ul.nav
+            %li.dropdown
+              %a{ :id=>"AboutMenu", :role=>"button", :class=>"dropdown-toggle"}(data-toggle="dropdown")
+                About
+                %b.caret
+              %ul.dropdown-menu
+                %li{ :role=>"presentation"}
+                  %a{ :role=>"menuitem", :tabindex=>"-1", :href=>"#{site.base_url}/faq"} FAQ
+                %li{ :role=>"presentation"}
+                  %a{ :role=>"menuitem", :tabindex=>"-1", :href=>"#{site.base_url}/governance"} Governance Policy
+                %li{ :role=>"presentation"}
+                  %a{ :role=>"menuitem", :tabindex=>"-1", :href=>"#{site.redhat_url}" } About Red Hat
+
+
+
     .container
       ~ content
       %hr
@@ -59,8 +74,8 @@
     -# Uncomment script tags (remove leading -#) when you're ready to use behaviors
     %script{ :type=>'text/javascript', :src=>'//cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js' }
     %script{ :type=>'text/javascript', :src=>"#{site.base_url}/javascripts/bootstrap-collapse.js" }
-    %script{ :type=>'text/javascript', :src=>"#{site.base_url}/javascripts/bootstrap-dropdown.js"}
-    %script{:type=>"text/javascript", :src=>"#{site.base_url}/javascripts/site.js" }
+    %script{ :type=>'text/javascript', :src=>"#{site.base_url}/javascripts/bootstrap-dropdown.js" }
+    %script{ :type=>"text/javascript", :src=>"#{site.base_url}/javascripts/site.js" }
     - if page.bottom_javascripts
       - page.bottom_javascripts.each do |javascript|
         %script{:src=>javascript, :type=>'text/javascript'}

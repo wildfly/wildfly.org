@@ -2,20 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bb8abab1-e36f-4d1c-99ac-b48a319b7225" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/_ext/common.rb" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/_ext/tweakruby.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_layouts/base.html.haml" afterPath="$PROJECT_DIR$/_layouts/base.html.haml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html.haml" afterPath="$PROJECT_DIR$/index.html.haml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_ext/pipeline.rb" afterPath="$PROJECT_DIR$/_ext/pipeline.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_config/site.yml" afterPath="$PROJECT_DIR$/_config/site.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="wildfly-site.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="bb8abab1-e36f-4d1c-99ac-b48a319b7225" time="1365535217458" ignored="false" />
     <file path="/index.html.haml" changelist="bb8abab1-e36f-4d1c-99ac-b48a319b7225" time="1365535826336" ignored="false" />
-    <file path="/base.html.haml" changelist="bb8abab1-e36f-4d1c-99ac-b48a319b7225" time="1365539572078" ignored="false" />
+    <file path="/base.html.haml" changelist="bb8abab1-e36f-4d1c-99ac-b48a319b7225" time="1365540290608" ignored="false" />
     <file path="$PROJECT_DIR$/../jdf-site/_layouts/base.html.haml" changelist="bb8abab1-e36f-4d1c-99ac-b48a319b7225" time="1365535346548" ignored="false" />
-    <file path="/site.yml" changelist="bb8abab1-e36f-4d1c-99ac-b48a319b7225" time="1365538623028" ignored="false" />
+    <file path="/site.yml" changelist="bb8abab1-e36f-4d1c-99ac-b48a319b7225" time="1365540330753" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +32,7 @@
       <file leaf-file-name="site.yml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/_config/site.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="48" selection-start="273" selection-end="273" vertical-scroll-proportion="0.0">
+            <state line="16" column="50" selection-start="585" selection-end="585" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -93,7 +90,7 @@
       <file leaf-file-name="base.html.haml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/_layouts/base.html.haml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="85" selection-start="2805" selection-end="2805" vertical-scroll-proportion="0.63364995">
+            <state line="64" column="52" selection-start="2939" selection-end="2939" vertical-scroll-proportion="1.0">
               <folding />
             </state>
           </provider>
@@ -511,14 +508,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/_config/site.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="48" selection-start="273" selection-end="273" vertical-scroll-proportion="0.0">
+        <state line="16" column="50" selection-start="585" selection-end="585" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/_layouts/base.html.haml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="85" selection-start="2805" selection-end="2805" vertical-scroll-proportion="0.63364995">
+        <state line="64" column="52" selection-start="2939" selection-end="2939" vertical-scroll-proportion="1.0">
           <folding />
         </state>
       </provider>

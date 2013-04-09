@@ -9,6 +9,7 @@ irc_url: irc://irc.freenode.net#jboss
 #Needs confirmation
 jira_key:  WILDFLY
 jira_url: https://issues.jboss.org/browse/WILDFLY
+redhat_url: http://community.redhat.com/
 website_source_repo: http://github.com/jbossas/wildfly-site/settings/collaboration
 wiki_url: https://community.jboss.org/en/wildfly
 
