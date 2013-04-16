@@ -1,0 +1,40 @@
+!!!5
+%html
+  %head
+    %meta{ :charset=>'utf-8' }
+    %title= (page.title ? (page.site_title ? page.site_title : page.title) : site.title)
+    %meta{ :name=>'viewport', :content=>'width=device-width, initial-scale=1, minimum-scale=1' }
+    %meta(name="description"){:content=>page.description ? page.description : site.description}
+    - if site.keywords
+      %meta(name="keywords"){:content=>site.keywords}
+    - if page.author
+      %meta(name="author"){:content=>site.identities.lookup(page.author).name}
+    - if site.noindex
+      %meta(name="robots" content="noindex")
+    - if site.url
+      %link(rel="canonical"){:href=>site.url}
+
+
+    %link{ :rel=>'stylesheet', :type=>'text/css', :href=>"#{site.base_url}/stylesheets/styles.css", :media=>"screen" }
+    /[if lt IE 9]
+      %script{ :type=>'text/javascript', :src=>'//html5shim.googlecode.com/svn/trunk/html5.js' }
+  %body
+    ~content
+
+
+    %footer
+      .container
+        %ul.row-fluid
+          %li
+            %a{ :href=>"#{site.base_url}/about"}About WildFly
+          %li
+            %a{ :href=>"#{site.base_url}/transparency"}Transparency
+          %li
+            %a{ :href=>"#{site.base_url}/social"}Social
+          %li
+            %a{ :href=>"http://www.jboss.org"}
+              %img{ :src=>"#{site.base_url}/images/jbossbadge.png"}
+      %a{ :href=>"http://www.redhat.com"}
+        %img{ :src=>"#{site.base_url}/images/redhat_logo.png"}
+    %script{ :type=>"text/javascript", :src=>"#{site.base_url}/javascripts/jquery.min.js"}
+

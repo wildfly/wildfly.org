@@ -1,0 +1,43 @@
+// Default Variables
+
+$brand_color: #f4f4f4;
+$brand_hover_color: #c0e4ff;
+$brand_font_size: 32px;
+$brand_font_weight: 900;
+$brand_text_transform: uppercase;
+$brand_letter_spacing: 1px;
+$nav_bg: rgba(0, 0, 0, 0.8);
+$nav_padding: 20px 0 20px 0;
+
+// // Light Sub-Theme
+
+// $brand_color: #333;
+// $brand_hover_color: #000;
+// $nav_bg: rgba(255, 255, 255, 0.4);
+
+// // Tan Sub-Theme
+
+// $brand_color: #2C4560;
+// $brand_hover_color: #000;
+// $nav_bg: rgba(255, 255, 255, 0.6);
+
+// Structure
+
+nav {
+  background: $nav_bg;
+  padding: $nav_padding;
+  text-align: center;
+  a.brand {
+    letter-spacing: $brand_letter_spacing;
+    color: $brand_color;
+    font-size: $brand_font_size;
+    font-weight: $brand_font_weight;
+    font-family: $base_font;
+    text-transform: $brand_text_transform;
+    @include transition(color 0.5s ease-in);
+    &:hover {
+      color: $brand_hover_color;
+      text-decoration: none;
+    }
+  }
+}

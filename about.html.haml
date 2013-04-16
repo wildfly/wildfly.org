@@ -1,47 +1,13 @@
 ---
-layout: base
+layout: default
 ---
 
 .row
   .span12
+    %h1 About WildFly
 
-    .hero-unit
-      %h1 Announcing WildFly
-      %br
-      %h3.pull-right The Open Source Java application server re-ignited
 .row
-  .span10
-
-    %p
-    %ul
-      %li Designed for Flexibility
-      %li Amped with electrifying speed
-      %li Launch your JavaEE applications in a flash
-
-    %h5
-      %b Lightning fast...
-      startup / deployment / configuration / performance
-
-    %br
-
-    %ul
-      %li
-        %a{ :href=>"#speed"}Even Faster
-      %li
-        %a{ :href=>"#modular"}Modular Design
-      %li
-        %a{ :href=>"#light"}Exceptionally Lightweight
-      %li
-        %a{ :href=>"#admin"}Elegant Administration
-      %li
-        %a{ :href=>"#compliant"}Strict Compliance
-      %li
-        %a{ :href=>"#testable"}Easily Testable
-      %li
-        %a{ :href=>"#bestof"}First class, modern components
-      %li
-        %a{ :href=>"#heritage"}New name, strong heritage
-
+  .span12
     .clearfix
     %a(name="#speed" )
     %h4
@@ -110,6 +76,9 @@ layout: base
         %p Consistent and powerful management is available out of the box, including a polished, user-friendly web console, Java and HTTP APIs and a command line tool (CLI). The web console provides a clear perspective into the server runtime, while the programmatic APIs can be leveraged by tools, scripts and geeks.
         %p What makes the interfaces especially useful is that changes are persistent, so you have the option to avoid fiddling with the configuration file directly.
 
+        %h5 Patching Made Easy
+        %p Patching has never been easier with WildFly.  Use the command line to deploy, stage, apply and even rollback system wide patches.
+
     %a(name="#compliant")
     %h4
       %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-compliant_45px.png" alt="")
@@ -141,8 +110,7 @@ layout: base
         %p  By removing the clutter from your tests and handling deployment and test execution, Arquillian enables you to write tests for just about any use case your application encounters: real tests.
 
         %p Thanks to the speed of WildFly, Arquillian tests run nearly as fast as unit tests.
-        %p
-          %b TODO:  replace with OpenShift (when available)
+
 
       .span5
         %h5 Smarter Development
@@ -158,58 +126,62 @@ layout: base
       .span10
         %p WildFly builds on many best of breed standalone OSS projects, many of which you're likely to recognize:
     .row
-      .span5
-        %ul
-          %li
+      .span1
+        %br
+      .span4
+        %ul{:style=>"list-style:none;"}
+          %li{:style=>"margin-top:10px;", :target=>"_blank"}
             %a{ :href=>"http://www.hibernate.org"}
-              %span.project-icon-med.hibernate_icon_16x
-                Hibernate
-          %li
-            %img{ :src=>"http://design.jboss.org/narayana/logo/final/narayana_icon_16px.png"}
-            %a{ :href=>"http://www.jboss.org/jbosstm"} Narayana
+              %span.project-icon-med.hibernate_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}Hibernate
 
-          %li
+          %li{:style=>"margin-top:10px;margin: 0pt 0pt -10px -15px"}
+            %span{:style=>"float:left"}
+              %img{ :src=>"http://design.jboss.org/narayana/logo/final/narayana_icon_16px.png"}
+              %a{ :href=>"http://www.jboss.org/jbosstm"} Narayana
+
+          %li{:style=>"margin-top:10px;"}
             %a{ :href=>"http://www.jboss.org/infinispan"}
-              %span.project-icon-med.infinispan_icon_16x
-                Infinispan
+              %span.project-icon-med.infinispan_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}Infinispan
 
-          %li
-            %a{ :href=>"http://www.jboss.org/ironjacamar"}
-              %span.project-icon-med.ironjacamar_icon_16x
-                IronJacamar
+          %li{:style=>"margin-top:10px;"}
+            %a{ :href=>"http://www.jboss.org/ironjacamar", :target=>"_blank"}
+              %span.project-icon-med.ironjacamar_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}IronJacamar
 
+          %li{:style=>"margin-top:10px;"}
+            %a{ :href=>"http://www.jboss.org/resteasy", :target=>"_blank"}
+              %span.project-icon-med.resteasy_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}RESTEasy
+          %li{:style=>"margin-top:10px;"}
+            %a{ :href=>"http://www.jboss.org/weld", :target=>"_blank"}
+              %span.project-icon-med.weld_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}Weld
+      .span4
+        %ul{:style=>"list-style:none;"}
           %li
-            %a{ :href=>"http://www.jboss.org/resteasy"}
-              %span.project-icon-med.resteasy_icon_16x
-                RESTEasy
+            %a{ :href=>"http://www.jboss.org/hornetq", :target=>"_blank"}
+              %span.project-icon-med.hornetq_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}HornetQ
           %li
-            %a{ :href=>"http://www.jboss.org/weld"}
-              %span.project-icon-med.weld_icon_16x
-                Weld
-      .span5
-        %ul
+            %a{ :href=>"http://www.jboss.org/jgroups", :target=>"_blank"}
+              %span.project-icon-med.jgroups_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}JGroups
           %li
-            %a{ :href=>"http://www.jboss.org/hornetq"}
-              %span.project-icon-med.hornetq_icon_16x
-                HornetQ
+            %a{ :href=>"http://java.net/projects/mojarra/", :target=>"_blank"}
+              %span.project-icon-med.blank_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}Mojarra
           %li
-            %a{ :href=>"http://www.jboss.org/jgroups"}
-              %span.project-icon-med.jgroups_icon_16x
-                JGroups
+            %a{ :href=>"http://cxf.apache.org/", :target=>"_blank"}
+              %span.project-icon-med.blank_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}ApacheCXF
           %li
-            %a{ :href=>"http://java.net/projects/mojarra/"}
-              %span.project-icon-med.blank_icon_16x
-                Mojarra
+            %a{ :href=>"http://www.arquillian.org", :target=>"_blank"}
+              %span.project-icon-med.arquillian_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
+              %span{:style=>"float:left"}Arquillian
           %li
-            %a{ :href=>"http://cxf.apache.org/"}
-              %span.project-icon-med.blank_icon_16x
-                ApacheCXF
-          %li
-            %a{ :href=>"http://www.arquillian.org"}
-              %span.project-icon-med.arquillian_icon_16x
-                Arquillian
-          %li
-            and more ...
+            %span{:style=>"float:left"}and more ...
     %a(name="#heritage")
     %h4
       %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-bestof_45px.png" alt="best of breed components")
@@ -245,4 +217,6 @@ layout: base
         %h5 Community matters
         %p WildFly is a community driven project geared towards rapid innovation. To support that WildFly is seeking input from a wider range of developers and ecosystems.
         %p Contributors should consider the team's commitment to a rapid delivery cadence as well as, a higher degree of transparency in it's deliverables and roadmap.
-        %p TODO:  Add link to governance here.
+
+    .row-fluid
+      %br

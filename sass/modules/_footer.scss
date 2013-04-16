@@ -1,0 +1,40 @@
+// Default Variables
+
+$footer_bg: #111111;
+$footer_color: #777777;
+$footer_link_color: #cccccc;
+$footer_link_hover_color: #29a3d0;
+
+// Structure
+
+footer {
+  background: $footer_bg;
+  color: $footer_color;
+  text-align: center;
+  padding: 40px;
+  ul, li {
+    float: none;
+    position: relative;
+  }
+  ul {
+    margin: 0 0 20px 0;
+    padding-bottom: 20px;
+    list-style-type: none;
+    li {
+      display: inline-block;
+      margin: 0 10px;
+      a {
+        color: $footer_link_color;
+        &:hover {
+          text-decoration: none;
+          color: $footer_link_hover_color;
+        }
+      }
+    }
+  }
+}
+
+.redhatlogo {
+  width: 76px;
+  margin: auto;
+}

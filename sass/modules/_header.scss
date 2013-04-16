@@ -1,0 +1,100 @@
+// Default Variables
+
+$header_bg_color: #222222;
+$header_bg: url("../images/bg2.jpg") center no-repeat;
+$section_h1_h2_color: white;
+$section_h1_font_weight: 400;
+$section_h1_text_shadow: 2px 2px 5px #424242;
+$section_h2_font_weight: 300;
+$section_h2_text_shadow: 2px 2px 5px #424242;
+
+$form_padding_top: 1.5em;
+$form_input_and_button_width: 200px;
+$form_input_and_button_border_radius: 4px;
+$form_font_size: 20px;
+$form_input_bg: white;
+$form_input_color: black;
+$form_btn_gold_color: white;
+$form_btn_gold_border: 1px solid #613e12;
+$form_btn_gold_text_shadow: 0 1px 0 #6d4107;
+
+// Mixins
+
+@mixin form_styling {
+  background: $form_input_bg;
+  color: $form_input_color;
+  border: none;
+  font-family: $base_font;
+  font-size: $form_font_size;
+  text-align: center;
+  width: $form_input_and_button_width;
+  border-radius: $form_input_and_button_border_radius;
+}
+
+@mixin gold_button_bg {
+  background-color: #a3681b;
+  @include filter-gradient(#e9a041, #7c4907);
+  @include background-image(linear-gradient(top, #e9a041 0, #7c4907));
+}
+
+@mixin gold_button_hover {
+  background-color: #bd7921;
+  @include filter-gradient(#ffba60, #7c4907);
+  @include background-image(linear-gradient(top, #ffba60 0, #7c4907));
+}
+
+@mixin gold_button_active {
+  background-color: #b1701c;
+  @include filter-gradient(#7c4907, #b1701c);
+  @include background-image(linear-gradient(top, #7c4907 22%, #b1701c 100%));
+}
+
+// Splash Page Structure
+
+header {
+  background-color: $header_bg_color;
+  background: $header_bg;
+  section {
+    padding: 20px 0;
+    text-align: center;
+    h1, h2 {
+      color: $section_h1_h2_color;
+      font-family: $base_font;
+    }
+    h1 {
+      font-weight: $section_h1_font_weight;
+      text-shadow: $section_h1_text_shadow;
+    }
+    h2 {
+      font-weight: $section_h2_font_weight;
+      text-shadow: $section_h2_text_shadow;
+	  font-size: 4em;
+    }
+  }
+}
+
+// Secondary Page Structure
+
+header.secondary {
+  background-color: $header_bg_color;
+  background: $header_bg;
+  section {
+    padding: 20px 0;
+    text-align: center;
+    h1, h2 {
+      color: $section_h1_h2_color;
+      font-family: $base_font;
+    }
+    h1 {
+      font-weight: $section_h1_font_weight;
+      text-shadow: $section_h1_text_shadow;
+    }
+    h2 {
+      font-weight: $section_h2_font_weight;
+      text-shadow: $section_h2_text_shadow;
+	  font-size: 4em;
+    }
+  }
+}
+
+
