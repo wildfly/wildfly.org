@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Password Required"
+AuthUserFile /home/remote/rploski/rename.pass
+Require valid-user

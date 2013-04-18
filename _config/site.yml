@@ -17,11 +17,10 @@ wiki_url: https://community.jboss.org/en/wildfly
 profiles:
   development:
     base_url: http://localhost:4242
-    logo_base_url: http://localhost:4242/images
+    logo_base_url: https://www.jboss.org/dms/wildfly_splash
     minify: false
     google_plusone: true
     noindex: true
-    google_analytics: UA-40221748-1
 
   sandbox:
     base_url: http://people.redhat.com/~rploski/rename
