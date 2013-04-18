@@ -4,3 +4,6 @@ _tmp
 .awestruct
 .idea
 *.swp
+.bundle
+vendor
+Gemfile.lock

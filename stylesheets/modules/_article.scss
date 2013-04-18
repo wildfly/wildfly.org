@@ -25,7 +25,8 @@ article {
   background: $article_bg;
   padding: 20px 0 40px 0;
   border-top: 1px solid #424242;
-  
+  margin: 0 auto;
+  text-align: center;
   ul {
     margin: 0;
     padding: 0;
@@ -33,12 +34,14 @@ article {
       text-align: center;
       padding-top: 20px;
       color: $article_color;
+      display: inline-block;
       i {
         color: $article_icon_color;
         font-size: 40px;
         text-shadow: $article_icon_text_shadow;
       }
       .box {
+        height: 10em;
         margin-top: 20px;
         padding: 10px 20px 20px 20px;
         border-radius: 4px;
@@ -54,14 +57,13 @@ article {
         p {
           color: $article_p_color;
           line-height: 150%;
-		  
-		  a {
-		  color: white;
-		  text-decoration: underline;
-		  }
-		  a:hover {
-		  color: #4a5d75;
-		  }
+          a {
+            color: white;
+            text-decoration: underline;
+          }
+          a:hover {
+            color: #4a5d75;
+          }
         }
       }
     }
@@ -75,25 +77,20 @@ article.secondary {
   background: $articlesecondary_bg;
   padding: 0;
   border-top: 1px solid #424242;
-    
 	h1, h2, h3, h4, h5 {
-	font-family: $base_font;
+    font-family: $base_font;
 	}
-	
 	h1 {
-	margin: 45px auto 30px auto;
-	color: #4a5d75;
+    margin: 45px auto 30px auto;
+    color: #4a5d75;
 	}
-	
 	h2, h3, h4 {
-	color: #656565;
+    color: #656565;
 	}
-
 	h4 {
-	font-size: 20px;
+    font-size: 20px;
 	}
-
 	h5 {
-	font-size: 18px;
+    font-size: 18px;
 	}
 }
