@@ -41,7 +41,7 @@ profiles:
     noindex: true
 
   production:
-    base_url: http://wildfly.org
+    base_url: http://www.wildfly.org
     logo_base_url: https://www.jboss.org/dms/wildfly_splash
     minify: true
     google_plusone: false
