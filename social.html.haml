@@ -1,0 +1,54 @@
+---
+layout: default
+---
+
+%h1 Follow WildFly Developments
+
+.row-fluid
+  .span12
+    %h4 Twitter
+    %p
+      Get news of new developments by following on Twitter:
+      %a{ :href=>"https://twitter.com/wildflyas", :class=>"twitter-follow-button"}(data-show-count="false" data-lang="en")Follow @WildFlyAS
+
+:javascript
+  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+%img{:src=>"#{site.base_url}/images/divider.png"}
+
+.row-fluid
+  .span12
+    %h4
+      Forums
+    %p
+      Participate in the
+      %a{:href=>"#{site.wiki_url}", :target=>"_blank"}forums
+
+
+%img{:src=>"#{site.base_url}/images/divider.png"}
+
+.row-fluid
+  .span12
+    %h4
+      GitHub
+    %p
+      Get Involved!  Fork the code on
+      %a{:href=>"#", :target=>"_blank"}GitHub
+
+
+
+
+%img{:src=>"#{site.base_url}/images/divider.png"}
+
+.row-fluid
+  .span12
+    %h4
+      Newsletter
+    %p
+      %a{:href=>"http://www.jboss.org/developer/subscribe", :target=>"_blank"}Subscribe
+      to the JBoss Developer Newsletter
+
+%br
+%br
+
+

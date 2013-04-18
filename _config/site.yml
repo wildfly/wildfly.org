@@ -1,4 +1,4 @@
-title: JBoss Application Server has a new name... WildFly.
+title: WildFly - JBoss Application Server has a new name... WildFly.
 author: WildFly Development Team
 description: WildFly, the project formerly known as JBossAS, is a Java Application Server
 
@@ -17,9 +17,36 @@ wiki_url: https://community.jboss.org/en/wildfly
 profiles:
   development:
     base_url: http://localhost:4242
+    logo_base_url: http://localhost:4242/images
+    minify: false
+    google_plusone: true
+    noindex: true
+    google_analytics: UA-40221748-1
+
+  sandbox:
+    base_url: http://people.redhat.com/~rploski/rename
+    logo_base_url: https://www.jboss.org/dms/wildfly_splash
     minify: false
     google_plusone: false
     noindex: true
-  sandbox:
-    base_url: http://wildfly-jbossway.rhcloud.com
+    deploy:
+      host: people.redhat.com
+      path: /home/remote/rploski/public_html/rename
+      uncommitted: true
+
+  staging:
+    base_url: http://localhost:4242
+    logo_base_url: https://www.jboss.org/dms/wildfly_splash
+    minify: false
+    google_plusone: false
+    noindex: true
+
+  production:
+    base_url: http://wildfly.org
+    logo_base_url: https://www.jboss.org/dms/wildfly_splash
+    minify: true
+    google_plusone: false
+    noindex: false
+    google_analytics: UA-40221748-1
+
 

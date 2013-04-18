@@ -26,7 +26,7 @@
         .container
       %section{:class=>"container", :style=>"padding: -20px auto;"}
         %a{:href=>"#{site.base_url}/" }
-          %img{ :src=>"#{site.base_url}/images/splash_wildflylogo_small.png"}
+          %img{ :src=>"#{site.logo_base_url}/splash_wildflylogo_small.png"}
     %article.secondary
       .container
         ~ content
@@ -41,9 +41,16 @@
             %a{ :href=>"#{site.base_url}/social"}Social
           %li
             %a{ :href=>"http://www.jboss.org"}
-              %img{ :src=>"#{site.base_url}/images/jbossbadge.png"}
+              %img{ :src=>"#{site.logo_base_url}/jbossbadge.png"}
       %a{ :href=>"http://www.redhat.com"}
-        %img{ :src=>"#{site.base_url}/images/redhat_logo.png"}
+        %img{ :src=>"#{site.logo_base_url}/redhat_logo.png"}
     %script{ :type=>"text/javascript", :src=>"#{site.base_url}/javascripts/jquery.min.js"}
-
+    - if site.google_plusone
+      :javascript
+        (function() {
+          var po = document.createElement("script"); po.async = true; po.src = "https://apis.google.com/js/plusone.js";
+          var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(po, s);
+        })();
+    - if site.google_analytics
+      = google_analytics_async
 
