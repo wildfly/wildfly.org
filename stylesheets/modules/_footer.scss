@@ -38,3 +38,27 @@ footer {
   width: 76px;
   margin: auto;
 }
+
+
+@media (max-width: 767px) {
+
+footer {
+  padding: 30px;
+  ul {
+  margin-bottom: 0px;
+  }
+}
+}
+
+@media (max-width: 470px) {
+
+footer {
+  ul {
+    li {
+      img {
+		padding-top: 20px;
+      }
+    }
+  }
+}
+}

@@ -69,12 +69,14 @@ article {
   }
 }
 
+.span2.unorderedlist ul li { display:block; text-align: left; }
+
 
 // Secondary Page Structure
 
 article.secondary {
   background: $articlesecondary_bg;
-  padding: 0;
+  padding: 0px 30px ;
   border-top: 1px solid #424242;
 	h1, h2, h3, h4, h5 {
     font-family: $base_font;
@@ -92,4 +94,49 @@ article.secondary {
 	h5 {
     font-size: 18px;
 	}
+}
+
+// responsive styles
+
+
+@media (max-width: 979px) and (min-width: 768px) {
+
+article {
+  ul {
+    li {
+      .box {
+        h3 {
+		font-size: 18px;
+		}
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+
+article {
+  ul {
+    li {
+      .box {
+        height: 5em;
+        margin: 0px 30px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 470px) {
+
+article {
+  ul {
+    li {
+      img {
+		height: 64px;
+        }
+      }
+    }
+  }
 }

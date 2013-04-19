@@ -56,14 +56,13 @@ layout: default
 
 .row-fluid
   .span12
-
-%img{:src=>"#{site.base_url}/images/divider.png" , :alt=>"------------------------------------------"}
+    %img{:src=>"#{site.base_url}/images/divider.png" , :alt=>"------------------------------------------"}
 
 .row-fluid
   .span12
     %a(name="#light")
     %h4
-      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-feather_45px.png" alt="lightweight")
+      %img(style="margin: 0pt 0pt -10px -15px;" src="https://www.jboss.org/dms/AS7/icons/45px/jbossas7-icons-feather_45px.png" alt="")
       Exceptionally Lightweight
 .row-fluid
   .span6
@@ -165,10 +164,8 @@ layout: default
       %p WildFly builds on many best of breed standalone OSS projects, many of which you're likely to recognize:
 
   .row-fluid
-    .span1
-      %br
-    .span4
-      .project-icons
+    .span4.offset1
+      %ul.project-icons
         %li
           %a{ :href=>"http://www.hibernate.org", :target=>"_blank"}
             Hibernate
