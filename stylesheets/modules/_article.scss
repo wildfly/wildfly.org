@@ -8,7 +8,7 @@ $article_box_bg: #7997bc;
 $article_box_border: none;
 $article_box_inner_shadow: 0 0 2px #033b40 inset;
 $article_h3_font_color: inherit;
-$article_h3_font_size: 28px;
+$article_h3_font_size: 2em;
 $article_h3_font_weight: 300;
 $article_p_color: white;
 
@@ -41,8 +41,8 @@ article {
       }
       .box {
         height: 10em;
-        margin-top: 20px;
-        padding: 10px 20px 20px 20px;
+        margin-top: 1em;
+        padding: .8em .5em;
         border-radius: 4px;
         border: $article_box_border;
         background: $article_box_bg;
@@ -55,7 +55,7 @@ article {
         }
         p {
           color: $article_p_color;
-          line-height: 150%;
+          //line-height: 150%;
           a {
             color: white;
             text-decoration: underline;

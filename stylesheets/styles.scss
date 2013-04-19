@@ -19,3 +19,5 @@ $base_font_weight: 400;
 @import "modules/header";
 @import "modules/article";
 @import "modules/footer";
+
+ul, ol { margin:inherit;}
