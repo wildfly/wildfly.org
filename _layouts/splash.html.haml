@@ -3,7 +3,7 @@
   %head
     %meta{ :charset=>'utf-8' }
     %title= (page.title ? (page.site_title ? page.site_title : page.title) : site.title)
-    %meta{ :name=>'viewport', :content=>'width=device-width, initial-scale=1, minimum-scale=1' }
+    %meta{ :name=>'viewport', :content=>'width=device-width, initial-scale=1' }
     %meta(name="description"){:content=>page.description ? page.description : site.description}
     - if site.keywords
       %meta(name="keywords"){:content=>site.keywords}
@@ -23,7 +23,7 @@
 
 
     %footer
-      .container
+      .container-fluid
         %ul.row-fluid
           %li
             %a{ :href=>"#{site.base_url}/about"}About WildFly

@@ -19,15 +19,15 @@
   %body
     %header
       %nav
-        .container
-      %section{:class=>"container", :style=>"padding: -20px auto;"}
+        .container-fluid
+      %section.container-fluid{:style=>"padding: -20px auto;"}
         %a{:href=>"#{site.base_url}/" }
           %img{ :src=>"#{site.logo_base_url}/splash_wildflylogo_small.png"}
     %article.secondary
-      .container
+      .container-fluid
         ~ content
     %footer
-      .container
+      .container-fluid
         %ul.row-fluid
           %li
             %a{ :href=>"#{site.base_url}/about"}About WildFly
