@@ -13,10 +13,6 @@
       %meta(name="robots" content="noindex")
     - if site.url
       %link(rel="canonical"){:href=>site.url}
-    :css
-      body {
-        padding-top: 60px;
-      }
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>"#{site.base_url}/stylesheets/styles.css" }
     /[if lt IE 9]
       %script{ :type=>'text/javascript', :src=>'//html5shim.googlecode.com/svn/trunk/html5.js' }
