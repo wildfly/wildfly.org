@@ -2,3 +2,6 @@ vendor
 Gemfile
 Gemfile.lock
 README.md
+publish.sh
+release.sh
+release-utils.sh
