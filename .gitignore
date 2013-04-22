@@ -7,3 +7,4 @@ _tmp
 .bundle
 vendor
 Gemfile.lock
+.DS_STORE
