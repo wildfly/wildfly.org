@@ -163,63 +163,50 @@ layout: default
   .row-fluid
     .span10
       %p WildFly builds on many best of breed standalone OSS projects, many of which you're likely to recognize:
-.row-fluid
-  .span1
-    %br
-  .span4
-    %ul{:style=>"list-style:none;"}
-      %li{:style=>"margin-top:10px;", :target=>"_blank"}
-        %a{ :href=>"http://www.hibernate.org"}
-          %span.project-icon-med.hibernate_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}Hibernate
 
-      %li{:style=>"margin-top:10px;margin: 0pt 0pt -10px -15px"}
-        %span{:style=>"float:left"}
-          %img{ :src=>"http://design.jboss.org/narayana/logo/final/narayana_icon_16px.png"}
-          %a{ :href=>"http://www.jboss.org/jbosstm"} Narayana
+  .row-fluid
+    .span1
+      %br
+    .span4
+      .project-icons
+        %li
+          %a{ :href=>"http://www.hibernate.org", :target=>"_blank"}
+            Hibernate
+        %li
+          %a{ :href=>"http://www.jboss.org/jbosstm", :target=>"blank"}
+            Narayana
+        %li
+          %a{ :href=>"http://www.jboss.org/infinispan", :target=>"blank"}
+            Infinispan
+        %li
+          %a{ :href=>"http://www.jboss.org/ironjacamar", :target=>"_blank"}
+            IronJacamar
+        %li
+          %a{ :href=>"http://www.jboss.org/resteasy", :target=>"_blank"}
+            RESTEasy
+        %li
+          %a{ :href=>"http://www.jboss.org/weld", :target=>"_blank"}
+            Weld
+    .span4
+      %ul.project-icons
+        %li
+          %a{ :href=>"http://www.jboss.org/hornetq", :target=>"_blank"}
+            HornetQ
+        %li
+          %a{ :href=>"http://www.jboss.org/jgroups", :target=>"_blank"}
+            JGroups
+        %li
+          %a{ :href=>"http://java.net/projects/mojarra/", :target=>"_blank"}
+            Mojarra
+        %li
+          %a{ :href=>"http://cxf.apache.org/", :target=>"_blank"}
+            ApacheCXF
+        %li
+          %a{ :href=>"http://www.arquillian.org", :target=>"_blank"}
+            Arquillian
+        %li And more ...
 
-      %li{:style=>"margin-top:10px;"}
-        %a{ :href=>"http://www.jboss.org/infinispan"}
-          %span.project-icon-med.infinispan_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}Infinispan
 
-      %li{:style=>"margin-top:10px;"}
-        %a{ :href=>"http://www.jboss.org/ironjacamar", :target=>"_blank"}
-          %span.project-icon-med.ironjacamar_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}IronJacamar
-
-      %li{:style=>"margin-top:10px;"}
-        %a{ :href=>"http://www.jboss.org/resteasy", :target=>"_blank"}
-          %span.project-icon-med.resteasy_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}RESTEasy
-      %li{:style=>"margin-top:10px;"}
-        %a{ :href=>"http://www.jboss.org/weld", :target=>"_blank"}
-          %span.project-icon-med.weld_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}Weld
-  .span4
-    %ul{:style=>"list-style:none;"}
-      %li
-        %a{ :href=>"http://www.jboss.org/hornetq", :target=>"_blank"}
-          %span.project-icon-med.hornetq_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}HornetQ
-      %li
-        %a{ :href=>"http://www.jboss.org/jgroups", :target=>"_blank"}
-          %span.project-icon-med.jgroups_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}JGroups
-      %li
-        %a{ :href=>"http://java.net/projects/mojarra/", :target=>"_blank"}
-          %span.project-icon-med.blank_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}Mojarra
-      %li
-        %a{ :href=>"http://cxf.apache.org/", :target=>"_blank"}
-          %span.project-icon-med.blank_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}ApacheCXF
-      %li
-        %a{ :href=>"http://www.arquillian.org", :target=>"_blank"}
-          %span.project-icon-med.arquillian_icon_16x{:style=>"margin: 0pt 0pt -10px -15px"}
-          %span{:style=>"float:left"}Arquillian
-      %li
-        %span{:style=>"float:left"}and more ...
 
 .row-fluid
   .span12

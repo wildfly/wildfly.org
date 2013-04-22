@@ -21,3 +21,60 @@ $base_font_weight: 400;
 @import "modules/footer";
 
 ul, ol { margin:inherit;}
+
+.project-icon-med {
+     background: url(https://static.jboss.org/theme/images/icons/sprite-project-icons-all.png) no-repeat top left;
+     //float:left;
+     margin:-1px 4px 0 0;
+     display:block;
+     height:16px;
+     width:16px;
+   }
+
+.project-icons ul {
+  display: list-item;
+  list-style-image: none;
+}
+
+
+.project-icons li {
+
+  text-align: left;
+  display: list-item;
+  float: none;
+  list-style-type: none;
+  margin-top:10px;
+  color: #000000;
+}
+
+.project-icon-listing {
+  display: inline;
+}
+
+.blank_icon_16x{ background-position:0 0; width: 16px; height: 16px; }
+
+.aerogear_icon_16x { background-position: 0 -1176px; width: 16px; height: 16px; }
+.arquillian_icon_16x{ background-position: 0 -42px; width: 16px; height: 16px; }
+.errai_icon_16x{ background-position: 0 -167px; width: 16px; height: 16px; }
+.forge_icon_16x { background-position: 0 -1196px; width: 16px; height: 16px; }
+.hibernate_icon_16x{ background-position: 0 -228px; width: 16px; height: 16px; }
+.hornetQ_icon_16x{ background-position: 0 -249px; width: 16px; height: 16px; }
+.infinispan_icon_16x{ background-position: 0 -270px; width: 16px; height: 16px; }
+.jbossas7_icon_16x, .jbossas_icon_16x { background-position: 0 -1096px; width: 16px; height: 16px; }
+.jdf_icon_16x{ background-position: 0 -1216px; width: 16px; height: 16px;}
+.jgroups_icon_16x{ background-position: 0 -375px; width: 16px; height: 16px; }
+.jsfunit_icon_16x{ background-position: 0 -1116px; width: 16px; height: 16px; }
+.modcluster_icon_16x{ background-position: 0 -996px; width: 16px; height: 16px; }
+.narayana_icon_16x{ background-position: 0 -1037px; width: 16px; height: 16px; }
+.netty_icon_16x{ background-position: 0 -1057px; width: 16px; height: 16px; }
+.picketbox_icon_16x{ background-position: 0 -519px; width: 16px; height: 16px; }
+.picketlink_icon_16x{ background-position: 0 -540px; width: 16px; height: 16px; }
+.resteasy_icon_16x{ background-position: 0 -603px; width: 16px; height: 16px; }
+.richfaces_icon_16x{ background-position: 0 -645px; width: 16px; height: 16px; }
+.torquebox_icon_16x{ background-position: 0 -918px; width: 16px; height: 11px; }
+.weld_icon_16x{ background-position: 0 -934px; width: 16px; height: 15px; }
+.wildfly_icon_16x{ background-position: 0 -1276px; width: 16px; height: 16px;}
+.wise_icon_16x{ background-position: 0 -954px; width: 16px; height: 16px; }
+
+
+
