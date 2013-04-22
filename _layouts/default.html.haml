@@ -14,8 +14,6 @@
     - if site.url
       %link(rel="canonical"){:href=>site.url}
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>"#{site.base_url}/stylesheets/styles.css" }
-    %link{ :rel=>'stylesheet', :type=>'text/css', :href=>"#{site.base_url}/stylesheets/responsive.css", :media=>"screen" }
-
     /[if lt IE 9]
       %script{ :type=>'text/javascript', :src=>'//html5shim.googlecode.com/svn/trunk/html5.js' }
   %body
