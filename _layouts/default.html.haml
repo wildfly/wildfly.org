@@ -22,7 +22,7 @@
         .container-fluid
       %section.container-fluid{:style=>"padding: -20px auto;"}
         %a{:href=>"#{site.base_url}/" }
-          %img{ :src=>"#{site.logo_base_url}/splash_wildflylogo_small.png"}
+          %img{ :src=>"#{site.logo_base_url}/splash_wildflylogo_small.png", :alt=>"WildFly logo"}
     %article.secondary
       .container-fluid
         ~ content
@@ -37,9 +37,9 @@
             %a{ :href=>"#{site.base_url}/social"}Social
           %li
             %a{ :href=>"http://www.jboss.org"}
-              %img{ :src=>"#{site.logo_base_url}/jbossbadge.png"}
+              %img{ :src=>"#{site.logo_base_url}/jbossbadge.png" , :alt=>"A Red Hat JBoss Project"}
       %a{ :href=>"http://www.redhat.com"}
-        %img{ :src=>"#{site.logo_base_url}/redhat_logo.png"}
+        %img{ :src=>"#{site.logo_base_url}/redhat_logo.png", :alt=>"Red Hat Shadowman Logo"}
     %script{ :type=>"text/javascript", :src=>"#{site.base_url}/javascripts/jquery.min.js"}
     - if site.google_plusone
       :javascript

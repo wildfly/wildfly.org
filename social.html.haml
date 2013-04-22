@@ -1,20 +1,10 @@
 ---
 layout: default
+title:  Social Links for WildFly - The Community Application Server
+description:  WildFly is the new name of JBoss Application Server.  This page includes links on how you can get involved with the WildFly Community including IRC, Twitter, Google Plus, and newsletter.
 ---
 
 %h1 Follow WildFly Developments
-
-.row-fluid
-  .span12
-    %h4 Twitter
-    %p
-      Get news of new developments by following on Twitter:
-      %a{ :href=>"https://twitter.com/wildflyas", :class=>"twitter-follow-button"}(data-show-count="false" data-lang="en")Follow @WildFlyAS
-
-:javascript
-  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-
-%img{:src=>"#{site.base_url}/images/divider.png"}
 
 .row-fluid
   .span12
@@ -24,17 +14,21 @@ layout: default
       Participate in the
       %a{:href=>"#{site.wiki_url}", :target=>"_blank"}forums
 
-%img{:src=>"#{site.base_url}/images/divider.png"}
+%img{:src=>"#{site.base_url}/images/divider.png" , :alt=>"------------------------------------------"}
 
 .row-fluid
   .span12
     %h4
       IRC
     %p
-      Talk direct with the developers on #wildfly and #wildfly-dev on irc.freenode.net
+      Talk direct with the developers on
+      %a{:href=>"#{site.irc_url}"}#wildfly
+      and
+      %a{:href=>"#{site.irc_dev_url}"}#wildfly-dev
+      on irc.freenode.net
 
-%img{:src=>"#{site.base_url}/images/divider.png"}
 
+%img{:src=>"#{site.base_url}/images/divider.png" , :alt=>"------------------------------------------"}
 .row-fluid
   .span12
     %h4
@@ -46,8 +40,34 @@ layout: default
 
 
 
+%img{:src=>"#{site.base_url}/images/divider.png" , :alt=>"------------------------------------------"}
 
-%img{:src=>"#{site.base_url}/images/divider.png"}
+.row-fluid
+  .span12
+    %h4 Twitter
+    %p
+      Get news of new developments by following on Twitter:
+      %a{ :href=>"https://twitter.com/wildflyas", :class=>"twitter-follow-button"}(data-show-count="false" data-lang="en")Follow @WildFlyAS
+
+:javascript
+  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+
+%img{:src=>"#{site.base_url}/images/divider.png" , :alt=>"------------------------------------------"}
+
+.row-fluid
+  .span12
+    %h4 Google +
+    %p
+      .g-plus( data-href="//plus.google.com/104978988043603015502" data-rel="publisher")
+        :javascript
+          (function() {
+           var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+           po.src = 'https://apis.google.com/js/plusone.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+          })();
+
+%img{:src=>"#{site.base_url}/images/divider.png" , :alt=>"------------------------------------------"}
 
 .row-fluid
   .span12

@@ -1,17 +1,19 @@
 title: WildFly - JBoss Application Server has a new name... WildFly.
 author: WildFly Development Team
-description: WildFly, the project formerly known as JBossAS, is a Java Application Server
+description: WildFly, the project formerly known as JBossAS, is a Open Source Community Java Application Server
+keywords: Java, JavaEE, JBoss, JBossAS, WildFly
 
 
 forum_url: https://community.jboss.org/en/wildfly?view=discussions
 github_repo: https://github.com/jbossas/jboss-as
-irc_url: irc://irc.freenode.net#jboss
+irc_url: irc://irc.freenode.net#wildfly
+irc_dev_url: irc://irc.freenode.net#wildfly-dev
 #Needs confirmation
 jira_key:  WILDFLY
 jira_url: https://issues.jboss.org/browse/WILDFLY
 redhat_url: http://community.redhat.com/
 website_source_repo: http://github.com/jbossas/wildfly-site/settings/collaboration
-wiki_url: https://community.jboss.org/en/wildfly
+wiki_url: https://community.jboss.org/en/wildfly?view=discussions
 
 
 profiles:
@@ -34,7 +36,7 @@ profiles:
       uncommitted: true
 
   staging:
-    base_url: http://localhost:4242
+    base_url: http://www.wildfly.org/staging
     logo_base_url: https://www.jboss.org/dms/wildfly_splash
     minify: false
     google_plusone: false
