@@ -7,18 +7,21 @@
 @import "compass/support";
 
 // Base Styles
-
-@import "modules/fonts.scss";
-
 $base_font: "TitilliumText22LRegular", sans-serif;
 $base_font_weight: 400;
 
 // Modules
-
+@import "modules/fonts";
+@import "modules/entypo";
 @import "modules/nav";
 @import "modules/header";
 @import "modules/article";
 @import "modules/footer";
+
+.en-feather {@include en-icon(feather, $color: #fff)}
+.en-rocket {@include en-icon(rocket, $color: #fff)}
+.en-help {@include en-icon(help, $color: #fff)}
+.en-tools {@include en-icon(tools, $color: #fff)}
 
 ul, ol { margin:inherit;}
 

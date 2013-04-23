@@ -36,7 +36,7 @@ article {
       display: inline-block;
       i {
         color: $article_icon_color;
-        font-size: 40px;
+        font-size: 10em;
         text-shadow: $article_icon_text_shadow;
       }
       .box {
@@ -113,8 +113,8 @@ article.secondary {
   article {
     ul {
       li {
-        img {
-          height: 5em;
+        i {
+          font-size: 7em;
         }
         .box {
           height: auto;

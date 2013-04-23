@@ -15,68 +15,37 @@ title: WildFly - JBoss Application Server has a new name... WildFly.
 
 %article
   .container-fluid
-    .hidden-phone
-      %ul.row-fluid
-        %li.span3
-          %a{:href=>"#{site.base_url}/about/#speed"}
-            %img{:src=>"#{site.base_url}/images/icon_fast.png"}
-          .box
-            %h3 Unparalleled Speed
-            %p
-              %a{:href=>"#{site.base_url}/about/#speed"} 
-                Even Faster
-        %li.span3
-          %a{:href=>"#{site.base_url}/about/#light"}
-            %img{:src=>"#{site.base_url}/images/icon_lightweight.png"}
-          .box
-            %h3 Lightweight
-            %p
-              %a{:href=>"#{site.base_url}/about/#light"}
-                Small Memory Footprint
-        %li.span3
-          %a{:href=>"#{site.base_url}/about/#compliant"}
-            %img{:src=>"#{site.base_url}/images/icon_features.png"}
-          .box
-            %h3 New Features
-            %p
-              %a{:href=>"#{site.base_url}/about/#compliant"}
-                Targeting Java EE7
-
-        %li.span3
-          %a{:href=>"#{site.base_url}/faq"}
-            %img{:src=>"#{site.base_url}/images/icon_faq.png"}
-          .box
-            %h3 Questions?
-            %p
-              Have your questions answered on our
-              %a{:href=>"#{site.base_url}/faq"}FAQ.
-    .visible-phone
-      %ul.row-fluid
-        %li.span3
-          .box
-            .pull-left
-              %img{:src=>"#{site.base_url}/images/icon_fast.png"}
-            %h3 Unparalleled Speed
-            %p
-              Even Faster
-        %li.span3
-          .box
-            .pull-right
-              %img{:src=>"#{site.base_url}/images/icon_lightweight.png"}
-            %h3 Lightweight
-            %p
-              Small Memory Footprint
-        %li.span3
-          .box
-            .pull-left
-              %img{:src=>"#{site.base_url}/images/icon_features.png"}
-            %h3 New Features
-            %p Targeting Java EE7
-        %li.span3
-          .box
-            .pull-right
-              %img{:src=>"#{site.base_url}/images/icon_faq.png"}
-            %h3 Questions?
-            %p
-              Have your questions answered on our
-              %a{:href=>"#{site.base_url}/faq"}FAQ.
+    %ul.row-fluid
+      %li.span3
+        %i.en-rocket.hidden-phone
+        .box
+          .pull-left.visible-phone
+            %i.en-rocket
+          %h3 Unparalleled Speed
+          %p
+            %a{:href=>"#{site.base_url}/about/#speed"} Even Faster
+      %li.span3
+        %i.en-feather.hidden-phone
+        .box
+          .pull-right.visible-phone
+            %i.en-feather
+          %h3 Lightweight
+          %p
+            %a{:href=>"#{site.base_url}/about/#light"} Small Memory Footprint
+      %li.span3
+        %i.hidden-phone.en-tools
+        .box
+          .pull-left.visible-phone
+            %i.en-tools
+          %h3 New Features
+          %p 
+		    %a{:href=>"#{site.base_url}/about/#compliant"} Targeting Java EE7
+      %li.span3
+        %i.en-help.hidden-phone
+        .box
+          .pull-right.visible-phone
+            %i.en-help
+          %h3 Questions?
+          %p
+            Have your questions answered on our
+            %a{:href=>"#{site.base_url}/faq"}FAQ.
