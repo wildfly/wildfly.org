@@ -42,7 +42,7 @@ article {
       .box {
         height: 10em;
         margin-top: 1em;
-        padding: .8em .5em;
+        padding: .8em 0;
         border-radius: 4px;
         border: $article_box_border;
         background: $article_box_bg;
@@ -97,17 +97,12 @@ article.secondary {
 }
 
 // responsive styles
-
-
 @media (max-width: 979px) and (min-width: 768px) {
-
-article {
-  ul {
-    li {
-      .box {
-        h3 {
-		font-size: 18px;
-		}
+  article {
+    ul {
+      li {
+        .box {
+          height: 10em;
         }
       }
     }
@@ -115,26 +110,14 @@ article {
 }
 
 @media (max-width: 767px) {
-
-article {
-  ul {
-    li {
-      .box {
-        height: 5em;
-        margin: 0px 30px;
+  article {
+    ul {
+      li {
+        img {
+          height: 5em;
         }
-      }
-    }
-  }
-}
-
-@media (max-width: 470px) {
-
-article {
-  ul {
-    li {
-      img {
-		height: 64px;
+        .box {
+          height: auto;
         }
       }
     }
