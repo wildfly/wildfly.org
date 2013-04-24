@@ -1,0 +1,35 @@
+---
+---
+
+-# SiteCatalyst code version: H.25.4
+-# Copyright 1996-2013 Adobe, Inc. All Rights Reserved
+-# More info available at http://www.omniture.com
+
+
+#oTags
+  %script{:type=>"text/javascript", :src=>"http://www.redhat.com/assets/js/noncms_s_code.js"}
+  %script{:type=>"text/javascript"}
+    -# You may give each page an identifying name, server, and channel on the next lines.
+    - pageName = page.name
+    - siteName = site.tracking_name
+    - trackingName = "jb | microsite | #{siteName} | #{section}"
+    - baseURL = site.base_url
+
+    s.pageName="#{trackingName}";
+    s.channel="microsite";
+    s.prop2=s.eVar22="en";
+    s.prop3=s.eVar19="US";
+    s.prop4=s.eVar23=window.location.href;
+    s.prop21=s.eVar18="#{baseURL}";
+    s.prop14=s.eVar27="#{siteName}";
+    s.prop15=s.eVar28="SET YOUR SECOND MINOR SECTION HERE (if applicable)";
+    s.prop16=s.eVar29="SET YOUR THIRD MINOR SECTION HERE (if applicable)";
+  %script{:type=>"text/javascript", :src=>"http://www.redhat.com/j/rh_omni_footer.js"}
+  %script{:type=>"text/javascript", :language=>"Javascript"}
+    if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+
+  %noscript
+    %a{:href=>"http://www.omniture.com", :title=>"Web Analytics"}
+      %img{:src=>"https://smtrcs.redhat.com/b/ss/redhatcom,redhatglobal/1/H.25.4--NS/0?[AQB]&cdp=3&[AQE]",
+      :height=>"1", :width=>"1", :border=>"0", :alt=>""}
+-# End SiteCatalyst code version: H.25.4

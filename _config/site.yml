@@ -2,7 +2,7 @@ title: WildFly - JBoss Application Server has a new name... WildFly.
 author: WildFly Development Team
 description: WildFly, the project formerly known as JBossAS, is a Open Source Community Java Application Server
 keywords: Java, JavaEE, JBoss, JBossAS, WildFly
-
+tracking_name: wildfly
 
 forum_url: https://community.jboss.org/en/wildfly?view=discussions
 github_repo: https://github.com/jbossas/jboss-as
