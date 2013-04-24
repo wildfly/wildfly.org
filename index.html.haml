@@ -17,34 +17,46 @@ title: WildFly - JBoss Application Server has a new name... WildFly.
   .container-fluid
     %ul.row-fluid
       %li.span3
-        %i.en-rocket.hidden-phone
+        .hidden-phone
+          %a{:href=>"#{site.base_url}/about/#speed"}
+            %i.en-rocket
         .box
           .pull-left.visible-phone
-            %i.en-rocket
+            %a{:href=>"#{site.base_url}/about/#speed"}
+              %i.en-rocket
           %h3 Unparalleled Speed
           %p
             %a{:href=>"#{site.base_url}/about/#speed"} Even Faster
       %li.span3
-        %i.en-feather.hidden-phone
+        .hidden-phone
+          %a{:href=>"#{site.base_url}/about/#light"}
+            %i.en-feather
         .box
           .pull-right.visible-phone
-            %i.en-feather
+            %a{:href=>"#{site.base_url}/about/#light"}
+              %i.en-feather
           %h3 Lightweight
           %p
             %a{:href=>"#{site.base_url}/about/#light"} Small Memory Footprint
       %li.span3
-        %i.hidden-phone.en-tools
+        .hidden-phone
+          %a{:href=>"#{site.base_url}/about/#compliant"}
+            %i.en-tools
         .box
           .pull-left.visible-phone
-            %i.en-tools
+            %a{:href=>"#{site.base_url}/about/#compliant"}
+              %i.en-tools
           %h3 New Features
           %p 
             %a{:href=>"#{site.base_url}/about/#compliant"} Targeting Java EE7
       %li.span3
-        %i.en-help.hidden-phone
+        .hidden-phone
+          %a{:href=>"#{site.base_url}/faq"}
+            %i.en-help
         .box
           .pull-right.visible-phone
-            %i.en-help
+            %a{:href=>"#{site.base_url}/faq"}
+              %i.en-help
           %h3 Questions?
           %p
             Have your questions answered on our
