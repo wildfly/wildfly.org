@@ -26,10 +26,10 @@
     }
     if (urlLast.search(/\./) >= 0) {
       if (urlLast == "index.html") {
-	urlSplit.splice(-1,1);
+        urlSplit.splice(-1,1);
       }
       else {
-	urlSplit[urlSplit.length-1] = urlLast.split(".").splice(0,1);
+        urlSplit[urlSplit.length-1] = urlLast.split(".").splice(0,1);
       }
     }
     siteName = urlSplit[2].split(".")[1];
@@ -37,8 +37,8 @@
     s.prop15 = s.eVar28 = urlSplit[minorSectionIndex] || "";
     s.prop16 = s.eVar29 = urlSplit[minorSectionIndex+1] || "";
     pageNameString = urlSplit.splice(3).join(" | ");
-    s.pageName = "jboss | " + siteName + " | " + pageNameString;
-    s.channel = "jboss";
+    s.pageName = "jboss | community | " + siteName + " | " + pageNameString;
+    s.channel = "jboss | community";
     s.prop4 = s.eVar23 = encodeURI(document.URL);
     s.prop21 = s.eVar18 = coreUrl;
     s.prop2 = s.eVar22 = "en";
