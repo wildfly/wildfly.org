@@ -8,3 +8,4 @@ _tmp
 vendor
 Gemfile.lock
 .DS_STORE
+README.html
