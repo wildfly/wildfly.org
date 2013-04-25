@@ -45,19 +45,10 @@
           var po = document.createElement("script"); po.async = true; po.src = "https://apis.google.com/js/plusone.js";
           var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(po, s);
         })();
-    - if site.google_analytics
-      = google_analytics_async
 
-
-    -# Marketing & Metrics -- No Touchy
+    -# Marketing & Metrics
+    = partial("metrics.html.haml")
 
     -# Marketing - Segment Pixel - JBoss-Alpha 6 Specific Campaign 1 - DO NOT MODIFY WITHOUT CHECKING WITH RAYME
     %script{ :type=>"text/javascript", :src=>"http://rtb.inttrax.com/seg?add=684900&t=1"}
 
-
-    -# begin eloqua tracking
-    %script{ :type=>"text/javascript", :src=>"http://www.redhat.com/j/elqNow/elqCfg.js"}
-    %script{ :type=>"text/javascript", :src=>"http://www.redhat.com/j/elqNow/elqImg.js"}
-    -# end eloqua tracking
-
-    = partial("metrics.html.haml", {'section'=>page.name})

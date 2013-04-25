@@ -39,21 +39,8 @@
           var po = document.createElement("script"); po.async = true; po.src = "https://apis.google.com/js/plusone.js";
           var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(po, s);
         })();
-    -# Marketing & Metrics -- No Touchy, sorry, I touched it (removed some whitespace)
-    - if site.google_analytics
-      = google_analytics_async
+    -# Marketing & Metrics
+    = partial("metrics.html.haml")
     -# Marketing - Segment Pixel - JBoss-Alpha 6 Specific Campaign 1 - DO NOT MODIFY WITHOUT CHECKING WITH RAYME
     %script{ :type=>"text/javascript", :src=>"http://rtb.inttrax.com/seg?add=684900&t=1"}
-    -# begin eloqua tracking
-    %script{ :type=>"text/javascript", :src=>"http://www.redhat.com/j/elqNow/elqCfg.js"}
-    %script{ :type=>"text/javascript", :src=>"http://www.redhat.com/j/elqNow/elqImg.js"}
-    -# end eloqua tracking
-    -# SiteCatalyst code version: H.21.
-    :javascript
-      var s_code=s.t();if(s_code)document.write(s_code)
 
-      if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
-    %noscript
-      %a(href="http://www.omniture.com" title="Web Analytics")
-        %img( src="https://smtrcs.redhat.com/b/ss/redhatjbossorg/1/H.21--NS/0?[AQB]&cdp=3&[AQE]" height="1" width="1" border="0" alt="")
-    -# End SiteCatalyst code version: H.21.
