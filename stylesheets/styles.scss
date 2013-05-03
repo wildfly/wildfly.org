@@ -18,11 +18,6 @@ $base_font_weight: 400;
 @import "modules/article";
 @import "modules/footer";
 
-.en-feather {@include en-icon(feather, $color: #fff)}
-.en-rocket {@include en-icon(rocket, $color: #fff)}
-.en-help {@include en-icon(help, $color: #fff)}
-.en-tools {@include en-icon(tools, $color: #fff)}
-
 ul, ol { margin:inherit;}
 
 .project-icon-med {
