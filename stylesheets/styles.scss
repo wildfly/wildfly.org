@@ -20,6 +20,11 @@ $base_font_weight: 400;
 
 ul, ol { margin:inherit;}
 
+body{
+  max-width: 2000px;
+  margin: 0 auto;
+}
+
 .project-icon-med {
      background: url(https://static.jboss.org/theme/images/icons/sprite-project-icons-all.png) no-repeat top left;
      //float:left;
