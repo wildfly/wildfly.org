@@ -79,6 +79,42 @@ body{
 .wildfly_icon_16x{ background-position: 0 -1276px; width: 16px; height: 16px;}
 .wise_icon_16x{ background-position: 0 -954px; width: 16px; height: 16px; }
 
+.message-nav a {
+  color: white;
+}
+
+.download-table table {
+  border: #ababab solid 1px;
+}
+
+.download-table th {
+  border: #ababab solid 1px;
+  background-color: #ffffff; // Old browsers
+  @include filter-gradient(#ffffff, #e5e5e5, vertical); // IE6-9
+  @include background-image(linear-gradient(top,  #ffffff 0%,#e5e5e5 100%));
+  text-align: left;
+  font-weight: normal;
+  padding-left: 8px;
+}
+
+.download-table td {
+  padding-left: 8px;
+}
+
+.download-table-right {
+  text-align: right;
+  padding-right: 8px;
+}
+
+
+.download-table tr:nth-of-type(odd) {
+  background:#f3f6fa;
+}
+.download-table tr:nth-of-type(even) {
+  background:#ffffff;
+}
+
+
 // Many fixes... sigh
 @import "bootstrap/responsive-utilities";
 // Large desktops

@@ -1,3 +1,4 @@
+require 'bootstrap-sass'
 require File.join File.dirname(__FILE__), 'tweakruby'
 require_relative 'common'
 require 'awestruct/extensions/remotePartial'
