@@ -22,7 +22,7 @@ Developing the site
 
 If you run Awestruct locally, it will watch for changes to your soruces and regenerate the site. Run
 
-    awestruct -d
+    bundle exec awestruct -d
 
 and browse to <http://localhost:4242>.
 
