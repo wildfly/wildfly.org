@@ -1,7 +1,7 @@
 wildfly-site
 ============
 
-Wildfly Website
+Source of [Wildfly Website](http://wildfly.org)
 
 
 Prerequisites
@@ -20,7 +20,7 @@ The site is built using awestruct, and its dependencies are best installed using
 Developing the site
 -----------------
 
-If you run Awestruct locally, it will watch for changes to your soruces and regenerate the site. Run
+If you run Awestruct locally, it will watch for changes to your sources and regenerate the site. Run
 
     bundle exec awestruct -d
 
