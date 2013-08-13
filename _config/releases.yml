@@ -1,12 +1,16 @@
+- version: '8.0.0.Alpha4'
+  date: '2013-08-12'
+  notes: 'https://community.jboss.org/wiki/800Alpha4ReleaseNotes'
+  quickversion: '8.0.0.Alpha1'
 - version: '8.0.0.Alpha3'
-  date: "2013-07-17"
+  date: '2013-07-17'
   notes: 'https://community.jboss.org/wiki/800Alpha3ReleaseNotes'
-  quickversion: 8.0.0.Alpha1
+  quickversion: '8.0.0.Alpha1'
 - version: '8.0.0.Alpha2'
-  date: "2013-06-21"
+  date: '2013-06-21'
   notes: 'http://lists.jboss.org/pipermail/wildfly-dev/2013-June/000382.html'
-  quickversion: 8.0.0.Alpha1
+  quickversion: '8.0.0.Alpha1'
 - version: '8.0.0.Alpha1'
-  date: "2013-05-17"
+  date: '2013-05-17'
   notes: 'http://lists.jboss.org/pipermail/wildfly-dev/2013-May/000139.html'
-  quickversion: 8.0.0.Alpha1
+  quickversion: '8.0.0.Alpha1'
