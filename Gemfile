@@ -14,3 +14,4 @@ gem 'listen', '0.7.3'
 gem 'asciidoctor', '0.1.4'
 gem 'tilt', '~> 1.4.0'
 gem 'coderay'
+gem 'win32-open3-19', :platforms => :mingw
