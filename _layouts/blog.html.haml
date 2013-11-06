@@ -1,0 +1,31 @@
+---
+layout: project
+---
+- author = site.authors[page.author];
+.row-fluid
+  .span8.well.post-bg
+    = partial('post.html.haml', {"post" => page})
+    .pagination.no-bottom-margin
+      %ul
+        %li{:class=>('disabled' unless page.next_post)}
+          %a{:href=>page.next_post ? page.next_post.url : '#'} &laquo; Newer
+        %li
+          %a(href="#")<= "Post " + (site.posts.index(page) + 1).to_s + " of " + site.posts.size.to_s
+        %li{:class=>('disabled' unless page.previous_post)}
+          %a{:href=>page.previous_post ? page.previous_post.url : '#'} Older &raquo;
+  .span4
+    - if author
+      .row-fluid
+        .span12.well.post-bg 
+          %h2<= author.name;
+          %p
+            %img.pull-right.portrait{:src=>"#{site.base_url}/images/#{author.avatar}"}
+            %span.bio-size<=author.bio
+          %p.bio-size
+            %strong Location:&nbsp;
+            = author.location
+          %p.bio-size
+            %strong Occupation:&nbsp;
+            = author.occupation
+    .row-fluid
+      = partial('latest-news-sidebar.html.haml')

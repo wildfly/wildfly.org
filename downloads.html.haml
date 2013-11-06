@@ -1,17 +1,81 @@
 ---
 layout: rightcol
+title:  Downloads
 rightcol_partial: rightcol-downloads.html.haml
-title: Downloads
+description: List of releases available for download 
 ---
-
-
-/ Main hero unit for a primary marketing message or call to action
-.row-fluid
-  %h1 Project Name Downloads
-  %p Latest Releaase 5.6.0
-  %p<
-    %a.btn.btn-primary.btn-large(href="swatch.html") View the Swatches &raquo;
-
-  %hr
-
-/ Example Content
+%h2 Downloads
+%table.table.table-bordered.table-striped.white-stripes
+  %thead
+    %th Version
+    %th Date
+    %th Description
+    %th License
+    %th Size
+    %th Format
+  %tbody
+    - for release in site.releases
+      %tr
+        %td #{release[:version]}
+        %td #{release[:date]}
+        %td Application Server Distribution
+        %td LGPL
+        %td.download-size #{release[:zip][:size]} 
+        %td
+          %a{:href=>release[:zip][:url]} 
+            %i.icon-download-alt
+            ZIP
+      %tr
+        %td
+        %td 
+        %td 
+        %td  
+        %td.download-size #{release[:tgz][:size]} 
+        %td  
+          %a{:href=>release[:tgz][:url]}
+            %i.icon-download-alt
+            TGZ
+      %tr
+        %td 
+        %td 
+        %td Application Server Source Code 
+        %td LGPL 
+        %td.download-size #{release[:srczip][:size]} 
+        %td
+          %a{:href=>release[:srczip][:url]}
+            %i.icon-download-alt
+            ZIP
+      %tr
+        %td
+        %td  
+        %td  
+        %td 
+        %td.download-size #{release[:srctgz][:size]}  
+        %td
+          %a{:href=>release[:srctgz][:url]}
+            %i.icon-download-alt
+            TGZ
+      %tr
+        %td 
+        %td 
+        %td Quick Start Source Code
+        %td AL 
+        %td.download-size #{release[:quickstart][:size]} 
+        %td
+          %a{:href=>release[:quickstart][:url]}
+            %i.icon-download-alt
+            ZIP
+          %a{:href=>"http://github.com/wildfly/quickstart"} (git)
+      %tr
+        %td 
+        %td 
+        %td Release Notes
+        %td  
+        %td
+        %td
+          %a{:href=>release[:notes]} 
+            %i.icon-pencil 
+              Notes
+      %tr
+        - for i in 0..5
+          %td &nbsp;

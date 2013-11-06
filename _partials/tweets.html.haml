@@ -1,0 +1,13 @@
+.span6.well
+  %h2 Tweets
+  %a{"href" => "https://twitter.com/WildFlyAS", "class" => "twitter-follow-button", "data-show-count" => "false", "data-lang" => "en", "data-align" => "right"}Follow @WildFlyAS
+  %script{:type => 'text/javascript'}
+  :javascript
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+  %a{"class" => "twitter-timeline", "data-dnt" => "true", "href" => "https://twitter.com/WildFlyAS", "data-widget-id" => "397818706308259840", "data-chrome" => "nofooter transparent noheader", "data-link-color" => "#336699"}Tweets by @WildFlyAS
+  %script{:type => 'text/javascript'}
+  :javascript
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+  / Filler to equal cols
+  %div{:style=>"height: 45px"}

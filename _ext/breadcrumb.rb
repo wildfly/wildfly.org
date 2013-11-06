@@ -71,8 +71,10 @@ module Awestruct
 
         return "" if path==nil
 
+        title = (page.selected_tag and isLast) ?  page.selected_tag : page.title
+
         "<a class='breadcrumb_anchor #{isLast ? "active" : ""}' href='#{site.base_url}#{path}'
-        >#{page.title ? page.title : page.simple_name.capitalize }</a> / "
+        >#{title ? title : page.simple_name.capitalize }</a> / "
 
       end
 

@@ -1,6 +1,61 @@
-%h2 Right Col h2
-%p Prefer to use this to download? We do!
-%p<
-  %a.btn.btn-primary
-    Button Now
+.div
+  %h2 Compliance 
+.well
+  #badges
+    %ul{:style=>'list-style-type: none'}
+      / Filler to center
+      %li.pull-left
+        %div{:style=>'width: 5px;height: 5px;'}
+      %li.license-lgpl
+        %a{:href => "http://www.apache.org/licenses/LICENSE-2.0"}
+          %em Apache License, Version 2.0
+      %li.jsr
+        %a{:href => "http://jcp.org/en/jsr/detail?id=34"}
+          %span.implements{:style=>'padding-left: 20px;'} Java
+          %span.version EE7
+      %li.tools
+        %a{:href => "http://www.jboss.org/tools"} Supported by Tools
+      %li.arquillian
+        %a{:href => "http://www.jboss.org/arquillian"} Tested with Arquillian
+    %div{:style => "clear: both; height:1px;"}
 
+.div
+  %h3 Supported In:
+  %ul.supportedin
+    %li
+      %i.icon-fixed-width.icon-plus
+      %a{:href => "http://redhat.com/products/jbossenterprisemiddleware/application-platform/"}
+        Enterprise Application Platform
+
+%div#coolstuff
+  %p{:style => "margin-top: 2px; margin-bottom: 15px; margin-right: 10px; text-align: right;"}
+    %a{:href => "http://www.jboss.org/coolstuff/desktopwallpapers/wildfly"}> Desktop Wallpaper
+    &nbsp;|&nbsp;
+    %a{:href => "#"} Project Swag
+  %a{:href => "http://www.jboss.org/coolstuff/desktopwallpapers/wildfly"}
+    %img{:alt => "Cool Stuff", :height => "110", :src => "http://static.jboss.org/images/infinispan/project_coolstuff_infinispan.png", :style => "margin:0 auto;", :width => "225"}/
+
+
+.well.sponsors
+  %h3 Sponsors
+  %ul
+    %li
+      %a{:href => "http://www.redhat.com"}
+        %img{:alt => "Red Hat", :src=>"http://static.jboss.org/theme/images/common/redhat_logo.png"}/
+      %p Red Hat employees the majority of contributors and provides all project infrastructure.
+    %li
+      %a{:href => "http://www.ej-technologies.com/"}
+        %img{:alt => "EJ-Technologies", :src => "http://static.jboss.org/common/images/sponsors/ejtechnologies-color.png"}/
+      %p EJ-Technologies has kindly provided free JProfiler licenses.
+    %li{:style => "border: none;"}
+      %a{:href => "http://www.jetbrains.com/"}
+        %img{:alt => "JetBrians", :src => "http://static.jboss.org/common/images/sponsors/intellij-color.png"}/
+      %p JetBrains has kindly donated an open source IntelliJ license.
+
+%div
+  %a{:href => "http://www.jboss.org/security.html"}/
+  .projectpage-sprite.projectpage-sprite-securityimage
+
+%div
+  %a{:href => "http://www.jboss.org/security.html"}
+    %img{:alt => "Find a security issue with a JBoss Project or Product? Report it now", :height => "110", :src => "http://static.jboss.org/common/images/securityissue.png"}/
