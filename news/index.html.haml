@@ -11,11 +11,11 @@ title: WildFly News
     .pagination.no-bottom-margin
       %ul
         %li{:class=>('disabled' unless page.posts.previous_page)}
-          %a{:href=>page.posts.previous_page ? page.posts.previous_page.url : '#'} &laquo; Newer
+          %a{:href=>page.posts.previous_page ? "#{site.base_url}#{page.posts.previous_page.url}" : '#'} &laquo; Newer
         %li
           %a(href="#")<= "Page " + (page.posts.current_page_index + 1).to_s + " of " + page.posts.pages.size.to_s
         %li{:class=>('disabled' unless page.posts.next_page)}
-          %a{:href=>page.posts.next_page ? page.posts.next_page.url : '#'} Older &raquo;
+          %a{:href=>page.posts.next_page ? "#{site.base_url}#{page.posts.next_page.url}" : '#'} Older &raquo;
   .span4
     .row-fluid
       = partial('latest-news-sidebar.html.haml')

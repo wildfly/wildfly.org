@@ -1,0 +1,79 @@
+---
+layout: project
+title: Get Help
+---
+
+.row-fluid
+  .hero-unit
+    %h1 Get Help
+    %p How to connect with the WildFly community.
+  .row-fluid
+    .span12.well.post-bg
+      .row-fluid
+        .span4
+          %h2 User Forums
+          %p
+            WildFly's user forums should be your first port of call for any user-related issues with WildFly.  Be it a question, wanting to report a bug, looking for advice, or simply sharing some cool stories you may have.
+          %p
+            %a.btn.btn-primary{:href => "https://community.jboss.org/en/wildfly?view=discussions", :role => "button"} Visit the User Forums
+          .well
+            %p
+              %i.icon-thumbs-up.icon-2x.pull-left
+              %h4 Etiquette
+              If you are asking for help, have you read through the
+              %a{:href => "https://docs.jboss.org/author/display/WFLY8/Documentation", :target=>"_new"} documentation
+              first?  You may find your answer there.
+            %p
+              Also, if you are reporting a bug, have you checked our
+              %a{:href => "http://issues.jboss.org/browse/WFLY"} bug tracker
+              first?  It may be a known issue.
+    
+        .span4
+          %h2 IRC
+          %p
+            The WildFly community uses 
+            %a{:href => "http://en.wikipedia.org/wiki/Internet_Relay_Chat", :target => "_NEW"} IRC
+            for real-time communications. Join us on the 
+            %a{:href => "irc://freenode.org/#wildfly"}
+              %code #wildfly
+            IRC channel on 
+            %a{:href=>"http://freenode.net/", :target=>"_new"}Freenode.
+          %p
+            %a.btn.btn-primary{"data-toggle" => "modal", :href => "#myModal", :role => "button"} IRC Instructions
+            #myModal.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+              .modal-header
+              %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+              %h4#myModalLabel IRC Instructions
+              .modal-body
+                %p
+                  Learn more about Freenode 
+                  %a{:href=>"http://freenode.net/", :target=>"_new"}here
+                  and if you need a list of IRC clients, visit 
+                  %a{:href=>"http://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients", :target=>"_new"}Wikipedia.
+                  There are many high-quality, free and open source clients for almost any platform - including mobile devices!
+                %p
+                  Once you have connected to a Freenode server, 
+                  %a{:href=>"http://freenode.net/faq.shtml#userregistration"} you MUST register with nickserv!
+                  Afterwords, join 
+                  %code #wildfly
+                  and you will be able to speak with a number of WildFly developers, users and contributors.
+                .modal-footer
+                %button.btn{"aria-hidden" => "true", "data-dismiss" => "modal"} Close
+          %p
+            %img(src="#{site.base_url}/images/chat.png")
+        .span4
+          %h2 Developers Mailing List
+          %p
+            This is a mailing list geared towards developing WildFly itself.  It often contains deep, technical discussions on how WildFly works internally, how new features could be implemented, and is definitely not the place for end user questions such as how to configure, use or even troubleshoot WildFly.  Please use the User Forums for such questions.
+          %p
+            If, however, you are helping contribute to WildFly, we welcome your thoughts, ideas and overall participation on the developers' mailing list.
+          %p
+            %a.btn.btn-primary{:href => "https://lists.jboss.org/mailman/listinfo/wildfly-dev", :role => "button"} Join the Developers' Mailing List
+          .well
+            %i.icon-envelope.icon-2x.pull-left
+            %h4 Archives
+            %p
+              Archives of the WildFly developers' mailing list can be found on
+              %a{:href=>"http://wildfly-development.1055759.n5.nabble.com", :target=>"_NEW"} Nabble
+              which also has an excellent search interface.
+  

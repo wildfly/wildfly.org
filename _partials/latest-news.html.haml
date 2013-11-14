@@ -1,14 +1,17 @@
 -			# Latest news - reads an RSS feed from blog.infinispan.org
 - real_page = page["real_page"]
 .span6.well
-  %h2 Latest News
+  %h2 
+    Latest News
+    %a.rss{:href => "#{site.base_url}/news.atom"}
+      %i.icon-rss
   - # Match 430px twitter feed 
   %ul.listPosts{:style=>"min-height: 505px"}
     - for post in site.posts[0,4]
       %li
         %span.name{:style=>"color: #292F33;"}= lookup_name(post.author)
         %span.meta{:style=>"color: #292F33;"}= post.date.strftime('%b %d, %Y')
-        %a{:href => post.url}= post.title  
+        %a{:href => "#{site.base_url}#{post.url}"}= post.title  
         %br
         - if (post.content.length > 0)
           - cut_at = post.content.index(/<pre[^>]*>/)

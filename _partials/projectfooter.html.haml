@@ -4,37 +4,35 @@
       %h4 Navigate
       %ul
         %li
-          %a{:href => "#", :title => "Learn"} Learn
+          %a{:href => "#{site.base_url}/about.html", :title => "About"} About 
         %li
-          %a{:href => "#", :title => "Get Started"} Get Started
+          %a{:href => "#{site.base_url}/gethelp.html", :title => "Get Help"} Get Help
         %li
-          %a{:href => "#", :title => "Forums"} Forums
+          %a{:href => "https://community.jboss.org/en/wildfly?view=discussion", :title => "Forums"} Forums
         %li
-          %a{:href => "#", :title => "Get Involved"} Get Involved
-        %li
-          %a{:href => "#", :title => "Download"} Download
+          %a{:href => "#{site.base_url}/download.html", :title => "Download"} Download
     .span2
       %h4 Follow Us
       %ul
         %li
-          %a{:href => "#", :title => "Blog"} Blog
+          %a{:href => "#{site.base_url}/news.html", :title => "News"} News 
         %li
-          %a{:href => "#", :title => "Twitter"} Twitter
-        %li
-          %a{:href => "#", :title => "Google+"} Google+
+          %a{:href => "https://twitter.com/WildFlyAS", :title => "Twitter"} Twitter
     .span2
       %h4 Contribute
       %ul
         %li
-          %a{:href => "#", :title => "Submit a bug"} Submit a bug
+          %a{:href => "https://issues.jboss.org/browse/WFLY", :title => "Submit a bug"} Submit a bug
         %li
-          %a{:href => "#", :title => "Write code"} Write Code
+          %a{:href => "https://github.com/wildfly/wildfly/fork", :title => "Fork"} Fork The Code
         %li
-          %a{:href => "#", :title => "Join the team"} Join the team
+          %a{:href => "#{site.base_url}/joinus.html", :title => "Join Us"} Join Us
+        %li
+          %a{:href => "#{site.base_url}/governance.html", :title => "Governance"} Governance
     .span3.offset1
       %h4 LGPL 2.1 License
       %p All dependencies of this project are available under the LGPL or a compatible license.
       %p
       .jbossbadge
         %a{:href => "http://www.jboss.org/"}
-          %img{:src => "/cache/static.jboss.org/theme/images/common/jbossbadge.png"}/
+          %img{:src => "http://static.jboss.org/theme/images/common/jbossbadge.png"}/

@@ -31,7 +31,6 @@ fileMerger:
     - /javascripts/_jbossorg-misc.js
     - /javascripts/_jquery-easytabs.js
     - /javascripts/_crisp-scripts.js
-    - /javascripts/_jbossorg-tabzilla.js
 
 # Cache hosted fonts, images and javascript
 wget:
@@ -76,8 +75,8 @@ profiles:
     jborg_js_url: http://static.jboss.org/theme/js
     project_images_url: http://static.jboss.org/wildfly/images
     bootstrap_css_url: http://static.jboss.org/theme/css/bootstrap-community/2.3.1.1/bootstrap-community
-    bootstrap_js_url: http://static.jboss.org/theme/js/libs/bootstrap-community/2.3.1.1/bootstrap-community
-    base_url: http://wildfly-stg.jboss.org
+    bootstrap_js_url: http://static.jboss.org/wildfly/scripts/bootstrap-community
+    base_url: http://wildfly.org/staging
     wget:
       enabled: false
   production:
@@ -90,7 +89,7 @@ profiles:
     jborg_js_url: http://static.jboss.org/theme/js
     project_images_url: http://static.jboss.org/wildfly/images
     bootstrap_css_url: http://static.jboss.org/theme/css/bootstrap-community/2.3.1.1/bootstrap-community
-    bootstrap_js_url: http://static.jboss.org/theme/js/libs/bootstrap-community/2.3.1.1/bootstrap-community
+    bootstrap_js_url: http://static.jboss.org/wildfly/scripts/bootstrap-community
     base_url: http://wildfly.org
     wget:
       enabled: false

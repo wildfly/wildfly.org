@@ -11,17 +11,21 @@ title: WildFly Homepage
       %li.active{"data-slide-to" => "0", "data-target" => "#myCarousel"}
       %li{"data-slide-to" => "1", "data-target" => "#myCarousel"}
       %li{"data-slide-to" => "2", "data-target" => "#myCarousel"}
+      %li{"data-slide-to" => "3", "data-target" => "#myCarousel"}
     / Carousel items
     .carousel-inner
       .active.item
-        %a{:href => "/downloads.html"}
-          %img(src="/images/8beta1.png")
+        %a{:href => "#{site.base_url}/downloads.html"}
+          %img(src="#{site.base_url}/images/8beta1.jpg")
       .item
-        %a{:href => "/about"}
-          %img(src="/images/wildflynewimproved.png")
+        %a{:href => "#{site.base_url}/about.html"}
+          %img(src="#{site.base_url}/images/wildflynewimproved.jpg")
+      .item
+        %a{:href => "#{site.base_url}/joinus.html"}
+          %img(src="#{site.base_url}/images/iwantyou.jpg")
       .item
         %a{:href => "http://www.redhat.com/jboss", :target=>"_NEW"}
-          %img(src="/images/wantsupport.png")
+          %img(src="#{site.base_url}/images/wantsupport.png")
     / Carousel nav
     %a.carousel-control.left{"data-slide" => "prev", :href => "#myCarousel"} ‹
     %a.carousel-control.right{"data-slide" => "next", :href => "#myCarousel"} ›

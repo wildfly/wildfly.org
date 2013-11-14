@@ -1,0 +1,145 @@
+---
+layout: project
+title: Join Us
+---
+
+.row-fluid
+  .hero-unit
+    %h1 Join Us!
+    %p Take the red pill.
+  .row-fluid
+    .span12.well.post-bg
+      %h2 Why should I join?
+      %p WildFly is not only 100% open source, it is also developed for and by its community of users.  Developers join from all over the world, and they contribute in many different ways. We are grateful for all contributions, whether it be a new feature, a bug fix, wiki entires, helping other members, or even just filling a bug report. The relationship is symbiotic, every contribution you make encourages others to in turn contribute in ways that will likely benefit you. The experience is also rewarding. Let's look at why. 
+      .row-fluid
+        .span6
+          %h4
+            %i.icon-rocket
+            Build Awesome New Technology
+          %p You get to work on the latest and greatest technology. It's extremely exciting working on what defines the future of application development. It's always changing and never boring.
+        .span6
+          %h4
+            %i.icon-trophy 
+            Challenge Yourself
+          %p Working on server runtimes and development frameworks is no slice of pie. But what fun is the easy level? While it can be challenging, solving tricky problems leaves you feeling a real sense of accomplishment.
+      .row-fluid
+        .span6
+          %h4 
+            %i.icon-book
+            Learn Something New
+          %p WildFly is a big project covering many areas. You are bound to learn something new with every contribution you make. Even our top contributors are learning something new everyday, and they love it.
+        .span6
+          %h4
+            %i.icon-group
+            Build Relationships
+          %p When contributing you get to work with some amazing people, and forging relationships with other sharp minds is always great professionally and personally.
+      .row-fluid
+        .span6
+          %h4
+            %i.icon-certificate
+            Prove Yourself
+          %p Experience contributing to WildFly looks fantastic on a resume, and on a contracting reference list. It demonstrates talent and personal commitment beyond a normal job.
+        .span6
+          %h4
+            %i.icon-globe
+            Be a Part of Something Big
+          %p Your contribution will be forever archived on the internet, and will benefit many others. They will tackle a hard problem using your work, they will learn by reading your work, and they will likely return the favor.
+      .row-fluid
+        %h2 How do I get started?
+      .row-fluid
+        .span6
+          %p Getting involved is easier than you think. All resources that you need are available on the internet.
+          %h4
+            %i.icon-wrench 
+            Build It
+          %p 
+            The first step to get started is to build WildFly yourself. This requires creating a
+            %a{:src=>"http://github.com"} GitHub
+            account, forking WildFly, and cloning your private fork. The
+            %a{:src=>"https://community.jboss.org/wiki/HackingOnWildFly"} "Hacking On WildFly"
+            wiki article contains complete instructions for this and the patch construction and submission process. 
+          %h4
+            %i.icon-search
+            Find Something To Work On
+          %p 
+            After you are comfortable building the server, the next step is to find something that you would like to work on. Scan through
+            %a{:src=>"http://issues.jboss.org/browse/WFLY"} bug tracking system
+            and look for an issue you would like to fix. We also stick features that have not been scheduled / assigned into a special version called
+            %a{:src=>"https://issues.jboss.org/browse/WFLY/fixforversion/12321689"} Awaiting Volunteers.
+            It is usually best to start with something small though like a minor priority bug. If you need help locating a task, feature, or bug to work on, just 
+            %a{:src=>"#{site.base_url}/community.html"} join our IRC channel 
+            and ask for help. When you do locate an issue be sure to announce you intention in the JIRA so that others don't end up duplicating your effort.
+          %h4
+            %i.icon-envelope
+            Subscribe to our Mailing List
+          %p 
+            If you are intending to contribute, it's a good idea to 
+            %a{:src=>"#{site.base_url}/community.html"} join the development mailing list.
+            All design and general development discussions take place on this list. We also will send out important notifications, like release schedule updates and system availability.
+          %h4
+            %i.icon-github 
+            Submit A Pull Request
+          %p Follow the directions in the above linked wiki article on how to submit the pull request. Once your pull request is submitted our automated CI environment will test it, and report any test failures. You will get email notifications in case this happens. A reviewer will also perform a human review, and request additional changes or clarification if required.
+          %h4
+            %i.icon-bullhorn  
+            Brag
+          %p After your patch is successfully merged, it's time to celebrate!
+        .span6
+          .row-fluid
+            .span12.well
+              %h3 Key Resources
+              %p Getting up to speed as a contributor is much easier if you know where to look. Here is the most common set of resources to assist you.
+              %p
+                %ul.list-with-icons
+                  %li
+                    %i.icon-github
+                    %a{:href => "https://github.com/wildfly", :target => "_NEW"}Source Code
+                  %li
+                    %i.icon-pencil
+                    %a{:href => "jira.jboss.org/browse/ISPN", :target => "_NEW"}Issue tracker
+                  %li
+                    %i.icon-road
+                    %a{:href => "https://issues.jboss.org/browse/WFLY#selectedTab=com.atlassian.jira.plugin.system.project%3Aroadmap-panel", :target => "_NEW"}Road Map
+                  %li
+                    %i.icon-comments
+                    %a{:href => "irc://irc.freenode.net/#wildfly"} IRC 
+                  %li
+                    %i.icon-envelope
+                    %a{:href => "https://lists.jboss.org/mailman/listinfo/wildfly-dev", :target=>"_NEW"}Developer Discussions Mailing List
+                    (
+                    %a{:href=>"http://wildfly-development.1055759.n5.nabble.com", :target=>"_NEW"}archive
+                    )
+                  %li
+                    %i.icon-wrench
+                    %a{:href => "https://community.jboss.org/wiki/HackingOnWildFly"} Hacking On WildFly Guide
+                  %li
+                    %i.icon-puzzle-piece
+                    %a{:href => "https://docs.jboss.org/author/display/WFLY8/Extending+WildFly+8"} Extending WildFly
+                  %li
+                    %i.icon-book
+                    %a{:href => "http://git-scm.com/book"} Pro Git Book
+          .row-fluid
+            .span12.well
+              .row-fluid
+                %h3 Recommended books
+                %p We highly recommend the following books, which we consider essential to working on system code.
+                %div{:style=>"height: 10px;"}
+                %ul.list-with-icons
+                  %li.pull-left
+                    %div{:style=>"text-align: center; width: 90px; margin-right: 10px;"}
+                      %a.clear{:href=>"http://www.amazon.com/Java-Concurrency-Practice-Brian-Goetz/dp/0321349601"}
+                        %img{:src=>"#{site.base_url}/images/jcip.jpg", :style=>"height: 120px; margin-bottom: 5px;"} 
+                        Java Concurrency In Practice
+                  %li.pull-left 
+                    %div{:style=>"text-align: center; width: 90px; margin-right: 10px;"}
+                      %a.clear{:href=>"http://www.amazon.com/Effective-Java-2nd-Joshua-Bloch/dp/0321356683"}
+                        %img{:src=>"#{site.base_url}/images/effectivejava.jpg", :style=>"height: 120px; margin-bottom: 5px;"} 
+                        Effective Java
+                  %li.pull-left 
+                    %div{:style=>"text-align: center; width: 90px; margin-right: 10px;"}
+                      %a.clear{:href=>"http://www.amazon.com/Unix-Network-Programming-Volume-Networking/dp/0131411551"}
+                        %img{:src=>"#{site.base_url}/images/unpstevens.jpg", :style=>"height: 120px; margin-bottom: 5px;"} 
+                        UNIX Network Programming
+  
+  
+

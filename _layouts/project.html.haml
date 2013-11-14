@@ -4,6 +4,7 @@
   %head
     = partial( page.head_partial.nil? ? 'head.html.haml' : page.head_partial , { "real_page" => page } )
     %link{:rel=>"stylesheet", :type=>"text/css", :href=>"#{site.base_url}/stylesheets/blog.css"}
+    %link{:rel=>'stylesheet', :type=>'text/css', :href=>"#{site.base_url}/stylesheets/asciidoctor-coderay.css", :media=>"screen" }
     :css
       td.download-size {
         text-align: right;
@@ -23,8 +24,6 @@
         %a{:accesskey => "n", :href => "#nav", :title => "Skip to navigation"} Skip to navigation
       %li
         %a{:accesskey => "c", :href => "#page", :title => "Skip to content"} Skip to content
-    / Prevent Tabzilla JS Error
-    %span#tab
     .container#content
 
       = partial( page.banner_partial.nil? ? 'banner.html.haml' : page.banner_partial , { "real_page" => page } )
@@ -53,7 +52,7 @@
         <!-- end eloqua tracking -->
 
         <div id="oTags">
-          <script type="text/javascript" src="//www.#{site.profile.eql?('staging') ? 'stage.' : ''}redhat.com/j/s_code.js"></script>
+          <script type="text/javascript" src="//www.redhat.com/j/s_code.js"></script>
           <script type="text/javascript"><!--
           var coreUrl = encodeURI(document.URL.split("?")[0]).replace(/-/g," ");
           var urlSplit = coreUrl.toLowerCase().split(/\//);
@@ -85,7 +84,7 @@
           s.prop2 = s.eVar22 = "en";
           s.prop3 = s.eVar19 = "us";
           //--></script>
-          <script type="text/javascript" src="//www.#{site.profile.eql?('staging') ? 'stage.' : ''}redhat.com/j/rh_omni_footer.js"></script>
+          <script type="text/javascript" src="//www.redhat.com/j/rh_omni_footer.js"></script>
           <script language="JavaScript" type="text/javascript"><!--
           if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
           //--></script>
