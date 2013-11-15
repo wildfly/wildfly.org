@@ -29,7 +29,8 @@
       = partial( page.banner_partial.nil? ? 'banner.html.haml' : page.banner_partial , { "real_page" => page } )
 
       = partial( page.nav_partial.nil? ? 'nav.html.haml' : page.nav_partial , { "real_page" => page } )
-
+     
+      %span#page
       ~ content
 
     = partial( page.projectfooter_partial.nil? ? 'projectfooter.html.haml' : page.projectfooter_partial , { "real_page" => page } )

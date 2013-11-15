@@ -25,6 +25,7 @@ Awestruct::Extensions::Pipeline.new do
   extension Awestruct::Extensions::Atomizer.new(:posts, '/news.atom', {:feed_title=>'WildFly News', :template=>'_layouts/template.atom.haml'})
   extension Awestruct::Extensions::Tagger.new(:posts, '/news/index', '/news/tags', :per_page=>3 )
   extension Awestruct::Extensions::TagCloud.new(:posts, '/news/tags/index.html')
+  extension Awestruct::Extensions::Indexifier.new
   extension Release.new
 end
 

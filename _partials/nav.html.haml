@@ -6,23 +6,23 @@
         %span.icon-bar
         %span.icon-bar
       .nav-collapse.collapse
-        %ul.nav
+        %ul#nav.nav
           %li{:class=>"#{'active' if page.output_path.start_with?('/index') }" }<
-            %a(href="#{site.base_url}/index.html") Home
+            %a(href="#{site.base_url}/") Home
           %li{:class=>"#{'active' if page.output_path.start_with?('/about') }" }<
-            %a(href="#{site.base_url}/about.html") About
-          %li{:class=>"#{'active' if page.output_path.start_with?('/about') }" }<
+            %a(href="#{site.base_url}/about/") About
+          %li{:class=>"#{'active' if page.output_path.start_with?('/news') }" }<
             %a(href="#{site.base_url}/news/") News
           %li{:class=>"#{'active' if page.output_path.start_with?('/downloads') }" }<
-            %a(href="#{site.base_url}/downloads.html") Downloads
+            %a(href="#{site.base_url}/downloads/") Downloads
           %li{:class=>"#{'active' if page.output_path.start_with?('/docs') }" }<
-            %a{:href=>"https://docs.jboss.org/author/display/WFLY8/Documentation", :target=>"_new"} Documentation
+            %a{:href=>"https://docs.jboss.org/author/display/WFLY8/Documentation"} Documentation
           %li{:class=>"#{'active' if page.output_path.start_with?('/source') }" }<
             %a(href="http://github.com/wildfly/wildfly") Source Code
           %li{:class=>"#{'active' if page.output_path.start_with?('/gethelp') }" }<
-            %a(href="#{site.base_url}/gethelp.html") Get Help
+            %a(href="#{site.base_url}/gethelp/") Get Help
           %li{:class=>"#{'active' if page.output_path.start_with?('/joinus') }" }<
-            %a(href="#{site.base_url}/joinus.html") Join Us
+            %a(href="#{site.base_url}/joinus/") Join Us
           %li.dropdown
             %a.dropdown-toggle(href="#" data-toggle="dropdown")<
               = precede 'Follow Us ' do
@@ -31,5 +31,7 @@
               %li<
                 %a(href="http://twitter.com/WildFlyAS")<
                   %img(src="#{site.jborg_images_url}/common/socialmedia_icon40_twitter.png")
-
+              %li<
+                %a(href="https://plus.google.com/communities/103877841516607784660")<
+                  %img(src="#{site.jborg_images_url}/common/socialmedia_icon40_googleplus.png")
 = breadcrumb(page.real_page.output_path)
