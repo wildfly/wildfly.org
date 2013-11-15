@@ -56,6 +56,27 @@ a.clear:hover, a.clear:visited, a.clear:active, a.clear:link {
 .tag-4, .tag-5, .tag-6, .tag-7, .tag-8 {
   font-size: 200%;
 }
+
+.sect1 h2 {
+  font-size: 24px;
+}
+
+.sect2 h3 {
+  font-size: 18px;
+}
+
+.sect3 h4 {
+  font-size: 14px;
+}
+
+.sect4 h5 {
+  font-size: 12px;
+}
+
+.sect5 h6 {
+  font-size: 12px;
+}
+
 table.tableblock th {
   font-weight: bold;
   background-color: #424242;
