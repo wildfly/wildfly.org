@@ -11,7 +11,7 @@ One of the big new features in WildFly 8 is the ability to enforce role based ac
 {nbsp}
 
 +++
-<iframe src="//player.vimeo.com/video/78780176" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78780176">Role Based Access Control in WildFly 8 (Part 1 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<iframe class="blog-video-frame" src="//player.vimeo.com/video/78780176" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78780176">Role Based Access Control in WildFly 8 (Part 1 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
 +++
 
 The first part of the series I walk through the basics of Role Based Access Control, and show how you can use standard roles within the WildFly Administration Console.
@@ -19,7 +19,7 @@ The first part of the series I walk through the basics of Role Based Access Cont
 {nbsp}
 
 +++
-<iframe src="//player.vimeo.com/video/78785944" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78785944">Role Based Access Control in WildFly 8 (Part 2 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<iframe class="blog-video-frame" src="//player.vimeo.com/video/78785944" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78785944">Role Based Access Control in WildFly 8 (Part 2 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
 +++
 
 The second video I show how you can configure roles and setup users which map to roles. 
@@ -27,7 +27,7 @@ The second video I show how you can configure roles and setup users which map to
 {nbsp}
 
 +++
-<iframe src="//player.vimeo.com/video/78786992" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78786992">Role Based Access Control in WildFly 8 (Part 3 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
+<iframe class="blog-video-frame" src="//player.vimeo.com/video/78786992" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78786992">Role Based Access Control in WildFly 8 (Part 3 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
 +++
 
 The final video I show how you can configure constraints which allow you to tweak the behavior of roles.

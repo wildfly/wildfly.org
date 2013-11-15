@@ -6,7 +6,7 @@ jgreene
 :awestruct-layout: blog
 :source-highlighter: coderay
 
-I'm happy to announce the release of link:../../../../downloads.html[WildFly 8.0.0.Beta1]. This is a significant milestone because all planned major features have been implemented. Let's run through the big ones.
+I'm happy to announce the release of link:{base_url}/downloads[WildFly 8.0.0.Beta1]. This is a significant milestone because all planned major features have been implemented. Let's run through the big ones.
 
 Java EE7
 --------

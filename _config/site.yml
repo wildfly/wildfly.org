@@ -69,6 +69,9 @@ profiles:
     symlinker:
       from: ../stylesheets
       to: ./_site/stylesheets-source
+    asciidoctor:
+      :attributes:
+        base_url: http://localhost:4242
   staging:
     jborg_fonts_url: http://static.jboss.org/theme/fonts
     jborg_images_url: http://static.jboss.org/theme/images
@@ -79,6 +82,9 @@ profiles:
     base_url: http://wildfly.org/staging
     wget:
       enabled: false
+    asciidoctor:
+      :attributes:
+        base_url: http://wildfly.org/staging
   production:
     minified: .min
     css_minifier: enabled
@@ -93,4 +99,6 @@ profiles:
     base_url: http://wildfly.org
     wget:
       enabled: false
-
+    asciidoctor:
+      :attributes:
+        base_url: http://wildfly.org

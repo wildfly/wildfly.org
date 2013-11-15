@@ -1,7 +1,7 @@
 .span12.well.post-bg
   %h2 
     Latest News
-    %a.rss{:href => "/news.atom"}
+    %a.rss{:href => "#{site.base_url}/news.atom"}
       %i.icon-rss
   %ul.listPosts
     - for post in site.posts[0, 5]

@@ -40,17 +40,17 @@ you will probably see them pop up on here from time to time.
 
 About Page
 ~~~~~~~~~~
-If you click "About" in the navigation bar, you'll find a list of compelling 
+If you click link:{base_url}/about/[About] in the navigation bar, you'll find a list of compelling 
 reasons to use WildFly for your next project. We are certainly proud of
 what it has become.
 
 News Page
 ~~~~~~~~~
-The news page displays a number of entries at once, so you can catch up quickly. 
+The link:{base_url}/news/[News] page displays a number of entries at once, so you can catch up quickly. 
 
 Downloads
 ~~~~~~~~~
-The downloads page displays a list of all WildFly releases since 8. For older
+The link:{base_url}/downloads/[Downloads] page displays a list of all WildFly releases since 8. For older
 releases you will need to visit the older
 http://jboss.org/projects/jbossas[JBoss AS Community] page. If you are interested
 in our commercial offering, JBoss EAP, those releases are also referenced on that page.
@@ -64,7 +64,7 @@ release notes.
 
 Documentation
 ~~~~~~~~~~~~~
-The documentation page will take you into our official WildFly documentation, 
+The link:https://docs.jboss.org/author/display/WFLY8/Documentation[Documentation] link will take you into our official WildFly documentation, 
 which is maintained in separate Confluence system. We allow comments, so if you
 have suggestions on how we can improve a particular page in the documentation, 
 let us know!
@@ -75,19 +75,19 @@ This takes you to our GitHub repository. From here you can search, browse, and f
 
 Get Help
 ~~~~~~~~
-The get help section covers the various options available to get in touch with the WildFly community.
+The link:{base_url}/gethelp/[Get Help] section covers the various options available to get in touch with the WildFly community.
 These include our web based forums, mailing lists, and IRC.
 
 Join Us
 ~~~~~~~
 Since WildFly is a community project, we only exist because various developers around the world
 have decided to pitch in and help build a great application server. We are always looking
-for new volunteers, and the join us page will expand on the many benefits of doing so. It
+for new volunteers, and the link:{base_url}/joinus/[Join Us] page will expand on the many benefits of doing so. It
 also provides helpful information to new contributors.
 
 Governance
 ~~~~~~~~~~
-On the bottom footer there is a link to a page describing how we govern the WildFly project. If 
+On the bottom footer there is a link to a page describing how we link:{base_url}/governance/[govern the WildFly project]. If 
 you are evaluating the project, you might find it useful to understand how we plan and develop it.
 
 Special Thanks
