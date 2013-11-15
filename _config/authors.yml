@@ -1,12 +1,12 @@
 jgreene:
   name: "Jason Greene"
-  bio: "I am currently the lead of the JBoss Application Server project. I am also a member of the JCP, and represent Red Hat on the future Java EE6 specification. During my tenure at JBoss, I have worked in many areas including the application server, clustering, web services, AOP, and security. My interests include concurrency, distributed computing, hardware and programming language design."
+  bio: "I am currently the lead of the JBoss Application Server project. I am also a member of the JCP, and represent Red Hat on the Java EE specification. During my tenure at JBoss, I have worked in many areas including the application server, clustering, web services, AOP, and security. My interests include concurrency, distributed computing, hardware and programming language design."
   location: "Madison, WI"
   occupation: "WildFly Project Lead"
   avatar: jgreene.jpg
 bstansberry:
   name: "Brian Stansberry"
-  bio: "Brian Stansberry  is a principal software engineer at Red Hat, working as a core engineer on JBoss Application Server. He is currently leading the development of the administration and management capabilities in WildFly and JBoss EAP 6. Previously, he was the technical lead for the application server’s high availability clustering features.
+  bio: "Brian Stansberry  is a principal software engineer at Red Hat, working as a core engineer on WildFly. He is currently leading the development of the administration and management capabilities in WildFly and JBoss EAP 6. Previously, he was the technical lead for the application server’s high availability clustering features.
 Brian’s background is in international business and East Asian studies, with a bachelor’s degree from Michigan State and a master’s degree from Stanford. Before getting bitten by the software bug, Brian had a successful career in corporate finance in the semiconductor industry. He started working on JBoss technologies in 2003 and joined the company in 2005."
   location: "Ballwin, MO"
   occupation: "Domain Management Lead"
