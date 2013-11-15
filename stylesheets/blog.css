@@ -165,6 +165,10 @@ ul.list-with-icons i {
   margin-right: 5px;
 }
 
+.middle {
+  vertical-align: middle;
+}
+
 @media (max-width: 650px) {
   .hero-unit {
     padding: 20px;
