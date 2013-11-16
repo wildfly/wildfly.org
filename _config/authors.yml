@@ -1,6 +1,6 @@
 jgreene:
   name: "Jason Greene"
-  bio: "I am currently the lead of the JBoss Application Server project. I am also a member of the JCP, and represent Red Hat on the Java EE specification. During my tenure at JBoss, I have worked in many areas including the application server, clustering, web services, AOP, and security. My interests include concurrency, distributed computing, hardware and programming language design."
+  bio: "I am currently the lead of the WildFly application server project. I am also a member of the JCP, and represent Red Hat on the Java EE specification. During my tenure at JBoss, I have worked in many areas including the application server, clustering, web services, AOP, and security. My interests include concurrency, distributed computing, hardware and programming language design."
   location: "Madison, WI"
   occupation: "WildFly Project Lead"
   avatar: jgreene.jpg
