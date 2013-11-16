@@ -95,8 +95,8 @@ To the various tools and people that helped.
 
 * Awestruct - a handy templating engine for generating nice static sites.
 * Asciidoctor - supports the best blog formatting language ever.
-* JBoss Bootrap - a great starting template based on the awesome Twitter Bootstrap project.
-* Infinispan Website - a great boostrap derived site I was able to reuse a few layouts and ideas from.
+* JBoss Bootstrap - a great starting template based on the awesome Twitter Bootstrap project.
+* Infinispan Website - a great bootstrap derived site I was able to reuse a few layouts and ideas from.
 * Arquillian Website - an awestruct derived site that had a nice little snippet of summary code I was able to reuse.
 * Blender - a really amazing OSS 3d ray tracing tool.
 * Gimp - a really amazing OSS 2d drawing program.
