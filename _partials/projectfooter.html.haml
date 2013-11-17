@@ -4,7 +4,7 @@
       %h4 Navigate
       %ul
         %li
-          %a{:href => "#{site.base_url}/about/", :title => "About"} About 
+          %a{:href => "#{site.base_url}/about/", :title => "About"} About
         %li
           %a{:href => "#{site.base_url}/gethelp/", :title => "Get Help"} Get Help
         %li
@@ -35,7 +35,26 @@
     .span3.offset1
       %h4 LGPL 2.1 License
       %p All dependencies of this project are available under the LGPL or a compatible license.
-      %p
+  .row-fluid
+    .span6.offset1
+      %p{:style => "margin-top: 5px; font-size: 80%;"}
+        © Copyright 2013 Red Hat, Inc.
+        %br
+        %i.icon-fire
+        Made with
+        %a{:href => "https://github.com/jbossorg/bootstrap-community", :style=>"text-decoration: underline;"}JBoss Community Bootstrap
+        and
+        %a{:href => "http://awestruct.org/", :style=>"text-decoration: underline;"}Awestruct
+        %br
+        %i.icon-globe
+        This website is open source! If you want to improve it,
+        %a{:href => "http://github.com/wildfly/wildfly.org", :style=>"text-decoration: underline;"}fork the project,
+        and send a pull request.
+        %br
+        %i.icon-share
+        Website released under
+        %a{:href => "http://creativecommons.org/licenses/by/3.0/", :style=>"text-decoration: underline;"}CC BY 3.0.
+    .span3.offset1
       .jbossbadge
         %a{:href => "http://www.jboss.org/"}
           %img{:src => "http://static.jboss.org/theme/images/common/jbossbadge.png"}/
