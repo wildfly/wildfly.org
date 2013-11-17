@@ -22,7 +22,7 @@ The first page aims to keep you up to date with the latest WildFly news and
 events. 
 
 The rotating banners in the center are clickable and will take you into an 
-area that provides more information about what the banner content.
+area that provides more information about the banner subject.
 
 Below the banners we have the latest WildFly news, which is a specialized blog
 that will contain articles that we think Wildfly users, such as yourself, will
