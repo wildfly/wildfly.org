@@ -353,7 +353,7 @@ Tabzilla.content =
 +'      <ul class="level1">'
 +'        <li class="leaf"><a href="http://www.redhat.com/products/jbossenterprisemiddleware/">Red Hat JBoss Middleware Overview</a></li>'
 +'        <li class="leaf"><a href="http://www.redhat.com/products/jbossenterprisemiddleware/">Red Hat JBoss Middleware Products</a></li>'
-+'        <li class="leaf"><a href="http://www.jboss.org/projects"">Red Hat JBoss Projects & Standards</a></li>'
++'        <li class="leaf"><a href="http://www.jboss.org/projects">Red Hat JBoss Projects & Standards</a></li>'
 +'      </ul>'
 +'    </span>'
 +'    <span class="span4">'
