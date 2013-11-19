@@ -26,6 +26,9 @@
         %a{:accesskey => "c", :href => "#page", :title => "Skip to content"} Skip to content
     .container#content
 
+      .dropup
+        %a#tab.tabnav-closed{:href => "https://www.jboss.org"} Red Hat
+
       = partial( page.banner_partial.nil? ? 'banner.html.haml' : page.banner_partial , { "real_page" => page } )
 
       = partial( page.nav_partial.nil? ? 'nav.html.haml' : page.nav_partial , { "real_page" => page } )

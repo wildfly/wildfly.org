@@ -217,6 +217,10 @@ iframe.blog-video-frame {
     width: 300px;
     height: 169px;
   }
+  
+  .dropup {
+    visibility: hidden;
+  }
 }
 
 @media (max-width: 480px) {
@@ -231,4 +235,3 @@ iframe.blog-video-frame {
     height: 141px;
   }
 }
-
