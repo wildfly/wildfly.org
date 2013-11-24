@@ -6,7 +6,7 @@ jgreene
 :awestruct-layout: blog
 :source-highlighter: coderay
 
-A few days Brian Stansberry, Stuart Douglas and I presented a webinar on all of the major WildFly 8 features.
+A few days ago, Brian Stansberry, Stuart Douglas and I presented a webinar on all of the major WildFly 8 features.
 
 +++
 <iframe class="blog-video-frame" src="//player.vimeo.com/video/79890483" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/79890483">Dive Into WildFly 8</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
