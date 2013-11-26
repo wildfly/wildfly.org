@@ -7,21 +7,21 @@
         %span.icon-bar
       .nav-collapse.collapse
         %ul#nav.nav
-          %li{:class=>"#{'active' if page.output_path.start_with?('/index') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/index') }" }<
             %a(href="#{site.base_url}/") Home
-          %li{:class=>"#{'active' if page.output_path.start_with?('/about') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/about') }" }<
             %a(href="#{site.base_url}/about/") About
-          %li{:class=>"#{'active' if page.output_path.start_with?('/news') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/news') }" }<
             %a(href="#{site.base_url}/news/") News
-          %li{:class=>"#{'active' if page.output_path.start_with?('/downloads') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/downloads') }" }<
             %a(href="#{site.base_url}/downloads/") Downloads
-          %li{:class=>"#{'active' if page.output_path.start_with?('/docs') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/docs') }" }<
             %a{:href=>"https://docs.jboss.org/author/display/WFLY8/Documentation"} Documentation
-          %li{:class=>"#{'active' if page.output_path.start_with?('/source') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/source') }" }<
             %a(href="http://github.com/wildfly/wildfly") Source Code
-          %li{:class=>"#{'active' if page.output_path.start_with?('/gethelp') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/gethelp') }" }<
             %a(href="#{site.base_url}/gethelp/") Get Help
-          %li{:class=>"#{'active' if page.output_path.start_with?('/joinus') }" }<
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/joinus') }" }<
             %a(href="#{site.base_url}/joinus/") Join Us
           %li.dropdown
             %a.dropdown-toggle(href="#" data-toggle="dropdown")<
