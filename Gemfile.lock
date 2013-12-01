@@ -24,6 +24,10 @@ GEM
       sass (~> 3.2)
     chunky_png (1.2.9)
     coderay (1.1.0)
+    coffee-script (2.2.0)
+      coffee-script-source
+      execjs
+    coffee-script-source (1.6.2)
     commonjs (0.2.6)
     compass (0.12.2)
       chunky_png (~> 1.2)
@@ -76,6 +80,7 @@ DEPENDENCIES
   asciidoctor (= 0.1.4)
   awestruct (= 0.5.3)
   coderay
+  coffee-script
   cssminify (~> 1.0.2)
   htmlcompressor (~> 0.0.3)
   kramdown (~> 1.0.1)
@@ -86,3 +91,4 @@ DEPENDENCIES
   therubyrhino (~> 1.73)
   tilt (~> 1.4.0)
   uglifier (~> 2.0.1)
+  win32-open3-19
