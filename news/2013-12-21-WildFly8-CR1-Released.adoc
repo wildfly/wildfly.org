@@ -10,7 +10,7 @@ I'm happy to announce the release of link:{base_url}/downloads[WildFly 8.0.0.CR1
 This is the first candidate for release of WildFly 8. Provided no significant 
 issues are discovered, we will follow up with an 8.0.0.Final release soon after. 
 We are calling on all members in the community to help us evaluate WildFly 8,
-and that it is indeed ready for primetime.
+and that it is indeed ready for primetime. 
 
 Java EE7 TCK 100% Passing
 -------------------------
@@ -21,34 +21,6 @@ for official certication, and will be able to announce Wildfly 8 Final as Java E
 For those unfamiliar with Java EE7, it is an industry leading specification that offers
 applications productivity improving capabilities, including support for the modern web, 
 batch processing, and improvements in dependency injection. 
-
-More Port Reduction
--------------------
-HornetQ, our JMS implementation, is now multiplexed over HTTP, which fully completes our port
-reduction goals for WildFly 8.
-
-By utilizing HTTP upgrade, WildFly 8 has moved nearly all of its protocols to be multiplexed 
-over two HTTP ports: a management port, and an application port.  This is a big benefit to 
-cloud providers (such as OpenShift) who run hundreds to thousands of instances on a single 
-server. Our default configuration now only has _three_ ports, and *_will become 
-two ports by final._* We decided to preserve the original, now duplicative, native management port once again in 
-this release to remove any potential obstacle in evaluating the release. 
-
-Simplified & Improved EJB Clustering
-------------------------------------
-When using the HA profiles, all EJBs support clustering capabilities. More specifically they
-are no longer required to be annotated with @Clustered. Also clustering now utilizes 
-Infinispan 6 capibilities in a more efficient manner, which reduces the overhead involved
-with clustered applications.
-
-Improved JDK8 Compatibility
----------------------------
-This release has improved compatibility with JDK8, and we now encourage everyone interested
-in Java 8 to run WildFly 8 on it as well. Expect future releases of WildFly to include APIs that
-take advantage of the new language features.
-
-Logging Improvements
---------------------
 
 
 High Performance Web Server (http://undertow.io/[Undertow.io])
@@ -61,31 +33,22 @@ It is highly customizable, with the ability for applications to
 implement nearly anything from dynamic request routing to custom
 protocols. It can also function as a very efficient, pure non-blocking
 reverse proxy, allowing WildFly to delegate to other web servers with
-minimal impact to running applications. Undertow has been fully
-integrated for several releases now. This release finalizes the key
-features of this integration with reverse proxy support.
+minimal impact to running applications. This release adds numerous
+improvements including greater extensibility and enhanced security 
+capabilities.
+
 
 Port Reduction
-~~~~~~~~~~~~~~
-An important goal of WildFly 8 was to greatly reduce the number of ports
-used by multiplexing protocols over HTTP using HTTP Upgrade. This is a
-big benefit to cloud providers (such as OpenShift) who run hundreds to
-thousands of instances on a single server. Our default configuration now
-only has _three_ ports, and *_will become two ports by final._* We
-decided to preserve the original native management port for this Beta
-release to give those using legacy clients time to update before the
-final release. *_The native management port, 9999, is deprecated and
-will be removed by final._*
+--------------
+By utilizing HTTP upgrade, WildFly 8 has moved nearly all of its protocols to be multiplexed 
+over two HTTP ports: a management port, and an application port.  This is a big benefit to 
+cloud providers (such as OpenShift) who run hundreds to thousands of instances on a single 
+server.  As of this release, HornetQ, our JMS implementation, is now multiplexed over HTTP, 
+which fully completes our port reduction goals for WildFly 8.
 
-
-.Ports
-[cols="<1,<10,<2",options="header"]
-|=============================================================================================================================
-|Port|Protocols                                                                                            | Bound Interface
-|9990|HTTP/JSON Management, HTTP Upgraded Remoting - (Native Management & JMX), Web Administration Console | management
-|8080|HTTP (Servlet, JAX-RS, JAX-WS), Web Sockets, HTTP Upgraded Remoting (EJB Invocation, Remote JNDI)    | application
-|9999|Remoting - Native Management *_(deprecated)_*                                                        | management
-|=============================================================================================================================
+In total, our default configuration now only has _three_ ports, and *_will become 
+two ports by final._* We decided to preserve the original, now duplicative, native management port once again in 
+this release in order to remove any potential obstacle in evaluating the release. 
 
 Management Role Based Access Control (RBAC) & Auditing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -105,12 +68,26 @@ install has been implemented. This capability allows for a remote client
 to install and rollback new static modules and binary files using the
 WildFly management protocol.
 
-Notable Updates Since Alpha4
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Simplified & Improved EJB Clustering
+------------------------------------
+When using the HA profiles, all EJBs support clustering capabilities. More specifically they
+are no longer required to be annotated with @Clustered. Also clustering now utilizes 
+Infinispan 6 capibilities in a more efficient manner, which reduces the overhead involved
+with clustered applications.
 
-* Initial EE Batch support
+Improved JDK8 Compatibility
+---------------------------
+This release has improved compatibility with JDK8, and we now encourage everyone interested
+in Java 8 to run WildFly 8 on it as well. Expect future releases of WildFly to include APIs that
+take advantage of the new language features.
 
-* Initial EE concurrency support
+
+Other Updates Since Beta1
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Logging now supports custom formatters
+
+* CDI integration and performance improvements
 
 * Java EE Connector Architecture 1.7 support
 
