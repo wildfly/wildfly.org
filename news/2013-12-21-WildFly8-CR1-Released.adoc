@@ -50,9 +50,17 @@ In total, our default configuration now only has _three_ ports, and *_will becom
 two ports by final._* We decided to preserve the original, now duplicative, native management port once again in 
 this release in order to remove any potential obstacle in evaluating the release. 
 
+.Ports
+[cols="<1,<10,<2",options="header"]
+|=============================================================================================================================
+|Port|Protocols                                                                                            | Bound Interface
+|9990|HTTP/JSON Management, HTTP Upgraded Remoting - (Native Management & JMX), Web Administration Console | management
+|8080|HTTP (Servlet, JAX-RS, JAX-WS), Web Sockets, HTTP Upgraded Remoting (EJB Invocation, Remote JNDI)    | application
+|9999|Remoting - Native Management *_(deprecated)_*                                                        | management
+|=============================================================================================================================
+
 Management Role Based Access Control (RBAC) & Auditing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 WildFly can now support organizations with separated management
 responsibilities and restrictions. Roles represent different sets of
 permissions such as runtime operation execution, configuration areas
@@ -62,18 +70,24 @@ the ability to offload to a secure syslog server.
 
 Patching
 ~~~~~~~~
-
 The infrastructure to support the application of patches to an existing
 install has been implemented. This capability allows for a remote client
 to install and rollback new static modules and binary files using the
 WildFly management protocol.
 
-Simplified & Improved EJB Clustering
+New Minimalistic "Core" Distribution
 ------------------------------------
-When using the HA profiles, all EJBs support clustering capabilities. More specifically they
-are no longer required to be annotated with @Clustered. Also clustering now utilizes 
-Infinispan 6 capibilities in a more efficient manner, which reduces the overhead involved
-with clustered applications.
+A new download option is now available in WildFly 8, called the "core" distribution.
+This distribution is ideal for framework authors that want to build their own application 
+runtime using the powerful WildFly 8 architecture. 
+
+This architecture includes:
+
+* Rich management later supporting configuration persistence, hot runtime updates, and unified set of tools and protocols.
+* Fully concurrent service container with advanced capabilities
+* Modular class loading which enables multi-tenancy of applications
+* Deployment 
+
 
 Improved JDK8 Compatibility
 ---------------------------
@@ -81,33 +95,13 @@ This release has improved compatibility with JDK8, and we now encourage everyone
 in Java 8 to run WildFly 8 on it as well. Expect future releases of WildFly to include APIs that
 take advantage of the new language features.
 
-
-Other Updates Since Beta1
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Other Notable Updates Since Beta1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Logging now supports custom formatters
 
 * CDI integration and performance improvements
 
-* Java EE Connector Architecture 1.7 support
-
-  ** New :jca: subsystem with support for DistributedWorkManager
-  ** New :resource-adapters: subsystem with f.ex. pool capacity policies
-  ** New :datasources: subsystem with f.ex. pool capacity policies
-
-* Greatly improved RBAC & Audit logging
-
-* Fixed few memory leaks
-
-* Upgrade clustering to Infinispan 6
-
-* Full AJP backend support
-
-* Reverse proxy support
-
-* Multi-JSF is fully functional and we upload an installer for MyFaces
-
-* Made sure server starts on JDK8
 
 Issue Resolution
 ~~~~~~~~~~~~~~~~
