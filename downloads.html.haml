@@ -35,6 +35,17 @@ description: List of releases available for download
           %a{:href=>release[:tgz][:url]}
             %i.icon-download-alt
             TGZ
+      - if release.has_key?(:core)
+        %tr
+          %td
+          %td 
+          %td Minimalistic Core Distribution
+          %td LGPL
+          %td.download-size #{release[:core][:zip][:size]} 
+          %td
+            %a{:href=>release[:core][:zip][:url]} 
+              %i.icon-download-alt
+              ZIP
       %tr
         %td 
         %td 
