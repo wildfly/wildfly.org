@@ -1,0 +1,146 @@
+= WildFly 8 CR1 is released!
+jgreene
+2013-12-21
+:revdate: 2013-12-21 22:35:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+I'm happy to announce the release of link:{base_url}/downloads/[WildFly 8.0.0.CR1]. 
+This is the first candidate for release of WildFly 8. Provided no significant 
+issues are discovered, we will follow up with an 8.0.0.Final release soon after. 
+We are calling on all members in the community to help us evaluate WildFly 8,
+and that it is indeed ready for primetime. 
+
+Java EE7 TCK 100% Passing
+-------------------------
+The biggest development in this release is that WildFly 8 is now passing both the 
+full and web profiles of the Java EE7 TCK. We are now submitting the paperwork
+for official certification, and will be able to announce WildFly 8 Final as Java EE certified.
+
+For those unfamiliar with Java EE7, it is an industry leading specification that offers
+applications productivity improving capabilities, including support for the modern web, 
+batch processing, and improvements in dependency injection. 
+
+
+High Performance Web Server (http://undertow.io/[Undertow.io])
+--------------------------------------------------------------
+Undertow, the new cutting-edge web server in WildFly 8 is designed for
+maximum throughput and scalability, including environments with over a
+million connections. It supports non-blocking and blocking handlers,
+traditional and asynchronous servlets, and JSR-356 web socket handlers.
+It is highly customizable, with the ability for applications to
+implement nearly anything from dynamic request routing to custom
+protocols. It can also function as a very efficient, pure non-blocking
+reverse proxy, allowing WildFly to delegate to other web servers with
+minimal impact to running applications. This release adds numerous
+improvements including greater extensibility and enhanced security 
+capabilities.
+
+Port Reduction
+--------------
+By utilizing HTTP upgrade, WildFly 8 has moved nearly all of its protocols to be multiplexed 
+over two HTTP ports: a management port, and an application port.  This is a big benefit to 
+cloud providers (such as OpenShift) who run hundreds to thousands of instances on a single 
+server.  As of this release, HornetQ, our JMS implementation, is now multiplexed over HTTP, 
+which fully completes our port reduction goals for WildFly 8.
+
+In total, our default configuration now only has _three_ ports, and *_will become 
+two ports by final._* We decided to preserve the original, now duplicative, native management port once again in 
+this release in order to remove any potential obstacle in evaluating the release. 
+
+.Ports
+[cols="<1,<10,<2",options="header"]
+|=============================================================================================================================
+|Port|Protocols                                                                                            | Bound Interface
+|9990|HTTP/JSON Management, HTTP Upgraded Remoting - (Native Management & JMX), Web Administration Console | management
+|8080|HTTP (Servlet, JAX-RS, JAX-WS), Web Sockets, HTTP Upgraded Remoting (EJB Invocation, Remote JNDI)    | application
+|9999|Remoting - Native Management *_(deprecated)_*                                                        | management
+|=============================================================================================================================
+
+Management Role Based Access Control (RBAC) & Auditing
+------------------------------------------------------
+WildFly can now support organizations with separated management
+responsibilities and restrictions. Roles represent different sets of
+permissions such as runtime operation execution, configuration areas
+that can read or written, and the ability to audit changes and manage
+users. In addition a new restricted audit log can be enabled including
+the ability to offload to a secure syslog server.
+
+Patching
+--------
+The infrastructure to support the application of patches to an existing
+install has been implemented. This capability allows for a remote client
+to install and rollback new static modules and binary files using the
+WildFly management protocol.
+
+New Minimalistic "Core" Distribution
+------------------------------------
+A new download option is now available in WildFly 8, called the "core" distribution.
+This distribution is ideal for framework authors that want to build their own application 
+runtime using the powerful WildFly 8 architecture. 
+
+This architecture includes:
+
+* Rich management later supporting configuration persistence, hot runtime updates, and unified set of tools and protocols.
+* Fully concurrent service container with advanced capabilities
+* Modular class loading which enables multi-tenancy of applications
+* Pluggable hot deployment layer
+* Built-in lightweight web server (supports the HTTP/JSON management protocol)
+
+
+Improved JDK8 Compatibility
+---------------------------
+This release has improved compatibility with JDK8, and we now encourage everyone interested
+in Java 8 to run WildFly 8 on it as well. Expect future releases of WildFly to include APIs that
+take advantage of the new language features.
+
+Other Notable Updates Since Beta1
+---------------------------------
+
+* CDI integration and performance improvements
+* Batch now supports JDBC based backends
+* Generic JMS RAR for simplifying integration with third party messaging providers
+* Logging now supports custom formatters
+* sl4j forked to fix concurrency issues
+* Hibernate Search is included, although undecided if it will remain (opinions welcome!)
+
+Issue Resolution
+----------------
+
+* 387 issues were resolved since Beta1
+
+Component Updates
+-----------------
+* PicketBox 4.0.18.Final
+* JBoss SASL 1.0.4.CR1
+* JGroups to 3.4.0.Final
+* JBoss Negotiation 2.2.6.Final
+* Remoting JMX 2.0.0.CR4
+* MSC 1.2.0.CR1
+* JBossWS 4.2.2.Final
+* Mojarra 2.2.4-jbossorg-1
+* Infinispan 6.0.1.Final
+* PicketBox 4.0.19.Final
+* JGroups to 3.4.1.Final
+* IronJacamar 1.1.2.Final
+* JBossWS 4.2.3.Final
+* Narayana 5.0.0.CR2
+* Generic JMS RA 1.0.1.Final
+* HornetQ 2.4.0.Final
+* Javamail 1.5.0
+* Hibernate 4.3.0.Final
+* Hibernate Validator 5.0.2.Final
+* Hibernate Search 4.5.0.Alpha2
+* JacORB 2.3.2-jbossorg-5
+* JBeret 1.0.0.CR1
+* Jandex 1.1.0.Final
+* JBoss Marshalling 1.4.2.Final
+* Netty 4.0.13.Final
+* Netty XNIO Transport 0.1.1.CR1
+* Undertow 1.0.0.Beta30
+* Weld 2.1.1.Final
+* XNIO 3.2.0.Beta4
+* Apache CXF 2.7.7
+* RestEASY 3.0.6.Final
+* Syslog4j 0.9.30
