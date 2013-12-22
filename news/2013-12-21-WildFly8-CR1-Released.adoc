@@ -1,7 +1,7 @@
 = WildFly 8 CR1 is released!
 jgreene
 2013-12-21
-:revdate: 2013-12-21 20:57:25 -0600
+:revdate: 2013-12-21 22:35:00 -0600
 :awestruct-tags: [announcement, release]
 :awestruct-layout: blog
 :source-highlighter: coderay
