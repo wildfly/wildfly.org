@@ -16,7 +16,7 @@ Java EE7 TCK 100% Passing
 -------------------------
 The biggest development in this release is that WildFly 8 is now passing both the 
 full and web profiles of the Java EE7 TCK. We are now submitting the paperwork
-for official certication, and will be able to announce Wildfly 8 Final as Java EE certified.
+for official certification, and will be able to announce WildFly 8 Final as Java EE certified.
 
 For those unfamiliar with Java EE7, it is an industry leading specification that offers
 applications productivity improving capabilities, including support for the modern web, 
