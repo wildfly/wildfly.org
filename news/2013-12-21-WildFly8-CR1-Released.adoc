@@ -1,12 +1,12 @@
 = WildFly 8 CR1 is released!
 jgreene
 2013-12-21
-:revdate: 2013-10-04 14:39:25 -0600
+:revdate: 2013-12-21 20:57:25 -0600
 :awestruct-tags: [announcement, release]
 :awestruct-layout: blog
 :source-highlighter: coderay
 
-I'm happy to announce the release of link:{base_url}/downloads[WildFly 8.0.0.CR1]. 
+I'm happy to announce the release of link:{base_url}/downloads/[WildFly 8.0.0.CR1]. 
 This is the first candidate for release of WildFly 8. Provided no significant 
 issues are discovered, we will follow up with an 8.0.0.Final release soon after. 
 We are calling on all members in the community to help us evaluate WildFly 8,
@@ -24,7 +24,7 @@ batch processing, and improvements in dependency injection.
 
 
 High Performance Web Server (http://undertow.io/[Undertow.io])
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------------------------------
 Undertow, the new cutting-edge web server in WildFly 8 is designed for
 maximum throughput and scalability, including environments with over a
 million connections. It supports non-blocking and blocking handlers,
@@ -36,7 +36,6 @@ reverse proxy, allowing WildFly to delegate to other web servers with
 minimal impact to running applications. This release adds numerous
 improvements including greater extensibility and enhanced security 
 capabilities.
-
 
 Port Reduction
 --------------
@@ -60,7 +59,7 @@ this release in order to remove any potential obstacle in evaluating the release
 |=============================================================================================================================
 
 Management Role Based Access Control (RBAC) & Auditing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------
 WildFly can now support organizations with separated management
 responsibilities and restrictions. Roles represent different sets of
 permissions such as runtime operation execution, configuration areas
@@ -69,7 +68,7 @@ users. In addition a new restricted audit log can be enabled including
 the ability to offload to a secure syslog server.
 
 Patching
-~~~~~~~~
+--------
 The infrastructure to support the application of patches to an existing
 install has been implemented. This capability allows for a remote client
 to install and rollback new static modules and binary files using the
@@ -86,7 +85,8 @@ This architecture includes:
 * Rich management later supporting configuration persistence, hot runtime updates, and unified set of tools and protocols.
 * Fully concurrent service container with advanced capabilities
 * Modular class loading which enables multi-tenancy of applications
-* Deployment 
+* Pluggable hot deployment layer
+* Built-in lightweight web server (supports the HTTP/JSON management protocol)
 
 
 Improved JDK8 Compatibility
@@ -96,38 +96,51 @@ in Java 8 to run WildFly 8 on it as well. Expect future releases of WildFly to i
 take advantage of the new language features.
 
 Other Notable Updates Since Beta1
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* Logging now supports custom formatters
+---------------------------------
 
 * CDI integration and performance improvements
-
+* Batch now supports JDBC based backends
+* Generic JMS RAR for simplifying integration with third party messaging providers
+* Logging now supports custom formatters
+* sl4j forked to fix concurrency issues
+* Hibernate Search is included, although undecided if it will remain (opinions welcome!)
 
 Issue Resolution
-~~~~~~~~~~~~~~~~
+----------------
 
-* 219 issues were resolved since Alpha4
+* 387 issues were resolved since Beta1
 
 Component Updates
-~~~~~~~~~~~~~~~~~
-
-* Weld 2.1.0 CR1
-* Undertow Beta 17
-* Hibernate 4.3.0.Beta4
-* Console 2.0.0.Final
-* JBoss Modules 1.3.0.Final
-* HornetQ 2.4.0.Beta2
-* aesh 0.33.8
-* Jipijapa 1.0.0.Beta1
-* Javassist 3.18.1-GA
-* Remoting JMX 2.0.0.CR3
-* JBoss WS 4.2.1.Final
-* Jgroups 3.4.0.Beta1
-* Infinispan 6.0.0.Beta1
-* JBoss Log Manager 1.5.0.Final
-* PicketLink 2.5.1.Final
-* jboss-threads 2.1.1.Final
-* mod_cluster 1.2.4.Final
-* Narayana 5.0.0.M4
-* Mojarra 2.2.3
-* IronJacamar 1.1.0.Final
+-----------------
+* PicketBox 4.0.18.Final
+* JBoss SASL 1.0.4.CR1
+* JGroups to 3.4.0.Final
+* JBoss Negotiation 2.2.6.Final
+* Remoting JMX 2.0.0.CR4
+* MSC 1.2.0.CR1
+* JBossWS 4.2.2.Final
+* Mojarra 2.2.4-jbossorg-1
+* Infinispan 6.0.1.Final
+* PicketBox 4.0.19.Final
+* JGroups to 3.4.1.Final
+* IronJacamar 1.1.2.Final
+* JBossWS 4.2.3.Final
+* Narayana 5.0.0.CR2
+* Generic JMS RA 1.0.1.Final
+* HornetQ 2.4.0.Final
+* Javamail 1.5.0
+* Hibernate 4.3.0.Final
+* Hibernate Validator 5.0.2.Final
+* Hibernate Search 4.5.0.Alpha2
+* JacORB 2.3.2-jbossorg-5
+* JBeret 1.0.0.CR1
+* Jandex 1.1.0.Final
+* JBoss Marshalling 1.4.2.Final
+* Netty 4.0.13.Final
+* Netty XNIO Transport 0.1.1.CR1
+* Undertow 1.0.0.Beta30
+* Weld 2.1.1.Final
+* XNIO 3.2.0.Beta4
+* Apache CXF 2.7.7
+* RestEASY 3.0.6.Final
+* Syslog4j 0.9.30
