@@ -6,7 +6,7 @@ bstansberry
 :awestruct-layout: blog
 :source-highlighter: coderay
 
-One of the big new features in WildFly 8 is the ability to enforce role based access control on managmeent operations. I recorded some videos that describe how you can use this powerful feature, and also demonstrate it in action. Check them out!
+One of the big new features in WildFly 8 is the ability to enforce role based access control on managment operations. I recorded some videos that describe how you can use this powerful feature, and also demonstrate it in action. Check them out!
 
 {nbsp}
 
