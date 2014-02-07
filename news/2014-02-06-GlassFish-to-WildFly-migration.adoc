@@ -1,5 +1,5 @@
 # Migrating a Java EE App from GlassFish to WildFly
-arungupta
+arun-gupta
 2014-02-06
 :revdate: 2013-02-06 15:25:25 -0800
 :awestruct-tags: [wildfly8, glassfish, migration]
