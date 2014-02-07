@@ -73,6 +73,7 @@ profiles:
     asciidoctor:
       :attributes:
         base_url: http://localhost:4242
+        imagesdir: /images
   staging:
     jborg_fonts_url: http://static.jboss.org/theme/fonts
     jborg_images_url: http://static.jboss.org/theme/images
@@ -86,6 +87,7 @@ profiles:
     asciidoctor:
       :attributes:
         base_url: http://wildfly.org/staging
+        imagesdir: /staging/images
   production:
     minified: .min
     css_minifier: enabled
@@ -103,3 +105,4 @@ profiles:
     asciidoctor:
       :attributes:
         base_url: http://wildfly.org
+        imagesdir: /images
