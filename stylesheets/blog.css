@@ -77,6 +77,14 @@ a.clear:hover, a.clear:visited, a.clear:active, a.clear:link {
   font-size: 12px;
 }
 
+.admonitionblock td {
+  border: 1px solid rgb(213, 213, 213);
+  padding: 15px;
+}
+.admonitionblock table {
+  margin-bottom: 10px;
+}
+
 table.tableblock th {
   font-weight: bold;
   background-color: #424242;
