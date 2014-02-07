@@ -1,0 +1,359 @@
+# Migrating a Java EE App from GlassFish to WildFly
+arun-gupta
+2014-02-06
+:revdate: 2013-02-06 15:25:25 -0800
+:awestruct-tags: [wildfly8, glassfish, migration]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+by **Hildeberto Mendonça** and **Efraim Gentil** from CEJUG
+
+Serious open source projects should be backed up by at least one company who has genuine interest to be profitable with that project in the long run. It's a matter of fitting the project in the current economic model, where people can be employed full time to address the continuous flow of issues and features coming from users all over the world. That's what happens all the time at RedHat and that's what stopped happening at Oracle in the case of GlassFish.
+
+GlassFish users, who take open source seriously and care about the transparency of what is running on their servers, are currently looking for alternatives and WildFly is the strongest candidate because it:
+
+* follows the evolution of Java EE specifications faster than any other vendor;
+* is a continuation of JBoss, which is a rock solid application server with years of expertise on critical business applications;
+* is supported by Red Hat, a consistently growing IT company.
+
+This article helps you to migrate from GlassFish to WildFly. We initially take into account the most common configurations, such as database connection, JavaMail session, Security Realm and Java EE libraries. More advanced topics will come in future articles.
+
+You will notice in the coming sections that server configuration is definitely not part of the Java EE specification. Each application server is configured in a different way and we hope you will get a good deal of WildFly configuration tips through this article.
+
+## Installing WildFly 8
+
+The installation is very straightforward. Download the latest installation package from [http://www.wildfly.org/downloads/](http://www.wildfly.org/downloads/) and unzip it in a place you can easily remember. We will leave it to your decision about the best location to install it because it depends on the operating system, the server configuration and personal preferences. We refer to the location you chose to unzip WildFly as `WILDFLY_HOME`.
+
+WildFly requires JDK 7 or higher. Before starting WildFly, make sure either the variable `JAVA_HOME` is pointing to a certified JDK 7 installation or `bin` directory of JDK is in the system path.
+
+Go to the folder `WILDFLY_HOME/bin` and execute the command to start WildFly in standalone mode:
+
+    #> ./standalone.sh (Linux)
+    #> standalone.bat (Windows) 
+
+Make sure you have stopped GlassFish or any other application server  before doing this to avoid TCP/IP ports conflicts. You know when the startup finishes when you see the following message:
+
+    WildFly 8.0.0.CR1 "WildFly" started in 1846ms
+
+Open a web browser and access the url [http://localhost:8080](http://localhost:8080) to see the WildFly welcome page.
+
+## Configuring WildFly 8
+
+From this point on, we are going to configure WildFly to support Java EE applications. Changes in the configuration reflect in one of these files:
+
+- `WILDFLY_HOME/domain/configuration/domain.xml`: when you have a clustered environment, which usually happens in production, where there is a domain controller and at least two synchronised server instances. This configuration is taken into account when the command `WILDFLY_HOME/bin/domain.sh(.bat)` is executed to start WildFly. In addition, the file `host.xml`, located in the same folder, is used to configure each host that joins the domain. 
+- `WILDFLY_HOME/standalone/configuration/standalone.xml`: when you have a single WildFly instance for less demanding applications or for the development environment. This configuration is taken into account when the command `WILDFLY_HOME/bin/standalone.sh(.bat)` is executed to start WildFly.
+
+We refer to those files simply as ``configuration file'' throughout the text. Be careful when changing those files. Things can stop working just because of a simple distraction. It's recommended to use the command line or the admin console to make sure the XML content is correctly defined. Syntax changes from a version to another may happen sometimes, so it's better to delegate changes to a specialised tool.
+
+### The Admin Console
+
+You can change the configuration through the administration console or the command line. The console is a web application available at [http://localhost:9990](http://localhost:9990). Unlike GlassFish, it is not accessible by default. We have to create a user in the administration realm to be able to operate the admin console. Therefore, there is no risk of forgetting to protect the admin console. To create one, execute the file `WILDFLY_HOME/bin/add-user.sh(.bat)` and follow the instructions, remembering to note the username and password as they will be needed later.
+
+### The Command Line
+
+All admin operations can be also done through the command line. To activate WildFly command line prompt start WildFly, go to the `WILDFLY_HOME/bin` folder and execute the command:
+
+    #> jboss-cli.sh(.bat) --connect 
+
+It connects to `localhost` and port `9990` by default. The prompt looks like `[standalone@localhost:9990 /]`, indicating it is ready to accept admin commands. Type `quit` when you are done. Command line examples are spreaded througout the text.
+ 
+## Migrating The Database Connection
+
+Let's start discussing about the database connection, which is by far the most frequent need of a Java EE application.
+
+### JDBC Driver
+
+On GlassFish the JDBC driver becomes available when it is visible in the classpath. The practical way of doing it is dropping the driver in the lib folder, then a connection pool can be created and tested using that driver. 
+
+On WildFly, you have two ways of installing the JDBC driver: whether you deploy it as any other application package or you install it as a module. You can always choose to deploy the driver, but it's specially recommend when you have a cluster environment, since the deployments are automatically propagated in the server groups. 
+
+You may have issues with the deployment if the driver is not JDBC4-compliant. In this case, installing the driver as a module solves those issues. The advantage of the JDBC driver as a module is the possibility of creating a custom WildFly bundle for your organization. This way, you can repeat exactly the same installation throughout several machines, preserving the same configuration. This is perfect for the development environment.
+
+We use MySQL to illustrate the deployment and the creation of a module for the JDBC Driver. If you use another database, you will probably go through the same steps, but using different parameters.
+
+#### Deploying the JDBC Driver
+
+In the admin console, go to `Runtime > Server > Manage Deployments` and click on `Add` to deploy the MySQL driver. Upload the driver and give a new name to it. Any JDBC4-compliant driver is automatically recognised by WildFly and made available for new datasources. If not using a JDBC4 driver, then click on `En/Disable` right after the deployment`.
+
+#### Creating a Module
+
+To create a module:
+
+1. Go to `WILDFLY_HOME/modules/system/layers/base/com` and create the folder `mysql/main`;
+1. Visit the page [http://dev.mysql.com/downloads/connector/j/](http://dev.mysql.com/downloads/connector/j/) and download MySQL's JDBC Driver;
+1. Unzip the downloaded file and copy the file `mysql-connector-java-5.1.23-bin.jar` to the new folder `WILDFLY_HOME/modules/system/layers/base/com/mysql/main`
+1. create the file `module.xml` in the same folder with the following content:
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <module xmlns="urn:jboss:module:1.1" name="com.mysql">
+            <resources>
+                <resource-root path="mysql-connector-java-5.1.23-bin.jar"/>
+            </resources>
+            <dependencies>
+                <module name="javax.api"/>
+                <module name="javax.transaction.api"/>
+            </dependencies>
+        </module>
+
+The name of the driver file may vary, so make sure you declare exactly the same name in the `resource-root` tag. At this point, the module is not available yet. We still need to reference the module as a driver in WildFly configuration. Do it using the following command:
+
+    [standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mysql:add(
+        driver-name=mysql,
+        driver-module-name=com.mysql,
+        driver-class-name=com.mysql.jdbc.Driver
+    )
+
+The command returns `{"outcome" => "success"}` in case of success. This command resulted in the following part in the configuration file:
+
+    <datasources>
+        {...}
+        <drivers>
+            {...}
+            <driver name="mysql" module="com.mysql">
+                <driver-class>com.mysql.jdbc.Driver</driver-class>
+            </driver>
+        </drivers>
+    </datasources>
+
+It makes the JDBC driver module available for the datasource creation.
+
+### Datasource
+
+On GlassFish the datasource is nothing but a JNDI name to a connection pool. On WildFly, a datasource really means a datasource. It contains a connection pool and the JNDI name is just another property.
+
+The JNDI name is used by the application to reference the datasource. That's a fundamental difference between GlassFish and WildFly. Your current JNDI name may look like `jdbc/appds` in GlassFish, but in WildFly you need to append the prefix `java:/` or `java:jboss/`, resulting in `java:/jdbc/appds` or `java:jboss/jdbc/appds` respectively.
+
+On the admin console:
+
+1. Go to `Profile > subsytems > Connector > Datasources` and click on Add to create a datasource.
+2. Give a name to the datasource to easily identify it in the console. We use `AppDS` in our example. 
+3. Define the JNDI name appending the prefix `java:/` to your current datasource name like `java:/jdbc/AppDS` and click `Next`.
+4. Select the driver you deployed or added as a module and click `Next`.
+5. Fill in the connection parameters to your database and click `Done` when finished. For example:
+    - Connection URL: `jdbc:mysql://localhost:3306/AppDS`
+    - Username: `db_user`
+    - Password: `secret`
+
+These are the very basic steps to have the datasource working. Next, we are going to configure the connection pool:
+
+1. Select the datasource you just created and click on `Disable` (if it is not already disabled) to be able to edit it.
+2. Select the tab `Pool` and then click on `Edit`.
+3. Update values for `Min Pool Size` and `Max Pool Size` for 5 and 15 respectively, or values ​​you may find optimal.
+4. Click on `Save` and restart the server to all changes take effect.
+5. Go back to  `Profile > subsytems > Connector > Datasources`, select the recently created datasource, select the tab `Connection` and click on `Test connection`. 
+
+A success message may appear if everything is correctly configured. If not, then recheck the connection parameters and the precise execution of the steps above.
+
+NOTE: Since WildFly is not yet final, it's absolutely normal it may present some instability during the datasource configuration, requiring you to restart the server one or more times to get things working. Make sure to report every strange behavior in https://community.jboss.org/en/wildfly?view=discussions[WildFly's forum], https://lists.jboss.org/mailman/listinfo/wildfly-dev[mailing list] or even https://issues.jboss.org/browse/WFLY[submit a bug]. 
+
+The same datasource can be created using the following command:
+
+    [standalone@localhost:9990 /] /subsystem=datasources/data-source=AppDS:add(
+        driver-name=mysql,
+        user-name=db_user,
+        password=secret,
+        connection-url:jdbc:mysql://localhost:3306/appdb,
+        min-pool-size=5,
+        max-pool-size=15,
+        jndi-name=java:/jdbc/AppDS
+    )
+
+The resulting part made by the console/command in the configuration file are:
+
+    <datasources>
+        {...}
+        <datasource jndi-name="java:/jdbc/AppDS" pool-name="AppDS" enabled="true" use-java-context="true">
+            <connection-url>jdbc:mysql://localhost:3306/app</connection-url>
+            <driver>mysql</driver>
+            <pool>
+                <min-pool-size>5</min-pool-size>
+                <max-pool-size>15</max-pool-size>
+                <prefill>true</prefill>
+            </pool>
+            <security>
+                <user-name>db_user</user-name>
+                <password>secret</password>
+            </security>
+        </datasource>
+        {...}
+    </datasources>
+
+### Application Configuration for the Datasource
+
+Because of differences in the JNDI naming rules, it's necessary to change all occurrences of the previous JNDI name to the new one. So, search for `jdbc/AppDS` and change it to `java:/jdbc/AppDS`. If you are using JPA, you find the reference to the datasource in the file `persistence.xml`, as illustrated below:
+
+    <persistence-unit name="app-pu" transaction-type="JTA">
+        <jta-data-source>java:/jdbc/AppDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties/>
+    </persistence-unit>
+
+You may also find such references in `@Resource` annotations. Change them to `@Resource(name = "java:/jdbc/AppDS")`.
+
+## Migrating the JavaMail Session
+
+Configuring WildFly to send emails with JavaMail is also slightly different from GlassFish. Every inbound and outbound communication through TCP/IP should be declared in the socket binding group. Since SMTP uses TCP/IP to communicate, then we have to create an Outbound Socket Binding for that. To proceed:
+
+. In the admin console, go to `Profile > General Configuration > Socket Binding`.
+. In standard-sockets, click on `View >`, select the tab `Outbound Remote`, and click on `Add`.
+. Fill the form with the data to connect to your SMTP server. For instance:
+.. name: `mail-smtp-gmail`
+.. host: `smtp.gmail.com`
+.. port: `465`
+
+The second step is to create the JavaMail session that uses the socket binding. To proceed:
+
+. Go to `Profile > Subsytems > Connector > Mail` and click on `Add`.
+. Define a JNDI name like `java:/mail/app` and save.
+. Click on `View >` in the session you just created and click on `Add`.
+. Fill the form with the data to connect to the SMTP server. For instance:
+.. Socket Binding: `mail-smtp-gmail`
+.. Type: `smtp`
+.. Username: `johnsmith@gmail.com`
+.. Password: `supersecret`
+
+It's necessary to change all occurrences of the previous JNDI name to the new one. So, search for `mail/App` and change it to `java:/mail/App`. You may find such references in `@Resource` annotations. Change them to `@Resource(name = "java:/mail/App")`. 
+
+## Migrating the Security Realm
+
+There are several ways of configuring a security realm on GlassFish. It would require a full article on that to cover all possibilities. For now, we simply cover a realm for authentication and authorization, using the database as the source of users and groups. In GlassFish it is called JDBCRealm, which is pretty restrictive. It requires you do provide a database model such as the one in the figure below.
+
+image::images/2014-02-06-security-model.png[]
+
+You won't have too much freedom out of that model. Fortunately, WildFly is far more flexible than that. You are going to configure a security domain, which is the equivalent to a security realm for an application. Instead of specifying fixed tables and columns for users and groups, you can actually specify a SQL query that finds in the database what the security domain needs to authenticate and to authorize users.
+ 
+NOTE: At the time of this writing, WildFly Beta's admin console was not mature enough to allow the configuration of the application's security. So, we had to do it using the command line only.
+
+Considering the data model in the figure above, go to the command line and type the following command to create the security domain:
+
+    ./subsystem=security/security-domain=app:add(cache-type="default")
+      cd ./subsystem=security/security-domain=app
+         ./authentication=classic:add(
+           login-modules=[ { 
+             code="Database",
+             flag="required",
+             module-options={ 
+               dsJndiName="java:jboss/datasources/AppDS",
+               principalsQuery="select password from authentication where username=?",
+               rolesQuery="select group_name, 'Roles' 
+                           from user_group ug inner join authentication a on ug.user_id = a.user_account 
+                           where a.username = ?", hashAlgorithm="SHA-256",
+               hashEncoding="BASE",
+               unauthenticatedIdentity="guest"
+             }
+           }, {
+             code="RoleMapping", 
+             flag="required", 
+             module-options={
+               rolesProperties="file:${jboss.server.config.dir}/app.properties",
+               replaceRole="false"
+             }
+           }
+         ]
+
+The resulting part made by the command in the configuration file are:
+
+    <security-domain name="app" cache-type="default">
+      <authentication>
+        <login-module code="Database" flag="required">
+          <module-option name="dsJndiName" value="java:jboss/datasources/AppDS"/>
+          <module-option name="principalsQuery" value="select password from authentication where username=?"/>
+          <module-option name="rolesQuery" value="select group_name, 'Roles' from user_group ug inner join authentication a on ug.user_id = a.user_account where a.username = ?"/>
+          <module-option name="hashAlgorithm" value="SHA-256"/>
+          <module-option name="hashEncoding" value="BASE64"/>
+          <module-option name="unauthenticatedIdentity" value="guest"/>
+        </login-module>
+        <login-module code="RoleMapping" flag="required">
+          <module-option name="rolesProperties" value="file:${jboss.server.config.dir}/app.properties"/>
+          <module-option name="replaceRole" value="false"/>
+        </login-module>
+      </authentication>
+    </security-domain>
+
+The role-group mapping you have in the file `WEB-INF/glassfish-web.xml` should be migrated to the file `app.properties`, where `app` is the name of the security domain, as defined above. Save this file in the folder `WILDFLY_HOME/standalone/configuration` or `WILDFLY_HOME/domain/configuration` to be taken into account. 
+
+The following `glassfish-web.xml` content:
+
+    <security-role-mapping>
+        <role-name>admin</role-name>
+        <group-name>admins</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>leader</role-name>
+        <group-name>leaders</group-name>
+        <group-name>admins</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>helper</role-name>
+        <group-name>helpers</group-name>
+        <group-name>leaders</group-name>
+        <group-name>admins</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>member</role-name>
+        <group-name>members</group-name>
+        <group-name>helpers</group-name>
+        <group-name>leaders</group-name>
+        <group-name>admins</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>partner</role-name>
+        <group-name>partners</group-name>
+        <group-name>leaders</group-name>
+        <group-name>admins</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>speaker</role-name>
+        <group-name>speakers</group-name>
+    </security-role-mapping>
+
+is drastically simplified in the `app.properties` file:
+
+    admins=admin,leader,helper,member,partner
+    leaders=leader,helper,member,partner
+    members=member
+    helpers=helper,member
+    partners=partner
+
+where groups are listed on the left of the equal operator and roles are listed on the right. In the example above, users in the group `admins` fulfill the role of `admin`, `leader`, `helper`, `member` and `partner`.
+
+To finish the configuration, add the file `jboss-web.xml` in the folder WEB-INF of your web module with the following content: 
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <jboss-web>
+	      <security-domain>app</security-domain>
+    </jboss-web>
+
+If you don't use a database as a security repository, you can find more details about available login modules for WildFly in its https://docs.jboss.org/author/display/WFLY8/Security+subsystem+configuration[online documentation].
+
+At this point, your application probably has what it takes to be deployed and run on WildFly.
+
+## Java EE Implementation
+
+Migrating to another application server also means migrating to other implementations of Java EE specifications (i.e. EJB, CDI, JSF, JPA, etc.). In general, you don't have to do anything in your application to make it work with other implementations, unless you are using extra features, out of the specification, or you want to stick to a specific implementation. It's very common in the case of the JPA specification.
+
+GlassFish provides EclipseLink as JPA implementation while WildFly provides Hibernate. To be completely implementation independent, your code should reference classes from the package `javax.persistence.*` only. If it happens to reference classes from `org.eclipse.persistence.*`, then your application depends on EclipseLink to work properly, whether you refactor it to use `javax.persistence` classes and smoothly move to Hibernate, or you add EclipseLink as a dependence to the project. In the last case, you can explicitly declare in the `persistence.xml` the use of EclipseLink instead of Hibernate. Add the tag `provider` as illustrated below:
+
+    <persistence-unit name="app-pu" transaction-type="JTA">
+        <jta-data-source>java:/jdbc/AppDS</jta-data-source>
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties/>
+    </persistence-unit>
+
+Then add the following dependence to your `pom.xml` file:
+
+    <dependency>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>eclipselink</artifactId>
+        <version>2.5.1</version>
+    </dependency>
+
+You can find a complete list of Java EE implementations provided by WildFly on this http://blog.arungupta.me/2013/10/java-ee-7-implementations-in-wildfly-tech-tip-3/[Arun Gupta's blog post].
+
+NOTE: Despite rigorous tests to make sure that the implementation respects all specification requirements, there is always the risk of finding some differences. Therefore, do not forget to create new unit and integration tests for every refactoring you dealt with due to implementation differences.
+
+## Conclusion
+
+To keep this text on the limits of readability, we could not cover all sorts of possibilities. We've focused on those configurations most people need. But you can consider this text as an invitation to give feedback about your particular environment. It will help us to plan future articles about migrating to WildFly.
