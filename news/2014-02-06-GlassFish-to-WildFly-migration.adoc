@@ -57,7 +57,21 @@ All admin operations can be also done through the command line. To activate Wild
 
     #> jboss-cli.sh(.bat) --connect 
 
-It connects to `localhost` and port `9990` by default. The prompt looks like `[standalone@localhost:9990 /]`, indicating it is ready to accept admin commands. Type `quit` when you are done. Command line examples are spreaded througout the text. Before using them, please remove all line breaks and identation spaces, making them a continous text string. We decided to change the presentation to improve readability. 
+It connects to `localhost` and port `9990` by default. The prompt looks like `[standalone@localhost:9990 /]`, indicating it is ready to accept admin commands. Type `quit` when you are done. Command line examples are spreaded througout the text. Before using them, please remove all line breaks and identation spaces, making them a continous text string. For example:
+
+Instead of doing exactly this:
+
+    [standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mysql:add(
+        driver-name=mysql,
+        driver-module-name=com.mysql,
+        driver-class-name=com.mysql.jdbc.Driver
+    )
+
+You should do this:
+	
+    [standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql,driver-class-name=com.mysql.jdbc.Driver)
+	
+We decided to change the presentation to improve readability.
  
 ## Migrating The Database Connection
 
@@ -161,7 +175,11 @@ The same datasource can be created using the following command:
         connection-url=jdbc:mysql://localhost:3306/appdb,
         min-pool-size=5,
         max-pool-size=15,
-        jndi-name=java:/jdbc/AppDS
+        jndi-name=java:/jdbc/AppDS,
+		enabled=true,
+        validate-on-match=true,
+        valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker,
+        exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter
     )
 
 The resulting part made by the console/command in the configuration file are:
@@ -182,10 +200,17 @@ The resulting part made by the console/command in the configuration file are:
                 <user-name>db_user</user-name>
                 <password>secret</password>
             </security>
+            <validation>
+                <validate-on-match>true</validate-on-match>
+                <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker”/>
+                <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter”/>
+            </validation>
         </datasource>
         {...}
     </datasources>
 ----
+
+For more datasource examples, please consult the https://access.redhat.com/site/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Administration_and_Configuration_Guide/sect-Example_Datasources.html[JBoss EAP 6 documentation] that also applies to WildFly.
 
 ### Application Configuration for the Datasource
 
@@ -225,7 +250,20 @@ The second step is to create the JavaMail session that uses the socket binding. 
 .. Username: `johnsmith@gmail.com`
 .. Password: `supersecret`
 
-It's necessary to change all occurrences of the previous JNDI name to the new one. So, search for `mail/App` and change it to `java:/mail/App`. You may find such references in `@Resource` annotations. Change them to `@Resource(name = "java:/mail/App")`. 
+You can also perform the same configuration using the following command lines:
+
+    [standalone@localhost:9990 /] /socket-binding-group=standard-sockets/
+	      remote-destination-outbound-socket-binding=mail-smtp-gmail:add(host=smtp.gmail.com, port=465)
+
+    [standalone@localhost:9990 /] /subsystem=mail/mail-session=App:add(jndi-name=java:/mail/app)
+
+	[standalone@localhost:9990 /] /subsystem=mail/mail-session=App/server=smtp:add(
+        outbound-socket-binding-ref=mail-smtp-gmail,
+		username=your_email@gmail.com,
+		password=secret,
+		ssl=true)
+		
+It's necessary to change all occurrences of the previous JNDI name to the new one. So, search for `mail/App` and change it to `java:/mail/App`. You may find such references in `@Resource` annotations. Change them to `@Resource(name = "java:/mail/App")`.
 
 ## Migrating the Security Realm
 
