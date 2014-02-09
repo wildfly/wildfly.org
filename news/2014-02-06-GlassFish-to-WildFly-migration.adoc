@@ -57,7 +57,7 @@ All admin operations can be also done through the command line. To activate Wild
 
     #> jboss-cli.sh(.bat) --connect 
 
-It connects to `localhost` and port `9990` by default. The prompt looks like `[standalone@localhost:9990 /]`, indicating it is ready to accept admin commands. Type `quit` when you are done. Command line examples are spreaded througout the text.
+It connects to `localhost` and port `9990` by default. The prompt looks like `[standalone@localhost:9990 /]`, indicating it is ready to accept admin commands. Type `quit` when you are done. Command line examples are spreaded througout the text. Before using them, please remove all line breaks and identation spaces, making them a continous text string. We decided to change the presentation to improve readability. 
  
 ## Migrating The Database Connection
 
@@ -152,15 +152,13 @@ These are the very basic steps to have the datasource working. Next, we are goin
 
 A success message may appear if everything is correctly configured. If not, then recheck the connection parameters and the precise execution of the steps above.
 
-NOTE: Since WildFly is not yet final, it's absolutely normal it may present some instability during the datasource configuration, requiring you to restart the server one or more times to get things working. Make sure to report every strange behavior in https://community.jboss.org/en/wildfly?view=discussions[WildFly's forum], https://lists.jboss.org/mailman/listinfo/wildfly-dev[mailing list] or even https://issues.jboss.org/browse/WFLY[submit a bug]. 
-
 The same datasource can be created using the following command:
 
     [standalone@localhost:9990 /] /subsystem=datasources/data-source=AppDS:add(
         driver-name=mysql,
         user-name=db_user,
         password=secret,
-        connection-url:jdbc:mysql://localhost:3306/appdb,
+        connection-url=jdbc:mysql://localhost:3306/appdb,
         min-pool-size=5,
         max-pool-size=15,
         jndi-name=java:/jdbc/AppDS
@@ -223,6 +221,7 @@ The second step is to create the JavaMail session that uses the socket binding. 
 . Fill the form with the data to connect to the SMTP server. For instance:
 .. Socket Binding: `mail-smtp-gmail`
 .. Type: `smtp`
+.. Use SSL?: `true`
 .. Username: `johnsmith@gmail.com`
 .. Password: `supersecret`
 
@@ -247,12 +246,12 @@ Considering the data model in the figure above, go to the command line and type 
              code="Database",
              flag="required",
              module-options={ 
-               dsJndiName="java:jboss/datasources/AppDS",
+               dsJndiName="java:/jdbc/AppDS",
                principalsQuery="select password from authentication where username=?",
                rolesQuery="select group_name, 'Roles' 
                            from user_group ug inner join authentication a on ug.user_id = a.user_account 
                            where a.username = ?", hashAlgorithm="SHA-256",
-               hashEncoding="BASE",
+               hashEncoding="BASE64",
                unauthenticatedIdentity="guest"
              }
            }, {
@@ -263,7 +262,7 @@ Considering the data model in the figure above, go to the command line and type 
                replaceRole="false"
              }
            }
-         ]
+         ])
 
 The resulting part made by the command in the configuration file are:
 [source,xml]
@@ -385,3 +384,5 @@ NOTE: Despite rigorous tests to make sure that the implementation respects all s
 ## Conclusion
 
 To keep this text on the limits of readability, we could not cover all sorts of possibilities. We've focused on those configurations most people need. But you can consider this text as an invitation to give feedback about your particular environment. It will help us to plan future articles about migrating to WildFly.
+
+NOTE: Make sure to report every strange behavior in https://community.jboss.org/en/wildfly?view=discussions[WildFly's forum], https://lists.jboss.org/mailman/listinfo/wildfly-dev[mailing list] or even https://issues.jboss.org/browse/WFLY[submit a bug]. 
