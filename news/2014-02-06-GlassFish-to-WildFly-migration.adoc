@@ -392,7 +392,7 @@ At this point, your application probably has what it takes to be deployed and ru
 
 Migrating to another application server also means migrating to other implementations of Java EE specifications (i.e. EJB, CDI, JSF, JPA, etc.). In general, you don't have to do anything in your application to make it work with other implementations, unless you are using extra features, out of the specification, or you want to stick to a specific implementation. It's very common in the case of the JPA specification.
 
-GlassFish provides EclipseLink as JPA implementation while WildFly provides Hibernate. To be completely implementation independent, your code should reference classes from the package `javax.persistence.*` only. If it happens to reference classes from `org.eclipse.persistence.*`, then your application depends on EclipseLink to work properly, whether you refactor it to use `javax.persistence` classes and smoothly move to Hibernate, or you add EclipseLink as a dependence to the project. In the last case, you can explicitly declare in the `persistence.xml` the use of EclipseLink instead of Hibernate. Add the tag `provider` as illustrated below:
+GlassFish provides EclipseLink as JPA implementation while WildFly provides Hibernate. To be completely implementation independent, your code should reference classes from the package `javax.persistence.*` only. If it happens to reference classes from `org.eclipse.persistence.*`, then your application depends on EclipseLink to work properly. Whether you refactor it to use `javax.persistence` classes or you change WildFly's JPA implementation to EclipseLink. In the last case, you can follow the instructions in the https://docs.jboss.org/author/display/WFLY8/JPA+Reference+Guide#JPAReferenceGuide-UsingEclipseLink[WildFly JPA Reference Guide]. Optionally, you can explicitly declare in the `persistence.xml` the use of EclipseLink instead of Hibernate by adding the tag `provider` as illustrated below:
 
 [source,xml]
 ----
@@ -412,6 +412,7 @@ Then add the following dependence to your `pom.xml` file:
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>eclipselink</artifactId>
         <version>2.5.1</version>
+        <scope>provided</scope>
     </dependency>
 ----
 
