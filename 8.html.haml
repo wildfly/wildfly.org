@@ -5,18 +5,13 @@ title: WildFly 8
 
 :css
 
-  .cta.row {
+  .hero .row {
     padding-top: 2em;
     padding-bottom: 2em;
   }
 
   .cta h1 {
     font-size: 96px;
-    color: #424242;
-  }
-
-  .cta h4 {
-    color: #424242;
   }
 
   .cta a:hover {
@@ -36,7 +31,7 @@ title: WildFly 8
   }
 
   ul.features i {
-    color: yellow;
+    color: #e3a835;
   }
 
   .videos iframe {
@@ -48,105 +43,52 @@ title: WildFly 8
     padding-top: 1em;
   }
 
-%h1.text-center Welcome to Wildfly 8!
+  .hero {
+    color: #e1eef4;
+    background-image: url('../images/wf8_bkg.png');
+  }
+
+  .cta {
+    color: #c5e2c7;
+  }
+
+  .hero a {
+    color: #c5e2c7;
+  }
+
+  .hero h1 {
+    font-size: 72px;
+  }
+  
+  h2 {
+    color: #4a5d75;
+  }
 
 .row
-  .offset2.span8
-    %h3.text-center 
-      A Java EE 7 compliant application server, 
-      %br
-      WildFly 8 is as fast, lightweight, and flexible as ever
-
-.row.cta
-  .offset2.span3.text-center
-    %a{:href=>"http://wildfly.org/downloads/"}
-      %h1.icon-download-alt
-      %h4 See the downloads
-  .span2.text-center
-    %a{:href=>"https://docs.jboss.org/author/display/WFLY8/Documentation"}
-      %h1.icon-book 
-      %h4 View the documentation
-  .span3.text-center
-    %a{:href=>"http://wildfly.org/joinus/"}
-      %h1.icon-user
-      %h4 Join our community
-
-.row
-  %h2.span12 What can WildFly 8 do for me ?
-.row
-  .span6
-    %hr
-    %p WildFly brings you the latest innovations in application server technology. Plus...
-
-    %ul.unstyled.features
-      %li 
-        %i.icon-check
-        is developer friendly with fast start-up, extensive tooling, and quickstarts
-      %li 
-        %i.icon-check
-        supports Java EE standards and beyond
-      %li
-        %i.icon-check
-        is ideal for running in cloud environments where every cycle counts
-
-    %p
-      %strong NEW in WildFly 8
-
-    %ul.unstyled.features
-      %li
-        %i.icon-check
-        Java EE 7 support
-      %li
-        %i.icon-check
-        A new high performance Web server (Undertow)
-      %li
-        %i.icon-check
-        Greatly reduced port usage
-      %li
-        %i.icon-check
-        Role based access controls and auditing
-      %li
-        %i.icon-check
-        Patching infrastructure
-
-  .span6.videos
-    <iframe src="//player.vimeo.com/hubnut/album/2727869?color=44bbff&amp;background=000000&amp;slideshow=1&amp;video_title=1&amp;video_byline=1" width="400" height="300" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+  .span12.hero
+    .row
+      .offset2.span8
+        .row
+          .span8.text-center
+            %h1 WildFly 8
+        .row.cta
+          .span3.text-center
+            %a{:href=>"http://wildfly.org/downloads/"}
+              %h1.icon-download-alt
+              %h4 See the downloads
+          .span2.text-center
+            %a{:href=>"https://docs.jboss.org/author/display/WFLY8/Documentation"}
+              %h1.icon-book 
+              %h4 View the documentation
+          .span3.text-center
+            %a{:href=>"http://wildfly.org/joinus/"}
+              %h1.icon-user
+              %h4 Join our community
 
 .row
   .span12
-    %h2 I'm in! Where can I find more ?
+    %h2 Resources
     %hr
-
-.row.find-more
-  .span4
-    %h3 Hands-on Labs
-
-    %ul.unstyled
-      %li
-        %a{:href=>"https://github.com/javaee-samples/javaee7-hol/blob/master/docs/javaee7-hol.pdf?raw=true"}
-          %i.icon-book
-          Java EE 7 Application Development using WildFly
-      %li
-        %a{:href=>"https://github.com/arun-gupta/wildfly-lab/blob/master/docs/wildfly-lab.pdf?raw=true"}
-          %i.icon-book
-          WildFly Administrative Lab (pdf)
-  .span4
-    %h3 Use it in the Cloud
-    %a{:href=>"https://www.openshift.com/quickstarts/wildfly-8"}
-      %img(src="#{site.base_url}/images/openshift-logo.png")
-    %a{:href=>"http://www.cloudbees.com/press-room/cloudbees-adds-wildfly-support-java-ee-7-rolled-out-wildfly-8.cb"}
-      %img(src="#{site.base_url}/images/cloudbees-logo.png")
-  .span4
-    %h3 Media
-    %ol.unstyled
-      %li
-        %a{:href=>"http://jaxenter.com/wildfly-8-0-joins-roster-of-certified-java-ee7-apps-49456.html"}
-          %i.icon-pencil
-          WildFly 8.0 joins roster of certified Java EE 7 apps
-      %li
-        %a{:href=>"http://www.colocationamerica.com/blog/wildfly-8-enterprise-software-and-the-future-of-java"}
-          %i.icon-pencil
-          Wildfly 8, Enterprise Software and the future of Java
 
 .row.find-more
   .span6
@@ -158,22 +100,46 @@ title: WildFly 8
     %a{:href=>"http://shop.oreilly.com/product/0636920030614.do"}
       %img(src="#{site.base_url}/images/book_JavaEE7Essentials.gif")
 
-  .span6
-    %h3 Other tools that support WildFly 8
-    %a{:href=>"http://blog.arungupta.me/2013/12/getting-started-jboss-tools-wildfly-techtip-5/"}
-      %img(src="#{site.base_url}/images/jbosstools-logo.png")
-    %a{:href=>"https://blogs.oracle.com/geertjan/entry/wildfly_simply_works_in_netbeans"}
-      %img(src="#{site.base_url}/images/netbeans-logo.png")
-    %a{:href=>"http://blog.arungupta.me/2013/12/intellij-idea-13-javaee7-wildfly-tech-tip-4/"}
-      %img(src="#{site.base_url}/images/intellij-logo.png")
-    %br
-    %br
-    %a{:href=>"http://fedoraproject.org/wiki/Changes/WildFly8"}
-      %img(src="#{site.base_url}/images/fedora-logo.png")
-    %a{:href=>"http://goldmann.pl/blog/2013/10/07/wildfly-cluster-using-docker-on-fedora/"}
-      %img(src="#{site.base_url}/images/docker-logo.png")
-    %a{:href=>"http://javaraver.wordpress.com/2013/09/16/gradle-wildfly-and-eclipse/"}
-      %img(src="#{site.base_url}/images/gradle-logo.png")
+  .span6.videos
+    %h3 Videos
+    <iframe src="//player.vimeo.com/hubnut/album/2727869?color=44bbff&amp;background=000000&amp;slideshow=1&amp;video_title=1&amp;video_byline=1" width="400" height="300" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
 
-  
+.row.find-more
+  .span6
+    %h3 Hands-on Labs
+
+    %ul.unstyled
+      %li
+        %a{:href=>"https://github.com/javaee-samples/javaee7-hol/blob/master/docs/javaee7-hol.pdf?raw=true"}
+          %i.icon-book
+          Java EE 7 Application Development using WildFly
+      %li
+        %a{:href=>"https://github.com/arun-gupta/wildfly-lab/blob/master/docs/wildfly-lab.pdf?raw=true"}
+          %i.icon-book
+          WildFly Administrative Lab (pdf)
+
+
+.row
+  .span12
+    %h2 Media
+    %hr
+
+.row.find-more
+  .span6
+    %h3 Blogs
+    %ul
+      %li
+        %a{:href=>"http://jaxenter.com/wildfly-8-0-joins-roster-of-certified-java-ee7-apps-49456.html"}
+          WildFly 8.0 joins roster of certified Java EE 7 apps
+      %li
+        %a{:href=>"http://www.colocationamerica.com/blog/wildfly-8-enterprise-software-and-the-future-of-java"}
+          Wildfly 8, Enterprise Software and the future of Java
+
+  .span6
+    %h3 Media
+    %ul
+      %li
+        %a{:href=>"http://www.colocationamerica.com/blog/wildfly-8-enterprise-software-and-the-future-of-java"}
+          Wildfly 8, Enterprise Software and the future of Java
+ 
 
