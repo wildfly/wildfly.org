@@ -11,6 +11,9 @@ we feel the project is now stable and ready for general use. We received excelle
 feedback from the community regarding the CR1 release, and are looking forward to hearing more
 about your experiences with 8 Final. 
 
+We will be highlighting notable WildFly 8 articles, videos and resources on our new 
+link:{base_url}/8/[WildFly 8 Resources] page. Please keep an eye on it for future developments. 
+
 Java EE7 Certified
 ------------------
 The biggest development in this release is that WildFly 8 is now officially Java EE7 certified, 
