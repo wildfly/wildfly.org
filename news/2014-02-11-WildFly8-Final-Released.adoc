@@ -196,9 +196,10 @@ full-text searching. Multiple data sources are supported including Infinispan an
 Pruning
 -------
 Java EE7 no longer requires the following technologies:
-* CMP - JPA replaces, and is a much more performant and flexible API
-* JAX-RPC - JAX-WS replaces, and offers a much more accurate and complete solution
-* JSR-88 - Very little adoption, most preferred the more complete deployment APIs provided by venders
+
+* CMP - JPA offers much more performant and flexible API.
+* JAX-RPC - JAX-WS offers a much more accurate and complete solution.
+* JSR-88 - Very little adoptionr. Most preferred the more complete deployment APIs provided by venders.
 
 We decided to completely remove support for these technologies due to the high maintenance cost, low community interest, and 
 much better alternative solutions. If you are not able to port at this time, we recommend looking at JBoss EAP6, which provides 
