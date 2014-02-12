@@ -209,42 +209,42 @@ Issue Resolution
 
 Component Updates
 -----------------
-* Mojarras 2.2.5-jbossorg-3
-* Groovy 2.2.1
-* Netty 4.0.15.Final
-* Undertow 1.0.0.Final
-* Jastow 1.0.0.Final
-* Santuario 1.5.6
-* Jackson 1.9.13
-* Eclipse JDT Core Compiler 4.3.1
-* Hibernate 4.3.1.Final
-* Hibernate Validator 5.0.3.Final
-* Hibernate Search 4.5.0.Final
-* Hornetq 2.4.1.Final
-* JBeret 1.0.0.Final
 * Arquillian 1.1.2.Final-wildfly-1
-* Hal 2.1.1.Final
 * Byteman 2.1.4
 * EJB Client 2.0.0.Final
+* Eclipse JDT Core Compiler 4.3.1
+* Groovy 2.2.1
+* Hal 2.1.1.Final
+* Hibernate 4.3.1.Final
+* Hibernate Search 4.5.0.Final
+* Hibernate Validator 5.0.3.Final
+* Hornetq 2.4.1.Final
 * Invocation 1.2.1.Final
 * Ironjacamar 1.1.3.Final
-* Narayana 5.0.0.Final
+* JBeret 1.0.0.Final
 * JBoss Logging 3.1.4.GA
 * JBoss Logmanager 1.5.2.Final
-* Log4j JBoss LogManager 1.1.0.Final
 * JBoss Marshalling 1.4.3.Final
+* JGroups 3.4.2.Final
+* Jackson 1.9.13
+* Jastow 1.0.0.Final
+* Jipijapa 1.0.1.Final
+* Log4j JBoss LogManager 1.1.0.Final
 * Metadata 8.0.0.Final
 * Mod_cluster 1.3.0.Final
+* Mojarras 2.2.5-jbossorg-3
 * Msc 1.2.0.Final
+* Narayana 5.0.0.Final
+* Netty 4.0.15.Final
 * Netty-xnio-transport 0.1.1.Final
+* PicketBox 4.0.20.Final
+* PicketLink 2.5.2.Final
 * Remote naming 2.0.0.Final
 * Remoting 4.0.0.Final
 * Remoting JMX 2.0.0.Final
 * SASL 1.0.4.Final
+* Santuario 1.5.6
+* Undertow 1.0.0.Final
 * Weld 2.1.2.Final
-* XNIO 3.2.0.Final
-* JGroups 3.4.2.Final
-* Jipijapa 1.0.1.Final
-* PicketBox 4.0.20.Final
-* PicketLink 2.5.2.Final
 * Wildfly Security Manager 1.0.0.Final
+* XNIO 3.2.0.Final
