@@ -1,3 +1,7 @@
+- version: '8.0.0.Final'
+  date: '2014-02-11'
+  notes: '/news/2014/02/11/WildFly8-Final-Released/'
+  certified: 'true'
 - version: '8.0.0.CR1'
   date: '2013-12-21'
   notes: '/news/2013/12/21/WildFly8-CR1-Released/'

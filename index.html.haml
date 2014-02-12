@@ -10,18 +10,18 @@ title: WildFly Homepage
     %ol.carousel-indicators
       %li.active{"data-slide-to" => "0", "data-target" => "#myCarousel"}
       %li{"data-slide-to" => "1", "data-target" => "#myCarousel"}
-      %li{"data-slide-to" => "2", "data-target" => "#myCarousel"}
+      / %li{"data-slide-to" => "2", "data-target" => "#myCarousel"}
     / Carousel items
     .carousel-inner
       .active.item
-        %a{:href => "#{site.base_url}/news/2013/12/21/WildFly8-CR1-Released/"}
-          %img(src="#{site.base_url}/images/8cr1.jpg")
+        %a{:href => "#{site.base_url}/news/2014/02/11/WildFly8-Final-Released/"}
+          %img(src="#{site.base_url}/images/8final.jpg")
       .item
         %a{:href => "#{site.base_url}/about/"}
           %img(src="#{site.base_url}/images/wildflynewimproved.jpg")
-      .item
-        %a{:href => "#{site.base_url}/joinus/"}
-          %img(src="#{site.base_url}/images/iwantyou.jpg")
+      / .item
+      /    %a{:href => "#{site.base_url}/joinus/"}
+      /      %img(src="#{site.base_url}/images/iwantyou.jpg")
     / Carousel nav
     %a.carousel-control.left{"data-slide" => "prev", :href => "#myCarousel"} ‹
     %a.carousel-control.right{"data-slide" => "next", :href => "#myCarousel"} ›

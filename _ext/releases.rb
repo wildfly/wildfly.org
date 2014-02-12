@@ -21,9 +21,11 @@ class Release
           release[:core][kind] = {:url => uri, :size => size}
         end
       end
-      version = release[:quickversion] 
-      uri = URI.parse("http://download.jboss.org/wildfly/#{version}/quickstart-#{version}.zip")
-      release[:quickstart] = {:url => uri, :size => compute_size(uri)}
+      if release.has_key?("quickversion")
+        version = release[:quickversion] 
+        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/quickstart-#{version}.zip")
+        release[:quickstart] = {:url => uri, :size => compute_size(uri)}
+      end
     end
   end
 

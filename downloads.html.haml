@@ -18,7 +18,10 @@ description: List of releases available for download
       %tr
         %td #{release[:version]}
         %td #{release[:date]}
-        %td Application Server Distribution
+        - if release[:certified]
+          %td Java EE7 Certified Server 
+        - if not release[:certified]
+          %td Application Server Distribution
         %td LGPL
         %td.download-size #{release[:zip][:size]} 
         %td
@@ -66,17 +69,18 @@ description: List of releases available for download
           %a{:href=>release[:srctgz][:url]}
             %i.icon-download-alt
             TGZ
-      %tr
-        %td 
-        %td 
-        %td Quick Start Source Code
-        %td AL 
-        %td.download-size #{release[:quickstart][:size]} 
-        %td
-          %a{:href=>release[:quickstart][:url]}
-            %i.icon-download-alt
-            ZIP
-          %a{:href=>"http://github.com/wildfly/quickstart"} (git)
+      - if release.has_key?("quickversion")
+        %tr
+          %td 
+          %td 
+          %td Quick Start Source Code
+          %td AL 
+          %td.download-size #{release[:quickstart][:size]} 
+          %td
+            %a{:href=>release[:quickstart][:url]}
+              %i.icon-download-alt
+              ZIP
+            %a{:href=>"http://github.com/wildfly/quickstart"} (git)
       %tr
         %td 
         %td 
