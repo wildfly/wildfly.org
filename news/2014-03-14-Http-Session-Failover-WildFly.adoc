@@ -7,7 +7,7 @@ arun-gupta
 :source-highlighter: coderay
 :imagesdir: ../images
 
-WIldFly guarantees high availability of a Java EE application using session failover and load balancing. Session failover allows uninterrupted access to an application, even in the presence of a node failure. Load balancing allows for a timely response from the application, even in the presence of high volume requests.
+WIldFly enables high availability of a Java EE application using session failover and load balancing. Session failover allows uninterrupted access to an application, even in the presence of a node failure. Load balancing allows for a timely response from the application, even in the presence of high volume requests.
 
 WildFly can operate in _standalone_ mode which is an independent process, much like JBoss Application Serer 3, 4, 5, and 6. It can also operate in _managed domain_ mode where mulitple WildFly 8 instances across different physical or virtual hosts can be managed from a single control point.
 
