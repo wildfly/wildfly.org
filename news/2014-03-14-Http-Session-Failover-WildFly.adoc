@@ -1,0 +1,28 @@
+= HTTP Session Failover in WildFly 8
+arun-gupta
+2014-03-14
+:revdate: 2014-03-14 17:54:36 -0800
+:awestruct-tags: [wildfly8, http, session failover, clustering]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:imagesdir: ../images
+
+WIldFly enables high availability of a Java EE application using session failover and load balancing. Session failover allows uninterrupted access to an application, even in the presence of a node failure. Load balancing allows for a timely response from the application, even in the presence of high volume requests.
+
+WildFly can operate in _standalone_ mode which is an independent process, much like JBoss Application Serer 3, 4, 5, and 6. It can also operate in _managed domain_ mode where mulitple WildFly 8 instances across different physical or virtual hosts can be managed from a single control point.
+
+Centralized administration and high availability together provides a very powerful combination for Java EE application deployments. This blog contains a video tutorial explaining that. Specifically, it shows:
+
+* Introduction to WildFly and Managed Domain concepts
+* Setup up a 2-instance cluster
+* Deploy a WAR file to the cluster using centralized administration from admin console
+* Access the application on one node and add HTTP session attributes on it
+* Shutdown that instance and show HTTP session failover by accessing the application on other instance
+
+
++++
+<iframe src="//player.vimeo.com/video/89157225" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/89157225">HTTP Session Failover in WildFly 8</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
++++
+
+Enjoy!
+
