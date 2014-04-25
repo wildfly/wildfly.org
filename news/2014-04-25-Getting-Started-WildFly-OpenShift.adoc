@@ -1,0 +1,28 @@
+= Getting Started with WildFly in OpenShift and JBoss Developer Studio
+arun-gupta
+2014-04-25
+:revdate: 2014-04-25 13:46:28 -0800
+:awestruct-tags: [wildfly8, openshift, jbds, eclipse]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:imagesdir: ../images
+
+http://openshift.com[OpenShift] provides an open source hybrid cloud application platform by Red Hat. It enables polyglot applications to be deployed on a public, private, and a hybrid cloud very easily. It provides an extensible __cartridge__-based architecture that allows a wide range of functionality such as frameworks, databases, monitoring services, or connectors to external backends to be easily added. https://www.openshift.com/quickstarts/wildfly-8[WildFly cartridge] allows you to start a WildFly instance in https://www.openshift.com/products/online[OpenShift Online].
+
+https://www.jboss.org/products/jbds.html[JBoss Developer Studio] provide comprehensive tooling around Java EE, HTML5, Mobile, and many other technologies needed for modern web application development. The latest 7.1.1 release provide support for Eclipse Kepler SR2, the latest Eclipse release.
+
+This blog contains a video tutorial that explains how to get started with WildFly in OpenShift and JBoss Developer Studio. Specifically, it shows:
+
+* Create an OpenShift application using WildFly cartridge
+* Access the WildFly administration console using port forwarding
+* Import the created application in JBoss Developer Studio
+* Make changes to the application and view them in the deployed application
+* Add a simple Java EE 7 component to the application
+
+
++++
+<iframe src="//player.vimeo.com/video/92968621" width="500" height="313" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/92968621">Getting Started with WildFly 8 in OpenShift</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
++++
+
+Enjoy!
+
