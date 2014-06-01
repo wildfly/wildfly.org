@@ -1,3 +1,8 @@
+- version: '8.1.0.Final'
+  date: '2014-05-30'
+  notes: 'https://community.jboss.org/wiki/WildFly810FinalReleaseNotes'
+  certified: 'true'
+  updateforversion: '8.0.0.Final'
 - version: '8.1.0.CR2'
   date: '2014-05-12'
   notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12324883'

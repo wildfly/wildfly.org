@@ -38,6 +38,17 @@ description: List of releases available for download
           %a{:href=>release[:tgz][:url]}
             %i.icon-download-alt
             TGZ
+      - if release.has_key?("updateforversion")
+        %tr
+          %td
+          %td 
+          %td Update Existing #{release[:updateforversion]} Install
+          %td LGPL
+          %td.download-size #{release[:update][:size]} 
+          %td
+            %a{:href=>release[:update][:url]} 
+              %i.icon-download-alt
+              ZIP
       - if release.has_key?(:core)
         %tr
           %td
