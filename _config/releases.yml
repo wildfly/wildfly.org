@@ -1,3 +1,7 @@
+- version: '8.1.0.CR2'
+  date: '2014-05-12'
+  notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12324883'
+  certified: 'true'
 - version: '8.1.0.CR1'
   date: '2014-04-13'
   notes: 'https://community.jboss.org/wiki/WildFly810CR1ReleaseNotes'
