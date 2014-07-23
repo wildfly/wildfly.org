@@ -26,15 +26,27 @@ the rest of this document, since they explain why we choosed to use this particu
 
 It is not easy to fullfil all the above in one go, and some times it might take some more time, following these principles than simple hacking your way around. It turns though that these  guidelines are the basis for starting to think about moving to different deployment enviroments. The hard stuff are the small details behind things like the way you have structured your application, the use of a specific API that is specific to a technology or container, the use of a specific tool on an operating system that binds you with this platform. 
 
-Last but least, it was not a guideline, but a reality that I have faced many times in my carrer, *WE DID NOT* have over this year a paid subscription of Support either to IBM or RedHat. So my only tools were 
+Last but least, a reality that I had to face many times in my carrer, *WE DID NOT* have any paid supports subscription either from IBM or RedHat. So my only tools were 
 
 * any previous experience
 * http://stackoverflow.com/[stackoverflow]
-* support forums and free documentation available  e.g https://www.ibm.com/developerworks/community/forums/html/[IBM support forum] or https://community.jboss.org/welcome[Jboss Forums]
+* support forums and free documentation available e.g https://www.ibm.com/developerworks/community/forums/html/[IBM support forum] or https://community.jboss.org/welcome[Jboss Forums]
+* the community 
+
+Application technology stack and frameworks available
+----------------------------------------------------
+We started with the requirement on developing and deploying towards the latest version of the IBM Wesphere Application Server. At that time (and while I write these lines) the latest version is 8.5.5 which is a JavaEE6 Full Profile Application server. Since we wanted to use all of the JavaEE specification features the use of the new https://developer.ibm.com/wasdev/2013/03/29/introducing_the_liberty_profile/['Liberty'] profile was out of the scope, so we targeted the Full Profile. An older version of the application was already based on a previous version of Websphere (7). 
+
+The main technologies needed  by our application would be the following :
+
+* http://www.oracle.com/technetwork/java/javaee/ejb-141389.html[EJB 3.1]
+* http://docs.oracle.com/javaee/6/tutorial/doc/bnceh.html[JMS] 
+* http://docs.oracle.com/javaee/6/tutorial/doc/giwhl.html[CDI] 
+* http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html[JPA 2.0]
+* http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html[JAX-RS] 
+* http://docs.oracle.com/javaee/6/tutorial/doc/bnaph.html[JSF 2]
 
 
-Application technology stack 
------------------------------
 
 Modified Application stack, diverting from the Websphere tool set 
 ------------------------------------------------------------------
