@@ -47,8 +47,32 @@ The default library/implementations provided by Websphere for some of the techno
 http://openwebbeans.apache.org/[OpenWebBeans v 1.1.6 CDI Container] | http://openjpa.apache.org/documentation.html[OpenJPA 2.2.1] | http://wink.apache.org/[Apache Wink - JAX-RS] | http://myfaces.apache.org/[Apache MyFaces 2.0.5]
 
 
-Modified Application stack, diverting from the Websphere tool set 
-------------------------------------------------------------------
+Modified Application stack, diverting from the Websphere tool set and problems
+------------------------------------------------------------------------------
+Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset.
+
+*Installation*
+One of the minor but long standing difficulties developing towards Websphere is that is not available on all platforms so those coding on a MacOSX where forced to install and deploy on a remote machine (usually an extra windows PC), this is a great different comparing with Wilfly and previous Jboss application servers where you can run then in any standard JDK environment.Another small problem is the installation and deployment of the server, we had to go over install a specific application that managed the installation and then download a files 2GB of size in order to get a full profile appllication server running. Again downloading zip of 127 MB is a huge difference.
+
+*Server Configuration Tools*
+Our main problem though was the available toolset for configuration after deployment. Websphere follows the same scripting 'engine', very similar to recent versionf of Weblogic, (python or jacl based). Despite the fact that some people especially sys admins find the tools handy, I have to admit that I find them not very easy to use especially for people with no prior experience. The lack of an official Maven plugin was making things even worse (remember our guide lines), and we were left with integrating Ant tasks, called within Maven. The major problem is that in order to script your way to the development or deployment environment, you had to install a websphere engine on the machine that was going to issue the commands. Again developers with no Websphere supported O/S could not invoke such scripts (there are work-arounds). If you wonder why we did not use the specific IDE tool, because this was out of the basic guidelines.
+
+There is a huge difference in Wildfly where the new https://docs.jboss.org/author/display/WFLY8/CLI+Recipes[CLI] and the official https://docs.jboss.org/wildfly/plugins/maven/latest/[Wildfly Maven plugin], do not impose any of the above requirements. I could control, post deployment tasks like, install the server,deploy a datasource,deploy a database driver and devise a deployment descriptor in a few hours, with NO previous experience of the internals (just looking up available documentation).
+
+*Pre / Post deployment settings *
+Many application servers use propriatery descriptors in order to control the deployment of enterprise applications. Websphere features a http://pic.dhe.ibm.com/infocenter/rsahelp/v8/index.jsp?topic=%2Fcom.ibm.servertools.doc%2Ftopics%2Fcenhcear.html[handfull] of those depending on the application or module type. I dont think it is bad, all the application servers do it, but it eventually ends up on having to rely on specific tools (IDE, plugins) that are going to 1) create the descriptors, 2) generate automatically the paths within your ear (already aware of your local server deployment). Since we were not using all these specific tools, we were not using any specific files, neither we could eventually manually generate correctly. We were relying on the fact that if we generate a compliant to the specification ear file, any application server should be able to deploy it accordingly. More or less we managed to do this, but there were some that extra configuration was needed.
+
+In comparison Widfly has a smaller set of specific files that control features namely the jboss-deployment-structure.xml.
+
+*Shared libraries and class loaders*
+I have spent several hours (or man days) trying to understand the exact way and the exact class path that is being inherited by the Parent class loader of the Websphere application server, and how it affects the deployed application. In cases where you actually dont bundle any extra libraries or frameworks (eventually the applications server class path) you will be ok. In other cases where you wanted to bundle your own implementation for something then it is a matter of how you deploy your jars and if they are going to conflict with any existing 
+
+
+We switched and integrated the following replacement technologies
+
+Hibernate 4.2.7 
+Infinispan 6
+
 
 Java EE specification forward compatibility
 -------------------------------------------
