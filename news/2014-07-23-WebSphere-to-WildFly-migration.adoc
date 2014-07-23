@@ -8,7 +8,7 @@ About this guide
 This guide is about the migration process of a https://jcp.org/en/jsr/detail?id=316[JavaEE 6] enteprise application, developed over the past year based on the
 http://www-03.ibm.com/software/products/en/appserv-was[IBM Wesbsphere 8.5.5 Full profile] (a JavaEE6 container) to http://wildfly.org/[Wildfly 8.1.0.Final] (a http://www.oracle.com/technetwork/java/javaee/tech/index.html[JavaEE7] container).
 
-*Disclaimer*: Some of the comments and points raised in the sections below, are based on my personal opinion and experience only, as a Java EE developer working with JavaEE servers in different application domains. Feel free to comment or provide additional feedback in any case. 
+*Disclaimer*: Some of the comments and points raised in the sections below, are based on my personal opinion and experience only, working with JavaEE servers in different application domains. Feel free to comment or correct me and provide additional feedback in any case. 
 
 Basic development principles
 -----------------------------
@@ -25,6 +25,13 @@ the rest of this document, since they explain why we choosed to use this particu
 
 
 It is not easy to fullfil all the above in one go, and some times it might take some more time, following these principles than simple hacking your way around. It turns though that these  guidelines are the basis for starting to think about moving to different deployment enviroments. The hard stuff are the small details behind things like the way you have structured your application, the use of a specific API that is specific to a technology or container, the use of a specific tool on an operating system that binds you with this platform. 
+
+Last but least, it was not a guideline, but a reality that I have faced many times in my carrer, *WE DID NOT* have over this year a paid subscription of Support either to IBM or RedHat. So my only tools were 
+
+* any previous experience
+* http://stackoverflow.com/[stackoverflow]
+* support forums and free documentation available  e.g https://www.ibm.com/developerworks/community/forums/html/[IBM support forum] or https://community.jboss.org/welcome[Jboss Forums]
+
 
 Application technology stack 
 -----------------------------
