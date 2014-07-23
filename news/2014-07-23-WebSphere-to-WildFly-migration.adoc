@@ -1,6 +1,6 @@
 = Migrating a JavaEE-6 application from IBM Websphere 8.5.5 to RedHat Wildfly 8.1 
 
-by *Paris Apostolopoulous*  ( http://javapapo.blogspot.com[blog] | https://twitter.com/javapapo[twitter] | http://gr.linkedin.com/in/javaneze/[linkedIn] | mailto:javapapo@mac.com[email]  )
+by *Paris Apostolopoulous* aka javapapo ( http://javapapo.blogspot.com[blog] | https://twitter.com/javapapo[twitter] | http://gr.linkedin.com/in/javaneze/[linkedIn] | mailto:javapapo@mac.com[email] | http://www.jhug.gr[JUG] )
 
 
 About this guide
@@ -20,6 +20,9 @@ the rest of this document, since they explain why we choosed to use this particu
 * We wanted to be able to select the http://en.wikipedia.org/wiki/Integrated_development_environment[IDE] of our choice, no matter if it is https://netbeans.org/[Netbeans] / https://www.eclipse.org[Eclipse] / http://www.jetbrains.com/idea/[IntelliJ]. At the same time we wanted to avoid any IDE specific lock-in where teams or developers are loosing control over their configuration and deployment process and start rely on 'specific' plugins and tools build on top of general use IDE(s).
 * We wanted to be able to select the operating system we would be developing on, so we would have developers coding on http://en.wikipedia.org/wiki/Linux[Linux], on http://en.wikipedia.org/wiki/Microsoft_Windows[Windows] or http://en.wikipedia.org/wiki/MacOSX[MacOSX] (like me). That is a nice way to eventually catch bugs or application / platform inefficiencies.
 * We wanted to control and configure our deployment environment (aka the application server) as much as possible the same way as we did with our application, meaning scripting the application server or manipulating the environment through maven, especially for pre or post deploy tasks.
+* We wanted to be as much close to the JavaEE specification API(s) in terms of coding as possible, in order to enable our code base to migrate from one application server to another.
+
+It is not easy to fullfil all the above in one go, and some times it might take some more time, following these principles than simple hacking your way around. It turns though that these basic guidelines are the basis for starting to think about moving to different deployment enviroments. The hard stuff are the small details that hide beneath the way you have structure your application, the use of a specific API that is specific to a technology or container, the use of a specific tool on an operating system that binds you with this platform. 
 
 Application technology stack 
 -----------------------------
