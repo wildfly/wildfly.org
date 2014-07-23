@@ -47,8 +47,8 @@ The default library/implementations provided by Websphere for some of the techno
 http://openwebbeans.apache.org/[OpenWebBeans v 1.1.6 CDI Container] | http://openjpa.apache.org/documentation.html[OpenJPA 2.2.1] | http://wink.apache.org/[Apache Wink - JAX-RS] | http://myfaces.apache.org/[Apache MyFaces 2.0.5]
 
 
-Modified Application stack, diverting from the Websphere tool set and problems
-------------------------------------------------------------------------------
+Diverting from the Websphere tool set and problems
+---------------------------------------------------
 Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well. 
 
 *Installation*
@@ -64,13 +64,11 @@ In comparison Widfly has a smaller set of specific files that control features n
 
 *Shared libraries and class loaders*
 I have spent several hours (or man days) trying to understand the exact way and the exact class path that is being inherited by the Parent class loader of the Websphere application server, and how it affects the deployed application. In cases where you actually dont bundle any extra libraries or frameworks (eventually the applications server class path) you will be ok. In other cases where you wanted to bundle your own implementation for something then it is a matter of how you deploy your jars and if they are going to conflict with any existing jar from parent class loaders.
-
 The only way to make your way through the hierarchical class-loading is to create 'Shared libraries' that will include your preferred jars and then associate them either with the overall application server instance or your specific deployment. This association could be done easily prior to deployment (unless a tool was generating a special descriptor, that was injected to your deployable). This descriptor was very specific to your server. I don't know if the 'Shared library' way and the required pre-post deploy configuration required is 'flexible enough'. We ended up, not to use currently any shared libraries, and structure our EAR + bundled jars that way that they would not conflict with the default PARENT_FIRST and Parent classloading hierarchy of WebSphere. Indeed this is very restrictive and we had problems like the https://hibernate.atlassian.net/browse/HHH-8778[following] when Hibernate decided to use a newer version of Javassist internally and was conflicting with the version that Webpshere is providing.
-
 In comparison Widfly has a far more flexible classloading mechanism, is bundling many 'first' class appilication libraries and is dead easy with 3 lines of xml code, to disable or enable classpath visibility on bundled libraries. I have to admit after this migration process this feature was my favourite of all, since I managed to maintain most of my initial library setup with no major changes. See sections below. 
 
 
-We switched and integrated the following replacement technologies
+*We switched and integrated the following replacement technologies*
 
 Hibernate 4.2.7 
 Infinispan 6
