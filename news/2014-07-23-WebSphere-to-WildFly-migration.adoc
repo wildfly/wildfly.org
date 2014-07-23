@@ -1,7 +1,30 @@
 = Migrating a JavaEE-6 application from IBM Websphere 8.5.5 to RedHat Wildfly 8.1 
 
-by http://javapapo.blogspot.com[Paris Apostolopoulous] ( javapapo@mac.com / https://twitter.com/javapapo[@javapapo] )
+by *Paris Apostolopoulous*  ( http://javapapo.blogspot.com[blog] / javapapo@mac.com / https://twitter.com/javapapo[@javapapo])
 
 
-Introduction
------------
+About this guide
+----------------
+This guide is about the migration process of a https://jcp.org/en/jsr/detail?id=316[JavaEE 6] enteprise application, developed over the past year based on the
+http://www-03.ibm.com/software/products/en/appserv-was[IBM Wesbsphere 8.5.5 Full profile] (a JavaEE6 container) to http://wildfly.org/[Wildfly 8.1.0.Final] (a http://www.oracle.com/technetwork/java/javaee/tech/index.html[JavaEE7] container).
+
+*Disclaimer*: Some of the comments and points raised in the sections below, are based on my personal opinion and experience only, as a Java EE developer working with JavaEE servers in different application domains. Feel free to comment or provide additional feedback in any case. 
+
+Development principles and requirements
+---------------------------------------
+As any software development team, has it's own development principles and guidelines in our case we had set some very basic  goals and we tried hard to 'achieve' as many as we could during the development cycles. Some of our initial goals (listed below) will
+explaion some of 'technical' decision(s) taken. Some others were actually the basis, that enabled us to migrate from platfrom A to platform B. It is vital to the reader to have them in mind prior to going through
+the rest of this document, since they explain why we choosed to use this particual tool or this particular technology or vice versa.
+
+* We wanted our development to be based on Maven3 in terms of packaging / configuration or deployment.
+* We wanted to be free select the IDE of our choice, no matter if it is Netbeans / Eclipse / IntelliJ. 
+* We wanted to be free of the operating system we would be developing on, we would like to have developers coding on Linux, on Windows or MacOSX (like me).
+
+
+Application technology stack 
+-----------------------------
+
+
+
+
+
