@@ -1,4 +1,4 @@
-= Migrating a JavaEE application from Websphere 8.5.5 to Wildfly 8.1 
+= Migrating a JavaEE-6 application from IBM Websphere 8.5.5 to RedHat Wildfly 8.1 
 
 by http://javapapo.blogspot.com[Paris Apostolopoulous] ( javapapo@mac.com / https://twitter.com/javapapo[@javapapo] )
 
