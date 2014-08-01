@@ -8,7 +8,7 @@ About this guide
 This guide is about the migration process of a https://jcp.org/en/jsr/detail?id=316[JavaEE 6] enteprise application, developed over the past year based on the
 http://www-03.ibm.com/software/products/en/appserv-was[IBM Wesbsphere 8.5.5 Full profile] (a JavaEE6 container) to http://wildfly.org/[Wildfly 8.1.0.Final] (a http://www.oracle.com/technetwork/java/javaee/tech/index.html[JavaEE7] container).
 
-*Disclaimer*: Some of the comments and points raised in the sections below, are based on my personal opinion and experience only, working with JavaEE servers in different application domains. Feel free to comment or correct me and provide additional feedback in any case. 
+*Disclaimer*: Some of the comments and points raised in the sections below, are based on my personal opinion and experience only while working with JavaEE servers in different application domains. Feel free to comment or correct me and provide additional feedback in any case. 
 
 Basic development principles
 -----------------------------
