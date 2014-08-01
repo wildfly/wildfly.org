@@ -51,13 +51,17 @@ Diverting from the Websphere tool set and problems
 ---------------------------------------------------
 Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well. 
 
-| Case      |    Websphere | Wildfly  |
-| :-------- | --------:| :--: |
-| Installation  | XX |  XX  |
-| Server Configuration Tools     |  XX |  XX  |
-| Pre / Post deployment settings      |    XX | XX  |
-| Shared libraries and class loaders      |    XX | XX  |
-
+<table>
+  <tr>
+    <th>ID</th><th>Name</th><th>Rank</th>
+  </tr>
+  <tr>
+    <td>1</td><td>Tom Preston-Werner</td><td>Awesome</td>
+  </tr>
+  <tr>
+    <td>2</td><td>Albert Einstein</td><td>Nearly as awesome</td>
+  </tr>
+</table>
 
 
 *Installation*
