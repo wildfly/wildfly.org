@@ -53,8 +53,10 @@ Please treat this section as constructive critism, I only want to address the pr
 
 [cols="<1,<10,<2",options="header"]
 |=============================================================================================================================
-|Case|Websphere 8.5 | Wildfly 8.1 Interface
-|xxx|xxxx | xxxx
+|Case|Websphere 8.5 | Wildfly 8.1
+|OS Availability| No MacOSX support, IBM JDK| OS independent, Sun JDK (MacOSX includded)
+|Installation| Installation had to go through a special program, that would download or import huge files containing the app server. You need some time to get started and is not 'scriptable' to set up a server |Installation is easy, you can either download a 127 MB zip or even add a Maven task to download the full server as a dependency, then unpack the server in any custom folder. 
+
 
 |=============================================================================================================================
 
