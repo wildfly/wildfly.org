@@ -51,17 +51,13 @@ Diverting from the Websphere tool set and problems
 ---------------------------------------------------
 Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well. 
 
-<table>
-  <tr>
-    <th>ID</th><th>Name</th><th>Rank</th>
-  </tr>
-  <tr>
-    <td>1</td><td>Tom Preston-Werner</td><td>Awesome</td>
-  </tr>
-  <tr>
-    <td>2</td><td>Albert Einstein</td><td>Nearly as awesome</td>
-  </tr>
-</table>
+[cols="<1,<10,<2",options="header"]
+|=============================================================================================================================
+|Case|Websphere 8.5 | Wildfly 8.1 Interface
+|xxx|xxxx | xxxx
+
+|=============================================================================================================================
+
 
 
 *Installation*
