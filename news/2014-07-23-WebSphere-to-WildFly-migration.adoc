@@ -63,7 +63,7 @@ Please treat this section as constructive critism, I only want to address the pr
 Relying on JavaEE Specification technologies and the differences in bundled implementations
 -------------------------------------------------------------------------------------------
 Working towards API(s) defined in the context of JavaEE and application servers that follow the specification was the main force behind switching from on server to another. Eventually without out it would be impossible.
-This one of the good things of the JavaEE spec, one API several implementing servers, and moving from one environment to another, is a reality. Of course the overall process requires 3 main things  
+This one of the good things of the JavaEE spec, one API several implementing servers, and moving from one environment to another, is a reality. Of course the overall process is not always easy, and there are some principles that need to be followed. Below  I list some general guidelines that you need to consider prior to performing the switch. 
 
 1) you need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
 either on code level or configuration the harder it would be to  migrate to another environment. Take for example environment and configuration details. You need to 'abstract' and hide all these details and technicalities from your main application and do not
