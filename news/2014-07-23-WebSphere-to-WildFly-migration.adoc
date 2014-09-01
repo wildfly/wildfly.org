@@ -51,18 +51,6 @@ Comparing tools & features while developing
 ---------------------------------------------------
 Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well. 
 
-[cols="<1,<10,<2",options="header"]
-|=============================================================================================================================
-|Case|Websphere 8.5 | Wildfly 8.1
-|OS Availability| Linux, Windows, Unix, but NO MacOSX support, IBM JDK dependent| OS independent, Sun JDK (MacOSX includded)
-|Installation| Installation requires an extra program (Installation Manager), that would download or import huge files (2BG) containing the app server( Full Profile) . You need some time to get started and is not easily 'scriptable' to set up a running development server |Installation is easy, you can either download a 127 MB zip or even add a Maven task to download the full server as a dependency, then unpack the server in any custom folder and you are ready to go
-|Server Configuration Tools| Similar tools with Weblogic Jython / Jacl based, not the the most user friendly way now days, scriptable through Ant, or jython scripts only in supported platforms, meaning I could not get to execute wsadmin scripts in my dev platform since I could not install Websphere | The new Wildfly (Jboss) CLI is a) easy to understand, b) self documented in many way, c) easily integrated and scripted either with customer scripts, invoking cli or using the Maven Wildfly plugin. 
-|Maven support | No official Maven Plugin for Websphere Full Profule| Wildfly 8.1 has an official Maven Plugin
-|Pre / Post deployment settings | No official Maven Plugin for Websphere Full Profule| Wildfly 8.1
-|Shared libraries and class loaders | No official Maven Plugin for Websphere Full Profule| Wildfly 8.1
-|=============================================================================================================================
-
-
 .Ports
 [cols="<1,<10,<2",options="header"]
 |=============================================================================================================================
