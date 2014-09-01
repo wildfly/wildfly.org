@@ -46,9 +46,8 @@ The default library/implementations provided by Websphere for some of the techno
 
 http://openwebbeans.apache.org/[OpenWebBeans v 1.1.6 CDI Container] | http://openjpa.apache.org/documentation.html[OpenJPA 2.2.1] | http://wink.apache.org/[Apache Wink - JAX-RS] | http://myfaces.apache.org/[Apache MyFaces 2.0.5]
 
-
 Comparing tools & features while developing 
----------------------------------------------------
-Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well. 
+--------------------------------------------
+Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well.
 
 
