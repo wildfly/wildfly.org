@@ -72,7 +72,6 @@ either on code level or configuration the harder it would be to  migrate.
 that functionality is highly coupled with configuration details and behavior. For example,  if a certain feature of your functionality relies on some configuration that is either coupled with an existing service of the application server (e.g JMS) or a bundled library that is offered by the server, try to contaminate these changes and configuration tasks in separate clean config steps and do not mix configuration with code (as much as possible). 
 There are cases that this 'specific' configuration would require to use specifics of an application server. In case of migration, you will need to re-aply this configuration but using potentially a different method or tool chain. Your code in any case will not be aware on how a certain feature was configured or installed in the running environment.
 
-2) you need to be fully aware of the capabilities and implementation details from the server you currently develop to 
-the server that you aim to migrate. These are tricky details between differences in implementations of standard API's even minor differences on versions of libraries that exist in both application servers. For example, the JPA layer in Websphere is based on the
-Apache OpenJPA library while on Wildfly 8.1 is on Hibernate. With day to day coding you will notice differences in implementation details, the amount your application is making use of the differences and features of each implementing library,
-
+3) Learn about your environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
+the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers. For example, the JPA layer in Websphere is based on the
+Apache OpenJPA library while on Wildfly 8.1 is on Hibernate.
