@@ -1,4 +1,4 @@
-= Migrating a JavaEE-6 application from IBM Websphere 8.5.5 to Wildfly 8.1 
+= Migrating a JavaEE6 application from IBM Websphere 8.5.5 to Wildfly 8.1 
 
 by *Paris Apostolopoulous* aka javapapo ( http://javapapo.blogspot.com[blog] | https://twitter.com/javapapo[twitter] | http://gr.linkedin.com/in/javaneze/[linkedIn] | mailto:javapapo@mac.com[email] | http://www.jhug.gr[JUG] )
 
