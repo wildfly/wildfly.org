@@ -63,6 +63,14 @@ Please treat this section as constructive critism, I only want to address the pr
 |=============================================================================================================================
 
 
+.Ports
+[cols="<1,<10,<2",options="header"]
+|=============================================================================================================================
+|Port|Protocols                                                                                            | Bound Interface
+|9990|HTTP/JSON Management, HTTP Upgraded Remoting - (Native Management & JMX), Web Administration Console | management
+|8080|HTTP (Servlet, JAX-RS, JAX-WS), Web Sockets, HTTP Upgraded Remoting (EJB Invocation, Remote JNDI)    | application
+|9999|Remoting - Native Management *_(deprecated)_*                                                        | management
+|=============================================================================================================================
 
 *Pre / Post deployment settings*
 Many application servers use propriatery descriptors in order to control the deployment of enterprise applications. Websphere features a http://pic.dhe.ibm.com/infocenter/rsahelp/v8/index.jsp?topic=%2Fcom.ibm.servertools.doc%2Ftopics%2Fcenhcear.html[handfull] of those depending on the application or module type. I dont think it is bad, all the application servers do it, but it eventually ends up on having to rely on specific tools (IDE, plugins) that are going to 1) create the descriptors, 2) generate automatically the paths within your ear (already aware of your local server deployment). Since we were not using all these specific tools, we were not using any specific files, neither we could eventually manually generate correctly (some of them we could devise them). We were relying on the fact that if we generate a compliant to the specification ear file, any application server should be able to deploy it accordingly. More or less we managed to do this, but there were some that extra configuration was needed.
