@@ -75,4 +75,5 @@ of the logging subsystem may vary from one app server to another. Sometimes X lo
 should never change no matter if behind the SLF4J Facade one application server is attaching LogBack and the other JBoss Logging etc.
 
 3) Learn about your environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
-the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers.
+the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers. The more amount of information you have regarding your environment, gathered from official documentation, training or user forums the better you will be able to address different solutions to the same problem as you switch fron environment A to environment B.
+
