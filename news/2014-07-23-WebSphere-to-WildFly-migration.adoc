@@ -50,4 +50,7 @@ Comparing tools & features while developing
 --------------------------------------------
 Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well.
 
-
+[cols="<1,<10,<2",options="header"]
+|=============================================================================================================================
+|Case|Websphere 8.5 | Wildfly 8.1
+|=============================================================================================================================
