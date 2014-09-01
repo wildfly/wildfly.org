@@ -65,9 +65,11 @@ Relying on JavaEE Specification technologies and the differences in bundled impl
 Working towards API(s) defined in the context of JavaEE and application servers that follow the specification was the main force behind switching from on server to another. Eventually without out it would be impossible.
 This one of the good things of the JavaEE spec, one API several implementing servers, and moving from one environment to another, is a reality. Of course the overall process is not always easy, and there are some principles that need to be followed. Below  I list some general guidelines that you need to consider prior to performing the switch. 
 
-1) you need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
-either on code level or configuration the harder it would be to  migrate to another environment. Take for example environment and configuration details. You need to 'abstract' and hide all these details and technicalities from your main application and do not
-mix them with the rest of the application, especially the modules offering functionality.
+1) You need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
+either on code level or configuration the harder it would be to  migrate. 
+
+2) Separate configuration on application and server level, from your application. Take for example environment and configuration details. You need to 'abstract' and hide all these details and technicalities from your main application especially the modules 
+offering functionality. If a certain feature of your functionality relies on some configuration that is either coupled with an existing service of the application server (e.g JMS) or a bundled library that is offered by the server, try to contaminate these changes and configuration tasks in separate clean config steps and do not mix configuration with code (as much as possible). 
 
 2) you need to be fully aware of the capabilities and implementation details from the server you currently develop to 
 the server that you aim to migrate. These are tricky details between differences in implementations of standard API's even minor differences on versions of libraries that exist in both application servers. For example, the JPA layer in Websphere is based on the
