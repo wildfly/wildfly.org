@@ -65,11 +65,11 @@ Relying on JavaEE Specification technologies and the differences in bundled impl
 Working towards API(s) defined in the context of JavaEE and application servers that follow the specification was the main force behind switching from on server to another. Eventually without out it would be impossible.
 This one of the good things of the JavaEE spec, one API several implementing servers, and moving from one environment to another, is a reality. Of course the overall process requires 3 main things  
 
-a) you need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
+1) you need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
 either on code level or configuration the harder it would be to  migrate to another environment. Take for example environment and configuration details. You need to 'abstract' and hide all these details and technicalities from your main application and do not
 mix them with the rest of the application, especially the modules offering functionality.
 
-b) you need to be fully aware of the capabilities and implementation details from the server you currently develop to 
+2) you need to be fully aware of the capabilities and implementation details from the server you currently develop to 
 the server that you aim to migrate. These are tricky details between differences in implementations of standard API's even minor differences on versions of libraries that exist in both application servers. For example, the JPA layer in Websphere is based on the
 Apache OpenJPA library while on Wildfly 8.1 is on Hibernate. With day to day coding you will notice differences in implementation details, the amount your application is making use of the differences and features of each implementing library,
 
