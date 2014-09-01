@@ -73,5 +73,4 @@ that functionality is highly coupled with configuration details and behavior. Fo
 There are cases that this 'specific' configuration would require to use specifics of an application server. In case of migration, you will need to re-aply this configuration but using potentially a different method or tool chain. Your code in any case will not be aware on how a certain feature was configured or installed in the running environment.
 
 3) Learn about your environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
-the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers. For example, the JPA layer in Websphere is based on the
-Apache OpenJPA library while on Wildfly 8.1 is on Hibernate.
+the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers.
