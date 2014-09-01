@@ -53,5 +53,5 @@ Please treat this section as constructive critism, I only want to address the pr
 [cols="<1,<10,<2",options="header"]
 |=============================================================================================================================
 |Case|Websphere 8.5 | Wildfly 8.1
-|=============================================================================================================================
 |OS Availability|Linux, Windows, Unix, but NO MacOSX support, IBM JDK dependent| OS independent, Sun JDK (MacOSX includded)
+|=============================================================================================================================
