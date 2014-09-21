@@ -94,11 +94,11 @@ Websphere 8.5
 ^^^^^^^^^^^^^
 As already elaborated Hiberante is not officially supported by IBM. In order to make Hibernate our default JPA provided, I decided bundling the library jars along with our application in the same EAR and DO not rely on the specific shared library/wasadmin configuration specifics of Webspheres. That way I was minimizing the configuration effort from our side (especially the shared library per application on websphere requires more pre deployment configuration). The per server shared library option was dropped since we could not make sure that we would deploy our app in an app server instance with no other applications co-located.
 
-* We used Hibernate 4.2.7, eventually this is the latest we can use, based on the decision to bundle hibernate as a lib in our application. Due to a change from Hibernate 4.2.8 and on, on the Javassist dependency lib, in case you try and bundle a newer version into Webpshere you will conflict with  
-*The Datasource definition was based on a persistence.xml file
-* The jars were bundled within the ear \lib folder and all the required dependencies (unfortunately that increased the total size of the ear)
-* Our JPA entities were annotated using standard JPA 2 annotations and not hibernate specifics.
-* The tricky point was the glueing code to Websphere's internals for looking up the JTA manager and wiring it accordingly to Hibernate
+. We used Hibernate 4.2.7, eventually this is the latest we can use, based on the decision to bundle hibernate as a lib in our application. Due to a change from Hibernate 4.2.8 and on, on the Javassist dependency lib, in case you try and bundle a newer version into Webpshere you will conflict with  
+. The Datasource definition was based on a persistence.xml file
+. The jars were bundled within the ear \lib folder and all the required dependencies (unfortunately that increased the total size of the ear)
+. Our JPA entities were annotated using standard JPA 2 annotations and not hibernate specifics.
+. The tricky point was the glueing code to Websphere's internals for looking up the JTA manager and wiring it accordingly to Hibernate
 
 
 
