@@ -81,7 +81,7 @@ Learn about your application server environment.You need to be fully aware of th
 the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers. The more amount of information you have regarding your environment, gathered from official documentation, training or user forums the better you will be able to address different solutions to the same problem as you switch fron environment A to environment B.
 
 Configuring technologies and modules
-------------------------------------------
+------------------------------------
 
 Hibernate JPA Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
