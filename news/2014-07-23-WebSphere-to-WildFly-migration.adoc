@@ -65,25 +65,29 @@ Relying on JavaEE Specification technologies and the differences in bundled impl
 Working towards API(s) defined in the context of JavaEE and application servers that follow the specification was the main force behind switching from on server to another. Eventually without out it would be impossible.
 This one of the good things of the JavaEE spec, one API several implementing servers, and moving from one environment to another, is a reality. Of course the overall process is not always easy, and there are some principles that need to be followed. Below  I list some general guidelines that you need to consider prior to performing the switch. 
 
-1) You need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
+.Think ahead
+You need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
 either on code level or configuration the harder it would be to  migrate. 
 
-2) Separate configuration specifics on application and server level, from your functionality. You need to 'abstract' and hide all these details and technicalities from your main application especially the modules 
+.Separation of configuration and logic
+Separate configuration specifics on application and server level, from your functionality. You need to 'abstract' and hide all these details and technicalities from your main application especially the modules 
 that functionality is highly coupled with configuration details and behavior. For example,  if a certain feature of your functionality relies on some configuration that is either coupled with an existing service of the application server (e.g JMS) or a bundled library that is offered by the server, try to contaminate these changes and configuration tasks in separate clean config steps and do not mix configuration with code (as much as possible). 
 There are cases that this 'specific' configuration would require to use specifics of an application server. In case of migration, you will need to re-aply this configuration but using potentially a different method or tool chain. Your code in any case does not need to be aware on how a certain feature was configured or installed in the running environment. For example, many application use the SLF4J Interface API to add logging functionality to their application, the actual configuration
 of the logging subsystem may vary from one app server to another. Sometimes X logging library might be offered out of the box, some other times you need to bundled it on your own. The most important thing is that your code
 should never change no matter if behind the SLF4J Facade one application server is attaching LogBack and the other JBoss Logging etc.
 
-3) Learn about your environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
+.Study your deployment environment
+Learn about your environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
 the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers. The more amount of information you have regarding your environment, gathered from official documentation, training or user forums the better you will be able to address different solutions to the same problem as you switch fron environment A to environment B.
 
 Configuring severa technologies and modules
 ------------------------------------------
 
 Hibernate JPA Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Websphere
-^^^^^^^
+^^^^^^^^^
 
 
 
@@ -92,10 +96,11 @@ Wildfly
 
 
 Logging Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+
 
 Websphere
-^^^^^^^
+^^^^^^^^^
 
 
 
@@ -104,10 +109,10 @@ Wildfly
 
 
 Caching Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 Websphere
-^^^^^^^
+^^^^^^^^^
 
 
 
