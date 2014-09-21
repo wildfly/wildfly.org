@@ -65,29 +65,40 @@ Relying on JavaEE Specification technologies and the differences in bundled impl
 Working towards API(s) defined in the context of JavaEE and application servers that follow the specification was the main force behind switching from on server to another. Eventually without out it would be impossible.
 This one of the good things of the JavaEE spec, one API several implementing servers, and moving from one environment to another, is a reality. Of course the overall process is not always easy, and there are some principles that need to be followed. Below  I list some general guidelines that you need to consider prior to performing the switch. 
 
-.Think ahead
+TIP: Think ahead
 You need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
 either on code level or configuration the harder it would be to  migrate. 
 
-.Separation of configuration and logic
+TIP:Separation of configuration and logic
 Separate configuration specifics on application and server level, from your functionality. You need to 'abstract' and hide all these details and technicalities from your main application especially the modules 
 that functionality is highly coupled with configuration details and behavior. For example,  if a certain feature of your functionality relies on some configuration that is either coupled with an existing service of the application server (e.g JMS) or a bundled library that is offered by the server, try to contaminate these changes and configuration tasks in separate clean config steps and do not mix configuration with code (as much as possible). 
-There are cases that this 'specific' configuration would require to use specifics of an application server. In case of migration, you will need to re-aply this configuration but using potentially a different method or tool chain. Your code in any case does not need to be aware on how a certain feature was configured or installed in the running environment. For example, many application use the SLF4J Interface API to add logging functionality to their application, the actual configuration
+There are cases that this 'specific' configuration would require to use specifics of an application server. In case of migration, you will need to re-aply this configuration but using potentially a different method or tool. Your code in any case does not need to be aware on how a certain feature was configured or installed in the running environment. For example, many application use the SLF4J Interface API to add logging functionality to their application, the actual configuration
 of the logging subsystem may vary from one app server to another. Sometimes X logging library might be offered out of the box, some other times you need to bundled it on your own. The most important thing is that your code
-should never change no matter if behind the SLF4J Facade one application server is attaching LogBack and the other JBoss Logging etc.
+should never change no matter if behind the SLF4J Facade one application server is attaching LogBack and the other Lo4j.
 
-.Study your deployment environment
-Learn about your environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
+TIP: Study the specifics of your application server(s)
+Learn about your application server environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
 the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers. The more amount of information you have regarding your environment, gathered from official documentation, training or user forums the better you will be able to address different solutions to the same problem as you switch fron environment A to environment B.
 
-Configuring severa technologies and modules
+Configuring technologies and modules
 ------------------------------------------
 
 Hibernate JPA Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Websphere
-^^^^^^^^^
+Hibernate is one of the most used and reliable JPA implementations for many many years now. We decided that it was worth trying using it, even in servers that are actually do not bundle or support it (officially). We felt that we were more comfortable working with Hibernate rather than the bit outdated version of OpenJPA as bundled by Websphere. At the same time we were more confident with the implementation details of Hibernate and it's features. 
+
+TIP: Integration different implementations of specific technologies, like a JPA provider, should be part of a JSR, making sure that all the application servers offer at least a common interface to their internals and different libraries implementing the spec could be interchanged.
+
+Websphere 8.5
+^^^^^^^^^^^^^
+As already elaborated Hiberante is not officially supported by IBM. In order to make Hibernate our default JPA provided, I decided bundling the library jars along with our application in the same EAR and DO not rely on the specific shared library/wasadmin configuration specifics of Webspheres. That way I was minimizing the configuration effort from our side (especially the shared library per application on websphere requires more pre deployment configuration). The per server shared library option was dropped since we could not make sure that we would deploy our app in an app server instance with no other applications co-located.
+
+* We used Hibernate 4.2.7, eventually this is the latest we can use, based on the decision to bundle hibernate as a lib in our application. Due to a change from Hibernate 4.2.8 and on, on the Javassist dependency lib, in case you try and bundle a newer version into Webpshere you will conflict with  
+*The Datasource definition was based on a persistence.xml file
+* The jars were bundled within the ear \lib folder and all the required dependencies (unfortunately that increased the total size of the ear)
+* Our JPA entities were annotated using standard JPA 2 annotations and not hibernate specifics.
+* The tricky point was the glueing code to Websphere's internals for looking up the JTA manager and wiring it accordingly to Hibernate
 
 
 
