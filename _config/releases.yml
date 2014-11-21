@@ -1,3 +1,7 @@
+- version: '8.2.0.Final'
+  date: '2014-11-20'
+  notes: '/news/2014/11/20/WildFly82-Final-Released'
+  certified: 'true'
 - version: '9.0.0.Alpha1'
   date: '2014-09-15'
   notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12324890'
