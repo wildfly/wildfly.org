@@ -16,7 +16,7 @@ which includes improved discovery semantics and better compatibility with AtInje
 implementations.
 
 Additionally, Weld, our CDI implementation has been updated with improved performance. Large deployments
-were observed to be as much as *20% faster*. 
+were observed to be as much as *20% faster* to deploy. 
 
 For more details, see the Weld 2.2 link:http://weld.cdi-spec.org/news/2014/04/15/weld-220-final[release announcement].
 
