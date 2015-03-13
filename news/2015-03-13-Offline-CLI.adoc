@@ -1,0 +1,262 @@
+= Running an Embedded WildFly 9 Server in the CLI
+bstansberry
+2015-03-13
+:revdate: 2015-03-13 17:54:36 -0800
+:awestruct-tags: [wildfly9, management, CLI, embedded]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:imagesdir: ../images
+
+In WildFly 9 Beta1 we are introducing a new capability to our Command Line Interface (CLI) tool: the ability to embed a WildFly standalone server process inside the CLI process, with the CLI interacting with the embedded server in a manner consistent with how it interacts with a remote WildFly server. All of the standard CLI commands that you can use to administer a remote server are available.
+
+The immediate goal is to support direct local administration of a WildFly installation via the CLI without requiring a socket-based connection. The general use case is initial setup type activities where the user doesn't want to have to launch a WildFly server and have it be visible on the network. link:{base_url}/news/2013/11/07/Role-Based-Access-Control-in-WildFly-8/[RBAC configuration] and other management security configuration is one use case; another is a desire users have expressed to be able to do configuration without first having to edit any xml to avoid port conflicts on 9990 or 9999.
+
+Longer term, since the CLI is itself embeddable, this opens up the possibility of embedding the CLI inside some other process (say a test class, a provisioning tool or a jar with a main) and then launching the embedded server and using the embedded CLI as a convenient management tool. For example, an installer or other provisioning tool could include in its own configuration a small amount of CLI script, which the tool would use to customize a stock WildFly configuration, say by adding a datasource configuration. The user of the tool would only need to understand the CLI script.
+
+## [[example]]Simple Example
+
+Here I start the CLI in a modular environment, launch an embedded server, do a couple simple CLI things, and stop the embedded server:
+
+....
+$ bin/jboss-cli.sh   
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.  
+[disconnected /] embed-server --std-out=echo  
+12:10:15,300 INFO  [org.jboss.modules] (main) JBoss Modules version 1.4.1.Final  
+12:10:15,983 INFO  [org.jboss.msc] (main) JBoss MSC version 1.2.4.Final  
+12:10:16,049 INFO  [org.jboss.as] (MSC service thread 1-6) WFLYSRV0049: WildFly Full 9.0.0.Alpha2-SNAPSHOT (WildFly Core 1.0.0.Alpha18-SNAPSHOT) starting  
+12:10:16,891 INFO  [org.jboss.as.controller.management-deprecated] (Controller Boot Thread) WFLYCTL0028: Attribute enabled is deprecated, and it might be removed in future version!  
+12:10:17,055 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 9.0.0.Alpha2-SNAPSHOT (WildFly Core 1.0.0.Alpha18-SNAPSHOT) started in 7113ms - Started 35 of 48 services (19 services are lazy, passive or on-demand)  
+[standalone@embedded /] ls -l  
+ATTRIBUTE                VALUE                  TYPE     
+launch-type              EMBEDDED               STRING   
+management-major-version 3                      INT      
+management-micro-version 0                      INT      
+management-minor-version 0                      INT      
+name                     taozi                  STRING   
+namespaces               []                     OBJECT   
+process-type             Server                 STRING   
+product-name             WildFly Full           STRING   
+product-version          9.0.0.Alpha2-SNAPSHOT  STRING   
+profile-name             undefined              STRING   
+release-codename         Kenny                  STRING   
+release-version          1.0.0.Alpha18-SNAPSHOT STRING   
+running-mode             ADMIN_ONLY             STRING   
+schema-locations         []                     OBJECT   
+server-state             running                STRING   
+suspend-state            RUNNING                STRING   
+      
+CHILD                MIN-OCCURS MAX-OCCURS   
+core-service         n/a        n/a          
+deployment           n/a        n/a          brew unlink gcc-4.2
+deployment-overlay   n/a        n/a          
+extension            n/a        n/a          
+interface            n/a        n/a          
+path                 n/a        n/a          
+socket-binding-group n/a        n/a          
+subsystem            n/a        n/a          
+system-property      n/a        n/a          
+[standalone@embedded /] cd socket-binding-group=standard-sockets/socket-binding=management-http  
+[standalone@embedded socket-binding=management-http] :write-attribute(name=port,value=19990)  
+{"outcome" => "success"}  
+[standalone@embedded socket-binding=management-http] reload --admin-only=false  
+12:12:34,615 INFO  [org.jboss.as] (MSC service thread 1-16) WFLYSRV0050: WildFly Full 9.0.0.Alpha2-SNAPSHOT (WildFly Core 1.0.0.Beta1) stopped in 16ms  
+12:12:34,621 INFO  [org.jboss.as] (MSC service thread 1-16) WFLYSRV0049: WildFly Full 9.0.0.Alpha2-SNAPSHOT (WildFly Core 1.0.0.Beta1) starting  
+. . . .  
+12:12:36,176 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 9.0.0.Beta1 (WildFly Core 1.0.0.Beta1) started in 1505ms - Started 202 of 379 services (210 services are lazy, passive or on-demand)  
+[standalone@embedded socket-binding=management-http] stop-embedded-server   
+12:12:43,352 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-5) WFLYJCA0010: Unbound data source [java:jboss/datasources/ExampleDS]  
+12:12:43,352 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-8) WFLYUT0019: Host default-host stopping  
+12:12:43,364 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-13) WFLYJCA0019: Stopped Driver service with driver-name = h2  
+12:12:43,368 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-4) WFLYUT0008: Undertow HTTP listener default suspending  
+12:12:43,380 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-4) WFLYUT0007: Undertow HTTP listener default stopped, was bound to /127.0.0.1:8080  
+12:12:43,384 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-13) WFLYUT0004: Undertow 1.2.0.Beta8 stopping  
+12:12:43,393 INFO  [org.jboss.as] (MSC service thread 1-7) WFLYSRV0050: WildFly Full 9.0.0.Beta1 (WildFly Core 1.0.0.Beta1) stopped in 13ms  
+[disconnected socket-binding=management-http] quit
+....
+
+Here I do a similar thing, but using the non-modular `jboss-cli-client.jar` included in the `bin/client` directory of the WildFly distribution. I also don't include the `--std-out=echo` param, so I don't see the server logging in the console:
+
+....
+$ java -jar bin/client/jboss-cli-client.jar   
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.  
+[disconnected /] embed-server --jboss-home=/home/brian/dev/wildfly/dist/target/wildfly-9.0.0.Alpha2-SNAPSHOT  
+[standalone@embedded /] cd socket-binding-group=standard-sockets/socket-binding=management-http  
+[standalone@embedded socket-binding=management-http] :read-attribute(name=port)  
+{  
+    "outcome" => "success",  
+    "result" => 19990  
+}  
+[standalone@embedded socket-binding=management-http] quit
+....
+
+I'll explain the `--jboss-home` parameter below. See <<classloading,Modular vs Non-Modular Classloading and JBOSS_HOME>>.
+ 
+## Finer points
+
+### Specifying the Server Configuration
+
+The embed-server command supports `-c` and `--server-config` parameters that can be used to specify the name of the configuration file to use. If not specified, the default is `standalone.xml`.
+
+    [disconnected /] embed-server --server-config=standalone-full.xml
+
+### Starting with an Empty Configuration
+
+Embedding the server opens up the possibility of starting from a completely empty, even non-existent, configuration. Such a configuration makes no sense without embedding, as no configuration means no remote management interface, and thus no means to change the configuration to something useful. But a server embedded in the CLI tool doesn't have that problem.
+ 
+So, the `embed-server` command allows you to specify that an initially empty configuration should be used:
+ 
+    [disconnected /] embed-server --server-config=my-config.xml --empty-config
+
+That command will fail if file `$JBOSS_HOME/standalone/configuration/my-config.xml` already exists. This is to avoid accidental deletion of a configuration file. However, you can specify that you want any existing configuration removed:
+
+    [disconnected /] embed-server --server-config=my-config.xml --empty-config --remove-existing
+
+Here I launch the CLI telling it to run a CLI script (link:https://developer.jboss.org/servlet/JiveServlet/download/53050-3-129627/embedded-server.txt.zip[available here]) that starts an embedded server with an empty configuration and then uses CLI commands to build the entire server configuration. The resulting configuration is equivalent to the standard `standalone-full-ha.xml` config that ships with WildFly:
+
+....
+$ bin/jboss-cli.sh --file=/home/bstansberry/tmp/embedded-server.txt   
+The batch executed successfully  
+The batch executed successfully  
+process-state: reload-required   
+$ 
+....
+
+The script is long but conceptually straightforward. First it launches the embedded server:
+
+    embed-server --server-config=standalone-empty.xml --empty-config --remove-existing
+
+Then it runs a CLI batch to add all the desired extensions:
+
+....
+# Extensions first
+batch
+/extension=org.jboss.as.clustering.infinispan:add
+/extension=org.jboss.as.clustering.jgroups:add
+/extension=org.jboss.as.connector:add
+. . . .
+/extension=org.wildfly.extension.undertow:add
+/extension=org.wildfly.iiop-openjdk:add
+run-batch
+....
+
+Once this batch runs, the server will understand the management APIs exposed by those extensions, so the rest of the configuration can be applied. This is done in a second batch:
+
+....
+# Other
+batch
+/core-service=management/security-realm=ManagementRealm:add(map-groups-to-roles=false)
+. . . .    
+/subsystem=webservices/client-config=Standard-Client-Config:add
+/subsystem=weld:add
+run-batch
+....
+
+It works!
+
+....
+$ bin/standalone.sh -c standalone-empty.xml
+=========================================================================  
+      
+  JBoss Bootstrap Environment  
+    
+  JBOSS_HOME: /Users/bstansberry/dev/wildfly/wildfly/dist/target/wildfly-9.0.0.Alpha2-SNAPSHOT  
+      
+  JAVA: /Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/bin/java  
+      
+  JAVA_OPTS:  -server -XX:+UseCompressedOops  -server -XX:+UseCompressedOops -Xms64m -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true  
+      
+=========================================================================  
+      
+12:24:45,565 INFO  [org.jboss.modules] (main) JBoss Modules version 1.4.1.Final  
+12:24:45,775 INFO  [org.jboss.msc] (main) JBoss MSC version 1.2.4.Final  
+12:24:45,843 INFO  [org.jboss.as] (MSC service thread 1-6) WFLYSRV0049: WildFly Full 9.0.0.Beta1 (WildFly Core 1.0.0.Beta1) starting  
+. . . .  
+12:24:48,649 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management  
+12:24:48,649 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990  
+12:24:48,649 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 9.0.0.Beta1 (WildFly Core 1.0.0.Beta1) started in 3365ms - Started 246 of 478 services (281 services are lazy, passive or on-demand)
+....
+
+### Admin-only Mode
+
+By default the embedded server will be started in `admin-only` mode. This is because the main expected use cases are for initial configuration. A server running in `admin-only` mode will only start services related to server administration but will not start other services or accept end user requests.
+ 
+This can be changed with a parameter to the `embed-server` command:
+ 
+    [disconnected /] embed-server --admin-only=false  
+ 
+Same as with a non-embedded server, a server can be moved in and out of `admin-only` using the CLI `reload` command:
+ 
+    [standalone@embedded /] reload --admin-only=false 
+
+### Admin-only Mode and the Server's Management Interfaces
+
+One of the goals of this work is to support use cases where the server being configured is completely invisible on the network. Normally, the management interfaces themselves open sockets (e.g. port 9990, 9999), even when the server is in `admin-only` mode. But, what if there is a port conflict on those ports, with the purpose of using the offline CLI being to change settings to avoid the conflict?
+ 
+To account for this, we have changed the behavior of the management interface resources. Now, if those resources detect they are running in an embedded server and the running mode is `admin-only`, the services for the remote management interfaces *will not* be started. The server will not be visible to remote management clients.
+
+### Controlling stdout
+
+The CLI uses stdout heavily. The embedded server may also want to write to stdout, particularly for console logging. These two uses of stdout have the potential to interfere with each other, particularly in an interactive session where the CLI may output a command prompt and then the server logs something, resulting in the prompt being in the middle of server log messages, possibly in the middle of a line. The interactive CLI will still work if this happens, but it can be disorienting.
+
+The `embed-server` command includes a parameter to allow the user to control what happens to output the embedded server writes to stdout:
+
+* `--std-out=echo` -- the output from the server is allowed to go to the CLI's stdout, allowing the user to see logging, but at the risk of mixing the CLI prompt with server logging
+* `--std-out=discard` -- the output the server attempts to send to stdout is discarded. Users should look at the `server.log` file to see server logging.
+ 
+The default behavior is `--std-out=discard`
+
+### Boot Timeout
+
+By default, the `embed-server` command will block indefinitely waiting for the embedded server to reach server-state `running`; i.e. to complete boot. The amount of time to wait can be controlled by using the `--timeout` parameter
+ 
+    [disconnected /] embed-server --timeout=30  
+
+The value is in seconds.
+
+A value of less than 1 means the `embed-server` command will not block waiting for boot to complete. Rather, it will return as soon as boot proceeds to the point where the internal `ModelController` service is available, allowing the CLI to obtain an internal client to use to execute management operations.
+
+A server in `admin-only` mode would typically boot very quickly, so configuring this timeout would be more useful when `--admin-only=false` is used.
+
+### Stopping the Embedded Server
+
+To stop an embedded server but continue with your CLI session, use the `stop-embedded-server` command:
+
+....
+[standalone@embedded /] stop-embedded-server
+[disconnected /]
+....
+
+If you also want to exit the CLI session, you can simply use the standard `quit` command:
+
+....
+[standalone@embedded /] quit
+$
+....
+
+The embedded server will be stopped cleanly.
+
+When an embedded server is running, the CLI `shutdown` command usually used to stop a remote server is not available. The `shutdown` command has some behavior somewhat inconsistent with embedded server operation, so we chose to use a separate command for the embedded case.
+
+### [[classloading]]Modular vs Non-Modular Classloading and JBOSS_HOME
+
+As shown in the <<example,Simple Example section>> above, the CLI can either be running in a modular classloading environment (`bin/jboss-cli.sh` example) or in a flat classpath (`java --jar bin/client/jboss-cli-client.jar` example.) Either way, the embedded server runs in a modular classloading environment. There are some behavior differences between the two cases though:
+
+* If the CLI is running in a modular classloading environment:
+** the embedded server will use the same boot module loader as the CLI. The implication here is the CLI and server are running from the same WildFly installation, with the same module path and therefore the same set of modules available.
+** the embedded server will need to know where the root of the WildFly installation is. This must be provided to the CLI via the `JBOSS_HOME` environment variable. The `jboss-cli.sh` script sets this. If some other mechanism is used for starting the CLI, the `JBOSS_HOME` environment variable must be set.
+* If the CLI is not running in a modular classloading environment:
+** the embedding logic will set up an appropriate modular classloading environment for the server. The module path for the modular classloader will have a single element:
+`<root_of_wildfly_installation>/modules`
+** the embedded server will need to know where the root of the WildFly installation is. This must be provided to the CLI via one of the following mechanisms:
+*** the `JBOSS_HOME` environment variable
+*** the `--jboss-home` parameter to the `embed-server` command. If this is set, it takes precedence over any `JBOSS_HOME` environment variable
+ 
+The `--jboss-home` parameter to the `embed-server` command is not supported in a modular CLI environment, as it would imply that the root of the embedded server could be something other than the root of the install from which the CLI is running.
+
+
+## Future Work
+
+In WildFly 10 we'd like to also be able to embed a Host Controller process in the CLI, allowing similar offline configuration of WildFly managed domain hosts.
+
+Enjoy!
+
