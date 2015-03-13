@@ -22,7 +22,7 @@ For more details, see the Weld 2.2 link:http://weld.cdi-spec.org/news/2014/04/15
 
 Web Sockets 1.1 (JSR-356)
 -------------------------
-Undertow now supports the new Web Sockets 1.1 APIs, which allows Java 8 lamdas to be used as message handlers. Additionally
+Undertow now supports the new Web Sockets 1.1 APIs, which allows Java 8 lambdas to be used as message handlers. Additionally
 the TCK for 1.1 is much more extensive, with nearly three times the tests. This ultimately leads to better portability and 
 quality of conformant implementations, such as WildFly.
 
