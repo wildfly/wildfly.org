@@ -1,0 +1,13 @@
+= WildFly 9 Beta is released!
+jgreene
+2015-03-26
+:revdate: 2015-03-26 23:10:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+I'm happy to announce the link:{base_url}/downloads/[beta release of WildFly 9]! WildFly 9 builds off of WildFly 8's Java EE7 support, and adds many new capabilities, including intelligent load balancing, HTTP/2 support, a new offline CLI mode, graceful single node shutdown, and a new Servlet-only distribution. For more details, check out the link:https://developer.jboss.org/wiki/WildFly900Beta1ReleaseNotes[full release notes].
+
+Provided no major issues are discovered, we plan to move to CR fairly quickly, sometime in April. 
+
+Enjoy!

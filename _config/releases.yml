@@ -1,3 +1,6 @@
+- version: '9.0.0.Beta1'
+  date: '2014-03-26'
+  notes: 'https://developer.jboss.org/wiki/WildFly900Beta1ReleaseNotes'
 - version: '8.2.0.Final'
   date: '2014-11-20'
   notes: '/news/2014/11/20/WildFly82-Final-Released'

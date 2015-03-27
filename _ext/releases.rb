@@ -14,11 +14,11 @@ class Release
         release[kind] = {:url => uri, :size => compute_size(uri)}
       end
       {:zip => '.zip',  :tgz => '.tar.gz', :srczip => '-src.zip', :srctgz => '-src.tar.gz'}.each do |kind, suffix|
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/core/wildfly-core-#{version}#{suffix}")
+        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/servlet/wildfly-web-#{version}#{suffix}")
         size = compute_size(uri)
         if (size != "unknown")
-          release[:core] = {} unless release.has_key?(:core)
-          release[:core][kind] = {:url => uri, :size => size}
+          release[:servlet] = {} unless release.has_key?(:servlet)
+          release[:servlet][kind] = {:url => uri, :size => size}
         end
       end
       if release.has_key?("quickversion")

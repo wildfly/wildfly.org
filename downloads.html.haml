@@ -49,17 +49,27 @@ description: List of releases available for download
             %a{:href=>release[:update][:url]} 
               %i.icon-download-alt
               ZIP
-      - if release.has_key?(:core)
+      - if release.has_key?(:servlet)
         %tr
           %td
           %td 
-          %td Minimalistic Core Distribution
+          %td Servlet-Only Distribution
           %td LGPL
-          %td.download-size #{release[:core][:zip][:size]} 
+          %td.download-size #{release[:servlet][:zip][:size]} 
           %td
-            %a{:href=>release[:core][:zip][:url]} 
+            %a{:href=>release[:servlet][:zip][:url]} 
               %i.icon-download-alt
               ZIP
+        %tr
+          %td
+          %td 
+          %td 
+          %td  
+          %td.download-size #{release[:servlet][:tgz][:size]} 
+          %td  
+            %a{:href=>release[:servlet][:tgz][:url]}
+              %i.icon-download-alt
+              TGZ
       %tr
         %td 
         %td 
