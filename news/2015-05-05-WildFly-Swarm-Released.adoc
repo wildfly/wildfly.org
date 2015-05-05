@@ -24,10 +24,9 @@ JAX-RS is a microservice?
 
 In the simplest case, you make small adjustments to your existing
 Maven `pom.xml` that generates a WAR file and you'll get another
-artifact with a name akin to `myproject-1.0-swarm.jar` which you 
-can simply
+artifact with a name akin to `myproject-1.0-swarm.jar`.
 
-Add the `wildfly-swarm-plugin` to your `pom.xml`:
+Simply add the `wildfly-swarm-plugin` to your `pom.xml`:
 
 [source,xml]
 <plugin>
