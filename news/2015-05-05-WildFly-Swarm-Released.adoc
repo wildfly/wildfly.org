@@ -19,7 +19,7 @@ new sidecar project supporting WildFly 9.x to enable
 deconstructing the WildFly AS and pasting just enough of it back together
 with your application to create a self-contained executable jar.
 
-JAX-RS is a microservices?
+JAX-RS is a microservice?
 --------------------------
 
 In the simplest case, you make small adjustments to your existing
