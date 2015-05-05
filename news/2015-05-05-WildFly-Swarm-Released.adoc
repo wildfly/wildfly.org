@@ -84,7 +84,7 @@ of WildFly available to you.  This includes subsystems such as:
 - Security
 
 Additionally, if you want to provide your own `main(...)` method to
-instantiate the `Container`, configured some of the subsystems, and
+instantiate the `Container`, configure some of the subsystems, and
 perform whatever deployments you need, that's possible also!
 
 [source,java]
