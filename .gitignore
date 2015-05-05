@@ -11,6 +11,7 @@ stylesheets/_config-variables.less
 .settings
 .project
 .buildpath
+.idea
 
 ## Ruby tools
 .rvmrc
