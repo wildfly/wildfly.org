@@ -102,7 +102,7 @@ block to your `pom.xml`
   <artifactId>wildfly-swarm-plugin</artifactId>
   <configuration>
     <mainClass>com.bigcorp.myservice.MyMain</mainClass>
- </configuration>
+  </configuration>
   <executions>
     <execution>
       <goals>
