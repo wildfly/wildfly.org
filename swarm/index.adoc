@@ -1,0 +1,137 @@
+= WildFly Swarm
+:awestruct-layout: project
+
+What is WildFly Swarm?
+----------------------
+
+*WildFly Swarm* is a new sidecar project to WildFly which helps
+you created self-contained Java microservices based upon the
+normal WildFly application-server.
+
+How do I use WildFly Swarm?
+---------------------------
+
+Currently, the easiest way to use WildFly Swarm is through
+your Maven build.  We do aim to add support for other build-systems
+in the near future.
+
+Decide whichever portions of WildFly you need, and add matching
+dependencies to your `pom.xml`:
+
+[source,xml]
+<dependency>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-undertow</artifactId>
+<dependency>
+
+Of course, some dependencies imply others, since Maven transitively
+resolves them.
+
+This, for instance, implies `wildfly-swarm-undertow`, along with providing
+your application with the JAX-RS APIs:
+
+[source,xml]
+----------------------------
+<dependency>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-jaxrs</artifactId>
+<dependency>
+----------------------------
+
+To make your project aware of WildFly Swarm capabilities, configure
+the plugin:
+
+[source,xml]
+----------------------------
+<plugin>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-plugin</artifactId>
+  <executions>
+    <execution>
+      <goals>
+        <goal>package</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+----------------------------
+
+
+How do I run my application?
+----------------------------
+
+You can run your application from your IDE by specifying either
+your own `main()` class, or simply executing `org.wildfly.swarm.Swarm`.
+This will boot the default container with all the parts specified
+within your `pom.xml` and deploy your simple `.war` file.
+
+If you want to run from the command-line using maven:
+
+`mvn wildfly-swarm:run`
+
+If you're not building a `.war` and want more control, you can write
+your own `main()` method, constructing a container and deploying
+whatever deployments you wish:
+
+[source,java]
+----------------------------
+import org.wildfly.swarm.container.Container;
+import org.wildfly.swarm.container.Deployment;
+
+public class MyMain {
+
+    public static void main(String[] args) throws Exception {
+
+        Container container = new Container();
+
+        Deployment deployment = ...
+
+        container.start();
+        container.deploy(deployment);
+    }
+}
+----------------------------
+
+If you provide your own `main()`, be certain to add a `<configuration>`
+block to your `pom.xml`
+
+[source,xml]
+----------------------------
+<plugin>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-plugin</artifactId>
+  <configuration>
+    <mainClass>com.bigcorp.myservice.MyMain</mainClass>
+ </configuration>
+  <executions>
+    <execution>
+      <goals>
+        <goal>package</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+----------------------------
+
+In your IDE, simply run your `main()` directly.  If you use the `wildfly-swarm:run`
+Maven plugin, it will use the value specified by your `mainClass` in the plugin configuration.
+
+What about an uberjar?
+----------------------
+
+The `wildfly-swarm-maven-plugin` has a `package` goal which will create
+an uberjar (fat-jar) of your project, which contains all dependencies and
+is executable.
+
+Then you execute `mvn package`, in your `target/` directory you'll find
+another artifact with the suffix of `-swarm.jar`.
+
+Simply `java -jar ./target/myapp-swarm-jar` and it'll run.
+
+
+Community
+----------
+
+You can keep up with the project through the link:https://www.hipchat.com/gW90m6pIs[WildFly HipChat]
+room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
+link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].
