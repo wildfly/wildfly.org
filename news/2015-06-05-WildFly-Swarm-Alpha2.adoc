@@ -8,14 +8,12 @@ kenfinnigan
 
 We've been churning through the improvements and fixes for Alpha2!
 
-Windows
--------
+== Windows
 
 All the Windows issues are now resolved.  You can enjoy the benefits of WildFly Swarm
 on your operating system of choice.
 
-Modify your Application from Alpha1
------------------------------------
+== Modify your Application from Alpha1
 
 We've made a few changes to how the plugin works which means that you will need
 to update any applications that are already utilizing Alpha1:
@@ -24,8 +22,7 @@ to update any applications that are already utilizing Alpha1:
 - Change the goal of the wildfly-swarm-plugin from `create` to `package`
 - Remove the `provided` scope from all WildFly Swarm dependencies in your `pom.xml`
 
-Weld and JAX-RS
----------------
+== Weld and JAX-RS
 
 There were some WildFly modules missing when you wanted to use Weld with JAX-RS,
 so we've created a new fraction to cater for this combination. Simply add the
@@ -38,8 +35,7 @@ following dependency:
   <version>${version.wildfly-swarm}</version>
 </dependency>
 
-JPA
----
+== JPA
 
 This release brings initial support for JPA projects. There are improvements planned
 for Alpha3 to make it even easier, but right now your project needs to have `jar`
@@ -78,8 +74,7 @@ public class Main {
 }
 ------------------------------
 
-More ways to run your WildFly Swarm Application!
-------------------------------------------------
+== More ways to run your WildFly Swarm Application!
 
 As with Alpha1 you can run your generated self-contained executable with:
 
@@ -95,8 +90,8 @@ mvn wildfly-swarm:run
 or run the Main class of your application, or `org.wildfly.swarm.Swarm` if
 you don't have one, directly within your favorite IDE!
 
-Examples?
----------
+
+== Examples?
 
 Yes indeed! We have a bunch of buildable and runnable examples at GitHub:
 
@@ -113,15 +108,13 @@ Yes indeed! We have a bunch of buildable and runnable examples at GitHub:
 - link:https://github.com/wildfly-swarm/examples/jpa-servlet[JPA and Servlet]
 - link:https://github.com/wildfly-swarm/examples/jpa-jaxrs-cdi[JPA, JAX-RS and CDI]
 
-What do I download?
--------------------
+== What do I download?
 
 There is no special download or installation instructions.  Simply start
 using `org.wildfly.swarm` artifacts in your `pom.xml`, throw in the plugin
 and continue doing your builds.  Everything is available through Maven Central.
 
-Stay in Touch
--------------
+== Stay in Touch
 
 You can keep up with the project through the link:https://www.hipchat.com/gW90m6pIs[WildFly HipChat]
 room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
