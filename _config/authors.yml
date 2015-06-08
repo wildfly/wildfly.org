@@ -23,3 +23,9 @@ bobmcwhirter:
   location: "Wytheville, VA"
   occupation: "Director, R&P"
   avatar: bobmcwhirter.jpg
+kenfinnigan:
+  name: "Ken Finnigan"
+  bio: "Ken is a Principal Software Engineer at Red Hat, working on various projects. He is the project co-lead of WildFly Swarm with Bob McWhirter, and the author of books on GateIn and CDI."
+  location: "Boston, MA"
+  occupation: "WildFly Swarm Project Co-Lead"
+  avatar: kenfinnigan.jpg
