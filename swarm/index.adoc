@@ -5,7 +5,7 @@ What is WildFly Swarm?
 ----------------------
 
 *WildFly Swarm* is a new sidecar project to WildFly which helps
-you created self-contained Java microservices based upon the
+you create self-contained Java microservices based upon the
 normal WildFly application-server.
 
 How do I use WildFly Swarm?
