@@ -20,6 +20,12 @@ class Release
           release[:servlet] = {} unless release.has_key?(:servlet)
           release[:servlet][kind] = {:url => uri, :size => size}
         end
+        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/servlet/wildfly-servlet-#{version}#{suffix}")
+        size = compute_size(uri)
+        if (size != "unknown")
+          release[:servlet] = {} unless release.has_key?(:servlet)
+          release[:servlet][kind] = {:url => uri, :size => size}
+        end
       end
       if release.has_key?("quickversion")
         version = release[:quickversion] 
