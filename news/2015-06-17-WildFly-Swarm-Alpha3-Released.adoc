@@ -1,0 +1,54 @@
+= WildFly Swarm 1.0.0.Alpha3 Released!
+bobmcwhirter
+2015-06-17
+:revdate: 2015-06-17 16:16:16 -0500
+:awestruct-tags: [announcement, release, swarm]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+Once again, we're delighted and enthralled to announce a release
+of WildFly Swarm.  This time, it's *1.0.0.Alpha3*!
+
+Since this follows quickly on the heels of the last release,
+there's not a whole lot of major changes.  Rather, we've fixed
+some things, enhanced others, written some tests, and generally
+knocked it together a little sturdier.
+
+== Changes
+
+* Based on WildFly 9.0.0.CR2.
+* You can now `stop()` the container.
+* Better classloading for `javax.*` stuff.
+* JPA improvements:
+** Default datasources are now available.
+** JPA is usable from within a normal WAR.
+* WebSocket API included in the Undertow fraction.
+* More configuration through the `wildfly-swarm-maven-plugin`.
+* Serve static content (with or without a WAR/JAX-RS deployment).
+* Magical `favicon.ico` support for JAX-RS deployments, mostly
+  to avoid ugly stack-traces in the console.
+
+== Documentation
+
+We've started writing some documentation, which you can contribute to:
+
+- link:http://wildfly.org/swarm/[http://wildfly.org/swarm/]
+
+== Examples?
+
+Yes indeed! We have a bunch of buildable and runnable examples at GitHub 
+in one handy repository:
+
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples[https://github.com/wildfly-swarm/wildfly-swarm-examples]
+
+== What do I download?
+
+There is no special download or installation instructions.  Simply start
+using `org.wildfly.swarm` artifacts in your `pom.xml`, throw in the plugin
+and continue doing your builds.  Everything is available through Maven Central.
+
+== Stay in Touch
+
+You can keep up with the project through the link:https://www.hipchat.com/gW90m6pIs[WildFly HipChat]
+room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
+link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].
