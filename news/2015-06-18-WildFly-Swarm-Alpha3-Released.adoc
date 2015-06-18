@@ -1,7 +1,7 @@
 = WildFly Swarm 1.0.0.Alpha3 Released!
 bobmcwhirter
-2015-06-17
-:revdate: 2015-06-17 16:16:16 -0500
+2015-06-18
+:revdate: 2015-06-18 11:11:11 -0500
 :awestruct-tags: [announcement, release, swarm]
 :awestruct-layout: blog
 :source-highlighter: coderay
@@ -45,7 +45,9 @@ in one handy repository:
 
 There is no special download or installation instructions.  Simply start
 using `org.wildfly.swarm` artifacts in your `pom.xml`, throw in the plugin
-and continue doing your builds.  Everything is available through Maven Central.
+and continue doing your builds.  Everything should be available through Maven Central
+shortly, and is in link:http://repository.jboss.org/nexus/[JBoss Nexus] now for the
+impatient.
 
 == Stay in Touch
 
