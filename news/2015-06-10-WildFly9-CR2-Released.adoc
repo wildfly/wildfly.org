@@ -1,0 +1,16 @@
+= WildFly 9 CR2 is released!
+jgreene
+2015-06-10
+:revdate: 2015-06-10 21:10:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+I'm happy to announce the link:{base_url}/downloads/[WildFly 9.0.0.CR2] release! This release addresses a number issues discovered during the CR1 cycle, and also includes a major UX 
+update to the console.
+
+For those new to WildFly 9, it builds off of WildFly 8's Java EE7 support, and adds many new capabilities, including intelligent load balancing, HTTP/2 support, a new offline CLI mode, graceful single node shutdown, and a new Servlet-only distribution. 
+
+Provided no major issues are discovered, we hope to release Final within the next couple of weeks.
+
+Enjoy!
