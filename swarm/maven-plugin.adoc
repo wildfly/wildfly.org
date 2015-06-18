@@ -1,0 +1,107 @@
+= Maven Plugin
+:awestruct-layout: project
+
+== The Plugin
+
+The `wildfly-swarm-maven-plugin` helps you run and package your
+WildFly Swarm-based application when you're using Maven.
+
+== To Package Your App
+
+The simplest configuration just adds the plugin and an execution
+to invoke the `package` goal during the `package` phase of your build.
+
+This will produce the `-swarm.jar` uberjar for your application
+when you invoke `mvn package`:
+
+[source,xml]
+----------------------------
+<plugin>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-plugin</artifactId>
+  <executions>
+    <execution>
+      <goals>
+        <goal>package</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+----------------------------
+
+== To Run Your App
+
+If you've configured the `wildfly-maven-plugin` into your `pom.xml`
+then the `wildfly-swarm:run` goal can be invoke from the command-line
+to run your application without having ot build and execute the uberjar.
+
+    mvn wildfly-swarm:run
+
+== Configure The Plugin
+
+While the defaults are useful, you may wish to adjust some of the
+configuration items.  These configuration details apply to both your
+packaged app and when you execute it with `wildfly-swarm:run`.
+
+Typically you would place these configuration items within a 
+`<configuration>` block _outside_ of any `<execution>` block.
+
+=== `mainClass`
+
+Defaults to `org.wildfly.swarm.Swarm`.
+
+This specifies your own class containing the `public static void main(String...args)`
+method to boot the container and deploy your deployments. 
+
+=== `httpPort`
+
+Defaults to `8080`.   
+
+This affects which port the webserver is bound to (if any webserver is present
+in your configuration).  This affects both execution of the uberjar and execution
+by way of `mvn wildfly-swarm:run`.
+
+=== `portOffset`
+
+Defaults to `0`.
+
+Amount to offset *all* ports within the WildFly container.  This is added to each
+port binding.
+
+=== `bindAddress`
+
+Defaults to `0.0.0.0`.
+
+Interface to which the various ports should be bound.  By default, all available
+interfaces are bound.
+
+=== `contextPath`
+
+Defaults to `/`.
+
+For *default deployments only*, this affects where the application is deployed.
+This is only truly usable if you don't provide a `main(...)` or you only perform
+a default deployment via the no-arg `container.deploy()`.
+
+Otherwise, you would typically specify the context for each deployment within
+your Java code that creates the deployments.
+
+[source,xml]
+----------------------------
+<plugin>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-plugin</artifactId>
+  <configuration>
+    <httpPort>9191</httpPort>
+    <bindAddress>127.0.0.1</bindAddress>
+  </configuration>
+  <executions>
+    <execution>
+      <goals>
+        <goal>package</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+----------------------------
+

@@ -128,6 +128,12 @@ another artifact with the suffix of `-swarm.jar`.
 
 Simply `java -jar ./target/myapp-swarm-jar` and it'll run.
 
+== More Documentation
+
+* link:./maven-plugin/[Maven Plugin]
+* link:./fractions/[Fraction Details]
+* link:http://forge.jboss.org/addon/org.jboss.forge.addon:wildfly-swarm[JBoss Forge WildFly Swarm Addon]
+
 
 Community
 ----------
