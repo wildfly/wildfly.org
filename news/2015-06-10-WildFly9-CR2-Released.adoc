@@ -1,6 +1,6 @@
 = WildFly 9 CR2 is released!
 jgreene
-2015-05-01
+2015-06-10
 :revdate: 2015-06-10 13:10:00 -0600
 :awestruct-tags: [announcement, release]
 :awestruct-layout: blog
