@@ -135,7 +135,7 @@ Supports Servlets and WebSockets.  Provides the appropriate spec APIs.
 ----------------------------
 <dependency>
   <groupId>org.wildfly.swarm</groupId>
-  <artifactId>wildfly-swarm-messaging</artifactId>
+  <artifactId>wildfly-swarm-undertow</artifactId>
   <version>${version.wildfly-swarm}</version>
 <dependency>
 ----------------------------
