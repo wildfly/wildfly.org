@@ -102,6 +102,17 @@ description: List of releases available for download
               %i.icon-download-alt
               ZIP
             %a{:href=>"http://github.com/wildfly/quickstart"} (git)
+      - if release.has_key?("quickstarts")
+        %tr
+          %td 
+          %td 
+          %td Quick Start Source Code
+          %td AL 
+          %td 
+          %td
+            %a{:href=>release["quickstarts"]}
+              %i.icon-download-alt
+              Source
       %tr
         %td 
         %td 

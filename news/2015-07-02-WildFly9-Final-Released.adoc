@@ -1,0 +1,107 @@
+= WildFly 9 Final is released!
+jgreene
+2015-07-02
+:revdate: 2015-07-02 14:50:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+The WildFly 9 Final release is now available link:{base_url}/downloads[for download]!
+
+Java EE7
+--------
+As with WildFly 8, WildFly 9 is a certified implemenation of both the Java EE7 full and web profile specifications.
+ 
+HTTP/2 Support
+--------------
+Undertow, the web server in WildFly, has added support for the new link:https://datatracker.ietf.org/doc/draft-ietf-httpbis-http2/[HTTP/2 standard]. HTTP/2 reduces latency by compressing headers and multiplexing many streams over the same TCP connection. It also supports the ability for a server to push resources to the client before it has requested them, leading to faster page loads. We also included support for SPDY, the predecessor to HTTP/2, in order to support clients that have not yet updated to the new specification. Although, currently, recent versions of Chrome and Firefox provide support for the standard out of the box.
+
+Note that using HTTP/2 link:http://undertow.io/blog/2015/03/26/HTTP2-In-Wildfly.html[requires using Java 8 with a specialized setup procedure]. This is because the HTTP/2 standard requires a TLS stack that supports ALPN, and a stock Java install does not include support for it. The extra setup steps will go away once Java 9 is released, which is expected to include ALPN support. Since HTTP/2 is also a goal for Java EE8, it is also expected to be made available in a future Java SE 8 update, likely after Java 9 is released.
+ 
+Front End Load Balancer Support
+-------------------------------
+WildFly can now be configured to function as an intelligent load balancer, proxying requests to backend WildFly nodes using HTTP, HTTP/2, SPDY, and mod_cluster protocols. This removes the need to use a native web server, such as Apache for this use case.  To see this feature in action, check out link:https://www.youtube.com/watch?v=xa_gtRDpwyQ[this interview with Stuart Douglas], the lead of the Undertow project. He demonstrates how domain management, clustering, and the new load balancing capability can be used to deploy and manage a full HA setup from a single point, the WildFly CLI.
+
+Server Suspend Mode / Graceful Shutdown
+---------------------------------------
+Previously, in order to achieve graceful draining of sessions/requests, a load balancer was required. The new server suspend mode in WildFly, once activated rejects new requests but allows old ones to complete. Once the suspension process has completed the server can either be stopped without aborting in-flight transactions, left in suspended state while maintenance is performed, or returned back to running state where new requests are once again allowed.
+ 
+Offline CLI Support
+-------------------
+You can now manage the server using CLI commands, without having a running server. This works similar to the admin-only mode, but does not require launching the server, and using a TCP port. Instead the CLI embeds the server and launches it directly in admin-only mode.
+
+For more information, check out link:https://developer.jboss.org/docs/DOC-53050[the detailed article on this feature], written by Brian Stansberry, the lead of WildFly's domain management capabilities.
+ 
+New Servlet-Only Distribution
+-----------------------------
+The new "WildFly Servlet" distribution, provides a stripped down, yet fully manageable Servlet-only distribution. This is useful for applications that prefer to roll-their-own frameworks, and wish to conserve disk space.
+ 
+Core / Full Split
+-----------------
+The base architecture of WildFly has been fully separated, and is now versioned separately from the full platform. We now have two different source repositories as a result.
+
+.Split Repositories
+[options="header"] 
+|============================
+|Ditribution|Location|JIRA Location
+|Core|link:https://github.com/wildfly/wildfly-core[wildfly/wildfly-core · GitHub]|link:https://issues.jboss.org/browse/WFCORE[WildFly Core - JBoss Issue Tracker]
+|Full & Servlet|link:https://github.com/wildfly/wildfly[wildfly/wildfly · GitHub]|link:https://issues.jboss.org/browse/WFLY[WildFly - JBoss Issue Tracker]
+|============================
+ 
+Logging
+-------
+The logging subsystem now supports direct downloads of log files. The log-file mangagement resource lists all log files defined in the jboss.server.log.dir that are defined in the subsystem.
+
+Curl Example:
+[source,shell]
+curl --digest -L -D - http://127.0.0.1:9990/management?useStreamAsResponse --header "Content-Type: application/json" -u user:password.1234 -d '{"operation":"read-attribute","address":[{"subsystem":"logging"},{"log-file":"server.log"}],"name":"stream"}'  
+ 
+HTTP Get Example:
+[source,shell]
+http://localhost:9990/management/subsystem/logging/log-file/server.log?operation=attribute&name=stream&useStreamAsResponse  
+ 
+ 
+Web Services
+------------
+The Web Services subsystem is now based on JBossWS 5.0.0.Final. This is a major leap forward, bringing new features and performance improvements in WildFly. Notable new featues include:
+
+- Upgrade to Apache CXF 3 series
+- link:https://docs.jboss.org/author/display/JBWS/Published+WSDL+customization[WSDL soap:address rewrite] improvements
+- link:https://docs.jboss.org/author/display/JBWS/Predefined+client+and+endpoint+configurations#Predefinedclientandendpointconfigurations-Automaticconfigurationfromdefaultdescriptors[Convention for automatic assignment of pre-defined endpoint and client configurations]
+- link:https://docs.jboss.org/author/display/JBWS/Apache+CXF+integration#ApacheCXFintegration-ApacheCXFinterceptors[Apache CXF interceptors' declaration through properties]
+- link:https://docs.jboss.org/author/display/JBWS/Apache+CXF+integration#ApacheCXFintegration-HTTPConduitconfiguration[Apache CXF HTTP Conduit configuration through system properties]
+- JBossWS 5 link:https://developer.jboss.org/docs/DOC-52881[migration notes are also available] for those migrating existing applications from WildFly 8 / JBossWS 4.
+
+Switched to the OpenJDK Orb
+---------------------------
+We have switched our IIOP implementation from JacORB to a downstream branch of the OpenJDK Orb. This change should lead to better interoperability with the JVM ORB and the Java EE RI.
+
+Clustering
+----------
+All clustering services, including all Infinispan caches, will now share a single JGroups channel by default.  The channels supplied by the JGroups subsystem are now fully managed resources and can multiplex messages to any number of "forks" via the FORK protocol.  This requires fewer resources than the multi-channel, shared transport configuration of previous releases.
+
+JCA & JDBC
+----------
+The IronJacamar container has been upgraded to version 1.2.4.Final, fixing bugs and adding some new features.
+
+Highlights include:
+
+- max-pool-size is now applied across all credentials used for the resource
+- Pool type is determined by the decrementer policy
+- Allow an existing connection to be obtained during MARKED_FOR_ROLLBACK
+- Support validate-on-match for resource adapter deployments
+- Support for the IronJacamar tracer module
+- datasource:enable / datasource:disable is now *deprecated*
+- ds.xml deployments are now *deprecated* in favor of the Java EE standard mechanism
+ 
+Management Console
+------------------
+The managment console includes a new improved UI layout, as well as many additional capabilities including:
+
+- New subsystem configuration: Remoting
+- Support for datasource templates. Quickly configure the most commonly used datasources (PostgreSQL,  MySQL, Oracle, SQLServer, DB2 and Sybase)
+- Support for flush-* operations for connection pools
+- Improved log viewer: The full log file is now displayed. You can search inside a log file or download and open it in an external editor.
+- Enhanced model browser with support for singleton resources
+- Get more details about applied patches
+- Ability to launch the management console independently from WildFly. See link:http://hal.gitbooks.io/dev/content/release-coordination/distribution.html#standalone-console[the HAL development docs] for more details.

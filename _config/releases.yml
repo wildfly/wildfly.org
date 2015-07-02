@@ -1,3 +1,8 @@
+- version: '9.0.0.Final'
+  date: '2015-07-02'
+  notes: '/news/2015/07/02/WildFly9-Final-Released'
+  certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/9.x'
 - version: '9.0.0.CR2'
   date: '2015-06-10'
   notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12327268'
