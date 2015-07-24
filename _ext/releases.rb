@@ -27,14 +27,14 @@ class Release
           release[:servlet][kind] = {:url => uri, :size => size}
         end
       end
+      if release.has_key?("updateforversion")
+        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/wildfly-#{version}-update.zip")
+        release[:update] = {:url => uri, :size => compute_size(uri)}
+      end
       if release.has_key?("quickversion")
         version = release[:quickversion] 
         uri = URI.parse("http://download.jboss.org/wildfly/#{version}/quickstart-#{version}.zip")
         release[:quickstart] = {:url => uri, :size => compute_size(uri)}
-      end
-      if release.has_key?("updateforversion")
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/wildfly-#{version}-update.zip")
-        release[:update] = {:url => uri, :size => compute_size(uri)}
       end
     end
   end
