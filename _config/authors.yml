@@ -29,3 +29,9 @@ kenfinnigan:
   location: "Boston, MA"
   occupation: "WildFly Swarm Project Co-Lead"
   avatar: kenfinnigan.jpg
+jperkins:
+  name: "James R. Perkins"
+  bio: "James works at Red Hat on WildFly. He currently works on logging for WildFly and the batch (JSR-352) integration."
+  location: "Portland, OR"
+  occupation: "Software Engineer"
+  avatar: jperkins.jpg
