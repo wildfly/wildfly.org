@@ -1,0 +1,10 @@
+= WildFly 9.0.1.Final and 8.2.1.Final are released.
+jgreene
+2015-07-23
+:revdate: 2015-07-23 14:50:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+WildFly 9.0.1.Final and 8.2.1.Final are now available link:{base_url}/downloads[for download].
+These releases include security updates and bug fixes. For more details see the release notes for 8.2.1 link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12327667[here] and 9.0.1 link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12327668[here].
