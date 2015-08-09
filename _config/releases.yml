@@ -1,3 +1,6 @@
+- version: '10.0.0.Beta1'
+  date: '2015-08-09'
+  notes: 'https://developer.jboss.org/wiki/WildFly1000Beta1ReleaseNotes'
 - version: '9.0.1.Final'
   date: '2015-07-23'
   notes: '/news/2015/07/23/WildFly-901-and-821'
