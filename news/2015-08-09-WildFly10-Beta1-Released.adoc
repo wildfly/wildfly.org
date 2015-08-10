@@ -13,7 +13,7 @@ Notable highlights include:
 - Continued Java EE7 Support
 - Java 8+ Required
 - ActiveMQ Artemis
-- JavaScript Support with Hot Reloading
+- link:{base_url}/news/2015/08/10/Javascript-Support-In-Wildfly/[JavaScript Support with Hot Reloading]
 - Offline CLI Support For Domain Mode
 - HA Singleton Deployments
 - Migration Operations for Legacy Subsystems
