@@ -7,7 +7,7 @@ sdouglas
 :imagesdir: ../images
 :source-highlighter: coderay
 
-The Wildfly 10.0.0.Beta1 release includes support for an experimental new feature, that allows you to user Javscript
+The Wildfly 10.0.0.Beta1 release includes support for an experimental new feature, that allows you to use Javascript
 on the server side, using the Nashhorn Javascript engine that is built into the JDK. Combined with another new feature
 that allows you to serve web resources from outside the deployment it is possible to write server side code with no
 redeploy of copy step involved.
