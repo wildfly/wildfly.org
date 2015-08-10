@@ -35,3 +35,9 @@ jperkins:
   location: "Portland, OR"
   occupation: "Software Engineer"
   avatar: jperkins.jpg
+sdouglas:
+  name: "Stuart Douglas"
+  location: "Australia"
+  occupation: "Senior Software Engineer"
+  bio: "Stuart works at Red Hat on Wildfly. He is the lead of the Undertow web server, and also works on Java EE."
+  avatar: sdouglas.png
