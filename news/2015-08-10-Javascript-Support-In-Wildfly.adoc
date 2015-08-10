@@ -1,7 +1,7 @@
 = Using Server Side Javascript with Wildfly
 sdouglas
 2015-08-10
-:revdate: 2015-08-10 16:16:16 -0800
+:revdate: 2015-08-10 11:00:00 +1000
 :awestruct-tags: [wildfly, javascript]
 :awestruct-layout: blog
 :imagesdir: ../images
