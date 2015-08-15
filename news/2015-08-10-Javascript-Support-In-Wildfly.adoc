@@ -1,4 +1,4 @@
-= Using Server Side Javascript with Wildfly
+= Using Server-Side JavaScript with WildFly
 sdouglas
 2015-08-10
 :revdate: 2015-08-10 11:00:00 +1000
@@ -7,13 +7,13 @@ sdouglas
 :imagesdir: ../images
 :source-highlighter: coderay
 
-The Wildfly 10.0.0.Beta1 release includes support for an experimental new feature, that allows you to use Javascript
-on the server side, using the Nashhorn Javascript engine that is built into the JDK. Combined with another new feature
-that allows you to serve web resources from outside the deployment it is possible to write server side code with no
+The WildFly 10.0.0.Beta1 release includes support for an experimental new feature, that allows you to use JavaScript
+on the server side, using the Nashorn JavaScript engine that is built into the JDK. Combined with another new feature
+that allows you to serve web resources from outside the deployment it is possible to write server-side code with no
 redeploy of copy step involved.
 
-This feature also allows Java EE resources such as CDI beans to be injected into your Javascript handlers, allowing you
-to write your back end using Java, and the front end in Javascript.
+This feature also allows Java EE resources such as CDI beans to be injected into your JavaScript handlers, allowing you
+to write your back end using Java, and the front end in JavaScript.
 
 This is a new feature, and as such may change before release based on user feedback.
 
@@ -23,11 +23,11 @@ https://github.com/stuartwdouglas/undertow.js-examples
 Getting Started
 ---------------
 
-The first step is to tell Wildfly where to find your Javascript. To do this we create a file `WEB-INF/undertow-scripts.conf`.
-In this file you list your server side Javascript files, one per line. For the sake of this post I will assume we have a
+The first step is to tell WildFly where to find your JavaScript. To do this we create a file `WEB-INF/undertow-scripts.conf`.
+In this file you list your server side JavaScript files, one per line. For the sake of this post I will assume we have a
 single file, example.js.
 
-Note that even though the server javascipt files are located in the web context, the javascipt integration will not allow
+Note that even though the server JavaScript files are located in the web context, the JavaScript integration will not allow
 them to be served. If a user requests a server side JS file a 404 will be returned instead.
 
 Setting up hot deployment
@@ -36,8 +36,8 @@ Setting up hot deployment
 To enable hot deployment create a file called `WEB-INF/undertow-external-mounts.conf`, and in this file add a single
 line that points to your local workspaces web content root (for example,
 `/Users/stuart/workspace/jsexample/src/main/webapp`). With this file in place resources will be served from your local
-workspace, instead of the deployment. This means that any changes you make to web resources or server side javascript
-will be immediatly visible as soon as you refresh your browser.
+workspace, instead of the deployment. This means that any changes you make to web resources or server-side JavaScript
+will be immediately visible as soon as you refresh your browser.
 
 This hot deployment mechanism is independent of the server side JS integration, and should work for any web resources.
 
@@ -57,14 +57,14 @@ $undertow
 Add this to your example.js file and point your browser at `/hello`. You should see your Hello World message appear.
 
 To test out hot deployment try modifying the message and refreshing your browser, the changes should be reflected
-immediatly.
+immediately.
 
-Lets walk through the things that are happening here. `$undertow` is the entry point for all Javascript functionality,
+Lets walk through the things that are happening here. `$undertow` is the entry point for all JavaScript functionality,
 it contains methods to register HTTP handlers, as well as some other utility methods. The `onGet` method registers a
-handler for `GET` requests. This method takes three paramters, the handler path, an (optional) options map, and a handler injection
+handler for `GET` requests. This method takes three parameters, the handler path, an (optional) options map, and a handler injection
 list (or just a plain handler function, if no injection is required).
 
-This function returns a string, which will be send to the user as a HTTP response.
+This function returns a string, which will be sent to the user as an HTTP response.
 
 Now lets try a simple JSON REST endpoint:
 
@@ -94,13 +94,13 @@ $undertow
         }])
 ----
 
-Javascript injection has the format 'type:name'. It uses angular.js style injection, where you pass in a list of injection specifiers, with
+JavaScript injection has the format 'type:name'. It uses angular.js style injection, where you pass in a list of injection specifiers, with
 the function to inject as the last item in the list. These injections will be resolved at runtime, and passed into the handler function
 in the order they are specified. The following injection types are supported out of the box:
 
 jndi::
 
-This injection is looked up from JNDI, any item that can be looked up in JNDI can be injected into your Javascript function.
+This injection is looked up from JNDI, any item that can be looked up in JNDI can be injected into your JavaScript function.
 
 cdi::
 
@@ -115,15 +115,15 @@ This allows the request entity to be injected directly into your function (for r
 - $entity:json injects parsed JSON.
 - $entity:form injects parsed form or multipart encoded data.
 
-Undertow.js will also automatically wrap some objects (such as datasources) in a Javascript friendly API. The raw JDBC
+Undertow.js will also automatically wrap some objects (such as datasources) in a JavaScript friendly API. The raw JDBC
 API is not particularly script friendly, so in the example above the DataSource that is injected is actually a wrapper
-that supports the `select` `selectOne` and `query` methods. With any wrapped object you can access the underlying Java
+that supports the `select`, `selectOne` and `query` methods. With any wrapped object you can access the underlying Java
 object using the objects `$underlying` property.
 
 Going back to our example above, there are two issues with it:
 
-- We have not set up any tables or added any data to the database
-- Writing the full JNDI name every time is cumbersome and error prone
+- We have not set up any tables or added any data to the database.
+- Writing the full JNDI name every time is cumbersome and error prone.
 
 Lets address those issues:
 
@@ -182,7 +182,7 @@ Handling POST requests
 ----------------------
 
 POST (and other requests that contain a body) can be handled using entity injection. The body can be injected as a string,
-or one of the built in parsers can be used to parse JSON or form encoded data(including multipart data).
+or one of the built in parsers can be used to parse JSON or form encoded data (including multipart data).
 
 An example of all three approaches is shown below:
 

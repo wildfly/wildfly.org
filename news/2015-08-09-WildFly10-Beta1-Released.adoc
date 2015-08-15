@@ -21,4 +21,4 @@ Notable highlights include:
 - Hibernate 5
 - Infinispan 8
 
-These are covered in more detail on the link:https://developer.jboss.org/wiki/WildFly1000Beta1ReleaseNotes[offical 10.0.0.Beta1 Release Notes wiki page]
+These are covered in more detail on the link:https://developer.jboss.org/wiki/WildFly1000Beta1ReleaseNotes[official 10.0.0.Beta1 Release Notes wiki page]
