@@ -20,7 +20,7 @@ jars.
 == What's Changed?
 
 * Rebased to WildFly 10.0.0.Beta1
-* Lots of new fractions:
+* Lots of new subsystems/fractions:
 ** Clustering
 ** EJB
 ** JAX-RS Multipart Support
