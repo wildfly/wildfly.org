@@ -14,7 +14,8 @@ This release has taken a few months, but it is chock-a-block full
 of awesome changes.  But first, you might be wondering *What is 
 WildFly Swarm?*  Well, it's WildFly, but dis-assembled and repackaged
 so that you can consume just the bits'n'bobs you need in order to
-build slimmer application services.  
+build slimmer application services and run them from self-contained
+jars.
 
 == What's Changed?
 
