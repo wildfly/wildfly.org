@@ -1,0 +1,71 @@
+= WildFly Swarm 1.0.0.Alpha4 Released!
+bobmcwhirter
+2015-08-19
+:revdate: 2015-08-19 11:11:11 -0500
+:awestruct-tags: [announcement, release, swarm]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+Once again, we're delighted and enthralled to announce a release
+of WildFly Swarm.  This time, it's *1.0.0.Alpha4*!  That's like
+one more than last time!
+
+This release has taken a few months, but it is chock-a-block full
+of awesome changes.  But first, you might be wondering *What is 
+WildFly Swarm?*  Well, it's WildFly, but dis-assembled and repackaged
+so that you can consume just the bits'n'bobs you need in order to
+build slimmer application services.  
+
+== What's Changed?
+
+* Rebased to WildFly 10.0.0.Beta1
+* Lots of new fractions:
+** Clustering
+** EJB
+** JAX-RS Multipart Support
+** JMX
+** JSF
+** Keycloak
+** Logstash
+** Mail
+** Netflix OSS
+* Better source repository layout
+* More tests
+
+== NetflixOSS?
+
+In the world of microservices, the NetflixOSS suite of Ribbon and Hystrix
+make is pretty easy to hide a service behind an interface, find instances
+of services, and load-balance between them. In the default case, Ribbon
+uses the Netflix Eureka server to register and discover individual services.
+With WildFly Swram, the standard clustering subsystem can be used to locate
+these services and maintain the lists of end-points.  No additional servers
+are required to be running.
+
+Additionally, Ribbon has been extended to propagate Keycloak authentication
+tokens across the service calls if you're also using Keycloak.
+
+== Documentation
+
+We've started writing some documentation, which you can contribute to:
+
+- link:http://wildfly.org/swarm/[http://wildfly.org/swarm/]
+
+== Examples?
+
+Yes indeed! We have a bunch of buildable and runnable examples at GitHub 
+in one handy repository:
+
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples[https://github.com/wildfly-swarm/wildfly-swarm-examples]
+
+== What do I download?
+
+There is no special download or installation instructions.  Simply start
+using `org.wildfly.swarm` artifacts in your `pom.xml`, throw in the plugin
+and continue doing your builds.  
+
+== Stay in Touch
+
+You can keep up with the project through the link:https://www.hipchat.com/gW90m6pIs[WildFly HipChat]
+room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
+link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].
