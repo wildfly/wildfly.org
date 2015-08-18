@@ -35,7 +35,7 @@ build slimmer application services.
 == NetflixOSS?
 
 In the world of microservices, the NetflixOSS suite of Ribbon and Hystrix
-make is pretty easy to hide a service behind an interface, find instances
+make it pretty easy to hide a service behind an interface, find instances
 of services, and load-balance between them. In the default case, Ribbon
 uses the Netflix Eureka server to register and discover individual services.
 With WildFly Swram, the standard clustering subsystem can be used to locate
