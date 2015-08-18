@@ -38,7 +38,7 @@ In the world of microservices, the NetflixOSS suite of Ribbon and Hystrix
 make it pretty easy to hide a service behind an interface, find instances
 of services, and load-balance between them. In the default case, Ribbon
 uses the Netflix Eureka server to register and discover individual services.
-With WildFly Swram, the standard clustering subsystem can be used to locate
+With WildFly Swarm, the standard clustering subsystem can be used to locate
 these services and maintain the lists of end-points.  No additional servers
 are required to be running.
 
@@ -53,7 +53,7 @@ We've started writing some documentation, which you can contribute to:
 
 == Examples?
 
-Yes indeed! We have a bunch of buildable and runnable examples at GitHub 
+Yes indeedy! We have a bunch of buildable and runnable examples at GitHub 
 in one handy repository:
 
 - link:https://github.com/wildfly-swarm/wildfly-swarm-examples[https://github.com/wildfly-swarm/wildfly-swarm-examples]
