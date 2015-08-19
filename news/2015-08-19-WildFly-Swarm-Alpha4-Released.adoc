@@ -64,7 +64,7 @@ your application (described by typical Arquillian `@Deployment` methods)
 and Arquillian launches it during the 'deploy' phase.
 
 You can still test from outside your app or inside the running process, as
-we provide support all the relevant test-enhancers provided by Arquillian.
+we provide support for all the relevant test-enhancers provided by Arquillian.
 
 The Arquillian support is definitely still a work-in-progress, so let us 
 know if you have any suggestions for improving it.
