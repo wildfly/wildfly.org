@@ -32,6 +32,7 @@ jars.
 ** Netflix OSS
 * Better source repository layout
 * More tests
+* Arquillian support
 
 == NetflixOSS?
 
@@ -45,6 +46,28 @@ are required to be running.
 
 Additionally, Ribbon has been extended to propagate Keycloak authentication
 tokens across the service calls if you're also using Keycloak.
+
+== Testing with Arquillian
+
+This release also brings integration with Arquillian, the fantastic tool that
+can not only manage your runtimes, but can inject test code directly into the
+running system.
+
+Normally Arquillian launches your server, deploys your app, runs your tests
+(either from outside the running app or within it), undeploys the app, and then
+stops the server.
+
+Since WildFly Swarm alters the concepts of "server" and "app", we've provided
+tight integration with Arquillian so that the same `BuildTool` used by the
+Maven and Gradle plugins is invoked to actually build your uberjar with 
+your application (described by typical Arquillian `@Deployment` methods)
+and Arquillian launches it during the 'deploy' phase.
+
+You can still test from outside your app or inside the running process, as
+we provide support all the relevant test-enhancers provided by Arquillian.
+
+The Arquillian support is definitely still a work-in-progress, so let us 
+know if you have any suggestions for improving it.
 
 == Documentation
 
