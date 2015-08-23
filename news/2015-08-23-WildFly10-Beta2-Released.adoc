@@ -1,0 +1,11 @@
+= WildFly 10 Beta2 is released!
+jgreene
+2015-08-23
+:revdate: 2015-08-23 10:35:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+The WildFly 10.0.0.Beta2 release is now available link:{base_url}/downloads[for download]!
+
+For details, see the link:https://developer.jboss.org/wiki/WildFly1000Beta2ReleaseNotes[official 10.0.0.Beta2 Release Notes wiki page].
