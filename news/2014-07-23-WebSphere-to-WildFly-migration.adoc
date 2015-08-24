@@ -1,0 +1,132 @@
+= Migrating a JavaEE6 application from IBM Websphere 8.5.5 to Wildfly 8.1 
+
+by *Paris Apostolopoulous* aka javapapo ( http://javapapo.blogspot.com[blog] | https://twitter.com/javapapo[twitter] | http://gr.linkedin.com/in/javaneze/[linkedIn] | mailto:javapapo@mac.com[email] | http://www.jhug.gr[JUG] )
+
+
+About this guide
+----------------
+This guide is about the migration process of a https://jcp.org/en/jsr/detail?id=316[JavaEE 6] enteprise application, developed over the past year based on the
+http://www-03.ibm.com/software/products/en/appserv-was[IBM Wesbsphere 8.5.5 Full profile] (a JavaEE6 container) to http://wildfly.org/[Wildfly 8.1.0.Final] (a http://www.oracle.com/technetwork/java/javaee/tech/index.html[JavaEE7] container).
+
+*Disclaimer*: Some of the comments and points raised in the sections below, are based on my personal opinion and experience only while working with JavaEE servers in different application domains. Feel free to comment or correct me and provide additional feedback in any case. 
+
+Basic development principles
+-----------------------------
+As any software development team  has it's own principles and guidelines in our case we had set some very basic goals and we tried hard to 'achieve' as many as we could during the development cycles. Some of our initial goals (listed below) will
+explaion some of 'technical' decision(s) taken. Some others were actually the basis, that enabled us to migrate from platfrom A to platform B. It is vital to the reader to have them in mind prior to going through
+the rest of this document, since they explain why we choosed to use this particual tool or this particular technology or vice versa.
+
+* We wanted our development to be based on http://maven.apache.org/[Maven 3] in terms of packaging, configuration and deployment. 
+* We wanted to be able to select the http://en.wikipedia.org/wiki/Integrated_development_environment[IDE] of our choice, no matter if it is https://netbeans.org/[Netbeans] / https://www.eclipse.org[Eclipse] / http://www.jetbrains.com/idea/[IntelliJ]. At the same time we wanted to avoid any IDE specific lock-in where teams or developers are loosing control over their configuration and deployment process and start rely on 'specific' plugins and tools build on top of general use IDE(s).
+* We wanted to be able to select the operating system we would be developing on, so we would have developers coding on http://en.wikipedia.org/wiki/Linux[Linux], on http://en.wikipedia.org/wiki/Microsoft_Windows[Windows] or http://en.wikipedia.org/wiki/MacOSX[MacOSX] (like me). That is a nice way to eventually catch bugs or application / platform inefficiencies.
+* We wanted to control and configure our deployment environment (aka the application server) as much as possible the same way as we did with our application, meaning scripting the application server or manipulating the environment through maven, especially for pre or post deploy tasks.
+* We wanted to be as much close to the JavaEE specification API(s) in terms of coding as possible, so that we have a chance on migrating the majority of the code to another container.
+* We wanted to layer our application (it was complex anyway) into modules with as much as possible distinctive boundaries in terms of API(s) /responsibilities and library dependencies. Monolithic or crippled modular applications tend to raise more often more problems when being deployed to different containers because each 'big' module has many technical dependencies that needs to be addressed.
+
+
+It is not easy to fullfil all the above in one go, and some times it might take some more time, following these principles than simple hacking your way around. It turns though that these  guidelines are the basis for starting to think about moving to different deployment enviroments. The hard stuff are the small details behind things like the way you have structured your application, the use of a specific API that is specific to a technology or container, the use of a specific tool on an operating system that binds you with this platform. 
+
+Last but least, a reality that I had to face many times in my carrer, *WE DID NOT* have any paid support subscription either from IBM or RedHat. So my only tools were 
+
+* any previous experience
+* http://stackoverflow.com/[stackoverflow]
+* support forums and free documentation available e.g https://www.ibm.com/developerworks/community/forums/html/[IBM support forum] or https://community.jboss.org/welcome[Jboss Forums]
+* the community 
+
+Application technology stack and frameworks available
+----------------------------------------------------
+We started with the requirement on developing and deploying towards the latest version of the IBM Wesphere Application Server. At that time (and while I write these lines) the latest version is 8.5.5 which is a JavaEE6 Full Profile Application server. Since we wanted to use all of the JavaEE specification features the use of the new https://developer.ibm.com/wasdev/2013/03/29/introducing_the_liberty_profile/['Liberty'] profile was out of the scope, so we targeted the Full Profile. An older version of the application was already based on a previous version of Websphere (7). 
+
+The main technologies needed  by our application would be the following :
+
+http://www.oracle.com/technetwork/java/javaee/ejb-141389.html[EJB 3.1] | http://docs.oracle.com/javaee/6/tutorial/doc/bnceh.html[JMS] | http://docs.oracle.com/javaee/6/tutorial/doc/giwhl.html[CDI] | http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html[JPA 2.0] | http://docs.oracle.com/javaee/6/tutorial/doc/giepu.html[JAX-RS] 
+| http://docs.oracle.com/javaee/6/tutorial/doc/bnaph.html[JSF 2]
+
+The default library/implementations provided by Websphere for some of the technologies above is the following :
+
+http://openwebbeans.apache.org/[OpenWebBeans v 1.1.6 CDI Container] | http://openjpa.apache.org/documentation.html[OpenJPA 2.2.1] | http://wink.apache.org/[Apache Wink - JAX-RS] | http://myfaces.apache.org/[Apache MyFaces 2.0.5]
+
+Comparing tools & features while developing 
+--------------------------------------------
+Please treat this section as constructive critism, I only want to address the problems I faced as a developer who tried to work with a given toolset. You may skip this section as well.
+
+[cols="<1,<10,<2",options="header"]
+|=============================================================================================================================
+|Case|Websphere 8.5 | Wildfly 8.1
+|OS Availability|Linux, Windows, Unix, but NO MacOSX support, IBM JDK dependent| OS independent, Sun JDK (MacOSX includded)
+|Server Configuration Tools| Similar tools with Weblogic Jython / Jacl based, not the the most user friendly way now days. Environment scriptable through Ant, or jython scripts only in supported platformsnce | The new Wildfly (Jboss) CLI is far easier to script even for newcomers a) easy to understand, b) self documented in many ways, c) easily integrated and scripted either with customer scripts, invoking cli or using the Maven Wildfly plugin. 
+|Maven support | No official Maven Plugin for Websphere Full Profile| Wildfly 8.1 has an official Maven Plugin
+|Pre / Post deployment settings | Websphere Relies heavily either on specific deployment descriptors that have to be generated by a specific tool and bundled along with the deployable, or rely on wsadmin scripts invoked just before deployment in order to alter the environment | Wildfly has a limited set of specific files that need to be included (eventually only one). Many pre deployments of the server can be changed during the serve config through the Maven/CLI integration
+|Shared libraries and class loaders | Websphere is using hierarchical classloading and you need to change the 'strategy' depending on your needs (parent_last/first) and application library structure. There are many libraries being enforced by the master class loader and the only way to get around them is to introduce shared libraries either on server or application wide level. The definition of shared libraries especially on application level can be scripted only through wsadmin scripts prior to deploying or including a specific xml file that contains a specific unique classloader identifier. This xml file is again specific and generated by specific tools like RAD | All the classloading problems that your application  could introduce due to the server's bundle lib could be easily configured and solved through the update of a single file, (deployment-structure.xml). Wildfly is far more flexible on which libs are being enforced by the parent class loaders and their version
+|=============================================================================================================================
+
+Relying on JavaEE Specification technologies and the differences in bundled implementations
+-------------------------------------------------------------------------------------------
+Working towards API(s) defined in the context of JavaEE and application servers that follow the specification was the main force behind switching from on server to another. Eventually without out it would be impossible.
+This one of the good things of the JavaEE spec, one API several implementing servers, and moving from one environment to another, is a reality. Of course the overall process is not always easy, and there are some principles that need to be followed. Below  I list some general guidelines that you need to consider prior to performing the switch. 
+
+TIP: Think ahead
+You need to build and code your application having in mind that potentially you can switch environments (e.g code towards javaEe Apis in the code and with libraries implementing the API). The more you rely on specifics of your application server environment 
+either on code level or configuration the harder it would be to  migrate. 
+
+TIP:Separation of configuration and logic
+Separate configuration specifics on application and server level, from your functionality. You need to 'abstract' and hide all these details and technicalities from your main application especially the modules 
+that functionality is highly coupled with configuration details and behavior. For example,  if a certain feature of your functionality relies on some configuration that is either coupled with an existing service of the application server (e.g JMS) or a bundled library that is offered by the server, try to contaminate these changes and configuration tasks in separate clean config steps and do not mix configuration with code (as much as possible). 
+There are cases that this 'specific' configuration would require to use specifics of an application server. In case of migration, you will need to re-aply this configuration but using potentially a different method or tool. Your code in any case does not need to be aware on how a certain feature was configured or installed in the running environment. For example, many application use the SLF4J Interface API to add logging functionality to their application, the actual configuration
+of the logging subsystem may vary from one app server to another. Sometimes X logging library might be offered out of the box, some other times you need to bundled it on your own. The most important thing is that your code
+should never change no matter if behind the SLF4J Facade one application server is attaching LogBack and the other Lo4j.
+
+TIP: Study the specifics of your application server(s)
+Learn about your application server environment.You need to be fully aware of the capabilities and implementation details from the server you currently develop to 
+the server that you aim to migrate. These are tricky details between differences in implementations of standard API's, out of the box functionality, or  even minor differences on versions of libraries that exist in both application servers. The more amount of information you have regarding your environment, gathered from official documentation, training or user forums the better you will be able to address different solutions to the same problem as you switch fron environment A to environment B.
+
+Configuring technologies and modules
+------------------------------------
+
+Hibernate JPA Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hibernate is one of the most used and reliable JPA implementations for many many years now. We decided that it was worth trying using it, even in servers that are actually do not bundle or support it (officially). We felt that we were more comfortable working with Hibernate rather than the bit outdated version of OpenJPA as bundled by Websphere. At the same time we were more confident with the implementation details of Hibernate and it's features. 
+
+TIP: Integration different implementations of specific technologies, like a JPA provider, should be part of a JSR, making sure that all the application servers offer at least a common interface to their internals and different libraries implementing the spec could be interchanged.
+
+Websphere 8.5
+^^^^^^^^^^^^^
+As already elaborated Hiberante is not officially supported by IBM. In order to make Hibernate our default JPA provided, I decided bundling the library jars along with our application in the same EAR and DO not rely on the specific shared library/wasadmin configuration specifics of Webspheres. That way I was minimizing the configuration effort from our side (especially the shared library per application on websphere requires more pre deployment configuration). The per server shared library option was dropped since we could not make sure that we would deploy our app in an app server instance with no other applications co-located.
+
+. We used Hibernate 4.2.7, eventually this is the latest we can use, based on the decision to bundle hibernate as a lib in our application. Due to a change from Hibernate 4.2.8 and on, on the Javassist dependency lib, in case you try and bundle a newer version into Webpshere you will conflict with  
+. The Datasource definition was based on a persistence.xml file
+. The jars were bundled within the ear \lib folder and all the required dependencies (unfortunately that increased the total size of the ear)
+. Our JPA entities were annotated using standard JPA 2 annotations and not hibernate specifics.
+. The tricky point was the glueing code to Websphere's internals for looking up the JTA manager and wiring it accordingly to Hibernate
+
+
+
+Wildfly
+^^^^^^^
+
+
+Logging Configuration
+~~~~~~~~~~~~~~~~~~~~~
+
+
+Websphere
+^^^^^^^^^
+
+
+
+Wildfly
+^^^^^^^
+
+
+Caching Configuration
+~~~~~~~~~~~~~~~~~~~~~
+
+Websphere
+^^^^^^^^^
+
+
+
+Wildfly
+^^^^^^^
+
