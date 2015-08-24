@@ -76,7 +76,7 @@ This takes you to our GitHub repository. From here you can search, browse, and f
 Get Help
 ~~~~~~~~
 The link:{base_url}/gethelp/[Get Help] section covers the various options available to get in touch with the WildFly community.
-These include our web based forums, mailing lists, and IRC.
+These include our web based forums, mailing lists, and chat.
 
 Join Us
 ~~~~~~~
