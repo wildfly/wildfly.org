@@ -1,0 +1,13 @@
+= WildFly 10 CR1 is released!
+jgreene
+2015-09-17
+:revdate: 2015-09-17 00:31:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+The first candidate for release of WildFly 10 (10.0.0.CR1) is now available link:{base_url}/downloads[for download]!
+
+For details, see the link:https://developer.jboss.org/wiki/WildFly1000CR1ReleaseNotes[official 10.0.0.CR1 Release Notes wiki page].
+
+Give it a try and let us know what you think.
