@@ -1,7 +1,7 @@
-= WildFly 10 CR2 is released!
+= WildFly 10 CR4 is released!
 jgreene
 2015-10-23
-:revdate: 2015-09-24 22:31:00 -0600
+:revdate: 2015-10-23 15:31:00 -0600
 :awestruct-tags: [announcement, release]
 :awestruct-layout: blog
 :source-highlighter: coderay
