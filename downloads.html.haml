@@ -42,11 +42,25 @@ description: List of releases available for download
         %tr
           %td
           %td 
-          %td Update Existing #{release[:updateforversion]} Install
+          - if release.has_key?("updateforversionfull")
+            %td Update Existing #{release[:updateforversion]} (Patched) Install
+          - if not release.has_key?("updateforversionfull")
+            %td Update Existing #{release[:updateforversion]} Install
           %td LGPL
           %td.download-size #{release[:update][:size]} 
           %td
             %a{:href=>release[:update][:url]} 
+              %i.icon-download-alt
+              ZIP
+      - if release.has_key?("updateforversionfull")
+        %tr
+          %td
+          %td 
+          %td Update Existing #{release[:updateforversion]} (Full Zip) Install
+          %td LGPL
+          %td.download-size #{release[:updatefull][:size]}
+          %td
+            %a{:href=>release[:updatefull][:url]} 
               %i.icon-download-alt
               ZIP
       - if release.has_key?(:servlet)
