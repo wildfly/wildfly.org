@@ -1,0 +1,112 @@
+= Undertow.js 1.0.1.Final has been released
+sdouglas
+2015-11-02
+:revdate: 2015-11-02 11:00:00 +1000
+:awestruct-tags: [wildfly, undertow, javascript]
+:awestruct-layout: blog
+:imagesdir: ../images
+:source-highlighter: coderay
+
+Undertow.js 1.0.1.Final has been released. This allows you to integrate JavaScript and Java EE in your applications. There
+have been some notable changes since I first wrote about this at http://wildfly.org/news/2015/08/10/Javascript-Support-In-Wildfly/.
+
+Websocket Support
+-----------------
+
+It is now possible to use WebSockets with Undertow.js. You can declare a websocket handler with the +websocket+ method,
+which takes a path and a connection handler. The connection handler gets passed the connection object, which can be
+used to send messages, and can respond to messages by setting the +onText+, +onBinary+ and +onClose+ functions.
+
+Binary messages are send and received using the JavaScript +ArrayBuffer+ object.
+
+[source,javascript]
+----
+$undertow
+    .websocket("/websocket1", ['cdi:myBean', function (myBean, connection) {
+        connection.send(myBean.getConnectedMessage());
+        connection.onText = function(message) {
+            return "echo-" + message;
+        }
+        connection.onBinary = function(message) {
+            return message;
+        }
+        connection.onClose = function (message) {
+            print(message.reason + " " + message.code);
+        }
+    }]);
+----
+
+Declarative Security
+--------------------
+
+Declarative security allows you to specify the roles that are allowed to use a certain handler. This uses standard Servlet
+authentication, so if a user is not authenticated then the container will attempt to authenticate them using whatever
+authentication mechanism is defined in +web.xml+. The special role '**' means any authenticated user.
+
+To use this we simply need to add a +roles_allowed+ list to a handlers options map:
+
+[source,javascript]
+----
+$undertow
+    .onGet("/rest/endpoint",
+        {roles_allowed: ['admin', 'user'], headers: {"content-type": "application/json"}},
+        [function ($exchange) {
+            return {message: 'Hello World'};
+        }])
+----
+
+Transaction Support
+-------------------
+
+It is now possible to mark a handler as transactional, which means that a new transaction will be started when the method
+is invoked. If the method completes without an exception the transaction will be commited, otherwise it will be rolled
+back. To use this add +transactional: true+ to the methods options map:
+
+
+[source,javascript]
+----
+$undertow
+    .onGet("/rest/endpoint",
+        {transactional: true, headers: {"content-type": "application/json"}},
+        [function ($exchange) {
+            return {message: 'Hello World'};
+        }])
+----
+
+Option map defaults
+-------------------
+
+It is now possible to set defaults that will be applied to every that is declared after the option is set (i.e. setting
+a default will not affect any previously declared handlers, only new handlers). This can be used to set transaction or
+security defaults for all methods, or set a default set of response headers. It is possible to override the defaults
+by explicitly specifying the option in the options map.
+
+The handler below will behave the same as the transactional one above, however the defaults will be applied to any other
+handlers declared after the +setDefault+ call:
+
+[source,javascript]
+----
+$undertow
+    .setDefault('transactional', true)
+    .setDefault('headers' {"content-type": "application/json"})
+    .onGet("/rest/endpoint",
+        [function ($exchange) {
+            return {message: 'Hello World'};
+        }])
+----
+
+Freemarker support
+------------------
+
+As well as Mustache.js we now support Freemarker as a template engine. To use Freemarker as the template engine set
+`template_type: 'freemarker'` in the methods options map. If all your templates are Freemarker templates you can use
+`setDefault('template_type', 'freemarker')`.
+
+
+Going forward
+-------------
+
+We would welcome any feedback or suggestions. If you want to contribute, or have any comments head to
+undertow-dev@lists.jboss.org.
+
+
