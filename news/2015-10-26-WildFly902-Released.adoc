@@ -1,0 +1,13 @@
+= WildFly 9.0.2 is released!
+jgreene
+2015-10-26
+:revdate: 2015-10-26 23:00:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+WildFly 9.0.2 is now available link:{base_url}/downloads[for download].
+
+This release includes a security update, bug fixes, and a few component updates.
+
+For more information, see the link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12327709[JIRA release notes].
