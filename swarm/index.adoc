@@ -138,6 +138,6 @@ Simply `java -jar ./target/myapp-swarm-jar` and it'll run.
 Community
 ----------
 
-You can keep up with the project through the link:https://www.hipchat.com/gW90m6pIs[WildFly HipChat]
+You can keep up with the project through the link:https://www.hipchat.com/gSW9XYz69[WildFly HipChat]
 room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
 link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].
