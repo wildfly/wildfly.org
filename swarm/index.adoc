@@ -1,6 +1,16 @@
 = WildFly Swarm
 :awestruct-layout: project
 
+[pass]
+++++
+<script>
+window.location.assign('http://wildfly-swarm.io');
+</script>
+<meta http-equiv="refresh" content="0;URL='http://wildfly-swarm.io/'" />
+++++
+
+== This page is deprecated, please visit http://wildfly-swarm.io
+
 What is WildFly Swarm?
 ----------------------
 
@@ -141,3 +151,4 @@ Community
 You can keep up with the project through the link:https://www.hipchat.com/gSW9XYz69[WildFly HipChat]
 room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
 link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].
+

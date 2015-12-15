@@ -1,6 +1,16 @@
 = Maven Plugin
 :awestruct-layout: project
 
+[pass]
+++++
+<script>
+window.location.assign('http://wildfly-swarm.io');
+</script>
+<meta http-equiv="refresh" content="0;URL='http://wildfly-swarm.io/'" />
+++++
+
+== This page is deprecated, please visit http://wildfly-swarm.io
+
 == Fractions
 
 Fractions within WildFly Swarm are roughly equivalent to
