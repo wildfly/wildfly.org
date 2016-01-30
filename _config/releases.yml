@@ -1,3 +1,8 @@
+- version: '10.0.0.Final'
+  date: '2016-01-29'
+  notes: '/news/2016/01/29/WildFly10-Released/'
+  certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/10.x'
 - version: '10.0.0.CR5'
   date: '2015-12-23'
   notes: 'https://developer.jboss.org/wiki/WildFly1000CR5ReleaseNotes'
