@@ -6,7 +6,7 @@ jgreene
 :awestruct-layout: blog
 :source-highlighter: coderay
 
-WildFly 10 Final is officially complete and available link:{base_url}/downloads[for download]!. WildFly 10 adds a number of capabilities and improvements to the powerful, yet lightweight, open-source application server.
+WildFly 10 Final is officially complete and available link:{base_url}/downloads[for download]! WildFly 10 adds a number of capabilities and improvements to the powerful, yet lightweight, open-source application server.
  
 Java EE 7
 ---------
@@ -42,7 +42,7 @@ For more details see the following blog post: link:http://wildfly.org/news/2015/
 
 HA Singleton Deployments
 ------------------------
-WildFly 10 adds the ability to deploy a given application as a "singleton deployment". This is a new implementation of a feature that existed in AS 6.0 and earlier. When deployed to a group of clustered servers, a singleton deployment will only deploy on a single node at any given time. If the node on which the deployment is active stops or fails, the deployment will automatically start on another node. The policies for controlling HA singleton behavior are managed by a new "singleton" subsystem.  A deployment may either specify a specific singleton policy or use the default subsystem policy. A deployment identifies itself as singleton deployment via a +/META-INF/singleton-deployment.xml+ deployment descriptor (the schema for which link:https://github.com/wildfly/wildfly/blob/master/clustering/singleton/extension/src/main/resources/schema/singleton-deployment_1_0.xsd[can be found on GitHub]), which is most easily applied to an existing deployment as a deployment overlay. Alternatively, the requisite singleton configuration can be embedded within an existing +jboss-all.xml+.
+WildFly 10 adds the ability to deploy a given application as a "singleton deployment". This is a new implementation of a feature that existed in AS 6.0 and earlier. When deployed to a group of clustered servers, a singleton deployment will only deploy on a single node at any given time. If the node on which the deployment is active stops or fails, the deployment will automatically start on another node. The policies for controlling HA singleton behavior are managed by a new "singleton" subsystem.  A deployment may either specify a specific singleton policy or use the default subsystem policy. A deployment identifies itself as singleton deployment via a +/META-INF/singleton-deployment.xml+ deployment descriptor (the schema for which link:https://github.com/wildfly/wildfly/blob/10.0.0.Final/clustering/singleton/extension/src/main/resources/schema/singleton-deployment_1_0.xsd[can be found on GitHub]), which is most easily applied to an existing deployment as a deployment overlay. Alternatively, the requisite singleton configuration can be embedded within an existing +jboss-all.xml+.
 
 
 HA Singleton MDBs and MDB Delivery Groups
@@ -66,7 +66,7 @@ To help users migrating from old subsystems such as jbossweb (AS 7.1), jacorb (W
  
 Capabilities and Requirements
 -----------------------------
-Subsystem developers now have the ability to negotiate interaction with other subsystems in a more pluggable way. This allows for subsystems to have dependencies that can be satisfied by more than one subsystem, which is particularly useful in providing multiple implementations of the same underlying capability. Additionally it leads to improved error reporting. Instead of a failure being reported at the service layer, which is how the WildFly runtime is mapped, it is instead reported at a higher level that is easier to connect to the server's configuration  As an example, a missing socket binding is now reported as a missing socket binding, as opposed to a list of services with an unsatisfied dependency. Expect to see overall error reporting in WildFly improve as subsystems begin to adopt this ability
+Subsystem developers now have the ability to negotiate interaction with other subsystems in a more pluggable way. This allows for subsystems to have dependencies that can be satisfied by more than one subsystem, which is particularly useful in providing multiple implementations of the same underlying capability. Additionally it leads to improved error reporting. Instead of a failure being reported at the service layer, which is how the WildFly runtime is mapped, it is instead reported at a higher level that is easier to connect to the server's configuration. As an example, a missing socket binding is now reported as a missing socket binding, as opposed to a list of services with an unsatisfied dependency. Expect to see overall error reporting in WildFly improve as subsystems begin to adopt this ability.
 
 For more information, link:https://docs.jboss.org/author/display/WFLY10/Working+with+WildFly+Capabilities[see the development guide]. 
 
