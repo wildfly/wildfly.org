@@ -1,3 +1,6 @@
+- version: '10.1.0.CR1'
+  date: '2016-07-28'
+  notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?version=12329499&styleName=Html&projectId=12313721'
 - version: '10.0.0.Final'
   date: '2016-01-29'
   notes: '/news/2016/01/29/WildFly10-Released/'
