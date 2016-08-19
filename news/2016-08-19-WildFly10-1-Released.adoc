@@ -1,0 +1,31 @@
+= WildFly 10.1 is now available!
+jgreene
+2016-08-19
+:revdate: 2016-08-19 17:00:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+WildFly 10.1 is officially complete and available link:{base_url}/downloads[for download]! 
+
+Major new features include:
+
+* Out of the box HTTP/2 support with *no JVM flags required* !
+* TLS cert auto-generation
+* Load-balancing profile is now in our default domain.xml config
+* Support for clustering node discovery on Azure (jgroups AZURE_PING)
+
+Additionally there was a massive 324 issues resolved in this release!
+
+ 
+Out of the Box HTTP/2 and TLS
+-----------------------------
+Unique to WildFly, is that HTTP/2 now works without any special JVM flags (even on Java 8!), configuration changes, or keystore changes. You simply point your browser at port 8443 and WildFly will automatically generate a self-signed TLS cert for you, and negotiate HTTP/2 if your browser supports it (most do). When you are ready to deploy in production, you simply update the keystore with whatever cert you would like to present to your users.
+
+Load-balancing Profile
+----------------------
+In order to make it even easier to get started with load-balancing, we added a profile to the default domain.xml file, called "load-balancer". You can now build a fully clustered topology using just our default profiles in domain mode, creating a server with the "load-balancer" profile, and a set of backend servers using the "full-ha" profile.
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12331186[here.]
