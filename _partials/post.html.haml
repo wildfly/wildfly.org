@@ -1,5 +1,10 @@
 - post  = page["post"]
 .post
+  %meta{:name=>"twitter.card", :content=>"summary"}
+  %meta{:name=>"twitter.site", :content=>"@WildFlyAS"}
+  %meta{:name=>"twitter.title", :content=>post.title}
+  %meta{:name=>"twitter.description", :content=>post.summary}
+ 
   %h2.title
     %a{:href=>"#{site.base_url}#{post.url}"}= post.title
   .byline

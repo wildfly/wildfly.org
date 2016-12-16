@@ -5,6 +5,7 @@ jgreene
 :awestruct-tags: [jigsaw, java, java9]
 :awestruct-layout: blog
 :source-highlighter: coderay
+:awestruct-description: "A set of technical issues, currently under discussion, prevents Jigsaw from fully supporting Java EE, OSGi, or any other system with similar dynamic capabilities. We believe it’s critical that these gaps are addressed, as the existence of multiple incompatible standards would likely fragment the Java ecosystem."
 
 Red Hat, with its years of experience supporting large scale software systems, has always been a strong proponent of modular Java. Over time, we have delivered many products and solutions that provide and support popular modular environments like Java EE, and OSGi. Since 2011, we introduced a flexible modular implementation called JBoss Modules, which is capable of supporting the core modularity needs of both Java EE and OSGi, but is usable in a standalone manner, without the need to bring in the full platform those specifications require. JBoss EAP and WildFly are built on this technology, which is a major contributor to the flexible runtime they provide.
 

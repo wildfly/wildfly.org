@@ -1,8 +1,19 @@
 %title #{page.real_page.title ? page.real_page.title : page.real_page.simple_name.capitalize } · #{site.title}
+- author = page.real_page.author
+- description = page.real_page.description
 %meta(charset="utf-8")
 %meta(name="viewport" content="width=device-width, initial-scale=1.0")
-%meta(name="description" content="#{page.description}")
-%meta(name="author" content="#{page.author}")
+- if description
+  %meta{:name=>"description", :content=>description}
+  %meta{:name=>"twitter:card", :content=>"summary"}
+  %meta{:name=>"twitter:description", :content=>description}
+  %meta{:name=>"twitter:title", :content=>page.real_page.title}
+  %meta{:name=>"twitter:image", :content=>"#{site.project_images_url}/apple-touch-icon-144x144-precomposed.png"}
+- if author
+  %meta{:name=>"author", :content=>lookup_name(author)}
+  - if description
+    %meta{:name=>"twitter:author", :content=>author}
+
 
 - pageStyle = page.style ;
 
