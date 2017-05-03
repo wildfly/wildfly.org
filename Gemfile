@@ -17,3 +17,4 @@ gem 'libv8', '~> 3.16.14.15'
 gem 'coderay'
 gem 'coffee-script'
 gem 'win32-open3-19', :platforms => :mingw
+gem 'rb-inotify', '~> 0.9'
