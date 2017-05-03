@@ -41,3 +41,9 @@ sdouglas:
   occupation: "Senior Software Engineer"
   bio: "Stuart works at Red Hat on WildFly. He is the lead of the Undertow web server, and also works on Java EE."
   avatar: sdouglas.png
+tcerar:
+  name: "Tomaz Cerar"
+  location: "Slovenia"
+  occupation: "Software Engineer"
+  bio: "Tomaz works at Red Hat on WildFly. He currently works on domain management, undertow subsystem and makes sure CI always works."
+  avatar: tcerar.png
