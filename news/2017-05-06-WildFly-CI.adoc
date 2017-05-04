@@ -1,0 +1,34 @@
+= Announcing public CI
+tcerar
+2017-05-06
+:revdate: 2017-05-06 13:00:00 +0100
+:awestruct-tags: [announcement, continuous-integration]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:awestruct-description: "A set of technical issues, currently under discussion, prevents Jigsaw from fully supporting Java EE, OSGi, or any other system with similar dynamic capabilities. We believe it’s critical that these gaps are addressed, as the existence of multiple incompatible standards would likely fragment the Java ecosystem."
+:awestruct-otherimage: missingpieces.jpg
+
+We are proud to announce our https://ci.wildfly.org/[public CI] system, which is running integration tests for WildFly, WildFly Core, Undertow and many other related projects, making sure that we don’t merge anything that is broken and that our master is always stable.
+
+
+CI also helps us with testing pull requests by
+
+* Making sure code works on the most common target platforms, currently Linux & Windows
+* Integration testing components as part of the full WildFly test suite, which is most often used when testing Wildfly Core where we test core itself as well as changes to core integrated on top of WildFly. This makes sure the latest core always works with the latest WildFly master.
+* Running additional test suites such as mixed-domain tests that are a bit harder to setup and run locally.
+* Running complex integration tests that span across multiple projects such as Elytron integration work that is landing in WildFly 11
+
+It is also utilized to test WildFly against various platforms & JDK combinations such as IBM JDK on Linux and Windows or Solaris SPARC as well as testing early builds of JDK9 regularly.
+CI also produces nightly builds of WildFly and WildFly core, more on which you can read at https://developer.jboss.org/thread/224262[our forums].
+We are using TeamCity as our CI with a few of our own customizations.
+
+* Bit modified unofficial https://github.com/ctomc/TeamCity.GitHub[TeamCity.GitHub plugin] that allows us to also post failed tests & other failure details to the pull request
+* https://github.com/ctomc/pull-player/[pull-player] which we use as our trigger for pull requests. It provides us with whitelisting of PR authors for which CI tests are auto triggered to prevent denial of service attacks, as well as providing an option to retrigger CI testing by adding the comment “retest this please” to the pull request.
+
+The system is powered by 3 servers running an ESXi hypervisor with everything else virtualized.
+
+Front entry point is running Nginx with configured HTTP that is using an SSL certificate provided by https://letsencrypt.org/[Let’s Encrypt]
+
+Infrastructure is managed with https://github.com/ansible/ansible[Ansible] with a set of our https://github.com/ctomc/ansible-playbooks/tree/master/teamcity-agent[playbooks].
+
+We would like to *thank JetBrains* that kindly donated open source license for TeamCity.
