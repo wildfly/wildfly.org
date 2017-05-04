@@ -25,6 +25,8 @@
             %a(href="#{site.base_url}/joinus/") Join Us
           %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/swarm') }" }<
             %a(href="#{site.base_url}/swarm/") WildFly Swarm
+          %li{:class=>"#{'active' if page.real_page.output_path.start_with?('/ci') }" }<
+            %a{:href=>"https://ci.wildfly.org/"} CI
           %li.dropdown
             %a.dropdown-toggle(href="#" data-toggle="dropdown")<
               = precede 'Follow Us ' do
