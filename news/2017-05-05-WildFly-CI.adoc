@@ -7,29 +7,28 @@ tcerar
 :source-highlighter: coderay
 :awestruct-description: "WildFly public CI"
 
-We are proud to announce our https://ci.wildfly.org/[public CI] system, which is running integration tests for WildFly, WildFly Core, Undertow, and many other related projects.
-This system ensures that we do not merge anything that is broken and that our master is always stable.
+We are proud to announce our https://ci.wildfly.org/[public CI] system, which is running integration tests for WildFly, WildFly Core, Undertow and many other related projects.
+Making sure that we don’t merge anything that is broken and that our master is always stable.
 
 
-CI also helps us with testing pull requests by:
+CI also helps us with testing pull requests by
 
-* Making sure the code works on most common target platforms, currently Linux and Windows.
-* Integration testing components as part of the full WildFly test suite. This is most often used when testing WildFly Core, where we test core itself as well as changes to core integrated on top of WildFly. This ensures that the latest core always works with the latest WildFly master.
-* Running additional test suites such as mixed-domain tests, which are a bit harder to set up and run locally.
-* Running complex integration tests that span across multiple projects, such as Elytron integration work that is landing in WildFly 11.
+* Making sure code works on the most common target platforms, currently Linux & Windows
+* Integration testing components as part of the full WildFly test suite, which is most often used when testing Wildfly Core where we test core itself as well as changes to core integrated on top of WildFly. This makes sure the latest core always works with the latest WildFly master.
+* Running additional test suites such as mixed-domain tests that are a bit harder to setup and run locally.
+* Running complex integration tests that span across multiple projects such as Elytron integration work that is landing in WildFly 11
 
-It is also utilized to test WildFly against various platforms and JDK combinations, such as testing the IBM JDK on Linux and Windows, testing Solaris SPARC, as well as regularly testing early builds of JDK 9.
-CI also produces nightly builds of WildFly and WildFly core, which you can follow on https://developer.jboss.org/thread/224262[our forums].
+It is also utilized to test WildFly against various platforms & JDK combinations such as IBM JDK on Linux and Windows or Solaris SPARC as well as testing early builds of JDK9 regularly.
+CI also produces nightly builds of WildFly and WildFly core, more on which you can read at https://developer.jboss.org/thread/224262[our forums].
+We are using TeamCity as our CI with a few of our own customizations.
 
-We are using TeamCity as our CI with a few of our own customizations, including the following:
+* Bit modified unofficial https://github.com/ctomc/TeamCity.GitHub[TeamCity.GitHub plugin] that allows us to also post failed tests & other failure details to the pull request
+* https://github.com/ctomc/pull-player/[pull-player] which we use as our trigger for pull requests. It provides us with whitelisting of PR authors for which CI tests are auto triggered to prevent denial of service attacks, as well as providing an option to retrigger CI testing by adding the comment “retest this please” to the pull request.
 
-* A bit-modified, unofficial https://github.com/ctomc/TeamCity.GitHub[TeamCity.GitHub plugin] that allows us to post failed tests and other details of the failure to the pull request.
-* A https://github.com/ctomc/pull-player/[pull-player], which we use as our trigger for pull requests. It provides us with a whitelisting of pull request authors for which CI tests are auto-triggered to prevent denial-of-service attacks. It also provides an option to retrigger CI testing by adding the comment “retest this please” to the pull request.
+The system is powered by 3 servers running an ESXi hypervisor with everything else virtualized.
 
-The system is powered by three servers running an ESXi hypervisor with everything else virtualized.
+Front entry point is running Nginx with configured HTTP that is using an SSL certificate provided by https://letsencrypt.org/[Let’s Encrypt]
 
-The front entry point is running Nginx with configured HTTP that is using an SSL certificate provided by https://letsencrypt.org/[Let’s Encrypt].
+Infrastructure is managed with https://github.com/ansible/ansible[Ansible] with a set of our https://github.com/ctomc/ansible-playbooks/tree/master/teamcity-agent[playbooks].
 
-The infrastructure is managed by https://github.com/ansible/ansible[Ansible] with a set of our https://github.com/ctomc/ansible-playbooks/tree/master/teamcity-agent[playbooks].
-
-We would like to *thank JetBrains*, which kindly donated the open source license for TeamCity.
+We would like to *thank JetBrains* that kindly donated open source license for TeamCity.
