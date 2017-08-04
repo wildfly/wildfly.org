@@ -68,7 +68,9 @@ Distributed transactions are now handled by the graceful shutdown mechanism. Exi
 Web Console Improvements
 -------------------------
 A number of Web Console improvements are included in WildFly 11, including the ability to see recent configuration changes, to manage active JMS transactions, manage active batch jobs, manage Undertow filters, and test data-sources during creation.  
+
 Management and Configuration Improvements
+-----------------------------------------
 WildFly 11 now supports remote managed exploded deployments, which allows remote management clients the ability to update content within the deployment, such as html and jsp files without requiring a full redeployment. Additionally there is a new management operation that can be used to read individual files in any deployment. In addition to these new capabilities, errors in the XML now lead to pretty printed easier to understand error messages,
 
 Also notable is that CLI tab completion can now tab complete attribute reference values that have capabilities present, such as references to socket bindings.  Finally, there is a new SPI for server extensions, that can be used to register a process state listener, and react to server life-cycle changes (such as the server stopping).
