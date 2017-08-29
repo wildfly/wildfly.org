@@ -38,7 +38,7 @@ Since WildFly 8, all protocols (with the exception of IIOP) can utilize HTTP Upg
 WildFly OpenSSL & HTTP/2
 ------------------------
 
-WildFly 11 now provides a JSSE provider that can offload TLS handling from the JVM’s internal implementation to an OpenSSL library on your system, typically improving TLS performance. If the version discovered and/or specified is 1.0.2 or greater, than WildFly will utilize OpenSSL’s ALPN support to provide HTTP/2 support. HTTP/2 support will be disabled on versions less than 1.0.2.
+WildFly 11 now provides a JSSE provider that can offload TLS handling from the JVM’s internal implementation to an OpenSSL library on your system, typically improving TLS performance. If the version discovered and/or specified is 1.0.2 or greater, then WildFly will utilize OpenSSL’s ALPN support to provide HTTP/2 support. HTTP/2 support will be disabled on versions less than 1.0.2.
 
 Note that HTTP/2 is also supported without OpenSSL, out of the box, on Java 8 (on VMs derived from OpenJDK) and Java 9 (using the new standard ALPN API). 
 
@@ -59,7 +59,9 @@ If your openssl library is not installed in a standard location, you will need t
 New Load-Balancer Configs
 -------------------------
 In order to simplify the setup of EAP as an HTTP load-balancer, there is an additional +standalone-load-balancer.xml+ configuration in the distribution, which is an instance slimmed to just running the load balancing services. Additionally the stock +domain.xml+ also includes this as a profile configuration that can be referenced by server groups. 
+
 Graceful Shutdown/Startup Improvements
+--------------------------------------
 Distributed transactions are now handled by the graceful shutdown mechanism. Existing transactions will allow local operations to continue, but any new in-flowed transaction will be rejected. Additionally there is a new EJB parameter that allows for additional remote calls to occur against an established/active remote transaction. Finally you can now start the server directly in suspended mode, for staging changes. This is now part of the default start sequence where the server enters suspend first, and then resumes after all services have launched, so new requests aren’t accepted during the brief window of the server starting.
 
 
