@@ -47,3 +47,9 @@ tcerar:
   occupation: "Software Engineer"
   bio: "Tomaz works at Red Hat on WildFly. He currently works on domain management, undertow subsystem and makes sure CI always works."
   avatar: tcerar.png
+ehsavoie:
+  name: "Emmanuel Hugonnet"
+  location: "France"
+  occupation: "Software Engineer"
+  bio: "Emmanuel works at Red Hat on WildFly Core. He currently works on domain management and also maintains the NetBeans WildFly plugin."
+  avatar: ehsavoie.png

@@ -239,7 +239,7 @@ This opens a new page with the contents of the deployment. For each file, there'
 image::exploded_deployments/content.png[]
 
 === Using HAL.NEXT ===
-The next major of the web console (HAL.next) is currently under active development and available as technical preview  https://github.com/hal/hal.next.
+The next major version of the web console (HAL.next) is currently under active development and is available as technical preview https://github.com/hal/hal.next.
 Follow the instruction in https://github.com/hal/hal.next#running  to get started.
 Besides general improvements like better navigation and a revisited look and feel, HAL.next comes with many improvements for dealing with deployments: 
 
