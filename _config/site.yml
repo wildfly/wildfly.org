@@ -33,6 +33,10 @@ fileMerger:
     - /javascripts/_crisp-scripts.js
     - /javascripts/_jbossorg-tabzilla.js
 
+asciidoctor:
+      :attributes:
+        icons: font
+
 # Cache hosted fonts, images and javascript
 wget:
   enabled: true

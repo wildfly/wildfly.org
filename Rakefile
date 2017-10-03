@@ -41,7 +41,7 @@
 # Now you're Awestruct with rake!
 
 $use_bundle_exec = true
-$install_gems = ['awestruct -v "~> 0.5.0"', 'rb-inotify -v "~> 0.9.0"']
+$install_gems = ['awestruct -v "~> 0.5.6"', 'rb-inotify -v "~> 0.9.3"']
 $awestruct_cmd = nil
 task :default => :preview
 

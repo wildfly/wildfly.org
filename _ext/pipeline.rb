@@ -13,6 +13,7 @@ Awestruct::Extensions::Pipeline.new do
   helper Awestruct::Extensions::Partial
   helper Awestruct::Extensions::Breadcrumb
   helper Awestruct::Extensions::AuthorsHelper
+
   extension Awestruct::Extensions::WgetWrapper.new
   transformer Awestruct::Extensions::JsMinifier.new
   transformer Awestruct::Extensions::CssMinifier.new
@@ -20,7 +21,7 @@ Awestruct::Extensions::Pipeline.new do
   extension Awestruct::Extensions::FileMerger.new
   extension Awestruct::Extensions::LessConfig.new
   extension Awestruct::Extensions::Symlinker.new
-  extension Awestruct::Extensions::Posts.new('/news', :posts)
+  extension Awestruct::Extensions::Posts.new('/news')
   extension Awestruct::Extensions::Paginator.new(:posts, '/news/index', :per_page => 3)
   extension Awestruct::Extensions::Tagger.new(:posts, '/news/index', '/news/tags', :per_page=>3 )
   extension Awestruct::Extensions::TagCloud.new(:posts, '/news/tags/index.html')
