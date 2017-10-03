@@ -1,0 +1,156 @@
+= Management Model Referential Integrity and Suggestions =
+bstansberry
+2017-09-29
+:revdate: 2017-09-29 19:00:00 +0100
+:awestruct-tags: [wildfly, cli, hal]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:encoding: utf-8
+:lang: en
+
+A significant improvement in WildFly 11 is much better support for referential integrity when one resource in your configuration refers to another resource. 
+Going beyond just checking that your references are correct, the server provides reference information that our CLI and the HAL web console are able to use 
+to suggest valid values to you as you set up your configuration.
+ 
+== Configuration references ==
+
+When you are configuring a WildFly server, a common thing you need to do is configure attributes whose value refers to the name of some other resource. 
+A common example of this is a resource that includes a `socket-binding` attribute:
+
+....
+[standalone@localhost:9999 /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
+.... 
+
+When you do this, it's because the services managed by the resource you are configuring need some capabilities provided by another resource. What you're
+doing is configuring which one to use. But what kind of resource that `socket-binding` attribute refers to may not be obvious, and what the valid values are
+is also not obvious. And before the rollout of improved reference support, if you got it wrong the failure you'd see could be difficult to understand. 
+
+Here, using WildFly 9 with a config where the previously unused 'ajp' socket binding config had been removed, we try and add an AJP listener
+to the web container:
+
+....
+[standalone@localhost:9990 /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
+{
+    "outcome" => "failed",
+    "failure-description" => {"WFLYCTL0180: Services with missing/unavailable dependencies" => ["jboss.undertow.listener.ajp is missing [jboss.binding.ajp]"]},
+    "rolled-back" => true
+}
+.... 
+ 
+That error message says nothing about where to go to correct the mistake.
+
+Worse, if you made that mistake when working with a server started in `admin-only` mode, that bad reference would not be detected when you entered it. 
+
+....
+[standalone@localhost:9990 /] reload --admin-only=true
+[standalone@localhost:9990 /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
+{"outcome" => "success"}
+....
+
+The configuration would be updated and the problem would only be detected when the server was reloaded or restarted not in `admin-only` mode.
+The server would boot but would not function correctly.
+
+== Referential Integrity Checks and Reference Suggestions ==
+
+Starting in WildFly 10 and greatly expanded in WildFly 11, we've added reference description metadata to our resources and attributes, and we use that 
+to proactively ensure that management operations that violate referential integrity fail immediately.
+
+The same incorrect operation shown above will now fail immediately, with a message that gives a hint as to where you can configure the missing resource:
+
+....
+[standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
+{
+    "outcome" => "failed",
+    "failure-description" => "WFLYCTL0369: Required capabilities are not available:
+    org.wildfly.network.socket-binding.ajp; Possible registration points for this capability: 
+		/socket-binding-group=*/socket-binding=*",
+    "rolled-back" => true
+}
+....
+
+The same failure will happen if the server is running in `admin-only` mode (with some exceptions; see "Referential Integrity Checks in an `admin-only` Process"
+below.)
+
+If you think the resource you need already exists, but you're not sure of its name, you can use CLI tab completion to get a list of suggestions:
+
+....
+[standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=    
+http  https  management-http  management-https  txn-recovery-environment  txn-status-manager  
+[standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=
+.... 
+
+Once the needed socket binding resource is added, it is available in the tab completion results.
+
+....
+[standalone@embedded /] /socket-binding-group=standard-sockets/socket-binding=ajp:add(port=8009)
+{"outcome" => "success"}
+[standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=    
+ajp                       https                     management-https          txn-status-manager        
+http                      management-http           txn-recovery-environment  
+[standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
+{"outcome" => "success"}
+....
+
+The HAL console will also suggest valid values by means of a pull-down:
+
+image::choose-socket-binding.png[]
+
+If you try and remove a resource whose capabilities are depended upon by other resources, that will also result in a failed operation:
+
+....
+[standalone@embedded /] /socket-binding-group=standard-sockets/socket-binding=ajp:remove
+{
+    "outcome" => "failed",
+    "failure-description" => "WFLYCTL0367: Cannot remove capability 'org.wildfly.network.socket-binding.ajp' as it is required by other capabilities:
+capability 'org.wildfly.undertow.listener.ajp' requires it for attribute 'socket-binding' at address '/subsystem=undertow/server=default-server/ajp-listener=ajp'",
+    "rolled-back" => true
+}
+....
+
+== Referential Integrity Checks in an `admin-only` Process ==
+
+If your xml configuration file contains invalid references and you start the server normally, the server will fail to boot and the log will have an 
+error message describing the problem. However, if you start the server with the `--admin-only` flag, the server boot will not fail. This is because 
+starting in admin-only and manipulating the configuration via the CLI is the recommended way of correcting your configuration. If we didn't allow
+the server to boot, the user would have no alternative to manually editing the xml.
+
+When the server is started in this state, no operation will be rejected due to an invalid reference until all referential integrity problems have been 
+corrected. Once the configuration reaches a state where there are no integrity issues, thereafter any changes that break integrity will be rejected. 
+If a server is started in `admin-only` and has no integrity problems at boot, any changes that break integrity will be rejected. So, leniency in 
+integrity checks is only enabled when the server's configuration at boot has problems.  
+
+////
+== Additional Benefits ==
+
+The referential integrity features discussed here are based on technology provided by WildFly Core called "capabilities and requirements", a term you
+may see in discussions of the development of WildFly. In a nutshell it's a formal system where management resources make known to the WildFly kernel 
+what capabilities they provide, and what capabilities they require. The kernel acts as a mediator between required and requiror, allowing 
+both looser coupling between parts of the server and stronger checks that all requirements are met. This has benefits to developers of subsystems,
+but also has some benefits for end users.
+
+One of these is that if a management operation targeted at a particular resource can't be applied to the runtime, but instead requires a reload 
+to take effect, any capability provided by that resource now has a running state inconsistent with its configuration. This condition lasts until
+a reload or restart occurs. But, due to its tracking of capabilities and requires, the kernel knows what other resources provide 
+capabilities that require, directly or transitively, the affected capability. The kernel will use this knowledge and disable applying changes to
+the runtime for those resources as well, even if they would otherwise be allowed. This ensures the runtime remains in a consistent state.
+
+An example of this kind of scenario is TODO
+
+Another example of this kind of thing is removing a resource and then re-adding it (i.e. with a different configuration) without an intervening reload. 
+A removal often results in putting the server in reload-required state, as the operation won't immediately remove services provided by the resource. 
+But prior to WildFly 11 the re-add would try to install the resource's services, resulting in confusing duplicate service failures. In WildFly 11, 
+the capability tracking allows the kernel to be aware that the configuration doesn't reflect the runtime services, so it won't try and re-add
+those services. The user needs to reload the server to get a set of runtime services that match the configuration.
+////
+== Further Work == 
+ 
+The referential integrity functionality discussed here first began to appear in WildFly 10, but it's use was greatly expanded in WildFly 11, and
+the use of it to drive CLI tab completion and HAL pulldowns is new in 11. But still, we don't yet have complete coverage of all capabilities
+subsystems provide, although the bulk of cases are covered, particularly those involve configuration attributes. Rollout of the use of capabilities
+will continue in future WildFly releases.
+
+== More Information
+
+If you are interested in learning more about how the capabilities and requirements system works from the point of view of someone working on developing
+WildFly, please see the https://docs.jboss.org/author/display/WFLY/Working+with+WildFly+Capabilities[Working with WildFly Capabilities] document in the
+WildFly documentation.
