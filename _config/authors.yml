@@ -53,3 +53,9 @@ ehsavoie:
   occupation: "Software Engineer"
   bio: "Emmanuel works at Red Hat on WildFly Core. He currently works on domain management and also maintains the NetBeans WildFly plugin."
   avatar: ehsavoie.png
+jmesnil:
+  name: "Jeff Mesnil"
+  location: "France"
+  occupation: "Software Engineer"
+  bio: "Jeff works at Red Hat. He is a core developer on WildFly application server."
+  avatar: jmesnil.jpg
