@@ -10,8 +10,9 @@
   .byline
     %p
       = "Posted by " + lookup_name(post.author) + " on " + post.date.strftime('%b %d, %Y');
-      - for tag in post.tags
-        %a.label.label-info.pull-right.blah{:href=>"#{site.base_url}#{tag.primary_page.url}"}<= tag.to_s
-        %span.pull-right &nbsp;
+      - page.post.tags.each do |tag|
+        - if tag != nil
+          %a.label.label-info.pull-right.blah{:href=>"#{site.base_url}#{tag.primary_page.url}"}<= tag.to_s
+          %span.pull-right &nbsp;
   %p
     ~ post.content
