@@ -33,6 +33,7 @@ To use a JDBC store in WildFly, you need to configure the `journal-datasource` a
 Artemis uses thread pools for its clients that are running inside the application server. They can now be configured in the `messaging-activemq` subsystem to ensure that their sizes fit the application deployed in WildFly:
 
 [source, xml]
+--
 <subsystem xmlns="urn:jboss:domain:messaging-activemq:1.1">
   <global-client thread-pool-max-size="${activemq.artemis.client.global.thread.pool.max.size}"
     scheduled-thread-pool-max-size="${activemq.artemis.client.global.scheduled.thread.pool.core.size}" />
@@ -40,8 +41,8 @@ Artemis uses thread pools for its clients that are running inside the applicatio
   </server>
   ...
 </subsystem>
+--
 
-[source]
 
 NOTE: By default, the maximum size for client thread pool is not defined. In that case, Artemis will configure them to be 8 x the number of available processors.
 
@@ -86,7 +87,8 @@ They must first be enabled by setting the `statistics-enabled` attribute to `tru
 
 Once statistics are enabled, the `pooled-connection-factory` resource will have a `statistics=pool` child resource that will returns metrics on the pool used by the `pooled-connection-factory`:
 
-....
+[source, ruby]
+--
 [standalone@localhost:9990 /] /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra/statistics=pool:read-resource(include-runtime)
 {
     "outcome" => "success",
@@ -96,7 +98,7 @@ Once statistics are enabled, the `pooled-connection-factory` resource will have 
         ...
     }
 }
-....
+--
 
 === Web console improvements
 
