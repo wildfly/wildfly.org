@@ -1,0 +1,82 @@
+= OpenSSL support with WildFly
+sdouglas
+2017-10-06
+:revdate: 2017-10-06 11:00:00 +1000
+:awestruct-tags: [wildfly, openssl]
+:awestruct-layout: blog
+:imagesdir: ../images
+:source-highlighter: coderay
+
+The upcoming WildFly 11 release includes support for OpenSSL. This provides two main advantages over JSSE:
+
+- Support for ALPN on all JDK's
+- Significantly improved performance compared to JSSE
+
+== Setting up OpenSSL
+
+In general for Linux based systems all that is required is to install a recent version of OpenSSL using your systems
+package manager. The OpenSSL support will search the library path, and use whatever version of OpenSSL it finds. The
+same applies to MacOS when OpenSSL has been installed using brew (the system default OpenSSL installation is too old).
+
+For windows and for custom OpenSSL locations you need to specify the location via a system property,
+`org.wildfly.openssl.path`. If this is set then Wildfly will search for OpenSSL in the directory specified. If you have
+multiple versions of OpenSSL in the same directory and need to specify the precise file to use you can instead use
+`org.wildfly.openssl.path.ssl` and `org.wildfly.openssl.path.crypto` to specify the path to libssl and libcrypto
+respectively.
+
+As Wildfly uses dynamic linking this should work with any OpenSSL version from 1.0.1 onwards (however for security
+reasons it is recommended to always use the most up to date 1.1.x or 1.0.x version that is available, as older versions
+may have unpatched vulnerabilities).
+
+
+== Setting up Wildfly with Security Realms
+
+As Wildfly supports SSL out of the box with dynamically generated self signed certificates all that is required is to
+change the protocol in use. Doing this is as simple as running a single command in the CLI:
+
+----
+/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=protocol, value=openssl.TLS)
+----
+
+Other valid values are `openssl.TLSv1.1` and `openssl.TLSv1.2`, which limit the minimum TLS version to 1.1 and 1.2
+respectively.
+
+Once this is done you can use OpenSSL by simply pointing your browser to https://localhost:8443[https://localhost:8443].
+You should see the following message in the log that tells you that OpenSSL is in use:
+
+----
+09:01:04,150 INFO  [org.wildfly.openssl.SSL] (MSC service thread 1-6) WFOPENSSL0002 OpenSSL Version OpenSSL 1.0.2l  25 May 2017
+----
+
+== Setting up Wildfly with Elytron
+
+As Elytron is not used by default there is a little bit more work involved in setting it up. Elytron does not support
+auto generation of SSL certificates, so for the sake of this example I am going to assume that the keystore is
+located at `standalone/configuration/application.keystore` (the same location that the auto generated keystore is placed,
+if you just want a self signed certificate for testing purposes you can simply connect to
+https://localhost:8443[https://localhost:8443] with the default configuration and one will be generated for you).
+
+In order to set up SSL using Elytron run the following commands (note that this is just to use JSSE, the OpenSSL config
+will come later).
+
+----
+/subsystem=elytron/key-store=server:add(path=application.keystore, relative-to=jboss.server.config.dir, credential-reference={clear-text=password}, type=jks)
+/subsystem=elytron/key-manager=server:add(key-store=server, credential-reference={clear-text=password}, algorithm=SunX509)
+/subsystem=elytron/server-ssl-context=server:add(key-manager=server, protocols=[TLSv1.2])
+batch
+/subsystem=undertow/server=default-server/https-listener=https:undefine-attribute(name=security-realm)
+/subsystem=undertow/server=default-server/https-listener=https:write-attribute(name=ssl-context, value=server)
+run-batch
+:reload
+----
+
+If you point your browser at https://localhost:8443[https://localhost:8443] you should now have a working Elytron based
+SSL config. Once you have verified that this has worked we now need to change it to use OpenSSL. To do this we change
+the ordering of the providers in the elytron combined-providers, which means that OpenSSL will now take precedence:
+
+----
+/subsystem=elytron/aggregate-providers=combined-providers:list-add(index=0, name=providers, value=openssl)
+/subsystem=elytron/aggregate-providers=combined-providers:list-remove(index=2, name=providers)
+----
+
+You should now have OpenSSL working with Elytron.
