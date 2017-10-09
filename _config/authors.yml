@@ -59,3 +59,9 @@ jmesnil:
   occupation: "Software Engineer"
   bio: "Jeff works at Red Hat. He is a core developer on WildFly application server."
   avatar: jmesnil.jpg
+kwills:
+  name: "Ken Wills"
+  location: "Madison, WI"
+  occupation: "Software Engineer"
+  bio: "Ken works at Red Hat on Wildfly Core and WildFly domain mode. He has a particular interest in all things WildFly embedded."
+  avatar: kwills.jpg

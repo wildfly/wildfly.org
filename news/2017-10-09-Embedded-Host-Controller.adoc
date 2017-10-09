@@ -1,0 +1,213 @@
+= Running an Embedded WildFly Host Controller in the CLI
+kwills
+2017-10-09
+:revdate: 2017-10-09 17:54:36 -0800
+:awestruct-tags: [wildfly11, management, CLI, embedded, domain]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:imagesdir: ../images
+
+WildFly supports running a standalone server in link:{base_url}/news/2015/03/13/Offline-CLI/[Offline mode] as an embedded server. An analogous capability has been added for domain mode in the form of running an offline host controller. This article discusses some of the details and possible applications of this feature.
+
+## [[introduction]]Introduction
+
+For those not familiar with the existing embedded standalone server, see: link:{base_url}/news/2015/03/13/Offline-CLI/[Offline mode Running an Embedded WildFly 9 Server in the CLI · WildFly]. One of the major use cases of this feature was to allow local administration of a WIldFly / link:https://developers.redhat.com/products/eap/overview/[JBoss EAP] instance without requiring a socket based connection, or opening any local ports but still enabling configuration and administration operations. The embedded approach also allows for a fast boot that will allow multiple concurrent running instances to co-exist without configuring any additional socket offsets or interfaces to avoid port conflicts etc.
+
+Using _jboss-cli.sh_ and the _embed-host-controller_ command enables a fast and flexible means of configuring host controller instances and servers.
+
+## [[embeddedhc]]Embedded Host Controller
+
+In a similar way to the standalone _embed-server_ command, the _embed-host-controller_ command is provided, to start an embedded host controller running in the CLI. This host controller is started in _admin-only_ mode, and no servers are started. [See below for more details on _admin-only_ restrictions].
+
+## Starting an embedded Host Controller:
+
+....
+$ ./bin/jboss-cli.sh
+
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.
+[disconnected /] embed-host-controller --std-out=echo
+11:07:46,723 INFO  [org.jboss.modules] (AeshProcess: 1) JBoss Modules version 1.6.0.Final
+11:07:46,825 INFO  [org.jboss.msc] (AeshProcess: 1) JBoss MSC version 1.2.7.SP1
+11:07:46,870 INFO  [org.jboss.as] (MSC service thread 1-7) WFLYSRV0049: WildFly Full 11.0.0 (WildFly Core 3.0.1.Final) starting
+[ Note: some startup output omitted for brevity. ]
+11:07:48,845 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 11.0.0 (WildFly Core 3.0.1.Final) (Host Controller) started in 2105ms - Started 56 of 61 services (18 services are lazy, passive or on-demand)
+
+[domain@embedded /] ls -l
+ATTRIBUTE                VALUE           TYPE
+domain-organization      undefined       STRING
+launch-type              EMBEDDED        STRING
+local-host-name          master          STRING
+management-major-version 5               INT
+management-micro-version 0               INT
+management-minor-version 0               INT
+name                     Unnamed Domain  STRING
+namespaces               []              OBJECT
+process-type             Host Controller STRING
+product-name             WildFly Full    STRING
+product-version          11.0.0          STRING
+release-codename         Kenny           STRING
+release-version          3.0.1.Final     STRING
+schema-locations         []              OBJECT
+
+CHILD                     MIN-OCCURS MAX-OCCURS
+core-service              n/a        n/a
+deployment                n/a        n/a
+deployment-overlay        n/a        n/a
+extension                 n/a        n/a
+host                      n/a        n/a
+host-exclude              n/a        n/a
+interface                 n/a        n/a
+management-client-content n/a        n/a
+path                      n/a        n/a
+profile                   n/a        n/a
+server-group              n/a        n/a
+socket-binding-group      n/a        n/a
+system-property           n/a        n/a
+
+....
+
+The non-modular client may also be used from the _bin/client_ WildFly distribution:
+....
+$ java -jar bin/client/jboss-cli-client.jar
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.
+[disconnected /] embed-host-controller --jboss-home=/wildfly-11.0.0
+Warning! The CLI is running in a non-modular environment and cannot load commands from management extensions.
+[domain@embedded /] cd /host=master/server-config=server-one
+[domain@embedded server-config=server-one] ls -l
+ATTRIBUTE                            VALUE             TYPE
+auto-start                           true              BOOLEAN
+cpu-affinity                         undefined         STRING
+group                                main-server-group STRING
+name                                 server-one        STRING
+priority                             undefined         INT
+socket-binding-default-interface     undefined         STRING
+socket-binding-group                 undefined         STRING
+socket-binding-port-offset           0                 INT
+status                               STOPPED           STRING
+update-auto-start-with-server-status false             BOOLEAN
+
+CHILD           MIN-OCCURS MAX-OCCURS
+interface       n/a        n/a
+jvm             n/a        n/a
+path            n/a        n/a
+ssl             n/a        n/a
+system-property n/a        n/a
+[domain@embedded server-config=server-one]
+....
+
+See link:{base_url}/news/2015/03/13/Offline-CLI/#classloading[Modular vs Non-Modular Classloading and JBOSS_HOME] in the original embedded server news article for details.
+
+## Executing commands:
+
+....
+[domain@embedded /]  /host=master/interface=public:write-attribute(name=inet-address, value=127.0.0.1)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined,
+    "response-headers" => {"process-state" => "reload-required"}
+}
+....
+
+### Reloading:
+....
+[domain@embedded /] reload --host=master --admin-only=true
+11:17:20,092 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 11.0.0 (WildFly Core 3.0.1.Final) (Host Controller) started in 279ms - Started 56 of 61 services (18 services are lazy, passive or on-demand)
+[domain@embedded /]
+....
+Note that currently, the embedded host controller may only be started / reloaded in _admin-only_ mode. In domain mode, servers are started and stopped via use of the _process controller_ which is not currently supported as part of embedded mode.
+
+### Stopping:
+....
+[domain@embedded /] stop-embedded-host-controller
+11:08:29,925 INFO  [org.jboss.as] (MSC service thread 1-7) WFLYSRV0050: WildFly Full 11.0.0 (WildFly Core 3.0.1.Final) stopped in 13ms
+....
+
+### Command usage:
+The _embed-host-controller_ command has several options that behave in the same way as the previously mentioned standalone embedded server, which will not be discussed again here. The relevant _embed-host-controller_ parameters are:
+....
+-c                - Name of the domain configuration file to use
+                     (default is "domain.xml")
+                     (Same as --domain-config)
+
+--domain-config   - Name of the domain configuration file to use
+                     (default is "domain.xml")
+                     (Same as -c)
+
+--host-config     - Name of the host configuration file to use
+                     (default is "host.xml")
+....
+
+As mentioned above, _--jboss-home_, _--std-out_ and _--timeout_ may also be provided and function in the same manner as the link:{base_url}/news/2015/03/13/Offline-CLI/[embed-server] command. The configuration files mentioned above (domain.xml, host.xml) above should be located in the _$JBOSS_HOME/domain/configuration_ directory (or under the location pointed to by the system property _jboss.domain.config.dir_.) [See link:https://docs.jboss.org/author/display/WFLY8/Command+line+parameters[Command Line Properties] for additional details on those properties.]
+
+For example, to start an embedded host controller with configuration files contained in the _otherdomain/configuration_ directory:
+....
+[wildfly-11]$ ./bin/jboss-cli.sh -Djboss.domain.config.dir=/wildfly-11/otherdomain/configuration
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.
+[disconnected /] embed-host-controller --std-out=echo
+11:26:44,122 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 11.0.0 (WildFly Core 3.0.1.Final) (Host Controller) started in 1894ms - Started 56 of 61 services (18 services are lazy, passive or on-demand)
+[domain@embedded /]
+....
+
+Configuration may then proceed and will be persisted to the _otherdomain/configuration_ directory. This directory must already exist and contain base copies of the required configuration files (host.xml, domain.xml etc.).
+
+## Scripted configuration
+
+The embedded host controller may be useful for configuration from a prepared file of scripted CLI commands. For example:
+....
+$ cat commands.cli
+embed-host-controller
+/server-group=main-server-group:write-attribute(name=socket-binding-port-offset, value=100)
+/host=master/server-config=server-one:write-attribute(name=auto-start, value=false)
+deploy --all-server-groups test.war
+stop-embedded-host-controller
+
+$ ./bin/jboss-cli.sh --file=commands.cli
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined
+}
+....
+
+This approach may be used for a variety of setup and configuration tasks, for example setting up unit or integration tests quickly using the embedded host controller, then restarting in domain mode using _domain.sh_ may require less time than starting the host controller normally using _domain.sh_, performing configuration and deployment etc, then restarting.
+
+## Other examples
+### Set server socket-binding-port-offset
+In order to allow more than one running instance on the same host, a common configuration for testing (or any scenario needing to run a domain controller and a slave host controller (with servers) on the same host), a _socket-binding-port-offset_ is commonly used. The slave host is configured to have a port offset so that the ports already in use by the domain controller's servers do not conflict with those of the slave.
+....
+[domain@embedded /] /server-group=main-server-group:write-attribute(name=socket-binding-port-offset, value=100)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined
+}
+....
+
+### Configure connection to remote domain controller
+When configuring a slave host controller, configure the connection to the domain controller.
+....
+[domain@embedded /] /host=master:write-remote-domain-controller(host=remotedc.somedomain.tld, security-realm=ManagementRealm)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined,
+    "response-headers" => {"process-state" => "reload-required"}
+}
+....
+
+### System property
+
+This can be useful as an initial configuration step before the host controller is started with _domain.sh_:
+....
+[domain@embedded /] /server-group=main-server-group/system-property=foo:add(value=bar)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined
+}
+....
+
+### Future Direction
+
+In the future we'd like to allow for starting the embedded host controller with some additional features, such as empty configurations in host and domain configuration files (similar to standalone embedded), and also re-examine the meaning and usage of _--admin-only_ in the context of the embedded host controller.
