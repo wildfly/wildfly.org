@@ -7,12 +7,14 @@ require 'less_config'
 require 'symlinker'
 require 'breadcrumb'
 require 'authors_helper'
+require 'tweet_helper'
 require 'releases'
 
 Awestruct::Extensions::Pipeline.new do
   helper Awestruct::Extensions::Partial
   helper Awestruct::Extensions::Breadcrumb
   helper Awestruct::Extensions::AuthorsHelper
+  helper Awestruct::Extensions::TweetHelper
 
   extension Awestruct::Extensions::WgetWrapper.new
   transformer Awestruct::Extensions::JsMinifier.new
