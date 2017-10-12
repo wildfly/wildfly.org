@@ -4,6 +4,7 @@ jgreene:
   location: "Madison, WI"
   occupation: "Chief Architect, JBoss EAP"
   avatar: jgreene.jpg
+  twitter: "jtgreene"
 bstansberry:
   name: "Brian Stansberry"
   bio: "Brian Stansberry  is a principal software engineer at Red Hat, working as a core engineer on WildFly. He is currently leading the development of the administration and management capabilities in WildFly and JBoss EAP 6. Previously, he was the technical lead for the application server’s high availability clustering features.
@@ -17,51 +18,60 @@ arun-gupta:
   location: "San Jose, CA"
   occupation: "Director, Developer Advocacy"
   avatar: arungupta.jpg
+  twitter: "arungupta"
 bobmcwhirter:
   name: "Bob McWhirter"
   bio: "Bob leads the Research & Prototyping group within Red Hat Middleware, typically mis-using other projects within the company.  He plays the banjo."
   location: "Wytheville, VA"
   occupation: "Director, R&P"
   avatar: bobmcwhirter.jpg
+  twitter: "bobmcwhirter"
 kenfinnigan:
   name: "Ken Finnigan"
   bio: "Ken is a Principal Software Engineer at Red Hat, working on various projects. He is the project co-lead of WildFly Swarm with Bob McWhirter, and the author of books on GateIn and CDI."
   location: "Boston, MA"
   occupation: "WildFly Swarm Project Co-Lead"
   avatar: kenfinnigan.jpg
+  twitter: "kenfinnigan"
 jperkins:
   name: "James R. Perkins"
   bio: "James works at Red Hat on WildFly. He currently works on logging for WildFly and the batch (JSR-352) integration."
   location: "Portland, OR"
   occupation: "Software Engineer"
   avatar: jperkins.jpg
+  twitter: "the_jamezp"
 sdouglas:
   name: "Stuart Douglas"
   location: "Australia"
   occupation: "Senior Software Engineer"
   bio: "Stuart works at Red Hat on WildFly. He is the lead of the Undertow web server, and also works on Java EE."
   avatar: sdouglas.png
+  twitter: "stuartwdouglas"
 tcerar:
   name: "Tomaz Cerar"
   location: "Slovenia"
   occupation: "Software Engineer"
   bio: "Tomaz works at Red Hat on WildFly. He currently works on domain management, undertow subsystem and makes sure CI always works."
   avatar: tcerar.png
+  twitter: "ctomc"
 ehsavoie:
   name: "Emmanuel Hugonnet"
   location: "France"
   occupation: "Software Engineer"
   bio: "Emmanuel works at Red Hat on WildFly Core. He currently works on domain management and also maintains the NetBeans WildFly plugin."
   avatar: ehsavoie.png
+  twitter: "ehsavoie"
 jmesnil:
   name: "Jeff Mesnil"
   location: "France"
   occupation: "Software Engineer"
   bio: "Jeff works at Red Hat. He is a core developer on WildFly application server."
   avatar: jmesnil.jpg
+  twitter: "jmesnil"
 kwills:
   name: "Ken Wills"
   location: "Madison, WI"
   occupation: "Software Engineer"
   bio: "Ken works at Red Hat on Wildfly Core and WildFly domain mode. He has a particular interest in all things WildFly embedded."
   avatar: kwills.jpg
+  twitter: "luck4y"
