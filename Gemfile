@@ -19,3 +19,4 @@ gem 'coderay', '~> 1.1.2'
 gem 'coffee-script', '~> 2.4.1'
 #gem 'win32-open3-19', :platforms => :mingw
 gem 'rb-inotify', '~> 0.9'
+gem 'guard-livereload', '2.4.0'
