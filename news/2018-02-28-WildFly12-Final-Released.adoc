@@ -1,0 +1,63 @@
+= WildFly 12 Final is now available!
+jgreene
+2018-02-28
+:revdate: 2018-02-28 23:00:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+
+WildFly 12 Final is now available link:{base_url}/downloads[for download]! 
+
+EE8 Capabilities & New Release Model
+------------------------------------
+This is our first release following our link:http://lists.jboss.org/pipermail/wildfly-dev/2017-December/006250.html[new quarterly delivery model]. As part of this plan, we are delivering EE8 functionality in fully completed incremental chunks, as opposed to waiting for everything to finish in a big bang reelase. WildFly 12 makes significant progress on this front, adding support for the majority of the new standards:
+
+[cols=",,,,",options="header"]
+|=======================================================================
+| Name | From Version | From JSR | To Version | To JSR
+
+| Java Servlet | 3.1 | JSR-340 | 4.0 | https://jcp.org/en/jsr/detail?id=370[JSR-369]
+| Contexts and Dependency Injection for Java | 1.2 | JSR-346 | 2.0 | https://jcp.org/en/jsr/detail?id=365[JSR-365]
+| Bean Validation | 1.1 | JSR-349 | 2.0 | https://jcp.org/en/jsr/detail?id=380[JSR-380]
+| JavaServer Faces | 2.2 | JSR-344 | 2.3 | https://jcp.org/en/jsr/detail?id=372[JSR-372]
+| JavaMail | 1.5 | JSR-919 | 1.6 | https://jcp.org/en/jsr/detail?id=919[JSR-919]
+| Java API for RESTFul Web Services | 2.0 | JSR-339 | 2.1 | https://jcp.org/en/jsr/detail?id=370[JSR-370]
+| Java API for JSON Processing | 1.0 | JSR-353 | 1.1 | https://jcp.org/en/jsr/detail?id=374[JSR-374]
+| Java API for JSON Binding | - | - | 1.0 | https://jcp.org/en/jsr/detail?id=367[JSR-367]
+| Common Annotations for the Java Platform | 1.2 | JSR-250 | 1.3 | http://download.oracle.com/otndocs/jcp/common_annotations-1_3-mrel3-spec/[JSR-250]
+|=======================================================================
+
+By default WildFly 12 launches in EE7 mode. In order to use these new capabilities you have to enable EE8 preview mode. This can be accomplished by passing the `ee8.preview.mode` property during startup:
+
+[source, bash]
+----
+./standalone.sh -Dee8.preview.mode=true
+----
+
+Alternatively, this can be achieved by launching the server using the new `standalone-ee8.xml` configuration, which simply includes the property in the config.
+
+[source, bash]
+----
+./standalone.sh -c standalone-ee8.xml
+----
+
+The CLI can also be used to modify the existing configuration to add this property. For example:
+
+[source, bash]
+----
+embed-server --admin-only=true
+/system-property=ee8.preview.mode:add(value=true)
+stop-embedded-server
+----
+
+Other Notable Items
+-------------------
+* WildFly 12 includes a new thread pooling strategy that reduces the number of threads active at any given time, which helps conserve system resources. 
+* MicroProfile REST Client 1.0 is now supported
+* Java 9 compatibilty has been improved
+* CLI scripts can now take advantage of loops with variables
+* WildFly Documentation is now in asciidoc, and part of the source tree
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12336563[here].
