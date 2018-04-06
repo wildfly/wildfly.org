@@ -2,6 +2,9 @@
 !!! 5
 %html(lang="en")
   %head
+    - if site.profile.eql?("staging") or site.profile.eql?("production")
+      - dpalsuffix = site.profile.eql?("staging") ? "-staging" : "" 
+      %script{:id=>'dpal', :src=>"//www.redhat.com/dtm#{dpalsuffix}.js", :type=>'text/javascript'}
     = partial( page.head_partial.nil? ? 'head.html.haml' : page.head_partial , { "real_page" => page } )
     %link{:rel=>"stylesheet", :type=>"text/css", :href=>"#{site.base_url}/stylesheets/blog.css"}
     %link{:rel=>'stylesheet', :type=>'text/css', :href=>"#{site.base_url}/stylesheets/asciidoctor-coderay.css", :media=>"screen" }
@@ -32,7 +35,7 @@
                  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                  '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
                  })(window,document,'script','dataLayer','GTM-NJWS5L');</script>
-        <!-- End Google Tag Manager —> 
+        <!-- End Google Tag Manager --> 
 
     / begin accesibility skip to top
     %ul#top.visuallyhidden
@@ -63,3 +66,11 @@
     - if page.bottom_javascripts
       - page.bottom_javascripts.each do |javascript|
         %script{:src=>javascript, :type=>'text/javascript'}
+    -# DPAL requires a last body child hook
+    - if site.profile.eql?("staging") or site.profile.eql?("production")
+      :plain
+        <script type="text/javascript">
+          if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+            _satellite.pageBottom();
+          }
+        </script>
