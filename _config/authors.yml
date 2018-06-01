@@ -75,3 +75,10 @@ kwills:
   bio: "Ken works at Red Hat on Wildfly Core and WildFly domain mode. He has a particular interest in all things WildFly embedded."
   avatar: kwills.jpg
   twitter: "luck4y"
+hpehl:
+  name: "Harald Pehl"
+  location: "Germany"
+  occupation: "HAL Project Lead"
+  bio: "Harald is a senior software engineer at Red Hat working on management capabilities of WildFly. He is currently leading the management console (HAL)."
+  avatar: hpehl.jpg
+  twitter: "haraldpehl"

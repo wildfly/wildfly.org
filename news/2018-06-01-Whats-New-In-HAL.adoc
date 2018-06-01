@@ -1,0 +1,102 @@
+= What's New in WildFly Management Console =
+hpehl
+2018-06-01
+:revdate: 2018-06-01 19:00:00 +0100
+:awestruct-tags: [wildfly, hal]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:imagesdir: ../images
+:encoding: utf-8
+:lang: en
+
+link:{base_url}/news/2018/05/30/WildFly13-Final-Released/[WildFly 13] comes with a management console (HAL) which has been rewritten from scratch. HAL still uses a similar technical stack (GWT) and user experience, but now fully adopts https://www.patternfly.org/[PatternFly].
+
+More important we enhanced the existing features and added support for many new subsystems and attributes. The following sections show some highlights of the latest version. For more details about the new features see the release notes for https://hal.github.io/releases/3.0.0.final/[HAL 3.0.0.Final].
+
+== Finder ==
+
+The column based navigation (finder) has been greatly improved. You can now use the cursor keys for navigation inside and across columns. To open an application view press ↵ (enter), to go back press ⌫ (backspace). Items in one column are now ordered alphabetically by default. You can pin frequently used items to stay at the top. Most columns offer a filter which can be used to quickly find the items you're looking for. Finally the previews have been enriched and provide detailed documentation or the main attributes of the selected item. If appropriate the previews contain action links for the most common tasks.
+
+.Finder
+image::hal/finder.png[Finder]
+
+== Applications ==
+
+Applications provide a new breadcrumb at the top to quickly switch between items of the same kind. More complex applications can include a vertical navigation. Finally most applications can be easily opened in an external window and provide an expert mode which uses the generic model browser.
+
+.Applications
+image::hal/application.png[Applications]
+
+== Deployments ==
+
+Many new features have been added to the deployment section:
+
+* Use drag and drop to deploy artifacts
+* Content browser with preview for text and images
+* Create exploded deployments
+* CRUD support for exploded deployments:
+** Add empty files
+** Upload content
+** Modify content
+** Remove content
+* Download complete deployments or deployment content
+
+.Deployments
+image::hal/deployment.png[Deployments]
+
+'''
+
+.Deployment Model
+image::hal/deployment-model.png[Deployment Model]
+
+'''
+
+.Content Browser
+image::hal/deployment-content.png[Content Browser]
+
+== Topology ==
+
+The topology view has been reintroduced to the management console. It was removed in the last versions due to performance issues with large domains. But thanks to new management operations, we were able to add this useful tool again.
+
+.Topology
+image::hal/topology.png[Topology]
+
+== Runtime ==
+
+The lifecycle operations for hosts, server groups and servers have been improved. New operations are available for hosts and disconnected hosts are now shown in the finder columns. For servers you can specify custom URLs which is extremely useful when running WildFly inside a docker container.
+
+.Runtime
+image::hal/runtime.png[Runtime]
+
+== Monitor ==
+
+The existing screens have been improved and many new subsystems have been added to the monitoring section. Some of the new and enhanced subsystems are:
+
+* Batch
+* EJB
+* IO
+* JAX-RS
+* Messaging
+* Web (Undertow)
+
+.Monitor Server
+image::hal/monitor-server.png[Monitor Server]
+
+'''
+
+.EJB Subsystem
+image::hal/monitor-ejb.png[EJB Subsystem]
+
+'''
+
+.JAX-RS Resources
+image::hal/monitor-jaxrs.png[JAX-RS Resources]
+
+'''
+
+.Undertow Listener Statistics
+image::hal/monitor-undertow.png[Undertow Listener Statistics]
+
+== Get Involved ==
+
+If you want to learn more about HAL, head over to https://hal.github.io/. The new website contains both end user and technical documentation. Read about HAL's architecture, building blocks and how you can build, run and debug the console. HAL is an open source project and we love to receive https://hal.github.io/contribute/[contributions] from our community — you!
