@@ -1,0 +1,58 @@
+= WildFly 14 is released!
+jgreene
+2018-08-30
+:revdate: 2018-08-30 15:00:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:awestruct-description: WildFly 14.0.0.Final is now available for download!
+:awestruct-otherimage: wildflycarousel_14.png
+
+WildFly 14 Final is now available link:{base_url}/downloads[for download]! 
+
+EE8 Certified!!
+---------------
+I am happy to announce that the WildFly 14 release is Java EE8 Certified! Since WildFly is now certified, the default EE7 mode and EE8 preview option have been dropped. The server now only provides EE8 APIs in all run modes. Since Java EE8 is backwards compatible with EE7, applications developed against EE7 (and earlier) will still run on WildFly 14. 
+
+This is our third release following our link:http://lists.jboss.org/pipermail/wildfly-dev/2017-December/006250.html[new quarterly delivery model]. A major theme of this plan, was to deliver EE8 functionality in fully completed incremental chunks, as opposed to waiting for everything to finish in a big bang release. This goal has now been completed, and we greatly appreciate the feedback and support from the community during this process. We plan to continue this model going forward.
+
+An overview of the new and updated standards in Java EE8 are as follows:
+[cols=",,,,",options="header"]
+|=======================================================================
+| Name | From Version | From JSR | To Version | To JSR
+
+| Java Servlet | 3.1 | JSR-340 | 4.0 | https://jcp.org/en/jsr/detail?id=370[JSR-369]
+| Contexts and Dependency Injection for Java | 1.2 | JSR-346 | 2.0 | https://jcp.org/en/jsr/detail?id=365[JSR-365]
+| Bean Validation | 1.1 | JSR-349 | 2.0 | https://jcp.org/en/jsr/detail?id=380[JSR-380]
+| JavaServer Faces | 2.2 | JSR-344 | 2.3 | https://jcp.org/en/jsr/detail?id=372[JSR-372]
+| JavaMail | 1.5 | JSR-919 | 1.6 | https://jcp.org/en/jsr/detail?id=919[JSR-919]
+| Java API for RESTFul Web Services | 2.0 | JSR-339 | 2.1 | https://jcp.org/en/jsr/detail?id=370[JSR-370]
+| Java API for JSON Processing | 1.0 | JSR-353 | 1.1 | https://jcp.org/en/jsr/detail?id=374[JSR-374]
+| Java API for JSON Binding | - | - | 1.0 | https://jcp.org/en/jsr/detail?id=367[JSR-367]
+| Common Annotations for the Java Platform | 1.2 | JSR-250 | 1.3 | http://download.oracle.com/otndocs/jcp/common_annotations-1_3-mrel3-spec/[JSR-250]
+| Java EE Security | - | - | 1.0 | https://jcp.org/en/jsr/detail?id=375[JSR-375]
+| Java Persistence | 2.1 | JSR-338 | 2.2 | https://jcp.org/en/jsr/detail?id=338[JSR-338]
+|=======================================================================
+
+
+MicroProfile Capabilities
+-------------------------
+Another major improvement in WildFly 14 is the inclusion of a number of important MicroProfile standards that are useful for running in container environments. 
+
+These include:
+
+- MP Config
+- MP OpenTracing
+- MP Health 
+
+High Performance Connection Pool
+--------------------------------
+Also new in WildFly 14, is a new high performance direct connection pool backed by the Agroal project. Since this is a new pooling implementation, it must be explicitly enabled to take advantage of it. By default, the existing JCA based implementation (IronJacamar) is still used; however, in a future release, Agroal may become the new default. For more information, please see the WildFly 14 documentation.
+
+Mod-Cluster Multiplicity
+------------------------
+Mod cluster support within WildFly previously only supported a single web server listener and server configuration on a WildFly instance. Mod-cluster has now been enhanced to support multiple web server configurations by adding the ability to declare and reference multiple mod-cluster configurations within its subsystem. 
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12338892[here].

@@ -1,3 +1,8 @@
+- version: '14.0.0.Final'
+  date: '2018-08-30'
+  notes: '../news/2018/08/30/WildFly14-Final-Released/'
+  certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/14.0.0.Final'
 - version: '13.0.0.Final'
   date: '2018-05-30'
   notes: '../news/2018/05/30/WildFly13-Final-Released/'
