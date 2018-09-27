@@ -1,0 +1,153 @@
+= Using Git for configuration history =
+ehsavoie
+2018-09-28
+:revdate: 2018-09-28 19:00:00 +0100
+:awestruct-tags: [wildfly, cli, configuration, history]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:encoding: utf-8
+:lang: en
+
+Until now the history of configuration in WildFly was using the folder + filename pattern. Now we have moved to a proper SCM integrating Git to manage history.
+
+You can now take advantage of a full Git support for your configuration history:
+
+ - every change in your configuration is now a commit.
+ - you can use branches to develop in parallel.
+ - you can create tags for stable points in your configuration.
+ - pull configuration from a remote repository.
+ - push your configuration history to a remote repository.
+ - use the git-bisect tool at your disposal when things go wrong.
+ 
+Now if we execute a management operation that modifies the model, for example adding a new system property using the CLI:
+[source, ruby]
+----
+[standalone@localhost:9990 /] /system-property=test:add(value="test123")
+{"outcome" => "success"}
+----
+
+What happens is:
+
+ - The change is applied to the configuration file.
+ - The configuration file is added to a new commit.
+
+[IMPORTANT]
+====
+The notion of configuration has been updated with the Git support. It covers more than 'just' the `standalone.xml` history but also the content files (aka managed deployments).
+
+Thus even your deployments are in history, which makes sense in a way since those deployments appear in the configuration file.
+====
+
+== Starting with a local Git repository ==
+
+To start using Git you don't have to create the repository, WildFly can do that for you.
+Just start your server with the following command line:
+[source,bash]
+--
+$ __WILDFLY_HOME__/bin/standalone.sh --git-repo=local --git-branch=my_branch
+--
+
+If a __--git-branch__ parameter is added then the repository will be checked out from the supplied branch. Please note that the branch will not be automatically created and must already exist in the repository. By default, if no parameter is specified, the branch `master` will be used.
+If a __--git-branch__ parameter is added then the repository will be checked out from the supplied branch. Please note that the branch will not be automatically created and must already exist in the repository. By default, if no parameter is specified, the branch `master` will be used.
+
+== Starting with a remote Git Repository ==
+ 
+To start WildFly with a configuration from a remote Git repository is simple too, just use the following command line:
+[source,bash]
+--
+$ __WILDFLY_HOME__/bin/standalone.sh --git-repo=https://github.com/USER_NAME/wildfly-config.git --git-branch=master
+--
+
+[IMPORTANT]
+====
+Be careful with this as the first step is to delete the configuration files to avoid conflicts when pulling for the first time.
+====
+[NOTE]
+====
+Note that you can use remote aliases if you have added them to your `.gitconfig`.
+====
+
+== Snapshots ==
+
+In addition to the commits taken by the server as described above, you can manually take snapshots which will be stored as `tags` in the Git repository.
+
+The ability to take a snapshot has been enhanced to allow you to add a comment to it. This comment will be used when creating the Git tag.
+
+This is how you can take a snapshot from the JBoss CLI tool:
+[source, ruby]
+--
+[standalone@localhost:9990 /] :take-snapshot(name="snapshot", comment="1st snapshot")
+{
+    "outcome" => "success",
+    "result" => "1st snapshot"
+}
+--
+
+You can also use the CLI to list all the snapshots:
+[source, ruby]
+--
+[standalone@localhost:9990 /] :list-snapshots
+{
+    "outcome" => "success",
+    "result" => {
+        "directory" => "",
+        "names" => [
+            "snapshot : 1st snapshot",
+            "refs/tags/snapshot",
+            "snapshot2 : 2nd snapshot",
+            "refs/tags/snapshot2"
+        ]
+    }
+}
+--
+
+To delete a particular snapshot:
+[source, ruby]
+--
+[standalone@localhost:9990 /] :delete-snapshot(name="snapshot2")
+{"outcome" => "success"}
+--
+
+[NOTE]
+====
+Note that this is a real Git repository, thus using the git client of your choice you can list those tags, or browse the history.
+====
+
+== Publishing ==
+
+You may 'publish' your changes on a remote repository (provided you have write access to it) so you can share them.
+For example, if you want to publish on GitHub, you need to create a token and allow for __full control__ of the repository.
+Then use that token in an Elytron configuration file like this:
+[source, xml]
+--
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <authentication-client xmlns="urn:elytron:1.1">
+        <authentication-rules>
+            <rule use-configuration="test-login">
+            </rule>
+        </authentication-rules>
+        <authentication-configurations>
+            <configuration name="test-login">
+                <sasl-mechanism-selector selector="BASIC" />
+                <set-user-name name="$GITHUB_USERNAME" />
+                <credentials>
+                    <clear-password password="$GITHUB_TOKEN" />
+                </credentials>
+                <set-mechanism-realm name="testRealm" />
+            </configuration>
+        </authentication-configurations>
+    </authentication-client>
+</configuration>
+--
+
+Then, to publish your changes:
+[source, ruby]
+--
+[standalone@localhost:9990 /] :publish-configuration(location="origin")
+{"outcome" => "success"}
+--
+
+== References ==
+
+For the official documentation regarding Git history : link:http://docs.wildfly.org/14/Admin_Guide.html#Configuration_file_git_history[Official Documentation].
