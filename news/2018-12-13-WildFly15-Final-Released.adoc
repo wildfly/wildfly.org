@@ -1,0 +1,42 @@
+= WildFly 15 is released!
+jgreene
+2018-12-13
+:revdate: 2018-12-13 15:00:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:awestruct-description: WildFly 15.0.0.Final is now available for download!
+:awestruct-otherimage: wildflycarousel_15.png
+
+WildFly 15 Final is now available link:{base_url}/downloads[for download]! 
+
+This is our fourth release following our link:http://lists.jboss.org/pipermail/wildfly-dev/2017-December/006250.html[quarterly delivery model]. The major objective of this year’s release plan was to deliver EE8 functionality in incremental chunks over the first three quarters, and then to ensure WildFly ran well on the latest long term support version of Java. Accordingly, in this fourth release our focus was less on new features and more on polishing our support for JDK 11.
+
+JDK 11 Support
+--------------
+The modularization of the JVM that began with Java 9 has a significant impact on a complex server like WildFly, particularly in the areas of classloading and reflection, both of which are extensively used in any application server. Since the early days of Java 9 development we’ve been working to ensure that not only the WildFly code itself, but also the scores of libraries we integrate, would all run well on the later generation JVMs. Specifically we wanted to be sure we ran well on the first long term supported Java version under the link:https://mreinhold.org/blog/forward-faster[new Java SE release cadence], Java 11. We’re proud to say we’ve achieved that goal in our first quarterly release since Java 11 itself went GA.
+
+WildFly 15 also is heavily tested and runs well on Java 8. We also do testing with non-LTS releases like Java 9 and 10, and aim to run reasonably well for most use cases on those, but the primary aim of that kind of testing is to identify problems early enough to resolve them for the upcoming LTS release.
+
+Please note that WildFly runs on Java 11 in classpath mode.
+
+Server Observability
+--------------------
+Continuing the effort from WildFly 14 to improve the ability of tools to observe the behavior of WildFly in a container environment, in WildFly 15 we added a new subsystem that brings tech-preview support for MicroProfile Metrics. Application authors can declare their own application-scoped metrics, and those as well as base metrics will be available in Prometheus or JSON format over a new /metrics context on the HTTP management interface. 
+
+SNI Support for HTTPS Listeners
+-------------------------------
+WildFly 15 supports server side SNI on its HTTPS listeners. This allows a WildFly instance listening on a single socket but with multiple virtual hosts associated with that listener to provide a different server certificate depending on what SNI name the client requests.
+
+Default SSL Context
+-------------------
+Setting a simple attribute on the Elytron subsystem ensures that as the server is started a JVM-wide default SSLContext is registered for use by any libraries within the application server that support use of the default context.
+
+JASPIC Integration with Elytron
+-------------------------------
+The Elytron subsystem now provides support for the Servlet Container Profile of the link:https://www.jcp.org/en/jsr/detail?id=196[JSR-196] Java Authentication SPI for Containers spec.
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12339953[here]. Issues resolved in the WildFly Core 7 release included with WildFly 15 are available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12340009[here].
+
