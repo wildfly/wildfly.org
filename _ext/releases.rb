@@ -34,19 +34,20 @@ class Release
 
   def analyze_release(release)
     version = release[:version]
-    Net::HTTP.start("download.jboss.org") do |http|
+    dl_uri = URI('https://download.jboss.org')
+    Net::HTTP.start(dl_uri.host, dl_uri.port, :use_ssl => dl_uri.scheme == 'https') do |http|
       {:zip => '.zip',  :tgz => '.tar.gz', :srczip => '-src.zip', :srctgz => '-src.tar.gz'}.each do |kind, suffix|
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/wildfly-#{version}#{suffix}")
+        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/wildfly-#{version}#{suffix}")
         release[kind] = {:url => uri, :size => compute_size(http,uri)}
       end
       {:zip => '.zip',  :tgz => '.tar.gz', :srczip => '-src.zip', :srctgz => '-src.tar.gz'}.each do |kind, suffix|
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/servlet/wildfly-web-#{version}#{suffix}")
+        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/servlet/wildfly-web-#{version}#{suffix}")
         size = compute_size(http,uri)
         if (size != "unknown")
           release[:servlet] = {} unless release.has_key?(:servlet)
           release[:servlet][kind] = {:url => uri, :size => size}
         end
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/servlet/wildfly-servlet-#{version}#{suffix}")
+        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/servlet/wildfly-servlet-#{version}#{suffix}")
         size = compute_size(http,uri)
         if (size != "unknown")
           release[:servlet] = {} unless release.has_key?(:servlet)
@@ -54,17 +55,17 @@ class Release
         end
       end
       if release.has_key?("updateforversion")
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/wildfly-#{version}-update.zip")
+        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/wildfly-#{version}-update.zip")
         release[:update] = {:url => uri, :size => compute_size(http,uri)}
       end
       if release.has_key?("updateforversionfull")
         versionfull = release["updateforversionfull"]
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/wildfly-#{version}-#{versionfull}-update.zip")
+        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/wildfly-#{version}-#{versionfull}-update.zip")
         release[:updatefull] = {:url => uri, :size => compute_size(http,uri)}
       end
       if release.has_key?("quickversion")
         version = release[:quickversion] 
-        uri = URI.parse("http://download.jboss.org/wildfly/#{version}/quickstart-#{version}.zip")
+        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/quickstart-#{version}.zip")
         release[:quickstart] = {:url => uri, :size => compute_size(http,uri)}
       end
     end
