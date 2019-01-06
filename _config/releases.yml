@@ -1,3 +1,8 @@
+- version: '15.0.1.Final'
+  date: '2019-01-05'
+  notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12340359
+  certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/15.0.0.Final'
 - version: '15.0.0.Final'
   date: '2018-11-30'
   notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12339953'
