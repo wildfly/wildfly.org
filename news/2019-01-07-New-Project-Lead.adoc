@@ -1,0 +1,18 @@
+= New WildFly Project Lead 
+jgreene
+2019-01-07
+:revdate: 2019-01-07 12:00:00 -0600
+:awestruct-tags: [announcement]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:awestruct-description: New WildFly Project Lead 
+
+I am very excited to announce that link:https://developer.jboss.org/people/brian.stansberry[Brian Stansberry] (link:https://twitter.com/bestansberry[@bestansberry]) will be taking on the role of WildFly project lead. Brian has been a major contributor to the project for almost 15 years now. During this time, he led a number of critical and complex subsystems including Clustering, Management, and most recently the cross-cutting cloud integration work. He is also one of our most active reviewers, and has helped many contributors navigate deep WildFly internals. Congratulations Brian! 
+
+It’s been a great journey, so I want to think each and every one of you for your contributions and support over the years. Our work as a community has frequently pushed the envelope, and led to WildFly being one of the most innovative and popular application servers available. While I will be moving on from this role, I won’t be too far way, still participating but tackling a new challenge (I’ll have more to say about that in the future). 
+
+With Brian at the helm, and all the great folks contributing to the project, I know WildFly has a bright future. I look forward to seeing the next chapter.
+
+Turn the page.
+
+-Jason
