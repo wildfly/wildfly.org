@@ -37,37 +37,45 @@ class Release
     dl_uri = URI('https://download.jboss.org')
     Net::HTTP.start(dl_uri.host, dl_uri.port, :use_ssl => dl_uri.scheme == 'https') do |http|
       {:zip => '.zip',  :tgz => '.tar.gz', :srczip => '-src.zip', :srctgz => '-src.tar.gz'}.each do |kind, suffix|
-        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/wildfly-#{version}#{suffix}")
-        release[kind] = {:url => uri, :size => compute_size(http,uri)}
+        release[kind] = kind_content(http, "https://download.jboss.org/wildfly/#{version}/wildfly-#{version}#{suffix}")
       end
       {:zip => '.zip',  :tgz => '.tar.gz', :srczip => '-src.zip', :srctgz => '-src.tar.gz'}.each do |kind, suffix|
-        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/servlet/wildfly-web-#{version}#{suffix}")
-        size = compute_size(http,uri)
-        if (size != "unknown")
+        content = kind_content(http, "https://download.jboss.org/wildfly/#{version}/servlet/wildfly-web-#{version}#{suffix}")
+        if (content[:size] != "unknown")
           release[:servlet] = {} unless release.has_key?(:servlet)
-          release[:servlet][kind] = {:url => uri, :size => size}
+          release[:servlet][kind] = content
         end
-        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/servlet/wildfly-servlet-#{version}#{suffix}")
-        size = compute_size(http,uri)
-        if (size != "unknown")
+        content = kind_content(http, "https://download.jboss.org/wildfly/#{version}/servlet/wildfly-servlet-#{version}#{suffix}")
+        if (content[:size] != "unknown")
           release[:servlet] = {} unless release.has_key?(:servlet)
-          release[:servlet][kind] = {:url => uri, :size => size}
+          release[:servlet][kind] = content
         end
       end
       if release.has_key?("updateforversion")
-        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/wildfly-#{version}-update.zip")
-        release[:update] = {:url => uri, :size => compute_size(http,uri)}
+        release[:update] = kind_content(http, "https://download.jboss.org/wildfly/#{version}/wildfly-#{version}-update.zip")
       end
       if release.has_key?("updateforversionfull")
         versionfull = release["updateforversionfull"]
-        uri = URI.parse("https://download.jboss.org/wildfly/#{version}/wildfly-#{version}-#{versionfull}-update.zip")
-        release[:updatefull] = {:url => uri, :size => compute_size(http,uri)}
+        release[:updatefull] = kind_content(http, "https://download.jboss.org/wildfly/#{version}/wildfly-#{version}-#{versionfull}-update.zip")
       end
       if release.has_key?("quickversion")
         version = release[:quickversion] 
         uri = URI.parse("https://download.jboss.org/wildfly/#{version}/quickstart-#{version}.zip")
         release[:quickstart] = {:url => uri, :size => compute_size(http,uri)}
       end
+    end
+  end
+
+  def kind_content(http, baseuri)
+    uri = URI.parse(baseuri)
+    size = compute_size(http,uri)
+    hashuri = find_hash(http, baseuri)
+    if (hashuri.nil?)
+      {:url => uri, :size => size}
+    elsif (hashuri.path.end_with?("sha1"))
+      {:url => uri, :size => size, :hashurl => hashuri, :hashtype => "SHA-1"}
+    else
+      {:url => uri, :size => size, :hashurl => hashuri, :hashtype => "MD5"}
     end
   end
 
@@ -104,6 +112,18 @@ class Release
     end
 
     sprintf("%.0f %s", bytes, units[i])
-  end  
+  end 
+
+  def find_hash(http, baseuri)
+    ['md5', 'sha1'].each do |suffix|
+      uri = URI.parse("#{baseuri}.#{suffix}")
+      response = http.get( uri.path )
+      if ( response.code == "200" and response['content-length'] )
+        return uri
+      end
+    end
+    nil
+  end
+
 end
 
