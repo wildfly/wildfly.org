@@ -8,7 +8,7 @@ sdouglas
 :source-highlighter: coderay
 
 Undertow.js 1.0.1.Final has been released. This allows you to integrate JavaScript and Java EE in your applications. There
-have been some notable changes since I first wrote about this at http://wildfly.org/news/2015/08/10/Javascript-Support-In-Wildfly/.
+have been some notable changes since I first link://wildfly.org/news/2015/08/10/Javascript-Support-In-Wildfly/[wrote about this].
 
 Websocket Support
 -----------------

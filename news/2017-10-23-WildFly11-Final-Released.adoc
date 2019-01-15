@@ -79,17 +79,17 @@ In the run-up to the release, we have been blogging about WildFly 11's features.
 [cols="1,3",options="header"]
 |===
 |Author | Title 
-|Emmanuel Hugonnet|http://wildfly.org/news/2017/09/08/Exploded-deployments/[Using exploded deployments and CLI attachments]
+|Emmanuel Hugonnet|link://wildfly.org/news/2017/09/08/Exploded-deployments/[Using exploded deployments and CLI attachments]
 |Farah Juma|https://developer.jboss.org/people/fjuma/blog/2017/09/08/getting-started-with-ejbs-and-elytron-part-1[How to secure EJBs with Elytron and invoke them from remote clients]
 |Farah Juma|https://developer.jboss.org/people/fjuma/blog/2017/09/08/getting-started-with-ejbs-and-elytron-part-2[EJB invocations from remote servers]
 |Farah Juma|https://developer.jboss.org/people/fjuma/blog/2017/09/28/how-to-use-an-elytron-sasl-plus-mechanism[How to use an Elytron SASL mechanism that supports channel binding]
 |Claudio Miranda|http://claudius.com.br/2017/09/wildfly-11-web-console-new-features[Admin/Web Console Features & Enhancements]
 |Darran Lofthouse|http://darranl.blogspot.ch/2017/09/wildfly-elytron-add-kerberos.html[WildFly Elytron - Add Kerberos Authentication to Existing Web Application]
 |Darran Lofthouse|http://darranl.blogspot.ch/2017/09/using-wildfly-elytron-with-undertow.html[Using WildFly Elytron with Undertow Standalone]
-|Brian Stansberry|http://wildfly.org/news/2017/09/29/Management-model-referential-integrity/[Management Model Referential Integrity and Suggestions]
-|Jeff Mesnil|http://wildfly.org/news/2017/10/03/Messaging-features/[Messaging features in WildFly 11]
-|Stuart Douglas|http://wildfly.org/news/2017/10/06/OpenSSL-Support-In-Wildfly/[OpenSSL & HTTP/2]
-|Ken Wills|http://wildfly.org/news/2017/10/09/Embedded-Host-Controller/[Embedded Hostcontroller]
+|Brian Stansberry|link://wildfly.org/news/2017/09/29/Management-model-referential-integrity/[Management Model Referential Integrity and Suggestions]
+|Jeff Mesnil|link://wildfly.org/news/2017/10/03/Messaging-features/[Messaging features in WildFly 11]
+|Stuart Douglas|link://wildfly.org/news/2017/10/06/OpenSSL-Support-In-Wildfly/[OpenSSL & HTTP/2]
+|Ken Wills|link://wildfly.org/news/2017/10/09/Embedded-Host-Controller/[Embedded Hostcontroller]
 |===
 
 Jira Release Notes
