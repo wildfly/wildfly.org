@@ -1,3 +1,6 @@
+- version: '16.0.0.Beta1'
+  date: '2019-02-13'
+  notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12339032
 - version: '15.0.1.Final'
   date: '2019-01-05'
   notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12340359
