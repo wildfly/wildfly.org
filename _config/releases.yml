@@ -8,7 +8,7 @@
   quickstarts: 'https://github.com/wildfly/quickstart/tree/15.0.1.Final'
 - version: '15.0.0.Final'
   date: '2018-11-30'
-  notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12339953'
+  notes: '../news/2018/12/13/WildFly15-Final-Released/'
   certified: 'true'
   quickstarts: 'https://github.com/wildfly/quickstart/tree/15.0.0.Final'
 - version: '14.0.1.Final'
