@@ -1,3 +1,8 @@
+- version: '16.0.0.Final'
+  date: '2019-02-27'
+  notes: '../news/2019/02/27/WildFly16-Final-Released/'
+  certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/16.0.0.Final'
 - version: '16.0.0.Beta1'
   date: '2019-02-13'
   notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12339032

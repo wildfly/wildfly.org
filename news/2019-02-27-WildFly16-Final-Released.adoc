@@ -1,0 +1,95 @@
+= WildFly 16 is released!
+bstansberry
+2018-12-13
+:revdate: 2019-02-27 15:00:00 -0600
+:awestruct-tags: [announcement, release]
+:awestruct-layout: blog
+:source-highlighter: coderay
+:awestruct-description: WildFly 16.0.0.Final is now available for download!
+:awestruct-otherimage: wildflycarousel_16.png
+
+WildFly 16 Final is now available link:{base_url}/downloads[for download]!
+
+
+Provisioning WildFly with Galleon
+---------------------------------
+As we continue with our link:http://lists.jboss.org/pipermail/wildfly-dev/2017-December/006250.html[quarterly delivery model], a major focus over the next few quarters will be on making WildFly as easy and productive as possible to use on the cloud, particularly on Kubernetes and OpenShift.
+
+An important requirement for the cloud is to be able to reduce the footprint of your server to what you need to run your application, eliminating unneeded runtime memory overhead, cutting down image size and reducing the possibility for security vulnerabilities. So, I'm very excited to announce Tech Preview support for use of the Galleon provisioning tool to allow you to easily provision a slimmed down server tailored toward REST applications. By easily, I mean a simple command that provisions a server that provides the technologies you want, with a correct configuration, and with unneeded libraries not present on disk. Being able to do this is an important piece of foundational technology that we'll be building upon over the course of 2019, particularly with tooling and best practices aimed at taking advantage of Galleon when creating cloud images.
+
+Galleon provisioning isn't just useful in cloud; users running on bare metal or virtualized environments can get the same benefits. Easy server slimming has been a goal for as long as I've been involved with JBoss AS!
+
+To use Galleon, link:https://github.com/wildfly/galleon/releases[download and unzip the Galleon tool].
+
+To install the latest final version of WildFly into the directory _my-wildfly-server_ call:
+
+[source,options="nowrap"]
+----
+galleon.sh install wildfly:current --dir=my-wildfly-server
+----
+
+That's not so interesting as the result is equivalent to unzipping the standard download zip. 
+
+[NOTE]
+====
+WildFly still provides the usual zip / tar.gz. Using Galleon is not required to use WildFly.
+==== 
+
+The real power comes when using the link:++https://docs.wildfly.org/galleon/#_layers++[Galleon layers] that WildFly provides to limit your installation to just the technologies you need. For example, if all you want is jaxrs and cdi:
+
+[source,options="nowrap"]
+----
+galleon.sh install wildfly:current --dir=my-wildfly-server --layers=cdi,jaxrs
+----
+
+The result is an installation that doesn't include unnecessary modules, has a correct configuration and has less than a third of the disk footprint of the standard WildFly distribution. And you don't have to worry about knowing and specifying technologies required by the ones you know you want (e.g. the servlet support that jaxrs needs). Galleon handles that for you.
+
+If you're ok with a slightly bigger footprint in order to have common WildFly Core management functionality, add the _core-server_ and _core-tools_ layers:
+
+[source,options="nowrap"]
+----
+galleon.sh install wildfly:current --dir=my-wildfly-server --layers=cdi,jaxrs,core-server,core-tools
+----
+
+WildFly 16 provides a rich set of layers oriented toward letting optimize your server for running HTTP applications. For further details, see the link:http://docs.wildfly.org/16/Admin_Guide.html#Galleon_Provisioning[WildFly Admin Guide] and the link:https://docs.wildfly.org/galleon[Galleon documentation].
+
+Please give Galleon provisioning a try and give us feedback! We'd love to hear about your use cases and how Galleon can be improved to meet them. We'll be doing more articles and blog posts explaining how to take advantage of this technology.
+
+JDK 12
+------
+While the GA version of JDK 12 has not been released yet (it is in the Release Candidate phase), we are pleased to report that WildFly 16 should run well on JDK 12 once it is GA. I'd like to especially thank Richard Opalka and Matej Novotny for their efforts in making this happen.
+
+Our goal with WildFly is to have our releases run well for most use cases on the most recent GA JDK version available on the WildFly final release date. If practical we'll try and run well on release candidates for upcoming JDK versions as well, which we've achieved with WildFly 16. By run well, I mean our main testsuite runs with no more than a few failures in areas not expected to be commonly used. (In the JDK 12 case we have no failures.) We want developers who are trying to evaluate what the latest JVM means for their applications to be able to look to WildFly as their development platform. It may not always be possible to attain this goal, but it's one we take seriously.
+
+While we do want to run well on the most recent JDK, our recommendation is that you run WildFly on the most recent long-term support release, i.e. on JDK 11 for WildFly 16.  We do considerably more testing on the LTS JDKs.
+
+WildFly 16 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 18.
+
+Please note that WildFly runs on Java 11 and 12 in classpath mode.
+
+Messaging Improvements
+----------------------
+
+* MDBs can be configured to belong to multiple delivery groups, with delivery only enabled only when all the delivery groups are active.
+* Users can use standard Java EE 8 resource definitions (annotations or xml) to define JMS resources that connect to a remote Artemis-based broker (including AMQ-7 instances).
+* Users can configure the maximum amount of memory that the embedded messaging broker can use to store messages for its addresses before they are considered "full" and
+their `address-full-policy` starts to apply (e.g. to drop messages, block producers, etc.)
+
+Clustering Improvements
+-----------------------
+
+* When WildFly servers behind a mod_cluster load balancer start they will instruct the load balancer to gracefully ramp up their load over the first minute or so of operation, instead of having the balancer send the maximum possible amount of traffic, possibly overwhelming the server.
+* Users running a cluster with HA Singleton deployments or services can connect with the CLI to any cluster member and  determine which node is the primary provider of a given deployment or service.
+
+Other Notable Items
+-------------------
+
+* You can use the CLI to list which modules are visible to a deployment. This is helpful in analyzing classloading issues.
+* In a WildFly managed domain, you can suspend and resume all of the servers managed by a particular Host Controller. Previously suspending or resuming multiple servers was limited to all servers in the domain or those in a particular server group.
+* When using Elytron, HTTP Basic authentication mechanism can be configured to only operate in 'silent mode', only sending a challenge if the request contained an authorization header.
+
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12340370[here]. Issues resolved in the WildFly Core 8 release included with WildFly 16 are available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12340978[here].
+
