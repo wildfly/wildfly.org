@@ -82,3 +82,9 @@ hpehl:
   bio: "Harald is a senior software engineer at Red Hat working on management capabilities of WildFly. He is currently leading the management console (HAL)."
   avatar: hpehl.jpg
   twitter: "haraldpehl"
+jfdenise:
+  name: "Jean-François Denise"
+  location: "France"
+  occupation: "Software Engineer"
+  bio: "Jean-François is a senior software engineer at Red Hat. He is the lead of the WildFly and Galleon command line tools."
+  avatar: jfdenise.jpg
