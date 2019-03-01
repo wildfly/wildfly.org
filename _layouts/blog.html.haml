@@ -5,7 +5,7 @@ layout: project
 .row-fluid
   .span8.post-bg
     = partial('post.html.haml', {"post" => page})
-    %a.twitter-share-button{:href=>tweet_page_url(page.title, page.author, site.base_url+page.url),:data=>{:url=>"#{site.base_url}#{page.url}"},:target=>"_blank"}
+    %a.twitter-share-button{:href=>tweet_page_url(page.title, page.author, site.base_url+page.url),:target=>"_blank"}
       %span Tweet
     %script{:type => 'text/javascript'}
     :javascript
