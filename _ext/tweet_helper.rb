@@ -15,7 +15,11 @@ module Awestruct::Extensions::TweetHelper
       msg = msg[0...allowedLen] + "..."
     end
     msg = "https://twitter.com/intent/tweet/?text=" + URI.encode_www_form([msg])
-    msg = link ? msg + "&url=" + URI.encode_www_form([link]) : msg
+    abs_link = link
+    if link
+      abs_link = link.start_with?("http") ? link : "https:" + link
+    end
+    msg = abs_link ? msg + "&url=" + URI.encode_www_form([abs_link]) : msg
     handle ? msg + "&via=" + handle : msg
   end
 end
