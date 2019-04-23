@@ -88,3 +88,9 @@ jfdenise:
   occupation: "Software Engineer"
   bio: "Jean-François is a senior software engineer at Red Hat. He is the lead of the WildFly and Galleon command line tools."
   avatar: jfdenise.jpg
+kkhan:
+  name: "Kabir Khan"
+  location: "United Kingdom"
+  occupation: "Software Engneer"
+  bio: "Kabir started using JBoss back in 2000, and joined the team in 2004. Since then he has worked on JBoss AS/WildFly as a core developer."
+  avatar: kkhan.jpg
