@@ -28,6 +28,7 @@ description: List of releases available for download
     %th License
     %th Size
     %th Format
+    %th Checksum
   %tbody
     - for release in site.releases
       %tr
@@ -43,6 +44,10 @@ description: List of releases available for download
           %a{:href=>release[:zip][:url]} 
             %i.icon-download-alt
             ZIP
+        %td
+          - if release[:zip].has_key?(:hashurl)
+            %a{:href=>release[:zip][:hashurl],:type=>"text/plain"} 
+              = release[:zip][:hashtype]
       %tr
         %td
         %td 
@@ -53,6 +58,10 @@ description: List of releases available for download
           %a{:href=>release[:tgz][:url]}
             %i.icon-download-alt
             TGZ
+        %td
+          - if release[:tgz].has_key?(:hashurl)
+            %a{:href=>release[:tgz][:hashurl],:type=>"text/plain"} 
+              = release[:tgz][:hashtype]
       - if release.has_key?("updateforversion")
         %tr
           %td
@@ -67,6 +76,10 @@ description: List of releases available for download
             %a{:href=>release[:update][:url]} 
               %i.icon-download-alt
               ZIP
+          %td
+            - if release[:update].has_key?(:hashurl)
+              %a{:href=>release[:update][:hashurl],:type=>"text/plain"} 
+                = release[:update][:hashtype]
       - if release.has_key?("updateforversionfull")
         %tr
           %td
@@ -78,6 +91,10 @@ description: List of releases available for download
             %a{:href=>release[:updatefull][:url]} 
               %i.icon-download-alt
               ZIP
+          %td
+            - if release[:updatefull].has_key?(:hashurl)
+              %a{:href=>release[:updatefull][:hashurl],:type=>"text/plain"} 
+                = release[:updatefull][:hashtype]
       - if release.has_key?(:servlet)
         %tr
           %td
@@ -89,6 +106,10 @@ description: List of releases available for download
             %a{:href=>release[:servlet][:zip][:url]} 
               %i.icon-download-alt
               ZIP
+          %td
+            - if release[:servlet][:zip].has_key?(:hashurl)
+              %a{:href=>release[:servlet][:zip][:hashurl],:type=>"text/plain"} 
+                = release[:servlet][:zip][:hashtype]
         %tr
           %td
           %td 
@@ -99,6 +120,10 @@ description: List of releases available for download
             %a{:href=>release[:servlet][:tgz][:url]}
               %i.icon-download-alt
               TGZ
+          %td
+            - if release[:servlet][:tgz].has_key?(:hashurl)
+              %a{:href=>release[:servlet][:tgz][:hashurl],:type=>"text/plain"} 
+                = release[:servlet][:tgz][:hashtype]
       %tr
         %td 
         %td 
@@ -109,6 +134,10 @@ description: List of releases available for download
           %a{:href=>release[:srczip][:url]}
             %i.icon-download-alt
             ZIP
+        %td
+          - if release[:srczip].has_key?(:hashurl)
+            %a{:href=>release[:srczip][:hashurl],:type=>"text/plain"} 
+              = release[:srczip][:hashtype]
       %tr
         %td
         %td  
@@ -119,6 +148,10 @@ description: List of releases available for download
           %a{:href=>release[:srctgz][:url]}
             %i.icon-download-alt
             TGZ
+        %td
+          - if release[:srctgz].has_key?(:hashurl)
+            %a{:href=>release[:srctgz][:hashurl],:type=>"text/plain"} 
+              = release[:srctgz][:hashtype]
       - if release.has_key?("quickversion")
         %tr
           %td 
@@ -131,6 +164,7 @@ description: List of releases available for download
               %i.icon-download-alt
               ZIP
             %a{:href=>"http://github.com/wildfly/quickstart"} (git)
+          %td
       - if release.has_key?("quickstarts")
         %tr
           %td 
@@ -141,7 +175,8 @@ description: List of releases available for download
           %td
             %a{:href=>release["quickstarts"]}
               %i.icon-download-alt
-              Source
+              Source 
+          %td
       %tr
         %td 
         %td 
@@ -151,7 +186,8 @@ description: List of releases available for download
         %td
           %a{:href=>release[:notes]} 
             %i.icon-pencil 
-              Notes
+              Notes 
+        %td
       %tr
-        - for i in 0..5
+        - for i in 0..6
           %td &nbsp;
