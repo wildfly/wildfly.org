@@ -1,6 +1,6 @@
-- version: '17.0.0.Alpha1'
-  date: '2019-05-15'
-  notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12340605
+- version: '17.0.0.Beta1'
+  date: '2019-05-24'
+  notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12342012
 - version: '16.0.0.Final'
   date: '2019-02-27'
   notes: '../news/2019/02/27/WildFly16-Final-Released/'
