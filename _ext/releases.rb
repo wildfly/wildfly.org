@@ -115,7 +115,7 @@ class Release
   end 
 
   def find_hash(http, baseuri)
-    ['md5', 'sha1'].each do |suffix|
+    ['sha1', 'md5'].each do |suffix|
       uri = URI.parse("#{baseuri}.#{suffix}")
       response = http.get( uri.path )
       if ( response.code == "200" and response['content-length'] )
