@@ -85,12 +85,12 @@ profiles:
     project_images_url: https://static.jboss.org/wildfly/images
     bootstrap_css_url: https://static.jboss.org/theme/css/bootstrap-community/2.3.1.1/bootstrap-community
     bootstrap_js_url: https://static.jboss.org/wildfly/scripts/bootstrap-community
-    base_url: //wildfly.org/staging
+    base_url: https://wildfly.org/staging
     wget:
       enabled: false
     asciidoctor:
       :attributes:
-        base_url: //wildfly.org/staging
+        base_url: https://wildfly.org/staging
         imagesdir: /staging/images
   production:
     minified: .min
@@ -103,10 +103,10 @@ profiles:
     project_images_url: https://static.jboss.org/wildfly/images
     bootstrap_css_url: https://static.jboss.org/theme/css/bootstrap-community/2.3.1.1/bootstrap-community
     bootstrap_js_url: https://static.jboss.org/wildfly/scripts/bootstrap-community
-    base_url: //wildfly.org
+    base_url: https://wildfly.org
     wget:
       enabled: false
     asciidoctor:
       :attributes:
-        base_url: //wildfly.org
+        base_url: https://wildfly.org
         imagesdir: /images

@@ -44,7 +44,7 @@ Start logstash with the configuration file we just created `./bin/logstash agent
 
 ## Configure WildFly
 
-If you don't have a local install of WildFly you'll want to link://wildfly.org/downloads/[download] a recent version. In my example I'll be use http://download.jboss.org/wildfly/9.0.1.Final/wildfly-9.0.1.Final.zip[WildFly 9.0.1.Final]. However any other version should work the same.
+If you don't have a local install of WildFly you'll want to link:https://wildfly.org/downloads/[download] a recent version. In my example I'll be use http://download.jboss.org/wildfly/9.0.1.Final/wildfly-9.0.1.Final.zip[WildFly 9.0.1.Final]. However any other version should work the same.
 
 We also need to download the https://repository.jboss.org/nexus/service/local/repositories/releases/content/org/jboss/logmanager/jboss-logmanager-ext/1.0.0.Alpha3/jboss-logmanager-ext-1.0.0.Alpha3.jar[jboss-logmanager-ext] library so that we can install it as a module. This library includes the formatter and handler we'll use for logging.
 

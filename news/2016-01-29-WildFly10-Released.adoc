@@ -15,7 +15,7 @@ As with WildFly 8 and WildFly 9, WildFly 10 implements the Java EE 7 Full and We
 
 Builds on WildFly 9
 -------------------
-In addition to the key features mentioned below, this release includes all the major features from 9, such as link://wildfly.org/news/2015/07/02/WildFly9-Final-Released/[HTTP/2 support and a built in load-balancer].
+In addition to the key features mentioned below, this release includes all the major features from 9, such as link:https://wildfly.org/news/2015/07/02/WildFly9-Final-Released/[HTTP/2 support and a built in load-balancer].
 
 
 Java 8+
@@ -37,7 +37,7 @@ JavaScript Support with Hot Reloading
 -------------------------------------
 WildFly 10 includes the Undertow JS project, which allows you to write server side scripts that can pull in CDI beans and JPA Entity Beans. This can be quite useful for throwing together a quick view layer (perhaps using a templating language like Mustache, or a framework like Angular), or quickly developing a REST endpoint. You can edit the JS files live on the system, and they are dynamically reloaded, without having to redeploy your application.
 
-For more details see the following blog post: link://wildfly.org/news/2015/08/10/Javascript-Support-In-Wildfly/[Using Server Side Javascript with Wildfly]
+For more details see the following blog post: link:https://wildfly.org/news/2015/08/10/Javascript-Support-In-Wildfly/[Using Server Side Javascript with Wildfly]
 
 
 HA Singleton Deployments
