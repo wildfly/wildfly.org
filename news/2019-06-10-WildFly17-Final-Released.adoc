@@ -55,7 +55,7 @@ Our goal with WildFly is to have our releases run well for most use cases on the
 
 Although JDK 13 is still in the EA stages, Richard Opalka continues to informally test WildFly against the EA releases as they come out and he reports that it is working well.
 
-While we do want to run well on the most recent JDK, our recommendation is that you run WildFly on the most recent long-term support release, i.e. on JDK 11 for WildFly 16.  We do considerably more testing on the LTS JDKs.
+While we do want to run well on the most recent JDK, our recommendation is that you run WildFly on the most recent long-term support release, i.e. on JDK 11 for WildFly 17.  We do considerably more testing on the LTS JDKs.
 
 WildFly 17 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 18, and probably beyond.
 
