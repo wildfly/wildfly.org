@@ -1,6 +1,6 @@
 = WildFly 18 S2I image has been released on quay.io
 jfdenise
-2019-10-04
+2019-10-07
 :awestruct-tags: [wildfly, galleon]
 :awestruct-layout: blog
 :source-highlighter: coderay
