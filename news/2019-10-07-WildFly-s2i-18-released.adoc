@@ -60,7 +60,8 @@ Build env variables:
 
 * _MAVEN_ARGS_APPEND=-Dmaven.compiler.source=1.6 -Dmaven.compiler.target=1.6_
 
-* _GALLEON_PROVISION_LAYERS=cloud-server,keycloak_ (Optional, default server supports Keycloak, only use Galleon to create trimmed down server). 
+* _GALLEON_PROVISION_LAYERS=cloud-server,keycloak_ (Optional, default server supports Keycloak, only use Galleon to create trimmed down server). NB: If using galleon layers, be sure
+to update the quickstart to use the _keycloak_ security domain (for example link:https://github.com/jfdenise/redhat-sso-quickstarts/blob/7.0.x-ose/app-profile-jee-jsp/src/main/webapp/WEB-INF/jboss-web.xml[jboss-web.xml]). _other_ security domain is pre-configured by the _cloud-profile_ layer and can't be used for Keycloak.
 
 Deployment env variables:
 
@@ -76,7 +77,8 @@ Deployment env variables:
 
 * _HOSTNAME_HTTP=<application hostname>_ (for example: my-app-myproject.192.168.42.233.nip.io)
 
-* _SSO_SECURITY_DOMAIN=other_ (by default security domain is named _keycloak_, the quickstart relies on the _other_ default security domain.
+* _SSO_SECURITY_DOMAIN=other_ (by default security domain is named _keycloak_, the quickstart relies on the _other_ default security domain. 
+NB: If using Galleon with an updated quickstart, do not set this env variable).
 
 
 Build your application. Once deployed you can access to _<your external route>/app-profile-jsp_, click on _Login_ and use _admin_ user credentials.
