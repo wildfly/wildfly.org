@@ -95,8 +95,8 @@ kkhan:
   bio: "Kabir started using JBoss back in 2000, and joined the team in 2004. Since then he has worked on JBoss AS/WildFly as a core developer."
   avatar: kkhan.jpg
 yborgess:
-    name: "Yeray Borges"
-    location: "Spain"
-    occupation: "Software Engineer"
-    bio: "Yeray Borges is a software engineer at Red Hat and joined the team in 2018."
-    avatar: yborgess.jpg
+  name: "Yeray Borges"
+  location: "Spain"
+  occupation: "Software Engineer"
+  bio: "Yeray Borges is a software engineer at Red Hat and joined to the team in 2017. He has been contributing to the WildFly server source code since 2016."
+  avatar: yborgess.jpg
