@@ -91,6 +91,12 @@ jfdenise:
 kkhan:
   name: "Kabir Khan"
   location: "United Kingdom"
-  occupation: "Software Engneer"
+  occupation: "Software Engineer"
   bio: "Kabir started using JBoss back in 2000, and joined the team in 2004. Since then he has worked on JBoss AS/WildFly as a core developer."
   avatar: kkhan.jpg
+yborgess:
+    name: "Yeray Borges"
+    location: "Spain"
+    occupation: "Software Engineer"
+    bio: "Yeray Borges is a software engineer at Red Hat and joined the team in 2018."
+    avatar: yborgess.jpg
