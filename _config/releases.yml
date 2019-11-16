@@ -2,6 +2,7 @@
   date: '2019-11-14'
   notes: '../news/2019/11/14/WildFly-1801-Released/'
   certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/18.0.1.Final'
 - version: '18.0.0.Final'
   date: '2019-10-03'
   notes: '../news/2019/10/03/WildFly18-Final-Released/'
