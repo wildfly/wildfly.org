@@ -38,5 +38,5 @@ The Elytron subsystem now provides support for the Servlet Container Profile of 
 
 Jira Release Notes
 ------------------
-The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12339953[here]. Issues resolved in the WildFly Core 7 release included with WildFly 15 are available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12340009[here].
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12339953[here]. Issues resolved in the WildFly Core 7 release included with WildFly 15 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12340009[here].
 

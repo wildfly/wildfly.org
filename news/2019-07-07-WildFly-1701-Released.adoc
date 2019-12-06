@@ -14,7 +14,7 @@ We had a number of important bug fixes ready to go so we decided to do a micro r
 
 == Jira Release Notes
 
-The full list of issues resolved in WildFly 17.0.1 is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12342471[here]. Issues resolved in the WildFly Core 9.0.2 release included with WildFly 17.0.1 are available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12342214[here].
+The full list of issues resolved in WildFly 17.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342471[here]. Issues resolved in the WildFly Core 9.0.2 release included with WildFly 17.0.1 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342214[here].
 
 == Using Galleon to Update a WildFly Installation
 

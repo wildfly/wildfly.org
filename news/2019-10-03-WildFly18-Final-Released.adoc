@@ -84,7 +84,7 @@ Management
 ----------
 
 * The logging subsystem now supports link:https://github.com/wildfly/wildfly-proposals/blob/master/logging/WFCORE-4336-custom-filters.adoc[configuration of custom logging filters], allowing for a higher degree of control over logging. As an example a filter could be created to filter messages based on the cause of the log message.
-* The HAL web console includes link:https://issues.jboss.org/issues/?filter=12341194[numerous new features and enhancements].
+* The HAL web console includes link:https://issues.redhat.com/issues/?filter=12341194[numerous new features and enhancements].
 
 
 WildFly in the Cloud
@@ -122,6 +122,6 @@ At this point it is uncertain whether we'll be able to say that the release of W
 
 Jira Release Notes
 ------------------
-The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12342528[here]. Issues resolved in the WildFly Core 10 releases included with WildFly 18 are available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12342773[here].
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342528[here]. Issues resolved in the WildFly Core 10 releases included with WildFly 18 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342773[here].
 
 Enjoy, and as always, thank you so much for your support of WildFly!
