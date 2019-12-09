@@ -44,8 +44,8 @@ The base architecture of WildFly has been fully separated, and is now versioned 
 [options="header"] 
 |============================
 |Ditribution|Location|JIRA Location
-|Core|link:https://github.com/wildfly/wildfly-core[wildfly/wildfly-core · GitHub]|link:https://issues.jboss.org/browse/WFCORE[WildFly Core - JBoss Issue Tracker]
-|Full & Servlet|link:https://github.com/wildfly/wildfly[wildfly/wildfly · GitHub]|link:https://issues.jboss.org/browse/WFLY[WildFly - JBoss Issue Tracker]
+|Core|link:https://github.com/wildfly/wildfly-core[wildfly/wildfly-core · GitHub]|link:https://issues.redhat.com/browse/WFCORE[WildFly Core - JBoss Issue Tracker]
+|Full & Servlet|link:https://github.com/wildfly/wildfly[wildfly/wildfly · GitHub]|link:https://issues.redhat.com/browse/WFLY[WildFly - JBoss Issue Tracker]
 |============================
  
 Logging

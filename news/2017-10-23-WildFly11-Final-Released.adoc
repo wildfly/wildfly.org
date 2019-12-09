@@ -94,7 +94,7 @@ In the run-up to the release, we have been blogging about WildFly 11's features.
 
 Jira Release Notes
 ------------------
-The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12335280[here].
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12335280[here].
 
 What's Next
 -----------

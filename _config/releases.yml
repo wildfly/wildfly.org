@@ -10,7 +10,7 @@
   quickstarts: 'https://github.com/wildfly/quickstart/tree/18.0.0.Final'
 - version: '18.0.0.Beta1'
   date: '2019-09-04'
-  notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12342012
+  notes: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342012
 - version: '17.0.1.Final'
   date: '2019-07-03'
   notes: '../news/2019/07/07/WildFly-1701-Released/'
@@ -23,7 +23,7 @@
   quickstarts: 'https://github.com/wildfly/quickstart/tree/17.0.0.Final'
 - version: '17.0.0.Beta1'
   date: '2019-05-24'
-  notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12342012
+  notes: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342012
 - version: '16.0.0.Final'
   date: '2019-02-27'
   notes: '../news/2019/02/27/WildFly16-Final-Released/'
@@ -31,7 +31,7 @@
   quickstarts: 'https://github.com/wildfly/quickstart/tree/16.0.0.Final'
 - version: '15.0.1.Final'
   date: '2019-01-05'
-  notes: https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12340359
+  notes: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12340359
   certified: 'true'
   quickstarts: 'https://github.com/wildfly/quickstart/tree/15.0.1.Final'
 - version: '15.0.0.Final'
@@ -41,7 +41,7 @@
   quickstarts: 'https://github.com/wildfly/quickstart/tree/15.0.0.Final'
 - version: '14.0.1.Final'
   date: '2018-09-05'
-  notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12339042'
+  notes: 'https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12339042'
   certified: 'true'
   quickstarts: 'https://github.com/wildfly/quickstart/tree/14.0.0.Final'
 - version: '14.0.0.Final'
@@ -77,7 +77,7 @@
   quickstarts: 'https://github.com/wildfly/quickstart/tree/10.x'
 - version: '9.0.2.Final'
   date: '2015-10-26'
-  notes: 'https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12327709'
+  notes: 'https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12327709'
   certified: 'true'
   quickstarts: 'https://github.com/wildfly/quickstart/tree/9.x'
   updateforversion: '9.0.1.Final'

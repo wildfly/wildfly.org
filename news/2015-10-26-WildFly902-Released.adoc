@@ -10,4 +10,4 @@ WildFly 9.0.2 is now available link:{base_url}/downloads[for download].
 
 This release includes a security update, bug fixes, and a few component updates.
 
-For more information, see the link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12327709[JIRA release notes].
+For more information, see the link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12327709[JIRA release notes].

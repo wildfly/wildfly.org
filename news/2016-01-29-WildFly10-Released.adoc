@@ -90,20 +90,20 @@ The following table has the complete list of issues resolved against the "full" 
 [options="header", cols="18,20,1"]
 |==========================
 |Release|Notes|Issues Resolved
-|10.0.0.Final   |link:https://issues.jboss.org/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12328857[Full JIRA Release Notes]|71
-|10.0.0.CR5   |link:https://issues.jboss.org/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12328604[Full JIRA Release Notes]|156
-|10.0.0.CR4   |link:https://issues.jboss.org/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327535[Full JIRA Release Notes]|71
-|10.0.0.CR3   |link:https://issues.jboss.org/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12328452[Full JIRA Release Notes]|29
-|10.0.0.CR2   |link:https://issues.jboss.org/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327534[Full JIRA Release Notes]|40
-|10.0.0.CR1   |link:https://issues.jboss.org/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327161[Full JIRA Release Notes]| 107
-|10.0.0.Beta2 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327774[Full JIRA Release Notes]|42
-|10.0.0.Beta1 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327160[Full JIRA Release Notes]|63
-|10.0.0.Alpha6|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327640[Full JIRA Release Notes]|39
-|10.0.0.Alpha5|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327579[Full JIRA Release Notes]|41
-|10.0.0.Alpha4|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327286[Full JIRA Release Notes]|37
-|10.0.0.Alpha3|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327285[Full JIRA Release Notes]|33
-|10.0.0.Alpha2|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327284[Full JIRA Release Notes]|10
-|10.0.0.Alpha1|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327159[Full JIRA Release Notes]|30
+|10.0.0.Final   |link:https://issues.redhat.com/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12328857[Full JIRA Release Notes]|71
+|10.0.0.CR5   |link:https://issues.redhat.com/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12328604[Full JIRA Release Notes]|156
+|10.0.0.CR4   |link:https://issues.redhat.com/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327535[Full JIRA Release Notes]|71
+|10.0.0.CR3   |link:https://issues.redhat.com/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12328452[Full JIRA Release Notes]|29
+|10.0.0.CR2   |link:https://issues.redhat.com/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327534[Full JIRA Release Notes]|40
+|10.0.0.CR1   |link:https://issues.redhat.com/jira/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327161[Full JIRA Release Notes]| 107
+|10.0.0.Beta2 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327774[Full JIRA Release Notes]|42
+|10.0.0.Beta1 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327160[Full JIRA Release Notes]|63
+|10.0.0.Alpha6|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327640[Full JIRA Release Notes]|39
+|10.0.0.Alpha5|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327579[Full JIRA Release Notes]|41
+|10.0.0.Alpha4|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327286[Full JIRA Release Notes]|37
+|10.0.0.Alpha3|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327285[Full JIRA Release Notes]|33
+|10.0.0.Alpha2|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327284[Full JIRA Release Notes]|10
+|10.0.0.Alpha1|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12327159[Full JIRA Release Notes]|30
 |========================== 
  
 
@@ -115,40 +115,40 @@ The following table has the complete list of issues resolved against the "core" 
 [options="header", cols="18,20,1"]
 |==========================
 |Release|Notes|Issues Resolve
-|2.0.8.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329400[Full JIRA Release Notes]|26
-|2.0.7.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329385[Full JIRA Release Notes]|2
-|2.0.6.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329259[Full JIRA Release Notes]|9
-|2.0.5.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329068[Full JIRA Release Notes]|9
-|2.0.5.CR1|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328936[Full JIRA Release Notes]|19
-|2.0.4.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328907[Full JIRA Release Notes]|12
-|2.0.3.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328872[Full JIRA Release Notes]|11
-|2.0.2.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328667[Full JIRA Release Notes]|16
-|2.0.1.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328766[Full JIRA Release Notes]|2
-|2.0.0.Final|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328659[Full JIRA Release Notes]|7
-|2.0.0.CR9|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328605[Full JIRA Release Notes]|12
-|2.0.0.CR7|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328357[Full JIRA Release Notes]|34
-|2.0.0.CR6|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328389[Full JIRA Release Notes]|16
-|2.0.0.CR5|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328373[Full JIRA Release Notes]|4
-|2.0.0.CR4|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328359[Full JIRA Release Notes]|6
-|2.0.0.CR2|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328356[Full JIRA Release Notes]|16
-|2.0.0.CR1|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328200[Full JIRA Release Notes]|6
-|2.0.0.Beta7|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328164[Full JIRA Release Notes]|20
-|2.0.0.Beta6|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12326713[Full JIRA Release Notes]|16
-|2.0.0.Beta5|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327877[Full JIRA Release Notes]|21
-|2.0.0.Beta4|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327804[Full JIRA Release Notes]|1
-|2.0.0.Beta3|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327764[Full JIRA Release Notes]|13
-|2.0.0.Beta2|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327763[Full JIRA Release Notes]|5
-|2.0.0.Beta1|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12326931[Full JIRA Release Notes]|2
-|2.0.0.Alpha13|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327768[Full JIRA Release Notes]|10
-|2.0.0.Alpha12|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327666[Full JIRA Release Notes]|4
-|2.0.0.Alpha11|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327639[Full JIRA Release Notes]|14
-|2.0.0.Alpha10|link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327609[Full JIRA Release Notes]|9
-|2.0.0.Alpha9 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327608[Full JIRA Release Notes]|31
-|2.0.0.Alpha8 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327607[Full JIRA Release Notes]|9
-|2.0.0.Alpha6 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327500[Full JIRA Release Notes]|14
-|2.0.0.Alpha5 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327266[Full JIRA Release Notes]|26
-|2.0.0.Alpha4 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327265[Full JIRA Release Notes]|10
-|2.0.0.Alpha3 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327264[Full JIRA Release Notes]|18
-|2.0.0.Alpha2 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327373[Full JIRA Release Notes]|4
-|2.0.0.Alpha1 |link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12326712[Full JIRA Release Notes]|12
+|2.0.8.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329400[Full JIRA Release Notes]|26
+|2.0.7.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329385[Full JIRA Release Notes]|2
+|2.0.6.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329259[Full JIRA Release Notes]|9
+|2.0.5.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12329068[Full JIRA Release Notes]|9
+|2.0.5.CR1|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328936[Full JIRA Release Notes]|19
+|2.0.4.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328907[Full JIRA Release Notes]|12
+|2.0.3.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328872[Full JIRA Release Notes]|11
+|2.0.2.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328667[Full JIRA Release Notes]|16
+|2.0.1.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328766[Full JIRA Release Notes]|2
+|2.0.0.Final|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328659[Full JIRA Release Notes]|7
+|2.0.0.CR9|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328605[Full JIRA Release Notes]|12
+|2.0.0.CR7|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328357[Full JIRA Release Notes]|34
+|2.0.0.CR6|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328389[Full JIRA Release Notes]|16
+|2.0.0.CR5|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328373[Full JIRA Release Notes]|4
+|2.0.0.CR4|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328359[Full JIRA Release Notes]|6
+|2.0.0.CR2|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328356[Full JIRA Release Notes]|16
+|2.0.0.CR1|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328200[Full JIRA Release Notes]|6
+|2.0.0.Beta7|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12328164[Full JIRA Release Notes]|20
+|2.0.0.Beta6|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12326713[Full JIRA Release Notes]|16
+|2.0.0.Beta5|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327877[Full JIRA Release Notes]|21
+|2.0.0.Beta4|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327804[Full JIRA Release Notes]|1
+|2.0.0.Beta3|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327764[Full JIRA Release Notes]|13
+|2.0.0.Beta2|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327763[Full JIRA Release Notes]|5
+|2.0.0.Beta1|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12326931[Full JIRA Release Notes]|2
+|2.0.0.Alpha13|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327768[Full JIRA Release Notes]|10
+|2.0.0.Alpha12|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327666[Full JIRA Release Notes]|4
+|2.0.0.Alpha11|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327639[Full JIRA Release Notes]|14
+|2.0.0.Alpha10|link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327609[Full JIRA Release Notes]|9
+|2.0.0.Alpha9 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327608[Full JIRA Release Notes]|31
+|2.0.0.Alpha8 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327607[Full JIRA Release Notes]|9
+|2.0.0.Alpha6 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327500[Full JIRA Release Notes]|14
+|2.0.0.Alpha5 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327266[Full JIRA Release Notes]|26
+|2.0.0.Alpha4 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327265[Full JIRA Release Notes]|10
+|2.0.0.Alpha3 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327264[Full JIRA Release Notes]|18
+|2.0.0.Alpha2 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12327373[Full JIRA Release Notes]|4
+|2.0.0.Alpha1 |link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12326712[Full JIRA Release Notes]|12
 |================

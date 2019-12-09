@@ -77,5 +77,5 @@ Also notable is that CLI tab completion can now tab complete attribute reference
 
 Jira Release Notes
 ------------------
-The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12328764[here].
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12328764[here].
 

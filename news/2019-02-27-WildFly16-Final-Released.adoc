@@ -91,5 +91,5 @@ Other Notable Items
 
 Jira Release Notes
 ------------------
-The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12340370[here]. Issues resolved in the WildFly Core 8 release included with WildFly 16 are available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12340978[here].
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12340370[here]. Issues resolved in the WildFly Core 8 release included with WildFly 16 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12340978[here].
 

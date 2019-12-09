@@ -23,7 +23,7 @@ A major focus will be on making WildFly as easy and productive as possible to us
  ** Enhancements to the Galleon tooling for creating feature packs.
  ** Fleshing out the image build processes. 
  * Adding an link:https://launch.openshift.io/launch/[openshift.io launcher] for WildFly and enhancing it as best practices for cloud-native application development evolve.
- * Improved support for offloading session caching to an external Infinispan caching service by using a link:https://issues.jboss.org/browse/WFLY-7719[HotRod-based distributed session manager].
+ * Improved support for offloading session caching to an external Infinispan caching service by using a link:https://issues.redhat.com/browse/WFLY-7719[HotRod-based distributed session manager].
  
 Jakarta EE
 ----------
@@ -41,13 +41,13 @@ Other Items
 Besides the broader topics I've touched on above, there are always individual items that are in progress. Here are a few noteworthy ones:
 
  * Support for messaging clusters behind http load balancers by disabling automatic topology updates on clients. (This allows the client to continue to address the load balancer rather than trying to communicate with the servers behind the load balancer.)
- * link:https://issues.jboss.org/browse/WFLY-6143[WFLY-6143] -- Ability to configure server-side EJB interceptors that should apply to all deployments. Client-side interceptors are link:https://issues.jboss.org/browse/WFLY-6144[also being considered].
- * link:https://issues.jboss.org/browse/WFCORE-1295[WFCORE-1295] -- Support for expression resolution for deployment descriptors parsed by WildFly Core, e.g. jboss-deployment-structure.xml and permissions.xml.
- * link:https://issues.jboss.org/browse/WFCORE-4227[WFCORE-4227] -- Ability for the CLI SSL security commands to be able to obtain a server certificate from Let's Encrypt.
+ * link:https://issues.redhat.com/browse/WFLY-6143[WFLY-6143] -- Ability to configure server-side EJB interceptors that should apply to all deployments. Client-side interceptors are link:https://issues.redhat.com/browse/WFLY-6144[also being considered].
+ * link:https://issues.redhat.com/browse/WFCORE-1295[WFCORE-1295] -- Support for expression resolution for deployment descriptors parsed by WildFly Core, e.g. jboss-deployment-structure.xml and permissions.xml.
+ * link:https://issues.redhat.com/browse/WFCORE-4227[WFCORE-4227] -- Ability for the CLI SSL security commands to be able to obtain a server certificate from Let's Encrypt.
  * In the clustering area:
- ** link:https://issues.jboss.org/browse/WFLY-5550[WFLY-5550] -- A separate subsystem for configuring distributed web session managers. This will help users avoid common configuration mistakes, and is also a prerequisite for the aforementioned link:https://issues.jboss.org/browse/WFLY-7719[HotRod-based distributed session manager] and for...
- ** link:https://issues.jboss.org/browse/WFLY-6944[WFLY-6944] -- Support for encoding web session affinity using multiple routes, if supported by the load balancer.
- ** https://issues.jboss.org/browse/WFLY-11098[WFLY-11098] -- Support for Singleton Service election listeners.
+ ** link:https://issues.redhat.com/browse/WFLY-5550[WFLY-5550] -- A separate subsystem for configuring distributed web session managers. This will help users avoid common configuration mistakes, and is also a prerequisite for the aforementioned link:https://issues.redhat.com/browse/WFLY-7719[HotRod-based distributed session manager] and for...
+ ** link:https://issues.redhat.com/browse/WFLY-6944[WFLY-6944] -- Support for encoding web session affinity using multiple routes, if supported by the load balancer.
+ ** https://issues.redhat.com/browse/WFLY-11098[WFLY-11098] -- Support for Singleton Service election listeners.
 
 Future Work
 -----------
@@ -62,7 +62,7 @@ I suspect anything on this would be in WildFly 18 or later.
 WildFly Feature Delivery Process / Following Development
 --------------------------------------------------------
 
-I'd love to have input both into our roadmap and into the requirements for the implementations of features. If you're interested in following WildFly feature development one thing to do is to monitor the link:https://issues.jboss.org/projects/WFLY/summary[WFLY] and link:https://issues.jboss.org/projects/WFCORE/summary[WFCORE] projects in JIRA. Beyond that I encourage you to subscribe to the link:https://lists.jboss.org/mailman/listinfo/wildfly-dev[wildfly-dev mailing list]. It's relatively low traffic, and I've been encouraging folks to post a brief note to the list when work on a new feature kicks off. So that's a good way to hear early on about work to which you may have something to add.
+I'd love to have input both into our roadmap and into the requirements for the implementations of features. If you're interested in following WildFly feature development one thing to do is to monitor the link:https://issues.redhat.com/projects/WFLY/summary[WFLY] and link:https://issues.redhat.com/projects/WFCORE/summary[WFCORE] projects in JIRA. Beyond that I encourage you to subscribe to the link:https://lists.jboss.org/mailman/listinfo/wildfly-dev[wildfly-dev mailing list]. It's relatively low traffic, and I've been encouraging folks to post a brief note to the list when work on a new feature kicks off. So that's a good way to hear early on about work to which you may have something to add.
 
 When we went to the quarterly time-boxed release model, we formalized our feature development process quite a bit. In order to reliably release on time, we needed to be sure that features were truly ready for release before they ever got merged. No more merging things that were 90% done with the expectation of further improvements before the final release. To help facilitate this we started requiring the creation of an asciidoc analysis document at the start of feature work. This document is meant to cover:
 

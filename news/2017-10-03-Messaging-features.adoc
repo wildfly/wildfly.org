@@ -116,4 +116,4 @@ The `messaging-activemq` subsystem has been integrated with Elytron to provide i
 == Bug fixes
 
 There were also many many messaging bug fixes since last WildFly release.
-However if you find any new issues or want to request enhancements, do not hesitate to use http://issues.jboss.org/browse/WFLY[WildFly issue tracker].
+However if you find any new issues or want to request enhancements, do not hesitate to use http://issues.redhat.com/browse/WFLY[WildFly issue tracker].

@@ -42,7 +42,7 @@ As we continue with our link:http://lists.jboss.org/pipermail/wildfly-dev/2017-D
 
 First, there's now a launcher allowing you to use WildFly as a backend runtime at https://launch.openshift.io !
 
-Second, I'm very pleased to announce the first release of our link:https://issues.jboss.org/browse/WFLY-11824[WildFly Operator for Kubernetes/OpenShift]. It's link:https://operatorhub.io/operator/wildfly[available at operatorhub.io] -- try it out! Or even better lend a hand at https://github.com/wildfly/wildfly-operator . This is a key step in making it easier to manage WildFly-based applications in the cloud, with more to come.
+Second, I'm very pleased to announce the first release of our link:https://issues.redhat.com/browse/WFLY-11824[WildFly Operator for Kubernetes/OpenShift]. It's link:https://operatorhub.io/operator/wildfly[available at operatorhub.io] -- try it out! Or even better lend a hand at https://github.com/wildfly/wildfly-operator . This is a key step in making it easier to manage WildFly-based applications in the cloud, with more to come.
 
 Finally, the Galleon-driven cloud image prototype work that link:https://wildfly.org/news/2019/03/01/Galleon_Openshift/[Jean-Francois Denise described in March] is making very good progress. It's leading to the next generation of link:https://github.com/wildfly/wildfly-s2i[source-to-image (s2i) for WildFly]. Later this week Jean-Francois will be uploading WildFly 17-based images to link:https://quay.io/organization/wildfly[quay.io]. In the meantime, I encourage you to link:https://github.com/wildfly/wildfly-s2i/blob/master/README.md[learn more about these efforts] or even have a go at building the images yourself.
 
@@ -64,6 +64,6 @@ Please note that WildFly runs on Java 11, 12 and 13 in classpath mode.
 
 Jira Release Notes
 ------------------
-The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12341151[here]. Issues resolved in the WildFly Core 9 releases included with WildFly 17 are available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12342171[here] and link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12315422&version=12342201[here].
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12341151[here]. Issues resolved in the WildFly Core 9 releases included with WildFly 17 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342171[here] and link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342201[here].
 
 Enjoy, and as always, thank you so much for your support of WildFly!

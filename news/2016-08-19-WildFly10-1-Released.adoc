@@ -28,4 +28,4 @@ In order to make it even easier to get started with load-balancing, we added a p
 
 Jira Release Notes
 ------------------
-The full list of issues resolved is available link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12331186[here.]
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12331186[here.]
