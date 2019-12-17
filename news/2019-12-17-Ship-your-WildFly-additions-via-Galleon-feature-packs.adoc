@@ -44,17 +44,17 @@ evolve independently of the static snapshot of information contained in this blo
 
 == Initial run
 If you are impatient, you can simply run:
-```
+----
 $mvn install
 $./build/target/wildfly-<WildFly Version>-template-<Template Version>/bin/standalone.sh
-```
+----
 The server in the `build/target` directory is a trimmed down version of ‘official’ WildFly with our
 subsystem added.
 
 Then in another terminal window:
-```
+----
 $mvn package wildfly:deploy -pl example
-```
+----
 Then go to http://localhost:8080/example/greeting and you will see a greeting message. This message comes
 from the CDI `@Produces` method made available by the template’s subsystem, and the language used for the
 message changes as you refresh the page.
@@ -114,14 +114,14 @@ details of that here. See the the template link:https://github.com/wildfly/wildf
 We define a single feature group in link:https://github.com/wildfly/wildfly-galleon-pack-template/blob/master/galleon-pack/src/main/resources/feature_groups/template-subsystem.xml[galleon-pack/src/main/resources/feature_groups/template-subsystem.xml].
 The group contains the `<feature spec="subsystem.template-subsystem"/>` for our subsystem. The value of
 'spec' used for these feature specifications is of the form
-```
+----
 subsystem.<subsystem name in the model>
-```
+----
 and it essentially configures the subsystem. In this case `<subsystem name in the model>` is 'template-subsystem',
 and this configuration results in a
-```
+----
 /subsystem=template-subsystem:add()
-```
+----
 when provisioning the server. Our subsystem is empty, if it had some attributes that need setting they would also be
 defined in the feature spec.
 
@@ -214,9 +214,9 @@ link:https://wildfly.org/downloads/[wildfly.org/downloads] page.
 
 ===== Install main server
 To install the main server we can do:
-```
+----
 $galleon.sh install wildfly:current --dir=wildfly
-```
+----
 
 This installs all of (i.e. the same as the downloaded zip) the latest WildFly version (at the time
 of writing 18.0.1.Final) into the directory specified by the `--dir` argument. In this case I am using a
@@ -232,17 +232,17 @@ If you want to trim the base server that we install (similar to what we did in t
 example server build), you can specify which layers to install by passing in the `--layers`
 option. To install the same server as we had in the `build/target/` directory that we used to run the example
 above, you can run:
-```
+----
 $galleon.sh install wildfly:current --dir=wildfly --layers=jaxrs,management
-```
+----
 Note that we did not install our `template-layer` because this is unknown in the main
 WildFly feature pack. We will add it in the next step.
 
 ===== Install feature pack
 Now to install our layer, we run the following command:
-```
+----
 $galleon.sh install org.wildfly.extras.galleon-feature-pack-template:template-galleon-pack:1.0.0.Alpha-SNAPSHOT --layers=template-layer --dir=wildfly
-```
+----
 We specify the same directory that we installed the server into in the last step by specifying the same value for
 `--dir`.
 
@@ -272,9 +272,9 @@ and `template-layer` layers. `cloud-profile` is just to give you another example
 we could have used the same layers as in the previous section.
 
 To provision the server, you now simply run the following command:
-```
+----
 $galleon.sh provision /path/to/provision.xml --dir=wildfly
-```
+----
 
 Now you can start the server and run the example as outlined in the <<Trying the provisioned server>> section.
 
@@ -290,14 +290,14 @@ which is injected with a bean made available by the CDI `@Produces` method from 
 
 To run it, first start the server by running (the value of `JBOSS_HOME` is the root of the built server, which
 depends on which flavour of the provisioned server you are trying):
-```
+----
 $"${JBOSS_HOME}"/bin/standalone.sh
-```
+----
 
 Then to deploy the application, in another terminal window in the checkout folder of the template project, run:
-```
+----
 $mvn package wildfly:deploy -pl example/
-```
+----
 
 Then go to http://localhost:8080/example/greeting, which will output the message created by the CDI producer.
 As you refresh, the message will change.
