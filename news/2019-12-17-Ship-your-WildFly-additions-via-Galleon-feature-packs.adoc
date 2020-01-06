@@ -41,6 +41,9 @@ The template repository
 link:https://github.com/wildfly/wildfly-galleon-pack-template/blob/master/README.md[README] goes into
 more depth in some areas. Also, as people provide feedback, its explanation of how things work can
 evolve independently of the static snapshot of information contained in this blog post.
+The link:https://github.com/wildfly/wildfly-galleon-pack-template/tree/blog-post-snapshot[blog-post-snapshot] tag is
+from when this blog post was written.
+
 
 == Initial run
 If you are impatient, you can simply run:
