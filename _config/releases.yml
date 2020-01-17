@@ -1,3 +1,6 @@
+- version: '19.0.0.Beta1'
+  date: '2020-01-17'
+  notes: '../news/2020/01/17/WildFly19-Beta-Released/'
 - version: '18.0.1.Final'
   date: '2019-11-14'
   notes: '../news/2019/11/14/WildFly-1801-Released/'
