@@ -1,3 +1,6 @@
+- version: '19.0.0.Beta1'
+  date: '2020-01-17'
+  notes: '../news/2020/01/17/WildFly19-Beta-Released/'
 - version: '18.0.1.Final'
   date: '2019-11-14'
   notes: '../news/2019/11/14/WildFly-1801-Released/'
@@ -8,9 +11,6 @@
   notes: '../news/2019/10/03/WildFly18-Final-Released/'
   certified: 'true'
   quickstarts: 'https://github.com/wildfly/quickstart/tree/18.0.0.Final'
-- version: '18.0.0.Beta1'
-  date: '2019-09-04'
-  notes: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342012
 - version: '17.0.1.Final'
   date: '2019-07-03'
   notes: '../news/2019/07/07/WildFly-1701-Released/'
@@ -21,9 +21,6 @@
   notes: '../news/2019/06/10/WildFly17-Final-Released/'
   certified: 'true'
   quickstarts: 'https://github.com/wildfly/quickstart/tree/17.0.0.Final'
-- version: '17.0.0.Beta1'
-  date: '2019-05-24'
-  notes: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342012
 - version: '16.0.0.Final'
   date: '2019-02-27'
   notes: '../news/2019/02/27/WildFly16-Final-Released/'
