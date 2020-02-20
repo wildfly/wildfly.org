@@ -424,4 +424,4 @@ NOTE: Despite rigorous tests to make sure that the implementation respects all s
 
 To keep this text on the limits of readability, we could not cover all sorts of possibilities. We've focused on those configurations most people need. But you can consider this text as an invitation to give feedback about your particular environment. It will help us to plan future articles about migrating to WildFly.
 
-NOTE: Make sure to report every strange behavior in https://community.jboss.org/en/wildfly?view=discussions[WildFly's forum], https://lists.jboss.org/mailman/listinfo/wildfly-dev[mailing list] or even https://issues.redhat.com/browse/WFLY[submit a bug].
+NOTE: Make sure to report every strange behavior in https://groups.google.com/forum/#!forum/wildfly[WildFly's forum], https://lists.jboss.org/mailman/listinfo/wildfly-dev[mailing list] or even https://issues.redhat.com/browse/WFLY[submit a bug].
