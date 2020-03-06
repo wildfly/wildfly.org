@@ -1,6 +1,7 @@
 - version: '19.0.0.Beta3'
   date: '2020-03-06'
   notes: https://issues.redhat.com/secure/ReleaseNote.jspa?version=12344714&projectId=12313721
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/19.0.0.Beta3'
 - version: '19.0.0.Beta2'
   date: '2020-02-10'
   notes: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12344557
