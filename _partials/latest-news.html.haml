@@ -12,7 +12,7 @@
         %span.meta{:style=>"color: #292F33;"}= post.date.strftime('%b %d, %Y')
         %a{:href => "#{site.base_url}#{post.url}"}= post.title  
         %br
-        - if (post.content.length > 0)
+        - if (post.content.length > 0 && !(post.relative_source_path.end_with? ".redirect"))
           - cut_at = post.content.index(/<pre[^>]*>/)
           -#%p= summarize(html_to_text(cut_at ? post.content[0,cut_at] : post.content), 50)
           - text = html_to_text(cut_at ? post.content[0, cut_at] : post.content)
