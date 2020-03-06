@@ -36,7 +36,7 @@ WildFly's MicroProfile implementations are primarily based on the link:https://s
 
 It takes a *great* community to bring in major new features like this. A great number of other folks have helped; I thank you all and my apologies to anyone I've missed:
 
-* Fabio Burgizotti
+* Fabio Burzigotti
 * Michael Edgar
 * Paul Ferraro
 * Emmanuel Hugonnet
