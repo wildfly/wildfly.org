@@ -1,3 +1,8 @@
+- version: '19.0.0.Final'
+  date: '2020-03-18'
+  notes: '../news/2020/03/18/WildFly19-Final-Released/'
+  certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/19.0.0.Final'
 - version: '19.0.0.Beta3'
   date: '2020-03-06'
   notes: https://issues.redhat.com/secure/ReleaseNote.jspa?version=12344714&projectId=12313721
