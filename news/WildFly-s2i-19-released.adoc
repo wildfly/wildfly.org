@@ -1,4 +1,4 @@
-= WildFly 19 S2I image has been released on quay.io
+= WildFly 19 S2I images have been released on quay.io
 jfdenise
 2020-03-20
 :awestruct-tags: [wildfly, galleon]
@@ -9,19 +9,19 @@ jfdenise
 
 ==  WildFly 19 S2I docker images
 
-The WildFly s2i builder and runtime Docker images for WildFly 19 have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
+The WildFly S2I (Source-to-Image) builder and runtime Docker images for WildFly 19 have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
 
 Changes since the link:https://wildfly.org/news/2019/10/07/WildFly-s2i-18-released/[last release]:
 
 * Optimized startup. The server starts much faster, as the CLI script applied to the server configuration is now executed during server boot.
 * Support for clustering. JGroups is now part of the default server configuration. 
-* The WildFly 19 Galleon decorator layer _web-clustering_ (support for Infinispan-based web session clustering) is fully usable in the openshift context.
+* The WildFly 19 Galleon decorator layer `web-clustering` (support for Infinispan-based web session clustering) is fully usable in the openshift context.
 This blog post highlights the new clustering features.
 * The default standalone.xml configuration file includes the Microprofile JWT (JSON Web Token) subsystem.
-* WildFly 19 defines three new Galleon layers for Microprofile 3.3 (_microprofile-fault-tolerance_, _microprofile-jwt_ and _microprofile-openapi_) which can be referenced from the _GALLEON_PROVISION_LAYERS_ env variable if you want Galleon to include those subsystems in a trimmed-down server it provisions.
+* WildFly 19 defines three new Galleon layers for Microprofile 3.3 (`microprofile-fault-tolerance`, `microprofile-jwt` and `microprofile-openapi`) which can be referenced from the `GALLEON_PROVISION_LAYERS` env variable if you want Galleon to include those subsystems in a trimmed-down server it provisions.
 
-For a complete documentation on how to use these images using s2i, OpenShift and Docker, 
-refer to the WildFly s2i link:https://github.com/wildfly/wildfly-s2i/blob/wf-19.0/README.md[README].
+For a complete documentation on how to use these images using S2I, OpenShift and Docker, 
+refer to the WildFly S2I link:https://github.com/wildfly/wildfly-s2i/blob/wf-19.0/README.md[README].
 
 == Adding the imagestreams and template to OpenShift
 
@@ -29,18 +29,18 @@ At some point the new images will be made available from the OpenShift catalog a
 
 * WildFly S2I builder image stream: 
 ```
-oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/imagestreams/wildfly-centos7.json
+oc create -n myproject -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/imagestreams/wildfly-centos7.json
 ```
 * WildFly runtime image stream: 
 ```
-oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/imagestreams/wildfly-runtime-centos7.json
+oc create -n myproject -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/imagestreams/wildfly-runtime-centos7.json
 ```
 * Chained build template: 
 ```
-oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/templates/wildfly-s2i-chained-build-template.yml
+oc create -n myproject -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/templates/wildfly-s2i-chained-build-template.yml
 ```
 
-NB: If you import the image streams into your project, be sure to set the _ImageStreams Namespace_ (_IMAGE_STREAM_NAMESPACE_ argument) to your project namespace in the template. _openshift_ being the default namespace.
+NB: If you import the image streams into your project, be sure to set the _ImageStreams Namespace_ (`IMAGE_STREAM_NAMESPACE` argument) to your project namespace in the template. _openshift_ being the default namespace.
 
 == Clustering examples
 
@@ -51,10 +51,10 @@ NB: If you import the image streams into your project, be sure to set the _Image
 oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default
 ```
 
-* Be sure to kill any WildFly application running in the _myproject_ namespace. Any running application would join the cluster.
+* Be sure to kill any WildFly application running in the `myproject` namespace. Any running application would join the cluster.
 
 
-=== Web session sharing using the _web-clustering_ galleon layer
+=== Web session sharing using the `web-clustering` galleon layer
 
 ==== Build and run the application
 
@@ -75,8 +75,8 @@ oc new-app wildfly-s2i-chained-build-template -p APPLICATION_NAME=web-clustering
 oc new-app myproject/web-clustering -e KUBERNETES_NAMESPACE=myproject -e JGROUPS_CLUSTER_PASSWORD=mypassword
 ```
 
-NB: The KUBERNETES_NAMESPACE is required to see other pods in the project, otherwise the server attempts to retrieve pods from the 'default' namespace which is not the one our project is using.
-JGROUPS_CLUSTER_PASSWORD is used to authenticate servers in the cluster.
+NB: The `KUBERNETES_NAMESPACE` is required to see other pods in the project, otherwise the server attempts to retrieve pods from the 'default' namespace which is not the one our project is using.
+`JGROUPS_CLUSTER_PASSWORD` is used to authenticate servers in the cluster.
 
 * Expose the service:
 ```
@@ -104,8 +104,8 @@ oc delete pod web-clustering-1-r4cx8 -n myproject
 
 === EJB singleton
 
-Another aspect of the WildFly clustering features is the support for high availabilty EJB singletons. We are here running the _ha-singleton-deployment_ WildFly quickstart.
-In this example we are using the default server present in the wildfly s2i builder image; we are not provisioning a server trimmed-down with Galleon. We don't have (yet) layers
+Another aspect of the WildFly clustering features is the support for high availabilty EJB singletons. We are here running the `ha-singleton-deployment` WildFly quickstart.
+In this example we are using the default server present in the wildfly S2I builder image; we are not provisioning a server trimmed-down with Galleon. We don't have (yet) layers
 for EJB features.
 
 * Build the application image:
