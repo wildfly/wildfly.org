@@ -98,7 +98,7 @@ cp target/opentracing-demo.war $WILDFLY_HOME/standalone/deployments
 $WILDFLY_HOME/bin/standalone.sh
 --
 
-Now, you can navigate to link:http://localhost:8080/opentracing-demo[http://localhost:8080/opentracing-demo] to access the deployed application. Generate a few traces by clicking on the links several times.
+Now, you can navigate to link:http://localhost:8080/opentracing-demo[http://localhost:8080/opentracing-demo] to access the deployed application. Generate a few traces by clicking on the links several times. _Note that in order to demonstrate error traces the application deliberately throws exceptions randomly, so don't be surprised if some requests fail._
 
 Now open the link:http://localhost:16686[Jaeger UI] and search for traces related to the service *opentracing-demo.war*, you should see the result of your previous actions.
 
