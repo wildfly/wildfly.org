@@ -40,7 +40,7 @@ oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/image
 oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-19.0/templates/wildfly-s2i-chained-build-template.yml
 ```
 
-NB: If you import the image streams into your project, be sure to set the _ImageStreams Namespace_ to your project namespace in the template. _openshift_ being the default namespace.
+NB: If you import the image streams into your project, be sure to set the _ImageStreams Namespace_ (_IMAGE_STREAM_NAMESPACE_ argument) to your project namespace in the template. _openshift_ being the default namespace.
 
 == Clustering examples
 
