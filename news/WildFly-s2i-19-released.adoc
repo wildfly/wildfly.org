@@ -7,7 +7,7 @@ jfdenise
 :encoding: utf-8
 :lang: en
 
-==  WildFly 19 S2I docker images
+==  WildFly 19 S2I Docker images
 
 The WildFly S2I (Source-to-Image) builder and runtime Docker images for WildFly 19 have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
 
