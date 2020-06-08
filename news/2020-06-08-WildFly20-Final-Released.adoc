@@ -39,7 +39,7 @@ As always, the folks working on security have been busy:
 
 == Standards Support
 
-WildFly 20.0.0 is a Jakarta EE 8 compatible implementation. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_20.0.0.Final/jakarta-full-platform.adoc#tck-results[at the WildFly certifications site].
+WildFly 20.0.0 is a Jakarta EE 8 compatible implementation, with both the Full Platform and the Web Profile. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_20.0.0.Final/jakarta-full-platform.adoc#tck-results[for the Full Platform] and link:https://github.com/wildfly/certifications/blob/EE8/WildFly_20.0.0.Final/jakarta-web-profile.adoc#tck-results[for the Web Profile].
 
 WildFly 20 is also a compatible implementation of Java EE 8.
 
