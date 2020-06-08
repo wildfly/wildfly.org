@@ -1,6 +1,8 @@
-- version: '20.0.0.Beta1'
-  date: '2020-05-20'
-  notes: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12343669
+- version: '20.0.0.Final'
+  date: '2020-06-08'
+  notes: '../news/2020/06/08/WildFly20-Final-Released/'
+  certified: 'true'
+  quickstarts: 'https://github.com/wildfly/quickstart/tree/20.0.0.Final'
 - version: '19.1.0.Final'
   date: '2020-05-04'
   notes: 'https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12345176'
