@@ -1,3 +1,7 @@
+- version: '20.0.1.Final'
+  date: '2020-07-07'
+  notes: 'https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12346151'
+  certified: 'true'
 - version: '20.0.0.Final'
   date: '2020-06-08'
   notes: '../news/2020/06/08/WildFly20-Final-Released/'
