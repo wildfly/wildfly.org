@@ -1,0 +1,50 @@
+---
+layout: base
+---
+
+<div class="news-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Wild<strong>Fly</strong> Project News</h1>
+  </div>
+  <div class="grid__item width-2-12 rss-btn">
+    <a href="{{site.baseurl}}/feed.xml"><i class="fas fa-rss-square"></i></a>
+  </div>
+  
+
+  <div class="grid__item width-10-12 width-12-12-m">
+    {% for post in paginator.posts %}
+      {% assign author = site.data.authors[post.author] %}
+      <div class="news-list-item grid-wrapper">
+        <div class="post-title grid__item width-12-12">
+          <h2><a href="{{site.baseurl}}{{ post.url }}">{{ post.title }}</a></h2>
+        </div>
+        <div class="grid__item width-6-12 width-12-12-m">
+          <p class="byline">By {{ author.name }} | {{ post.date | date: '%B %d, %Y' }}</p>
+        </div>
+        <div class="grid__item width-6-12 width-12-12-m">{% include share-page.html %}</div>
+        <div class="grid__item width-12-12">
+          {% if post.synopsis %}
+            <p>{{ post.synopsis | strip_html }}</p>
+          {% else %}
+            <p>{{ post.content | strip_html | truncatewords: 75 }}</p>
+          {% endif %}
+        </div>
+        <div class="grid__item width-12-12"><a href="{{site.baseurl}}{{ post.url }}">Read More ></a></div>
+      </div>
+    {% endfor %}
+    {% if paginator.total_pages > 1 %}
+      <div class="paginator-btns">
+        {% if paginator.previous_page %}
+          <a href="{{ paginator.previous_page_path | prepend: site.baseurl }}" class="button-cta secondary">Newer Posts</a>
+        {% endif %}
+        {% if paginator.next_page %}
+          <a href="{{ paginator.next_page_path | prepend: site.baseurl }}" class="button-cta secondary">Older Posts</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="grid__item width-2-12"></div>
+</div>
+
+

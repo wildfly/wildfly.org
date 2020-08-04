@@ -1,0 +1,105 @@
+---
+layout: post
+date:   2020-03-18 08:00:00 -0600
+tags:   announcement, release, microprofile
+author: bstansberry
+description: WildFly 19.0.0.Final is now available for download!
+otherimage: wildflycarousel_19.png
+---
+
+= WildFly 19 is released!
+
+I'm pleased to announce that the WildFly 19 Final zip is now available link:{base_url}/downloads[for download].
+
+Work on WildFly 19 has been a long and exciting journey, with tremendous help from contributors in the community, a lot of support from the communities behind the components we integrate (particularly the link:https://smallrye.io/[Smallrye folks]) and crucial backing from many of my colleagues at Red Hat, particularly all the QE folks who helped make sure all the new goodies really taste good!
+
+So, what are the new goodies?
+
+MicroProfile 3.3
+----------------
+
+As I've discussed in a couple blog posts about the WildFly 19 Beta releases, WildFly 19 supports the link:https://download.eclipse.org/microprofile/microprofile-3.3/microprofile-spec-3.3.html[Eclipse MicroProfile 3.3 platform specifications]. Achieving this has been the main focus of the release.
+
+WildFly now provides support for the following MicroProfile specifications:
+
+[cols=",",options="header"]
+|===
+|Specification |Version in WildFly 19
+|MicroProfile Config | 1.4
+|MicroProfile Fault Tolerance | 2.1
+|MicroProfile Health Check | 2.2
+|MicroProfile JWT Authentication | 1.1
+|MicroProfile Metrics | 2.3
+|MicroProfile OpenAPI | 1.1
+|MicroProfile OpenTracing | 1.3
+|MicroProfile Rest Client | 1.4
+|===
+
+We also provide all of the MicroProfile specs that are also part of EE 8.
+
+WildFly 19 includes three new subsystems to provide the MicroProfile specs that weren't in WildFly 18: `microprofile-fault-tolerance-smallrye`, `microprofile-jwt-smallrye` and `microprofile-openapi-smallrye`.
+
+We've also added two new standard configuration files to help guide users toward server configurations well suited for microservice use cases:
+
+* `standalone-microprofile.xml`
+** Provides our MicroProfile platform implementations combined with JAX-RS and technologies JAX-RS applications commonly use to integrate with external services.
+* `standalone-microprofile-ha.xml`
+** Similar to `standalone-microprofile.xml` but with support for high availability web sessions and distributed Hibernate second-level caching.
+
+Our other standard config files (e.g. `standalone.xml`) also include the subsystems needed to support Config, JWT, Health, Metrics, OpenTracing and Rest Client. The inclusion of JWT is new with WildFly 19.
+
+The link:https://github.com/wildfly/quickstart/tree/19.0.0.Final[WildFly 19 quickstarts] also include a number of new quickstarts for MicroProfile. My thanks to everyone who helped with those, particularly Martin Stefanko who did a ton of work.
+
+And finally, we've introduced a new `wildfly-microprofile` maven bom to help Micrapplication developers align with the API artifacts used by WildFly. The maven GAV for this new bom is `org.wildfly.bom:wildfly-microprofile:19.0.0.Final`. Thanks to Eduardo Martins for this!
+
+
+Other Enhancements
+------------------
+
+WildFly 19 brings a number of other enhancements beyond MicroProfile:
+
+* link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFLY-11697_WS_client_integration_with_Elytron.adoc#wfly-11697-ws-integration-with-wildfly-elytron---authenticationclient-for-authentication--ssl[Elytron configuration on the client side of a Webservices deployment] is now supported, so a WS client can support the Elytron security framework available within the application server.
+* A new `constant-headers` attribute has been link:https://github.com/wildfly/wildfly-proposals/blob/master/management/WFCORE-1110_Custom_HTTP_Management_Headers.adoc#wfcore-1110-custom-http-headers-for-the-http-management-interface[added to the HTTP management interface resource definition]. Administrators can make use of this attribute to specify additional HTTP headers to be returned in responses to requests made against the HTTP management interface.
+* It is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4172-tls-1.3.adoc#wfcore-4172-add-support-for-tls-13[use TLS 1.3 with WildFly] when running against JDK 11 or higher. However, if JDK 11 is in use and if there is a very large number of TLS 1.3 requests being made, it is possible that a drop in performance (throughput and response time) will occur compared to TLS 1.2. Upgrading to newer JDK versions should improve performance. For this reason, the use of TLS 1.3 is currently disabled by default. TLS 1.3 can be enabled by configuring the new `cipher-suite-names` attribute in the SSL Context resource definition in the Elytron subsystem. It is recommended to test for performance degradation prior to enabling TLS 1.3 in a production environment.
+* link:https://github.com/wildfly/wildfly-proposals/blob/master/jaxrs/WFLY-12298_Change_RESTEASY_settings.adoc#wfly-12298-support-configuring-resteasy-through-wildfly-management-model[RESTEasy context parameters and providers can now be configured] via attributes in the `jaxrs` subsystem configuration.
+* link:https://github.com/wildfly/wildfly-proposals/blob/master/ee/WFCORE_2147_Wildfly_core_descriptor_based_property_replacement.adoc#enabledisable-descriptor-based-property-replacement-for-files-parsed-by-wildfly-core[Expression resolution in EE security manager deployment descriptors] (permissions.xml and jboss-permissions.xml) is now supported. You can now use the familiar `${foo:true}` syntax in these deployment descriptors to allow customization of settings at runtime.
+* A JBoss Modules module can be link:https://github.com/wildfly/wildfly-proposals/blob/master/ee/WFLY-1160-Provide_ability_to_configure_a_global_directory_which_puts_the_contents_in_the_classpath.adoc#provide-ability-to-easily-apply-certain-jboss-module-libraries-to-all-deployments-running-in-a-server[made globally available to all deployments] by simply copying one or more library artifacts or other resources to a directory and then configuring the WildFly `ee` subsystem with the location of that directory.
+* link:https://github.com/wildfly/wildfly-proposals/blob/master/concurrency/WFLY-11255_EE_Concurrency_Utilities_Managed_Executors_Runtime_Stats.adoc#managed-executors-runtime-stats[Executor / thread pool statistics] are now available for the EE Concurrency resources. 
+
+
+Jakarta EE and Java EE
+----------------------
+
+WildFly 19.0.0 is a Jakarta EE 8 compatible implementation, with both the Full Platform and the Web Profile. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_19.0.0.Final/jakarta-full-platform.adoc#tck-results[for the Full Platform] and link:https://github.com/wildfly/certifications/blob/EE8/WildFly_19.0.0.Final/jakarta-web-profile.adoc#tck-results[for the Web Profile].
+
+WildFly 19 is also a certified compatible implementation of Java EE 8.
+
+JDK Support
+-----------
+
+For the last couple of years we've worked to ensure our releases run well for most developer use cases on the most recent GA JDK version available on the WildFly final release date. Unfortunately, that has come to an end with WildFly 19 and the just-released JDK 14.  We haven't had time to digest some of the package removals in JDK 14, particularly in the security area.
+
+While we do like to run well on more recent JDKs, our recommendation is that you run WildFly on the most recent long-term support release, i.e. on JDK 11 for WildFly 19.  We do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 8 or 11.
+
+WildFly 19 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 21, and probably beyond.
+
+Please note that WildFly runs on Java 11 and later in classpath mode.
+
+At this point it is uncertain when we'll be able to say that a release of WildFly runs well on JDK 14 or later. We'll have to see how well the work for that, both in WildFly itself and in the projects we integrate, aligns with our other goals. I don't expect it to be a priority before WildFly 22.
+
+Management API Documentation
+----------------------------
+
+Since the JBoss AS 7.1.1 release we've published auto-generated documentation of the appserver management API at the link:https://wildscribe.github.io//[wildscribe.github.io] site. Starting with WildFly 19 we've stopped publishing there and instead we will be including the management API documentation as link:https://docs.wildfly.org/19/wildscribe[part of the overall documentation for the release]. The content is equivalent; we've just changed where it is located.
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12345026[here]. Issues resolved in the WildFly Core 11 releases included with WildFly 19 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12343670[here].
+
+User Forum Move
+---------------
+
+Finally, a quick reminder that we have moved the WildFly user forum from link:https://developer.jboss.org/en/wildfly[the developer.jboss.org site] to link:https://groups.google.com/forum/#!forum/wildfly[google groups].  That's a great place to provide feedback on or ask questions about WildFly 19.
+
+
+Enjoy, but more importantly, stay safe and stay well!

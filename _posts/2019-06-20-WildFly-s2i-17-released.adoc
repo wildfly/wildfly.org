@@ -1,0 +1,59 @@
+---
+layout: post
+date:   2019-06-20
+tags:   wildfly, galleon
+author: jfdenise
+---
+
+= WildFly 17 S2I image has been released on quay.io!
+
+== WildFly 17 S2I image on link:http://quay.io[quay.io]
+
+Starting with WildFly 17, the WildFly S2I Docker image is now accessible from 
+link:http://quay.io[quay.io] at this URL: link:https://quay.io/repository/wildfly/wildfly-centos7[https://quay.io/repository/wildfly/wildfly-centos7]
+
+A companion image, a WildFly runtime Docker image that allows you to chain builds 
+in OpenShift or use Docker multi stage builds, is available from: link:https://quay.io/repository/wildfly/wildfly-runtime-centos7[https://quay.io/repository/wildfly/wildfly-runtime-centos7]
+
+For a complete documentation on how to use these images using s2i, OpenShift and Docker, 
+refer to link:https://github.com/wildfly/wildfly-s2i/blob/wf-17.0/README.md[this documentation].
+
+== WildFly 17 S2I image and the link:https://operatorhub.io/operator/wildfly[WildFly Operator]
+
+Images built with WildFly 17 or 16 S2I image can be managed by the link:https://operatorhub.io/operator/wildfly[WildFly Operator].
+
+Documentation on how to install the Operator and use it can be found in link:https://operatorhub.io/operator/wildfly[WildFly Operator].
+
+== WildFly S2I implementation notes
+
+The WildFly S2I image that used to be developed in the repository 
+link:https://github.com/openshift-s2i/s2i-wildfly[openshift-s2i/s2i-wildfly] is now developed 
+in link:https://github.com/wildfly/wildfly-s2i[wildfly/wildfly-s2i] repository.
+
+This image offers the same features that were provided by the WildFly 16 image. 
+In addition, during S2I build you have now the ability to provision
+a WildFly server using https://docs.wildfly.org/galleon/[Galleon].
+
+Documentation on how to configure S2I build and WildFly server execution can be 
+found link:https://github.com/wildfly/wildfly-s2i/blob/wf-17.0/README.md[there].
+
+== Chaining builds with runtime image
+
+In order to benefit from OpenShit chained builds or docker multi stage builds to 
+build an application image that only contains what is required to execute WildFly (S2I tooling being removed), 
+we have introduced a docker link:https://quay.io/repository/wildfly/wildfly-runtime-centos7[wildfly-runtime-centos7] 
+image into which you can copy the WildFly server and deployed application from the WildFly S2I generated
+application image. 
+
+This link:https://github.com/wildfly/wildfly-s2i/blob/wf-17.0/templates/wildfly-s2i-chained-build-template.yml[OpenShift template] 
+automates the chained builds to output a smaller application image.
+
+== Adding imagestreams and template to OpenShift
+
+At some point the new images will be made available from OpenShift catalog and image repository. You can already use these images by adding them yourselves to your OpenShift cluster.
+
+* WildFly S2I builder image stream: _oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-17.0/imagestreams/wildfly-centos7.json_
+* WildFly runtime image stream: _oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-17.0/imagestreams/wildfly-runtime-centos7.json_
+* Chained build template: _oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-17.0/templates/wildfly-s2i-chained-build-template.yml_
+
+NB: If you import the image streams in your project, be sure to set _ImageStreams Namespace_ to your project namespace in the template. _openshift_ being the default namespace.

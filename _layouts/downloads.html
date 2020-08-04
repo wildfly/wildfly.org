@@ -1,0 +1,49 @@
+---
+layout: base
+---
+
+<div class="wildfly-downloads">
+  <div class="grid-wrapper">
+    <div class="grid__item width-12-12 ">
+      {% assign latestRelease = site.data.releases[0] %}
+      <h1>Wild<strong>Fly</strong> {{ latestRelease.version_shortname }} is now available</h1>
+      <div class="download-ctas">
+        <a href="https://download.jboss.org/wildfly/{{latestRelease.version}}/wildfly-{{latestRelease.version}}.zip" class="button-cta">Download the zip</a>
+        <a href="https://download.jboss.org/wildfly/{{latestRelease.version}}/wildfly-{{latestRelease.version}}.tar.gz" class="button-cta">Download the tgz</a>
+      </div> 
+      <div class="page-subtitle">
+        <h4>The technology behind Wild<strong>Fly</strong> is also available in <a href="https://www.redhat.com/en/technologies/jboss-middleware/application-platform" target="_blank">JBoss Enterprise Application Platform 7</a>. JBoss EAP is a hardened enterprise subscription with Red Hat’s world-class support, long multi-year maintenance cycles, and exclusive content. <a href="https://developers.redhat.com/register" target="_blank">Sign-up with Red Hat</a> to download a no-cost 1-year development license.</h4>
+        <a href="https://developers.redhat.com/products/eap/download/" class="button-cta secondary" target="_blank">Download Red Hat EAP</a>
+      </div>
+      {% for versionId in site.data.releases %}
+      <div class="grid-wrapper version-row mobile-fullwidth">
+        <div class="grid__item width-2-12 version-id">
+          <h2>{{ versionId.version }}</h2>
+        </div>
+        <div class="grid__item width-10-12 version-content">
+          <div class="grid-wrapper">
+            <div class="grid__item width-6-12 version-table">
+              <table class="tg">
+                <tr>
+                  <th colspan="3"><div class="version-name final">final<span class="release-date">{{versionId.date | date: "%b %d, %Y" }}</span></div>
+                </tr>
+                {% for releaseItem in versionId.link %}
+                <tr>
+                  <td class="description">{{releaseItem.name}}</td>
+                  <td class="licence">{{releaseItem.licence}}</td>
+                  <td class="links">
+                    {% for releaseFormat in releaseItem.items %}
+                    <a href="{{releaseFormat.url}}">{{releaseFormat.format}}</a>{% if releaseFormat.checksum %} | <a href="{{releaseFormat.checksum_url}}">{{releaseFormat.checksum}}</a>{% endif %}<br/>
+                    {% endfor %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

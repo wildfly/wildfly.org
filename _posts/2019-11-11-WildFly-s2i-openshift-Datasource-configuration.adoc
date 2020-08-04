@@ -1,0 +1,443 @@
+---
+layout: post
+date:   2019-11-11
+tags:   wildfly, galleon
+author: yborgess
+---
+
+= Configuring WildFly S2I image Datasources on OpenShift
+
+== Introduction
+
+In this guide, we will show you how we can containerize a JAX-RS PostgreSQL demo application to run on WildFly in a local OpenShift cluster. We will explore the different options we have to configure the data source subsystem in a cloud-based infrastructure.
+
+First of all, we will use the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack] to bring in the PostgreSQL data source and driver configuration to our WildFly server. Later, we will show you how you can configure more aspects of the data source subsystem beyond the capabilities given by this Galleon pack.
+
+This practical guide requires https://github.com/code-ready/crc[Red Hat CodeReady Containers] to install an OpenShift cluster for development purposes on your system. On this local cluster, we will deploy a PostgreSQL database server and this simple https://github.com/yersan/jaxrs-postgresql-demo[Jaxrs PostgreSQL demo] application running on WildFly. It assumes you have basic knowledge of OpenShift.
+
+== Preparing the OpenShift cluster and PostgreSQL Database Server
+
+The CodeReady Containers https://code-ready.github.io/crc/[Getting Started Guide] describes pretty well how to install, configure, and start a local OpenShift cluster for development purposes; you only have to follow the installation instructions.
+
+At the time this post was written, CodeReady Containers does not ship the Wildfly image stream by default. The easiest way to create an image stream is by using the `oc import-image` to import the WildFly image from link:https://quay.io/organization/wildfly[quay.io/wildfly]. We import the image under the `openshift` namespace to make the image available to all projects and to avoid repeating the same step for each project we create. Finally, we verify the image is imported by using `oc get is`:
+
+[source, bash]
+----
+$ crc start
+...
+INFO Starting OpenShift cluster ... [waiting 3m]
+INFO
+INFO To access the cluster, first set up your environment by following 'crc oc-env' instructions
+INFO Then you can access it by running 'oc login -u developer -p developer https://api.crc.testing:6443'
+INFO To login as an admin, username is 'kubeadmin' and password is wyozw-5ywAy-5yoap-7rj8q
+INFO
+INFO You can now run 'crc console' and use these credentials to access the OpenShift web console
+The OpenShift cluster is running
+
+$ oc login -u kubeadmin -p wyozw-5ywAy-5yoap-7rj8q https://api.crc.testing:6443
+Login successful.
+
+You have access to 51 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+
+$ oc import-image wildfly --confirm \--from quay.io/wildfly/wildfly-centos7 --insecure -n openshift
+imagestream.image.openshift.io/wildfly imported
+
+$ oc get is -n openshift | grep wildfly
+NAME      IMAGE REPOSITORY                                                          TAGS     UPDATED
+wildfly   default-route-openshift-image-registry.apps-crc.testing/default/wildfly   latest   8 seconds ago
+----
+
+This is all that we need to configure the local OpenShift cluster to work with WildFly.
+
+Let us begin creating a new project for our demo:
+
+[source, bash]
+----
+$ oc new-project wildfly-demo
+Now using project "wildfly-demo" on server "https://api.crc.testing:6443".
+----
+
+Now, let us deploy our database server image. CodeReady Containers comes with a PostgreSQL image by default, so we do not need to import it. For our testing purposes, we need a basic server configured with a database name, user, and password.
+
+The `oc new-app` command creates the resources required to deploy the postgresql image:
+
+[source, bash]
+----
+$ oc new-app --name database-server \
+     --env POSTGRESQL_USER=postgre \
+     --env POSTGRESQL_PASSWORD=admin \
+     --env POSTGRESQL_DATABASE=demodb \
+     postgresql
+--> Found image f427c5c (2 months old) in image stream "openshift/postgresql" under tag "10" for "postgresql"
+
+    PostgreSQL 10
+    -------------
+    PostgreSQL is an advanced Object-Relational database management system (DBMS). The image contains the client and server programs that you'll need to create, run, maintain and access a PostgreSQL DBMS server.
+
+    Tags: database, postgresql, postgresql10, rh-postgresql10
+
+    * This image will be deployed in deployment config "database-server"
+    * Port 5432/tcp will be load balanced by service "database-server"
+      * Other containers can access this service through the hostname "database-server"
+
+--> Creating resources ...
+    imagestreamtag.image.openshift.io "database-server:10" created
+    deploymentconfig.apps.openshift.io "database-server" created
+    service "database-server" created
+--> Success
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose svc/database-server'
+    Run 'oc status' to view your app.
+----
+
+[NOTE]
+====
+Instead of using directly postgresql image stream with the `new-app` command, you can use one of the available templates. We have used the image stream directly here as an example to clear up better what a template does behind scenes.
+====
+
+Notice here the output of `new-app` describes for us which resources have been created. One important resource is the `database-server` service which is the internal load balancer service that connects to the data base server. Our URL connection will use this service name to connect to the database.
+
+We can get the status of the pod created with the command `oc get pods`:
+
+[source, bash]
+----
+$ oc get pods
+NAME                       READY   STATUS      RESTARTS   AGE
+database-server-1-5l6fd    1/1     Running     0          44s
+database-server-1-deploy   0/1     Completed   0          57s
+----
+
+The `new-app` command has created two pods, the one with -deploy suffix is the pod created by a https://docs.openshift.com/container-platform/4.2/applications/deployments/what-deployments-are.html[deployment config resource] to create application pods. The other one is the application pod running our database server. We can verify the database was created opening a remote shell connection on this pod:
+
+[source, bash]
+----
+$ oc rsh database-server-1-5l6fd
+sh-4.2$ psql demodb
+psql (10.6)
+Type "help" for help.
+
+demodb=# \q
+sh-4.2$ exit
+----
+
+
+== Configuring the WildFly Data Source
+
+Now is time to create our application container image that includes the WildFly server and our demo application. The `oc new-app` is also used for such purposes. Unlike the previous configuration of the database server where we were building a new container from an existing image stream, now we are going to create a new image combining the WildFly image stream with an external GitHub application source code.
+
+OpenShift takes care of the details and creates a final image containing the server and the application. Internally, it uses the https://github.com/openshift/source-to-image[Source-To-Image (S2I) tool]. During this process, the WildFly server is provisioned by Galleon, and our demo JAX-RS application is built and copied into the `$WILDFLY_HOME/deployments` folder.
+
+We do not need the full server to run our example, for example, we do not need the ejb3, remoting or messaging subsystems. We can specify a set of link:++https://docs.wildfly.org/galleon/#_layers++[Galleon layers] by using the `GALLEON_PROVISION_LAYERS` environment variable to reduce the server footprint. This environment variable contains a comma-separated list of layer names you want to use to provision your server during the S2I phase. It is important to understand that the server provisioning is done in OpenShift by a https://docs.openshift.com/container-platform/4.2/builds/understanding-buildconfigs.html[Build Config] resource, so we need to make this variable available as a build environment variable. Notice that these details usually are hidden to you when you are using a template or an Operator.
+
+[NOTE]
+====
+Check link:++https://wildfly.org/news/2019/03/01/Galleon_Openshift/++[this post] to learn more about OpenShift and Galleon layers.
+====
+
+For our demo example on OpenShift, we instruct Galleon to provision our server with these two Galleon Layers: `jaxrs-server` and `postgresql-datasource`.
+
+The https://github.com/wildfly/wildfly-cekit-modules/blob/master/jboss/container/wildfly/galleon/fp-content/base-layers/added/src/main/resources/layers/standalone/jaxrs-server/layer-spec.xml[jaxrs-server layer] provisions the server with some features needed to run our example e.g. cdi, jaxrs, jpa, undertow, transactions, datasources. It belongs to the default Galleon pack which is used to provision the default WildFly server.
+
+The link:++https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/master/src/main/resources/layers/standalone/postgresql-datasource/layer-spec.xml++[postgresql-datasource layer] comes from https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack]. This layer adds to the server the PostgreSQL drivers and specific PostgreSQL data source configuration. It allows us to configure the PostgreSQL data source by using the following variables:
+
+* POSTGRESQL_DATABASE
+* POSTGRESQL_SERVICE_PORT
+* POSTGRESQL_SERVICE_HOST
+* POSTGRESQL_PASSWORD
+* POSTGRESQL_USER
+
+Let us create our WildFly container then configuring the data source to connect to our PostgreSQL server running in a different pod:
+
+[source, bash]
+----
+$ oc new-app --name wildfly-app \
+     https://github.com/yersan/jaxrs-postgresql-demo.git \
+     --image-stream=wildfly \
+     --env POSTGRESQL_SERVICE_HOST=database-server \
+     --env POSTGRESQL_SERVICE_PORT=5432 \
+     --env POSTGRESQL_USER=postgre \
+     --env POSTGRESQL_PASSWORD=admin \
+     --env POSTGRESQL_DATABASE=demodb \
+     --env POSTGRESQL_DATASOURCE=PostgreSQLDS \
+     --build-env GALLEON_PROVISION_LAYERS=jaxrs-server,postgresql-datasource
+--> Found image 38b29f9 (3 weeks old) in image stream "openshift/wildfly" under tag "latest" for "wildfly"
+
+    WildFly 18.0.0.Final
+    --------------------
+    Platform for building and running JEE applications on WildFly 18.0.0.Final
+
+    Tags: builder, wildfly, wildfly18
+
+    * The source repository appears to match: jee
+    * A source build using source code from https://github.com/yersan/jaxrs-postgresql-demo.git will be created
+      * The resulting image will be pushed to image stream tag "wildfly-app:latest"
+      * Use 'oc start-build' to trigger a new build
+    * This image will be deployed in deployment config "wildfly-app"
+    * Ports 8080/tcp, 8778/tcp will be load balanced by service "wildfly-app"
+      * Other containers can access this service through the hostname "wildfly-app"
+
+--> Creating resources ...
+    imagestream.image.openshift.io "wildfly-app" created
+    buildconfig.build.openshift.io "wildfly-app" created
+    deploymentconfig.apps.openshift.io "wildfly-app" created
+    service "wildfly-app" created
+--> Success
+    Build scheduled, use 'oc logs -f bc/wildfly-app' to track its progress.
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose svc/wildfly-app'
+    Run 'oc status' to view your app.
+
+$ oc get pods
+NAME                       READY   STATUS      RESTARTS   AGE
+database-server-1-5l6fd    1/1     Running     0          10m
+database-server-1-deploy   0/1     Completed   0          10m
+wildfly-app-1-build        0/1     Completed   0          3m50s
+wildfly-app-1-deploy       0/1     Completed   0          55s
+wildfly-app-1-sdk2m        1/1     Running     0          46s
+
+$ oc expose svc/wildfly-app --name wildfly-app
+route.route.openshift.io/wildfly-app exposed
+----
+
+The `new-app` command creates three additional pods in the OpenShift cluster; one build config (-build suffix, completed), one deploy config (-deploy suffix, completed) and our running application pod.
+
+Remember, the build config is the resource that creates the container image using the S2I tool, builds your application and provisions the server using Galleon. The deployment config is the resource that starts the new container image created by the build config.
+
+[NOTE]
+====
+You can review the pod logs issuing the following command `oc log pod/{pod_name}`
+====
+
+Now we can verify our application is working. We exposed the application to the outside world using `oc expose`. If we want to access to our container via the web, we need to know its host name. We can get this value by inspecting the `routes/wildfly-app` resource. Once we know the host name, we can use `curl` to fetch some information from our application:
+
+[source, bash]
+----
+$ oc get routes/wildfly-app --template={{.spec.host}}
+wildfly-app-wildfly-demo.apps-crc.testing
+
+$ curl http://wildfly-app-wildfly-demo.apps-crc.testing/jaxrs-postgresql-demo/api/tasks
+[{"id":1,"title":"This is the task-1"},{"id":2,"title":"This is the task-2"},{"id":3,"title":"This is the task-3"},{"id":4,"title":"This is the task-4"},{"id":5,"title":"This is the task-5"}]
+----
+
+Now, let us take a look at our current datasources subsystem configuration to see how it was configured. We can open a remote session on our WildFly running pod and examine the standalone.xml file:
+
+[source, bash]
+----
+$ oc rsh wildfly-app-1-sdk2m
+sh-4.2$ cat /opt/wildfly/standalone/configuration/standalone.xml
+----
+
+The datasources subsystem configuration is the following:
+[source, xml]
+----
+<subsystem xmlns="urn:jboss:domain:datasources:5.0">
+    <datasources>
+        <datasource jndi-name="java:jboss/datasources/${env.POSTGRESQL_DATASOURCE,env.OPENSHIFT_POSTGRESQL_DATASOURCE:PostgreSQLDS}" pool-name="PostgreSQLDS" enabled="true" use-java-context="true" use-ccm="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
+            <connection-url>jdbc:postgresql://${env.POSTGRESQL_SERVICE_HOST, env.OPENSHIFT_POSTGRESQL_DB_HOST}:${env.POSTGRESQL_SERVICE_PORT, env.OPENSHIFT_POSTGRESQL_DB_PORT}/${env.POSTGRESQL_DATABASE, env.OPENSHIFT_POSTGRESQL_DB_NAME}</connection-url>
+            <driver>postgresql</driver>
+            <pool>
+                <flush-strategy>IdleConnections</flush-strategy>
+            </pool>
+            <security>
+                <user-name>${env.POSTGRESQL_USER, env.OPENSHIFT_POSTGRESQL_DB_USERNAME}</user-name>
+                <password>${env.POSTGRESQL_PASSWORD, env.OPENSHIFT_POSTGRESQL_DB_PASSWORD}</password>
+            </security>
+            <validation>
+                <check-valid-connection-sql>SELECT 1</check-valid-connection-sql>
+                <background-validation>true</background-validation>
+                <background-validation-millis>60000</background-validation-millis>
+            </validation>
+        </datasource>
+        <drivers>
+            <driver name="postgresql" module="org.postgresql.jdbc">
+                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+            </driver>
+        </drivers>
+    </datasources>
+</subsystem>
+----
+
+As you can see in the configuration file, Galleon has prepared the data source subsystem to be configured by the WildFly Datasources Galleon Pack environment variables. You can also verify that a PostgreSQL driver is added as a JBoss module in the server:
+
+[source, bash]
+----
+sh-4.2$ ls /opt/wildfly/modules/org/postgresql/jdbc/main/
+module.xml  postgresql-9.4.1211.jar
+----
+
+This sort of configuration done by using the WildFly Datasource Galleon Pack is simple and easy to use. However, it has some limitations; there are some attributes related to the datasource that cannot be configured, e.g. connection min/max pool size, flush-strategy, background-validation-millis. We cannot configure more than one datasource of the same type. In the following section, we explain how you can achieve this.
+
+Before moving to the next part, let us remove all unused configurations:
+
+[source, bash]
+----
+$ oc delete all -l app=wildfly-app
+pod "wildfly-app-1-84lh6" deleted
+replicationcontroller "wildfly-app-1" deleted
+service "wildfly-app" deleted
+deploymentconfig.apps.openshift.io "wildfly-app" deleted
+buildconfig.build.openshift.io "wildfly-app" deleted
+build.build.openshift.io "wildfly-app-1" deleted
+imagestream.image.openshift.io "wildfly-app" deleted
+route.route.openshift.io "wildfly-app" deleted
+----
+
+== Configuring additional aspects of the datasource subsystem
+
+If you need to configure more than one data source or you need to configure some attributes that are not available by the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack], there is a generic datasources subsystem configuration by using environment variables. You can check the https://github.com/wildfly/wildfly-s2i/blob/master/doc/datasources.md[Datasources configuration] where these variables are explained. In the next example, we make use of some environments to configure two different datasources specifying different max/min pool sizes.
+
+One detail we need to take into account is we no longer need the PostgreSQL datasource configuration added by the WildFly Datasources Galleon Pack, since we are going to configure the data source using a different set of variables. But we still need the PostgreSQL driver added by the Galleon Pack. The solution is easy, just instead of specifying the `postgresql-datasource` layer, we will specify this  the `postgresql-driver` layer which is the layer that brings in only the driver.
+
+Again, using `new-app`, we configure the two data sources s specifying the different max/min pool sizes:
+
+[source, bash]
+----
+$ oc new-app --name wildfly-app \
+           https://github.com/yersan/jaxrs-postgresql-demo.git \
+           --image-stream= wildfly \
+           --env DB_SERVICE_PREFIX_MAPPING="dbone-postgresql=DSONE,dbtwo-postgresql=DSTWO" \
+           --env DSONE_JNDI="java:/jboss/datasources/PostgreSQLDS" \
+           --env DSONE_USERNAME="postgre" \
+           --env DSONE_PASSWORD="admin" \
+           --env DSONE_DATABASE="demodb" \
+           --env DSONE_DRIVER="postgresql" \
+           --env DBONE_POSTGRESQL_SERVICE_HOST="database-server" \
+           --env DBONE_POSTGRESQL_SERVICE_PORT=5432 \
+           --env DSONE_MAX_POOL_SIZE=10 \
+           --env DSONE_MIN_POOL_SIZE=5 \
+           --env DSONE_NONXA=true \
+           --env DSTWO_JNDI="java:/jboss/datasources/UnusedDS" \
+           --env DSTWO_USERNAME="postgre" \
+           --env DSTWO_PASSWORD="admin" \
+           --env DSTWO_DATABASE="demodb" \
+           --env DSTWO_DRIVER="postgresql" \
+           --env DBTWO_POSTGRESQL_SERVICE_HOST="database-server" \
+           --env DBTWO_POSTGRESQL_SERVICE_PORT=5432 \
+           --env DSTWO_MAX_POOL_SIZE=5 \
+           --env DSTWO_MIN_POOL_SIZE=2 \
+           --build-env GALLEON_PROVISION_LAYERS=jaxrs-server,postgresql-driver
+warning: --env no longer accepts comma-separated lists of values. "DB_SERVICE_PREFIX_MAPPING=dbone-postgresql=DSONE,dbtwo-postgresql=DSTWO" will be treated as a single key-value pair.
+--> Found image 38b29f9 (3 weeks old) in image stream "openshift/wildfly" under tag "latest" for "wildfly"
+
+    WildFly 18.0.0.Final
+    --------------------
+    Platform for building and running JEE applications on WildFly 18.0.0.Final
+
+    Tags: builder, wildfly, wildfly18
+
+    * The source repository appears to match: jee
+    * A source build using source code from https://github.com/yersan/jaxrs-postgresql-demo.git will be created
+      * The resulting image will be pushed to image stream tag "wildfly-app:latest"
+      * Use 'oc start-build' to trigger a new build
+    * This image will be deployed in deployment config "wildfly-app"
+    * Ports 8080/tcp, 8778/tcp will be load balanced by service "wildfly-app"
+      * Other containers can access this service through the hostname "wildfly-app"
+
+--> Creating resources ...
+    imagestream.image.openshift.io "wildfly-app" created
+    buildconfig.build.openshift.io "wildfly-app" created
+    deploymentconfig.apps.openshift.io "wildfly-app" created
+    service "wildfly-app" created
+--> Success
+    Build scheduled, use 'oc logs -f bc/wildfly-app' to track its progress.
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose svc/wildfly-app'
+    Run 'oc status' to view your app.
+----
+
+The `DB_SERVICE_PREFIX_MAPPING` specifies the list of data sources we are going to configure (dbone-postgresql and dbtwo-postgresql) and links them with a variable prefix (DSONE and DSTWO). This mechanism allows us to create multiple datasources by using a variable prefix name identifying the variables that configure each data source. Explore the https://github.com/wildfly/wildfly-s2i/blob/master/doc/datasources.md[Datasource configuration documentation] to learn more on this.
+
+Once our application pod is created, if we inspect the final server configuration file, we will see that we have added two different data sources, one xa-datasource and one non-xa-datasource, each of them with a specific max/min pool sizes:
+
+[source, bash]
+----
+$ oc get pods
+NAME                       READY   STATUS      RESTARTS   AGE
+database-server-1-5l6fd    1/1     Running     0          19m
+database-server-1-deploy   0/1     Completed   0          19m
+wildfly-app-1-build        0/1     Completed   0          3m18s
+wildfly-app-1-deploy       0/1     Completed   0          33s
+wildfly-app-1-lwnf8        1/1     Running     0          25s
+
+$ oc rsh wildfly-app-1-lwnf8
+sh-4.2$ cat /opt/wildfly/standalone/configuration/standalone.xml
+----
+
+[source, xml]
+----
+<subsystem xmlns="urn:jboss:domain:datasources:5.0">
+    <datasources>
+        <datasource jta="true" jndi-name="java:/jboss/datasources/PostgreSQLDS" pool-name="dbone_postgresql-DSONE" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
+            <connection-url>jdbc:postgresql://database-server:5432/demodb</connection-url>
+            <driver>postgresql</driver>
+            <pool>
+                <min-pool-size>5</min-pool-size>
+                <max-pool-size>10</max-pool-size>
+            </pool>
+            <security>
+                <user-name>postgre</user-name>
+                <password>admin</password>
+            </security>
+            <validation>
+                <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                <validate-on-match>true</validate-on-match>
+                <background-validation>false</background-validation>
+                <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+            </validation>
+        </datasource>
+        <xa-datasource jndi-name="java:/jboss/datasources/UnusedDS" pool-name="dbtwo_postgresql-DSTWO" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
+            <xa-datasource-property name="ServerName">
+                database-server
+            </xa-datasource-property>
+            <xa-datasource-property name="DatabaseName">
+                demodb
+            </xa-datasource-property>
+            <xa-datasource-property name="PortNumber">
+                5432
+            </xa-datasource-property>
+            <driver>postgresql</driver>
+            <xa-pool>
+                <min-pool-size>2</min-pool-size>
+                <max-pool-size>5</max-pool-size>
+            </xa-pool>
+            <security>
+                <user-name>postgre</user-name>
+                <password>admin</password>
+            </security>
+            <validation>
+                <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                <validate-on-match>true</validate-on-match>
+                <background-validation>false</background-validation>
+                <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+            </validation>
+        </xa-datasource>
+        <drivers>
+            <driver name="postgresql" module="org.postgresql.jdbc">
+                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+            </driver>
+        </drivers>
+    </datasources>
+</subsystem>
+----
+
+Notice this time the datasources subsystem configuration is done when the server is launched by the deployment config resource. Behind the scenes the WildFly embedded server is launched and the server is configured from the values found in the environment variables.
+
+Since we have used the `postgresql-driver` layer, we still have the PostgreSQL driver installed in our server, we can see it under the modules folder:
+
+[source, bash]
+----
+sh-4.2$ ls /opt/wildfly/modules/org/postgresql/jdbc/main/
+module.xml  postgresql-9.4.1211.jar
+----
+
+Now you can delete the project to remove all the resources created in this demo:
+
+[source, bash]
+----
+$ oc delete project wildfly-demo
+project.project.openshift.io "wildfly-demo" deleted
+----
+
+In the next post, we will show you how you can configure the server using pure CLI https://docs.wildfly.org/18/Admin_Guide.html#operations[management operations ]instead of using environment variables. That will give you all the flexibility you could need to configure any aspect of the WildFly S2I cloud image.

@@ -1,0 +1,107 @@
+---
+layout: post
+title:  "A bootable JAR for WildFly 20o"
+date:   2020-06-18
+tags:   wildfly galleon bootable jar bootable-jar
+author: jfdenise
+---
+
+= A bootable JAR for WildFly 20
+
+== Introduction
+
+Now that WildFly supports link:https://projects.eclipse.org/projects/technology.microprofile[Eclipse Microprofile] this seems the appropriate time to introduce 
+a way to package a WildFly application as a bootable JAR (also known as a "fat JAR"). Bootable JAR packaging is well suited for microservices to be run on cloud and bare metal.
+
+A bootable JAR allows us to package both the container and the application in a single JAR file and execute it with a simple 
+command such as ```java -jar myapp-wildfly.jar```.
+
+Packaging the server and your app in a JAR makes sense when you can control the set of server features you want to see present. 
+Packaging a complete WildFly server (250+MB) for a simple microservice would defeat the purpose of the bootable JAR. link:https://docs.wildfly.org/galleon/[Galleon] technology 
+server trimming capabilities have made a bootable JAR for WildFly a valid solution.
+
+WildFly defines a set of link:https://docs.wildfly.org/20/Admin_Guide.html#defined-galleon-layers[Galleon layers] 
+(with new Galleon layers added nearly for each major WildFly releases) that you can combine in order to tailor the server to your application needs. 
+The tooling to build a bootable JAR relies on WildFly Galleon layers to provision the tailored server that is bundled in the JAR file.
+
+== WildFly JAR Maven plugin
+
+The project hosted in link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin[wildfly-extras/wildfly-jar-maven-plugin] defines a new Maven plugin allowing you
+to build a bootable JAR for WildFly (starting with version 20.0.0.Final). Although currently incubating, the project has gained enough maturity that you can start using it. Obviously,
+things could still evolve in the near future. It is worth noting that the project has already entered the WildFly 
+feature process in order to become a fully qualified WildFly tooling. The new feature proposal can be found link:https://github.com/wildfly/wildfly-proposals/pull/306[here].
+
+A WildFly bootable JAR contains both the server and your packaged application (a JAR, an EAR or a WAR).
+Once the application has been built and packaged as a bootable JAR, you can start the application using the following command:
+
+```
+java -jar target/myapp-wildfly.jar
+```
+
+A WildFly bootable JAR behaves in a way that is similar to a WildFly server unzipped on the file system:
+
+* It supports the main standalone server startup arguments. 
+* It can be administered/monitored using the WildFly CLI.
+
+== Getting started
+
+In order to help you start using the ```org.wildfly.plugins:wildfly-jar-maven-plugin``` Maven plugin, we have defined a 
+set of link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples[examples] that cover common use-cases. 
+
+To retrieve the examples:
+
+```
+git clone -b 2.0.0.Alpha4 http://github.com/wildfly-extras/wildfly-jar-maven-plugin
+cd wildfly-jar-maven-plugin/examples
+```
+
+A good example to start with is the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/jaxrs[jaxrs] example.
+To build and run the jaxrs example:
+
+```
+cd jaxrs
+mvn package
+java -jar target/jaxrs-wildfly.jar
+```
+
+The plugin documentation (currently an ```index.html``` file to download) can be found link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/releases/download/2.0.0.Alpha4/index.html[here].
+It contains a comprehensive list of the options you can use to fine tune the Maven build and create a bootable JAR.
+
+Be sure to read the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/README.md[examples/README] 
+that contains required information to run the examples in an OpenShift context. 
+
+== Main features
+
+The main features are covered in detail in the plugin link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/releases/download/2.0.0.Alpha4/index.html[documentation]. 
+Here is a summary of what the Maven plugin and created bootable JAR offer.
+
+=== Maven Plugin
+
+* Supports WildFly Galleon layers to create a use-case tailored bootable JAR.
+
+* Supports WildFly CLI script execution to fine tune your server during build (configure security, logging, ...).
+
+* Supports the ability to package extra content inside the bootable JAR (eg: a keystore)
+
+* Supports the creation of a "hollow" JAR (a JAR containing only the WildFly server, the application to deploy being provided at runtime).
+
+* Offers a "dev" mode to speed-up development by skipping the bootable JAR re-build.
+
+* Offers goals to start and shutdown a bootable JAR.
+
+=== Created bootable JAR
+
+* Supports the main WildFly standalone server startup arguments.
+
+* Can be built and deployed in OpenShift using the ```registry.access.redhat.com/openjdk/openjdk-11-rhel7``` java s2i image 
+(see link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/mp-config[mp-config] and 
+link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/postgresql[postgresql] examples).
+
+* Can be deployed inside a link:https://github.com/GoogleContainerTools/jib[JIB] container (see link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/jib[jib] example).
+
+
+== To conclude
+
+We hope that you will have an interest in using this new way to build and run your WildFly applications. Feel free to give us feedback, this will help improve tooling and bootable JAR execution.
+
+Thank-you.

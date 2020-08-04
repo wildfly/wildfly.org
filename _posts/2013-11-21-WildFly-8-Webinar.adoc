@@ -1,0 +1,37 @@
+---
+layout: post
+title:  "WildFly 8 Webinar Recording"
+date:   2013-11-21 16:39:25 -0600
+tags:   management rbac wildfly8 videos undertow javaee7
+author: jgreene
+---
+
+= WildFly 8 Webinar Recording
+
+A few days ago, Brian Stansberry, Stuart Douglas and I presented a webinar on all of the major WildFly 8 features.
+
++++
+<iframe class="blog-video-frame" src="//player.vimeo.com/video/79890483" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/79890483">Dive Into WildFly 8</a> from <a href="http://vimeo.com/jbossdeveloper">JBoss Developer</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
++++
+
+This video covers a number of topics including:
+
+* Java EE7
+** JSONP
+** Batch Processing
+** EE Concurrency 
+** Productivity & Portability Improvements
+* Undertow
+** Performance
+** Servlet 3.1 
+** Web Sockets 
+** Non-blocking Handlers
+** HTTP Upgrade
+** Reverse Proxy
+* Management Role Based Access Control
+** Roles
+** Auditing
+** Privileges
+** Constraints
+
+We also had some great questions at the end.

@@ -1,0 +1,128 @@
+---
+layout: post
+date:   2019-10-03 08:00:00 -0600
+tags:   announcement, release
+author: bstansberry
+description: WildFly 18.0.0.Final is now available for download!
+otherimage: wildflycarousel_18.png
+---
+
+= WildFly 18 is released! 
+
+I'm pleased to announce that the WildFly 18 Final zip is now available link:{base_url}/downloads[for download].
+
+This has been a very busy summer for the many folks who contribute to WildFly; a lot of long hours and a lot of progress. I'm forever grateful for the chance to work on a project with such a great group of people.
+
+So, what have we been up to?
+
+Jakarta EE and Java EE
+----------------------
+
+As I announced last month, WildFly 17.0.1 was certified as a Jakarta EE 8 compatible implementation. As you would expect, WildFly 18 is compatible as well, with both the Full Platform and the Web Profile. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_18.0.0.Final/jakarta-full-platform.adoc[here] for Full Platform and link:https://github.com/wildfly/certifications/blob/EE8/WildFly_18.0.0.Final/jakarta-web-profile.adoc[here] for the Web Profile.
+
+WildFly 18 is also a certified compatible implementation of Java EE 8.
+
+Besides ensuring WildFly is a compatible Jakarta EE 8 implementation, we put a lot of effort into better alignment with the Jakarta EE API projects, which I explain further <<alignment,below>>.
+
+MicroProfile 3
+--------------
+
+In addition to the parts of MicroProfile that are also in EE 8, WildFly provides support for five other MicroProfile standards. For WildFly 18 we have upgraded those to the spec versions included in the MicroProfile 3.0 release:
+
+[cols=",^",options="header"]
+|===
+|Specification |Version in WildFly 18
+|MP Config | 1.3
+|MP Health Check | 2.0
+|MP Metrics | 2.0
+|MP OpenTracing | 1.3
+|MP Rest Client | 1.3
+|===
+
+MicroProfile will be a significant focus for the next couple of WildFly releases. For WildFly 19 we are aiming to introduce support for the three remaining required MP 3 specs that we don't currently support: MP JWT Authentication, MP Fault Tolerance and MP Open API.
+
+Security Enhancements
+---------------------
+
+WildFly 18 brings a number of enhancements in the security area:
+
+* link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-3947-ocsp-ssl-revocation.adoc[SSL certificate revocation using OCSP] is now supported.
+* Elytron audit logging now link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/ELY-1712-enhanced-audit-logging.adoc[supports RFC5424/RFC3164 and also allows the administrator to configure the number of reconnect attempts.]
+* link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4361-evidence-decoder.adoc[Mapping of an X509 Certificate to the underlying identity] has been enhanced.
+* The Elytron subsystem now link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4447-realm-aggregation-for-attributes.adoc[supports loading the attributes of an identity using multiple security realms and aggregating the results together into a single identity].
+* The high level CLI security commands (`ssl enable-ssl-management` and `ssl enable-ssl-http-server`) have been enhanced to support link:https://github.com/wildfly/wildfly-proposals/blob/master/cli/WFCORE-4227-Add_the_ability_for_the_CLI_SSL_security_commands_to_be_able_to_obtain_a_server_certificate_from_Lets_Encrypt.adoc[obtaining certificates from the Let's Encrypt certificate authority].
+* The Elytron subsystem's aggregrate security realms now support link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4496-principal-transformer-in-aggregate-realm.adoc[transforming the principal in between loading the authentication identity and loading the authorization identity.] This would be needed in the case where the principal stored in the authentication realm is different from the principal stored in the authorization realm(s).
+* link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/ELY-816-masked-password.adoc[Support for masking passwords in an Elytron client's XML configuration] was added.
+* The certificate authority used by a `certificate-authority-account` resource is now link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4362-configurable-certificate-authority-in-certificate-authority-account.adoc[configurable]. This may help in some testing scenarios, or in the future if other authorities besides Let's Encrypt support the ACME protocol.
+
+
+Enhancements to the EE Subsystems
+---------------------------------
+
+There are a number of new features provided by various WildFly subsystems that I'll lump into the 'EE' category:
+
+* In the EJB3 subsystem support has been added for configuring system-wide (i.e. applicable to all EJB deployments) link:https://github.com/wildfly/wildfly-proposals/blob/master/ejb/WFLY-6144-Global_EJB_client_side_interceptor_configuration.adoc[client-side interceptors] and link:https://github.com/wildfly/wildfly-proposals/blob/master/ejb/WFLY-6143-Ability-to-add-a-server-side-configured-Interceptor-for-the-applications-without-changing-the-deployments.adoc[server-side interceptors].
+* The link:https://github.com/wildfly/wildfly-proposals/blob/master/ejb/WFLY-10057-thread-pool.adoc[behavior and configurability of thread pools used in the EJB3 subsystem] has been improved.
+* RESTEasy now link:https://github.com/wildfly/wildfly-proposals/blob/master/jaxrs/WFLY-11737_http_proxy.adoc[supports enabling an HTTP proxy on the client builder using the JAX-RS API].
+* RESTEasy now link:https://github.com/wildfly/wildfly-proposals/blob/master/jaxrs/WFLY-12192_optional_param.adoc[supports injecting `Optional<T>` parameter types].
+* The messaging subsystem now:
+** link:https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-11293_add_attribute_to_indicate_backup_is_synchronized.adoc[Exposes an attribute which indicates whether any backup server is synchronized with the live server].
+** link:https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-5286_add_runtime_journal_type_attribute.adoc[Exposes an attribute that indicates the Artemis journal type that's in use].
+** link:https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-6684_jms_bridge_statistics.adoc[Displays statistics about messages that have been processed by any JMS bridge].
+** link:https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-12243_monitor_artemis_resource_adapter_thread_pools.adoc[Exposes metrics from Artemis resource adapter thread pools].
+* The link:https://github.com/wildfly/wildfly-proposals/blob/master/undertow/WFLY-11764_Preserve_Path_on_Forward.adoc[return value of `HttpServletRequest.getServletPath/getRequestURI/getRequestURL` is now configurable]. This feature is to support a backwards compatible behavior of `HttpServletRequest.getServletPath`. For example, in a Struts2 application deployed to JBoss AS 7, this method returns the action name, but in WildFly it returns the forwarded jsp name. If the JBoss AS 7 behavior is preferred this can now be configured.
+
+
+Clustering Enhancements
+-----------------------
+
+As always, the folks working on clustering have been busy as well:
+
+* For a clustered web app the `JSESSIONID` can now be link:https://github.com/wildfly/wildfly-proposals/blob/master/clustering/web/WFLY-6944_Ranked_routing.adoc[encoded with multiple routes, ranked in order of preference]. Thus, if the primary owner of a given session is inactive (from the load balancer's perspective), the load balancer can attempt to route the request to the next route in the list.  This ensures that requests will be directed to the next best worker in the event that the primary owner is inactive, and prevents requests from "spraying" across the cluster.
+* The Infinispan subsystem now link:https://github.com/wildfly/wildfly-proposals/blob/master/clustering/infinispan/WFLY-12165_Remote_Cache_Metrics.adoc[exposes management metrics for remote HotRod caches].
+
+Management
+----------
+
+* The logging subsystem now supports link:https://github.com/wildfly/wildfly-proposals/blob/master/logging/WFCORE-4336-custom-filters.adoc[configuration of custom logging filters], allowing for a higher degree of control over logging. As an example a filter could be created to filter messages based on the cause of the log message.
+* The HAL web console includes link:https://issues.redhat.com/issues/?filter=12341194[numerous new features and enhancements].
+
+
+WildFly in the Cloud
+--------------------
+
+We've continued to make a lot of progress on the link:https://github.com/wildfly/wildfly-s2i[source-to-image (s2i) image for WildFly] and on the link:https://operatorhub.io/operator/wildfly[WildFly Operator for Kubernetes/OpenShift]. We'll provide further details on what's new there in the next couple of weeks when we announce new versions of those images based on the WildFly 18 server release.
+
+anchor:alignment[]Alignment with Jakarta EE API Projects
+--------------------------------------------------------
+
+Besides ensuring we could certify as Jakarta EE 8 compatible, a lot of effort this summer went into further aligning with the Jakarta community. Specifically, WildFly incorporates a large number of component jars that provide the various EE APIs. For some EE specs WildFly directly provided jars produced by the various Java EE spec projects; for others the JBoss.org community has provided its own jars, derived from source from the Java EE spec projects. For both cases, for WildFly 18 we moved to align the source for our API jars with the source coming from the active Jakarta community.
+
+* For projects where we were directly shipping a jar from a Java EE 8 project, we switched to a jar from the equivalent Jakarta project. As a result the Maven `groupId` and `artifactId` of these artifacts has changed.
+* For projects where we were consuming an API jar produced by a JBoss.org community project, for all of those projects a new github repo was created, with the initial code derived from the Jakarta projects, and new releases were produced. For these APIs the Maven `groupId` and `artifactId` did not change (except for JTA, where we moved from the 1.2 version of the spec to 1.3, which affected the `artifactId`). The new releases have a maven version number one higher than the previous release, but this version bump solely reflects the new _origin_ of the source code. It does not indicate major changes in the source itself.
+
+It's important to emphasize that the Jakarta EE 8 APIs are API identical to the Java EE 8 APIs and generally the method implementations are identical as well. So this change of the source from which we get the API jars is not expected to introduce any runtime incompatibility. This change is all about aligning the code we provide with projects that are actively maintained.
+
+If you were compiling a deployment project against the Java EE 8 API artifacts we shipped in WildFly 17, that deployment should run fine on WildFly 18.
+
+WildFly provides a number of maven boms for each release. These boms have been updated to use the Jakarta-based dependencies. In addition, the previous boms with maven ids `org.wildfly.bom:wildfly-javaee8` and `org.wildfly.bom:wildfly-javaee8-with-tools` have been discontinued and new boms `org.wildfly.bom:wildfly-jakartaee8` and `org.wildfly.bom:wildfly-jakartaee8-with-tools` have been introduced. Note that this name change does not indicate the WildFly 18 is not a Java EE 8 compatible server. We're just aligning our names with Jakarta EE.
+
+Within the WildFly runtime, deployments don't concern themselves with the Maven GAV of the API jars we provide. To the extent a deployment is concerned at all about the details of how EE API classes are made visible (which would not be common), it would be interested in the names of the JBoss Modules modules that provide the spec classes. All of the existing EE API modules from WildFly 17 still exist in 18 -- with the same names -- and provide the equivalent APIs so there is no need for deployment authors to make any changes.
+
+JDK 13
+------
+Our goal with WildFly is to have our releases run well for most use cases on the most recent GA JDK version available on the WildFly final release date. I'm pleased to report that this is the case with WildFly 18 and JDK 13. By run well, I mean the link:https://ci.wildfly.org/viewType.html?buildTypeId=WF_MasterLinuxJdk13[main WildFly testsuite] runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what the latest JVM means for their applications to be able to look to WildFly as a useful development platform.
+
+While we do want to run well on the most recent JDK, our recommendation is that you run WildFly on the most recent long-term support release, i.e. on JDK 11 for WildFly 18.  We do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 8 or 11.
+
+WildFly 18 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 21, and probably beyond.
+
+Please note that WildFly runs on Java 11 and later in classpath mode.
+
+At this point it is uncertain whether we'll be able to say that the release of WildFly that follows JDK 14 going GA will run well on 14. We'll have to see how well the work for that, both in WildFly itself and in the projects we integrate, aligns with our other goals for that release.
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342528[here]. Issues resolved in the WildFly Core 10 releases included with WildFly 18 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342773[here].
+
+Enjoy, and as always, thank you so much for your support of WildFly!

@@ -1,0 +1,115 @@
+---
+layout: post
+date:   2020-05-11 08:00:00 -0600
+tags:   wildfly, JMS, configuration, qpid, AMQP
+author: ehsavoie
+description: How to configure and use Apache Qpid within WildFly
+---
+
+= Pluging Apache Qpid into WildFly
+
+Using JBoss Generic JMS Resource Adapter you can use a JMS compatible client to connect WildFly to any broker. This article will describe how to do this with Apache Qpid and thus use JMS over AMQP.
+
+== Installing Apache Qpid
+
+You need to download and untar Apache Qpid Broker-J 8.0.0 from https://qpid.apache.org/download.html[https://qpid.apache.org/download.html].
+You need to allow for anonymous access. Please use the https://raw.githubusercontent.com/ehsavoie/qpid-example/master/initial-config.json[initial-config.json] configuration file.
+Note that we will start Apache Qpid HTTP server on 9080 to avoid port conflict with WildFly.
+[source,bash]
+--
+cd $INSTALL_DIR
+tar xvzf qpid-broker-8.0.0-bin.tgz
+export QPID_WORK=$INSTALL_DIR/qpid-broker/8.0.0/work
+cd pid-broker/8.0.0/bin
+./qpid-server -icp initial-config.json -prop "qpid.http_port=9080"
+--
+
+Now you can connect to http://localhost:9080[the Qpid web interface] using _guest/guest_. You can see that we have created 2 queues: *outQueue* and **testQueue**.
+
+== Configuring WildFly
+
+We are going to use the JBoss Generic JMS Resource Adapter. For this we need to deploy a module for the JMS provider to connect to Apache Qpid. Download the archive https://github.com/ehsavoie/qpid-example/raw/master/qpid-provider.tar.gz[qpid-provider.tar.gz] which provides the module to connect to Apache Qpid.
+Then we start WildFly with the _full_ profile.
+
+[source,bash]
+--
+cd $WILDFLY_HOME
+tar xvzf qpid-provider.tar.gz
+cd $WILDFLY_HOME/bin
+./standalone.sh -c standalone-full.xml
+--
+To configure WildFly you need to execute the following operations using the _jboss-cli_. You can use the following script https://raw.githubusercontent.com/ehsavoie/qpid-example/master/qpid.cli[qpid.cli].
+
+First we will enable the use of property replacement in our deployment for easier configurability:
+[source,ruby]
+--
+/subsystem=ee:write-attribute(name=spec-descriptor-property-replacement, value=true)
+/subsystem=ee:write-attribute(name=annotation-property-replacement, value=true)
+/subsystem=ee:write-attribute(name=jboss-descriptor-property-replacement, value=true)
+--
+Then we need to configure the JNDI provider for Apache Qpid:
+[source,ruby]
+--
+/subsystem=naming/binding=java\:global\/qpid:add(binding-type=external-context, class=javax.naming.InitialContext, module=org.jboss.genericjms.provider, environment={java.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory, queue.testQueue=testQueue, queue.outQueue=outQueue, connectionfactory.QpidBroker="amqp://localhost:5672?jms.username=guest&amp;jms.password=guest"})
+/subsystem=naming/binding=java\:\/jms\/qpid\/queue\/testQueue:add(binding-type=lookup, value=java\:global\/qpid\/testQueue)
+/subsystem=naming/binding=java\:\/jms\/qpid\/queue\/outQueue:add(binding-type=lookup, lookup=java\:global\/qpid\/outQueue)
+--
+Last we need to configure the resource adapter to connect to our Apache Qpid broker:
+[source,ruby]
+--
+/subsystem=resource-adapters/resource-adapter=apache-qpid:add(module=org.jboss.genericjms, transaction-support=NoTransaction)
+/subsystem=resource-adapters/resource-adapter=apache-qpid/connection-definitions=QPIDCF:add(jndi-name=java\:\/jms\/qpid\/cf\/QpidBroker, class-name=org.jboss.resource.adapter.jms.JmsManagedConnectionFactory)
+/subsystem=resource-adapters/resource-adapter=apache-qpid/connection-definitions=QPIDCF/config-properties=JndiParameters:add(value="java.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory;connectionfactory.QpidBroker=amqp://localhost:5672?jms.username=guest&jms.password=guest")
+--
+
+== Running the example
+
+You can download the example code from https://github.com/ehsavoie/qpid-example[this GitHub repository].
+
+The example consists of two parts :  a _client_ that will send a message to the *testQueue* to be processed by the _Message Driven Bean_ which will send a message on the *outQueue* to be consumed by the _client_.
+
+This is the client code that sends a message:
+[source,java]
+--
+try (Connection connection = factory.createConnection("guest", "guest")) {
+    connection.start();
+    Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    MessageProducer messageProducer = session.createProducer(queue);
+
+    TextMessage message = session.createTextMessage("Hello world!");
+    messageProducer.send(message, DeliveryMode.NON_PERSISTENT, Message.DEFAULT_PRIORITY, Message.DEFAULT_TIME_TO_LIVE);
+}
+--
+The MDB code is in https://github.com/ehsavoie/qpid-example/blob/master/ejb/src/main/java/org/wildfly/jms/demo/qpid/mdb/remote/RemoteQueueMDB.java[RemoteQueueMDB.java] and will send back a message to be consumed by the client.
+[source, java]
+--
+@Override
+public void onMessage(Message message) {
+    try (QueueConnection queueConnection = qcf.createQueueConnection("guest", "guest");
+    QueueSession queueSession = queueConnection.createQueueSession(true, Session.SESSION_TRANSACTED);
+    QueueSender queueSender = queueSession.createSender(outQueue)) {
+    if (message instanceof TextMessage) {
+        txtMsg = (TextMessage) message;
+        msgCnt++;
+        queueSender.send(message);
+        queueSession.commit();
+    } else {
+        LOG.warnf("MDB[%d] Message of wrong type: %s", mdbID, message.getClass().getName());
+    }
+}
+--
+
+
+Build using Apache Maven, then deploy the MDB by copying _remote-mdb-ejb-1.0.0.jar_ into the _deployments_ folder and run the client:
+
+[source,bash]
+--
+cd client
+mvn "-Dexec.args=-classpath %classpath org.wildfly.jms.demo.qpid.client.HelloWorld" -Dexec.executable=/usr/lib/jvm/java-11/bin/java -Dexec.classpathScope=runtime org.codehaus.mojo:exec-maven-plugin:1.5.0:exec
+--
+
+You should see the following message in the traces showing that all went nicely and that the client has received the message :
+[source,bash]
+--
+Message received 419a7c4d-afe0-4dc2-9cf0-f17f531eb1ba:1:1:1-1 with text Hello world!
+--

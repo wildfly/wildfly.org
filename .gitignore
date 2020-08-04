@@ -1,18 +1,8 @@
-## Awestruct
-_tmp
 _site
-stylesheets/_config-variables.less
-.awestruct
-.sass-cache/
-
-## OS related
-*.DS_Store
-
-## IDE
-.settings
-.project
-.buildpath
-.idea
-
-## Ruby tools
-.rvmrc
+.sass-cache
+.jekyll-metadata
+assets/img/.DS_Store
+_posts/.DS_Store
+_docs/.DS_Store
+assets/img/news/.DS_Store
+.DS_Store

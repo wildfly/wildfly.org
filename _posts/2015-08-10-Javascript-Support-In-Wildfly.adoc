@@ -1,0 +1,223 @@
+---
+layout: post
+title:  "Using Server-Side JavaScript with WildFly"
+date:   2015-08-10 11:00:00 +1000
+tags:   wildfly javascript
+author: sdouglas
+---
+
+= Using Server-Side JavaScript with WildFly
+
+The WildFly 10.0.0.Beta1 release includes support for an experimental new feature, that allows you to use JavaScript
+on the server side, using the Nashorn JavaScript engine that is built into the JDK. Combined with another new feature
+that allows you to serve web resources from outside the deployment it is possible to write server-side code with no
+redeploy of copy step involved.
+
+This feature also allows Java EE resources such as CDI beans to be injected into your JavaScript handlers, allowing you
+to write your back end using Java, and the front end in JavaScript.
+
+This is a new feature, and as such may change before release based on user feedback.
+
+If you want to skip the tutorial and just want to see the code there are some examples at
+https://github.com/stuartwdouglas/undertow.js-examples
+
+Getting Started
+---------------
+
+The first step is to tell WildFly where to find your JavaScript. To do this we create a file `WEB-INF/undertow-scripts.conf`.
+In this file you list your server side JavaScript files, one per line. For the sake of this post I will assume we have a
+single file, example.js.
+
+Note that even though the server JavaScript files are located in the web context, the JavaScript integration will not allow
+them to be served. If a user requests a server side JS file a 404 will be returned instead.
+
+Setting up hot deployment
+-------------------------
+
+To enable hot deployment create a file called `WEB-INF/undertow-external-mounts.conf`, and in this file add a single
+line that points to your local workspaces web content root (for example,
+`/Users/stuart/workspace/jsexample/src/main/webapp`). With this file in place resources will be served from your local
+workspace, instead of the deployment. This means that any changes you make to web resources or server-side JavaScript
+will be immediately visible as soon as you refresh your browser.
+
+This hot deployment mechanism is independent of the server side JS integration, and should work for any web resources.
+
+A simple HTTP endpoint
+----------------------
+
+[source,javascript]
+----
+$undertow
+    .onGet("/hello",
+        {headers: {"content-type": "text/plain"}},
+        [function ($exchange) {
+            return "Hello World";
+        }])
+----
+
+Add this to your example.js file and point your browser at `/hello`. You should see your Hello World message appear.
+
+To test out hot deployment try modifying the message and refreshing your browser, the changes should be reflected
+immediately.
+
+Lets walk through the things that are happening here. `$undertow` is the entry point for all JavaScript functionality,
+it contains methods to register HTTP handlers, as well as some other utility methods. The `onGet` method registers a
+handler for `GET` requests. This method takes three parameters, the handler path, an (optional) options map, and a handler injection
+list (or just a plain handler function, if no injection is required).
+
+This function returns a string, which will be sent to the user as an HTTP response.
+
+Now lets try a simple JSON REST endpoint:
+
+[source,javascript]
+----
+$undertow
+    .onGet("/rest/endpoint",
+        {headers: {"content-type": "application/json"}},
+        [function ($exchange) {
+            return {message: 'Hello World'};
+        }])
+----
+`
+This is basically the same, the only difference is that a map is returned instead of a string. Any object other than
+simple strings that are returned from a handler function will be converted into JSON and sent to the client.
+
+Now lets try out an injection, so our handler can interact with the app server. We will start by injecting the default
+datasource:
+
+[source,javascript]
+----
+$undertow
+    .onGet("/rest/members",
+        {headers: {"content-type": "application/json"}},
+        ['jndi:java:jboss/datasources/ExampleDS', function ($exchange, db) {
+            return db.select("select * from members");
+        }])
+----
+
+JavaScript injection has the format 'type:name'. It uses angular.js style injection, where you pass in a list of injection specifiers, with
+the function to inject as the last item in the list. These injections will be resolved at runtime, and passed into the handler function
+in the order they are specified. The following injection types are supported out of the box:
+
+jndi::
+
+This injection is looked up from JNDI, any item that can be looked up in JNDI can be injected into your JavaScript function.
+
+cdi::
+
+This allows you to inject CDI beans into a handler. The beans are resolved by name, and as such must have the `@Named`
+annotation for them to be resolvable.
+
+$entity::
+
+This allows the request entity to be injected directly into your function (for request types that have an entity, such as
+`POST` and `PUT`). By default this is injected as a string, however the following types are also supported.
+
+- $entity:json injects parsed JSON.
+- $entity:form injects parsed form or multipart encoded data.
+
+Undertow.js will also automatically wrap some objects (such as datasources) in a JavaScript friendly API. The raw JDBC
+API is not particularly script friendly, so in the example above the DataSource that is injected is actually a wrapper
+that supports the `select`, `selectOne` and `query` methods. With any wrapped object you can access the underlying Java
+object using the objects `$underlying` property.
+
+Going back to our example above, there are two issues with it:
+
+- We have not set up any tables or added any data to the database.
+- Writing the full JNDI name every time is cumbersome and error prone.
+
+Lets address those issues:
+
+[source,javascript]
+----
+$undertow
+    .alias('db', 'jndi:java:jboss/datasources/ExampleDS')
+    .onGet("/rest/members",
+        {headers: {"content-type": "application/json"}},
+        ['db', function ($exchange, db) {
+            return db.select("select * from member");
+        }]);
+
+
+var db = $undertow.resolve("db");
+try {
+    db.query("create table member (id serial primary key not null, name varchar(100), email varchar(100) unique, phone_number varchar(100))");
+    db.query("insert into member (id, name, email, phone_number) values (0, 'John Smith', 'john.smith@mailinator.jsp.com', '2125551212')");
+    db.query("insert into member (id, name, email, phone_number) values (1, 'Stuart Douglas', 'stuart@notmyrealaddress.com', '0487694837')");
+} catch(e) {
+    print("DB create failed")
+}
+----
+
+We have added two things to this handler, the first is a call to `alias`, that allows us to alias commonly used names to
+shorter versions, and the second is some code to create the database. This DB setup code is mostly for example purposes,
+and is not a recommended approach, as every time this file is modified it will attempt to re-setup the database (and fail,
+as the table already exists).
+
+Templates
+---------
+
+There is also support for templates, at the moment Undertow.js supports Mustache, with plans to support more in the future.
+
+To use a template simply specify the template name in the parameter map, the template will be rendered using the return
+value of your function as the data. An example is shown below:
+
+[source,javascript]
+----
+$undertow
+    .onGet("/hello",
+        {template: 'hello.txt', headers: {"content-type": "text/plain"}},
+        [function ($exchange) {
+            return {name: 'Stuart'};
+        }]);
+----
+
+And in `hello.txt`:
+
+[source]
+----
+Hello {{name}}
+----
+
+Handling POST requests
+----------------------
+
+POST (and other requests that contain a body) can be handled using entity injection. The body can be injected as a string,
+or one of the built in parsers can be used to parse JSON or form encoded data (including multipart data).
+
+An example of all three approaches is shown below:
+
+
+[source,javascript]
+----
+$undertow
+    .onPost("/string",
+        {headers: {"content-type": "text/plain"}},
+        ['$entity', function ($exchange, entity) {
+            return "You posted: " + entity;
+        }])
+    .onPost("/json",
+        {headers: {"content-type": "text/plain"}},
+        ['$entity:json', function ($exchange, entity) {
+                return "You posted: " + entity['name'];
+        }])
+    .onPost("/form",
+        {headers: {"content-type": "text/plain"}},
+        ['$entity:form', function ($exchange, entity) {
+            return "You posted: " + entity.get('name');
+        }])
+----
+
+Going forward
+-------------
+
+
+At the moment the following additional features are planned:
+
+- Support for more template engines
+- Support for declarative security
+
+This feature is very new, and will evolve over the coming months based on user feedback. If you want to contribute, or have
+any suggestions/comments head to undertow-dev@lists.jboss.org.
+
+

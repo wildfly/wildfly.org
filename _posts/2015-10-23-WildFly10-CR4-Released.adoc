@@ -1,0 +1,17 @@
+---
+layout: post
+title:  "WildFly 10 CR4 is released!"
+date:   2015-10-23 15:31:00 -0600
+tags:   announcement release
+author: jgreene
+---
+
+= WildFly 10 CR4 is released!
+
+The fourth release candidate for WildFly 10 (10.0.0.CR4) is now available link:{base_url}/downloads[for download]!
+
+For details, see the link:https://developer.jboss.org/wiki/WildFly1000CR4ReleaseNotes[official 10.0.0.CR4 Release Notes wiki page].
+
+Give it a try and let us know what you think. If all goes well, this will be the last CR before the final release.
+
+Enjoy!

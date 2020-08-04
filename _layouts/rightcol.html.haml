@@ -1,9 +1,0 @@
----
-layout: project
----
-
-%div#equalHeightsLayout.row-fluid
-  #maincol.span9.well
-    ~ content
-  #rightcol.span3.well
-    = partial( page.rightcol_partial.nil? ? 'rightcol.html.haml' : page.rightcol_partial  , { "real_page" => page } )
