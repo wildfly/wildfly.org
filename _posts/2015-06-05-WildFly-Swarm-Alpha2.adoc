@@ -1,0 +1,123 @@
+---
+layout: post
+title:  "WildFly Swarm Alpha2"
+date:   2015-06-05 16:30:00 -0500
+tags:   announcement release swar
+author: kenfinnigan
+---
+
+= WildFly Swarm Alpha2
+
+We've been churning through the improvements and fixes for Alpha2!
+
+== Windows
+
+All the Windows issues are now resolved.  You can enjoy the benefits of WildFly Swarm
+on your operating system of choice.
+
+== Modify your Application from Alpha1
+
+We've made a few changes to how the plugin works which means that you will need
+to update any applications that are already utilizing Alpha1:
+
+- Remove the `execution` phase from the wildfly-swarm-plugin
+- Change the goal of the wildfly-swarm-plugin from `create` to `package`
+- Remove the `provided` scope from all WildFly Swarm dependencies in your `pom.xml`
+
+== Weld and JAX-RS
+
+There were some WildFly modules missing when you wanted to use Weld with JAX-RS,
+so we've created a new fraction to cater for this combination. Simply add the
+following dependency:
+
+[source,xml]
+<dependency>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-weld-jaxrs</artifactId>
+  <version>${version.wildfly-swarm}</version>
+</dependency>
+
+== JPA
+
+This release brings initial support for JPA projects. There are improvements planned
+for Alpha3 to make it even easier, but right now your project needs to have `jar`
+packaging, not `war`, and you will need your own Main:
+
+[source,java]
+------------------------------
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+      Container container = new Container();
+      container.start();
+
+      // Create a JDBC driver deployment using maven groupId:artifactId
+      // The version is resolved from your pom.xml's <dependency>
+      DriverDeployment driverDeployment = new DriverDeployment(container, "com.h2database:h2", "h2");
+      container.deploy(driverDeployment);
+
+      // Create a DS deployment
+      DatasourceDeployment dsDeployment = new DatasourceDeployment(container, new Datasource("ExampleDS")
+              .connectionURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
+              .driver("h2")
+              .authentication("sa", "sa")
+      );
+      container.deploy(dsDeployment);
+
+      // Create the WAR and bundle all the JPA Entities and persistence.xml
+      WarDeployment deployment = new DefaultWarDeployment(container);
+      deployment.getArchive().addClasses(Employee.class);
+      deployment.getArchive().addClass(EmployeeServlet.class);
+      deployment.getArchive().addAsWebInfResource(new ClassLoaderAsset("META-INF/persistence.xml", Main.class.getClassLoader()), "classes/META-INF/persistence.xml");
+      deployment.getArchive().addAsWebInfResource(new ClassLoaderAsset("META-INF/load.sql", Main.class.getClassLoader()), "classes/META-INF/load.sql");
+
+      container.deploy(deployment);
+    }
+}
+------------------------------
+
+== More ways to run your WildFly Swarm Application!
+
+As with Alpha1 you can run your generated self-contained executable with:
+
+[source]
+java -jar ./target/myproject-1.0-swarm.jar
+
+With Alpha2 you can also run it from the command line, without building the
+project:
+
+[source]
+mvn wildfly-swarm:run
+
+or run the Main class of your application, or `org.wildfly.swarm.Swarm` if
+you don't have one, directly within your favorite IDE!
+
+
+== Examples?
+
+Yes indeed! We have a bunch of buildable and runnable examples at GitHub:
+
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/servlet[Servlet WAR]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/jaxrs[JAX-RS WAR]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/jaxrs-shrinkwrap[JAX-RS with ShrinkWrap]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/jaxrs-cdi[JAX-RS with CDI]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/datasource-subsystem[Datasource via Subsystem Config]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/datasource-deployment[Datasource via Deployment]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/msc[JBoss MSC Services]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/messaging[Messaging, JAX-RS and MSC]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/transactions[Transactions and JAX-RS]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/cdi-servlet[CDI and Servlet]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/jpa-servlet[JPA and Servlet]
+- link:https://github.com/wildfly-swarm/wildfly-swarm-examples/tree/master/jpa-jaxrs-cdi[JPA, JAX-RS and CDI]
+
+== What do I download?
+
+There is no special download or installation instructions.  Simply start
+using `org.wildfly.swarm` artifacts in your `pom.xml`, throw in the plugin
+and continue doing your builds.  Everything is available through Maven Central.
+
+== Stay in Touch
+
+You can keep up with the project through the link:https://www.hipchat.com/gSW9XYz69[WildFly HipChat]
+room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
+link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].

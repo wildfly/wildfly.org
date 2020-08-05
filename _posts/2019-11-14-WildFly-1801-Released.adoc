@@ -1,0 +1,20 @@
+---
+layout: post
+date:   2019-11-14 08:00:00 -0600
+tags:   announcement, release
+author: bstansberry
+synopsis: WildFly 18.0.1.Final is now available for download!
+otherimage: wildflycarousel_18.png
+---
+
+= WildFly 18.0.1 is released! 
+
+WildFly 18.0.1 Final is now available link:{base_url}/downloads[for download].
+
+It's been over a month since the WildFly 18 release and we had a number of important bug fixes and component upgrades ready to go so we decided to do a WildFly 18.0.1 release. 
+
+The full list of issues resolved in WildFly 18.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12343077[here]. Issues resolved in the WildFly Core 10.0.2 and 10.0.3 releases included with WildFly 18.0.1 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12343078[here] and link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12343166[here].
+
+Now it's time to get back to the exciting work on MicroProfile 3.2 support for WildFly 19!  
+
+Enjoy!

@@ -1,0 +1,92 @@
+---
+layout: post
+date:   2019-03-09 17:00:00 -0600
+tags:   wildfly, roadmap
+author: bstansberry
+description: Onward to WildFly 17 and Beyond!
+---
+
+= Onward to WildFly 17 and Beyond!
+
+Following the link:https://wildfly.org/news/2019/02/27/WildFly16-Final-Released[release of WildFly 16], I thought it would be a good time to give the WildFly community a sense of what I see coming in the project over the next few releases.
+
+WildFly will continue with the link:http://lists.jboss.org/pipermail/wildfly-dev/2017-December/006250.html[quarterly delivery model] we began last year with WildFly 12. These releases are essentially time-boxed; i.e. we typically won't significantly delay a release in order to get a feature in. So when I discuss general feature roadmaps I'll be talking in terms of the next two or three releases rather than just WildFly 17.  
+
+WildFly on the Cloud
+--------------------
+
+A major focus will be on making WildFly as easy and productive as possible to use on the cloud, particularly on Kubernetes and OpenShift. In particular we'll be working on the following:
+
+ * Creation of an link:https://coreos.com/blog/introducing-operators.html[Operator] to help automate best practices for deploying and managing a WildFly-based application on Kubernetes and OpenShift. Work on this has just link:http://lists.jboss.org/pipermail/wildfly-dev/2019-March/006798.html[kicked off]; we'd love to have your participation!
+ * Continuation of our efforts to link:http://wildfly.org/news/2019/03/01/Galleon_Openshift/[use Galleon to make WildFly a truly "cloud native" application server]. This will involve a number of areas, including:
+ ** Further development and greater testing of the link:http://docs.wildfly.org/16/Admin_Guide.html#Galleon_Provisioning[Galleon layers provided by WildFly].
+ ** Enhancements to the Galleon tooling for creating feature packs.
+ ** Fleshing out the image build processes. 
+ * Adding an link:https://launch.openshift.io/launch/[openshift.io launcher] for WildFly and enhancing it as best practices for cloud-native application development evolve.
+ * Improved support for offloading session caching to an external Infinispan caching service by using a link:https://issues.redhat.com/browse/WFLY-7719[HotRod-based distributed session manager].
+ 
+Jakarta EE
+----------
+
+Of course, the EE standards are very important to WildFly. We're very focused on Jakarta EE, with a number of members of the WildFly community involved in the various specs. We're keeping a close eye on the finalization of Jakarta EE 8 with certification a high priority. As work on Jakarta EE 9 ramps up we'll be active participants, although I don't expect significant change in WildFly related to EE 9 until the fall at earliest. 
+
+Security
+--------
+
+Darran Lofthouse and Farah Juma do an excellent job of maintaining a roadmap for security-related work in WildFly. I encourage you to read Darran's recent link:https://darranl.blogspot.com/2019/03/security-features-for-wildfly-17.html[blog post] to learn more about what's coming in WildFly 17.
+
+Other Items
+-----------
+
+Besides the broader topics I've touched on above, there are always individual items that are in progress. Here are a few noteworthy ones:
+
+ * Support for messaging clusters behind http load balancers by disabling automatic topology updates on clients. (This allows the client to continue to address the load balancer rather than trying to communicate with the servers behind the load balancer.)
+ * link:https://issues.redhat.com/browse/WFLY-6143[WFLY-6143] -- Ability to configure server-side EJB interceptors that should apply to all deployments. Client-side interceptors are link:https://issues.redhat.com/browse/WFLY-6144[also being considered].
+ * link:https://issues.redhat.com/browse/WFCORE-1295[WFCORE-1295] -- Support for expression resolution for deployment descriptors parsed by WildFly Core, e.g. jboss-deployment-structure.xml and permissions.xml.
+ * link:https://issues.redhat.com/browse/WFCORE-4227[WFCORE-4227] -- Ability for the CLI SSL security commands to be able to obtain a server certificate from Let's Encrypt.
+ * In the clustering area:
+ ** link:https://issues.redhat.com/browse/WFLY-5550[WFLY-5550] -- A separate subsystem for configuring distributed web session managers. This will help users avoid common configuration mistakes, and is also a prerequisite for the aforementioned link:https://issues.redhat.com/browse/WFLY-7719[HotRod-based distributed session manager] and for...
+ ** link:https://issues.redhat.com/browse/WFLY-6944[WFLY-6944] -- Support for encoding web session affinity using multiple routes, if supported by the load balancer.
+ ** https://issues.redhat.com/browse/WFLY-11098[WFLY-11098] -- Support for Singleton Service election listeners.
+
+Future Work
+-----------
+
+I regularly hear from community members asking about MicroProfile.  Last year we added subsystems to bring support of MicroProfile Config, Health, Metrics and OpenTracing.  The overall focus there was on "observability" of WildFly, particular in the cloud. These subsystems were oriented toward allowing monitoring and management tooling to observe the behavior of WildFly servers. The MicroProfile specs were a good choice because observers want to work in a standardized way.
+
+As this year continues we'll think about adding support for some other MicroProfile specifications, perhaps as new subsystems within the main WildFly codebase, or perhaps via new projects in the link:https://github.com/wildfly-extras[WildFly Extras organization] along with a link:http://docs.wildfly.org/galleon/#_feature_packs[Galleon feature pack] and a link:https://docs.wildfly.org/galleon/#_layers[Galleon layer] to allow easy integration into a WildFly installation.
+
+I suspect anything on this would be in WildFly 18 or later. 
+
+
+WildFly Feature Delivery Process / Following Development
+--------------------------------------------------------
+
+I'd love to have input both into our roadmap and into the requirements for the implementations of features. If you're interested in following WildFly feature development one thing to do is to monitor the link:https://issues.redhat.com/projects/WFLY/summary[WFLY] and link:https://issues.redhat.com/projects/WFCORE/summary[WFCORE] projects in JIRA. Beyond that I encourage you to subscribe to the link:https://lists.jboss.org/mailman/listinfo/wildfly-dev[wildfly-dev mailing list]. It's relatively low traffic, and I've been encouraging folks to post a brief note to the list when work on a new feature kicks off. So that's a good way to hear early on about work to which you may have something to add.
+
+When we went to the quarterly time-boxed release model, we formalized our feature development process quite a bit. In order to reliably release on time, we needed to be sure that features were truly ready for release before they ever got merged. No more merging things that were 90% done with the expectation of further improvements before the final release. To help facilitate this we started requiring the creation of an asciidoc analysis document at the start of feature work. This document is meant to cover:
+
+ * Who is going to work on the feature, both in terms of development and of testing.
+ * What the requirements for the feature are. (This IMHO is the most important part.)
+ * How the feature will be tested.
+ * How the feature will be documented. (Some form of documentation is required, either in link:https://docs.wildfly.org[the WildFly docs] or, for simple things, in the software itself, e.g. in help messages.)
+
+The analysis documents are all submitted as github pull requests to link:https://github.com/wildfly/wildfly-proposals/pulls[a github repo we created for them]. Discussion of the document is done via comments on and updates to the PR. The document remains unmerged until the feature code itself is merged. The analysis is meant to be a living document, revised as necessary as new things are learned as the feature is developed.
+
+One of the goals we had with all this is encourage community input to the feature requirements. So I very much encourage you to have a look at and comment on the PRs for any features in which you're interested. The announcement posts to wildfly-dev that I mentioned are meant to inform you when new PRs are submitted.
+
+
+Key WildFly 17 Schedule Dates
+-----------------------------
+
+Following are the expected key dates associated with the WildFly 17 release:
+
+ * Fri, May 10 -- Completion date for features coming in via WildFly Core
+ * Tue, May 14 -- All features ready
+ * Wed, May 15 -- WildFly 17 Beta. No new features after this date.
+ * Fri, May 24 -- All changes for WildFly Core ready
+ * Tue, May 28 -- All changes for WildFly ready
+ * Thu, May 30 -- WildFly 17 Final released
+
+
+Finally, thanks, as always, for your interest in and support of WildFly!

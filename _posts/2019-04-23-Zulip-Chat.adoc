@@ -1,0 +1,19 @@
+---
+layout: post
+date:   2019-04-23 14:00:00 -0600
+tags:   wildfly, announcement
+author: kkhan
+description: Zulip Chat
+---
+
+= Zulip Chat
+
+After HipChat got closed down earlier this year we evaluated a few alternative chat solutions. During this period we
+temporarily moved community discussions back to IRC (#wildfly on Freenode).
+
+We found that Zulip worked well for us and have now settled on this as our main chat tool. Thanks to the people
+at Zulip for their open source license!
+
+To join in, go to https://wildfly.zulipchat.com and sign up. The most obvious stream to join is #wildfly-users for
+user questions. If you want to get involved in development, or keep tabs on what we are up to, #wildfly-developers.
+We  also have more specific streams for development of larger app server areas (e.g. #wildfly-elytron and #undertow).

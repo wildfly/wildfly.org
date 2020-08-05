@@ -1,0 +1,20 @@
+---
+layout: post
+date:   2019-09-12 08:00:00 -0600
+tags:   announcement, certification, Jakarta
+author: bstansberry
+description: WildFly is Jakarta EE 8 Certified!
+otherimage: wildflycarousel_17.png
+---
+
+= WildFly is Jakarta EE 8 Certified!
+
+Tuesday was a great day in the world of enterprise Java. It's been a long road since Jakarta EE was born following Oracle's announcement that stewardship of Java EE would be moving to the Eclipse Foundation. But after a lot of hard work by folks in the Jakarta community, Jakarta EE 8 has been released. Congratulations to everyone involved with the Jakarta EE Platform project and all the various spec projects. The ability to enhance enterprise Java standards under an open-source model should bring great benefits to our communities.
+
+I'm pleased to say that WildFly 17.0.1 has passed the Jakarta EE 8 TCK and our compatibility certification request has been approved by the Jakarta EE Spec Committee. So, WildFly is a Jakarta EE Full platform compatible implementation. We also remain a certified Java EE 8 compatible implementation.
+
+My thanks to the many people whose work on WildFly and Jakarta EE made this certification possible, particularly to Scott Stark and Scott Marlow, who put in a lot of long days and nights on this. TCKs are not simple things, something you can now find out for yourself, as the move to Jakarta means the TCKs are all open source!
+
+If you're interested in the details of our certification request, they can be found at link:https://github.com/wildfly/certifications/blob/EE8/WildFly_17.0.1.Final/jakarta-full-profile.adoc[our certification repository].
+
+Onward to WildFly 18!

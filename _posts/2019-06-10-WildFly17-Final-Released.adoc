@@ -1,0 +1,70 @@
+---
+layout: post
+date:   2019-06-10 08:00:00 -0600
+tags:   announcement, release
+author: bstansberry
+description: WildFly 17.0.0.Final is now available for download!
+otherimage: wildflycarousel_16.png
+---
+
+= WildFly 17 is released!
+
+I'm pleased to announce that WildFly 17 Final is now available link:{base_url}/downloads[for download].
+
+A lot of effort in this last quarter has gone into using WildFly in cloud environments, which I'll expand on more below, but first I wanted to touch on improvements we've made in the main WildFly server.
+
+Clustering Improvements
+-----------------------
+
+* You can now use a link:https://github.com/wildfly/wildfly-proposals/blob/master/clustering/web/WFLY-5550_Distributable_Web_Subsystem.adoc[separate subsystem for configuring distributed web session managers]. This will help users avoid common configuration mistakes, and is also a prerequisite for the next two improvements. 
+* We have improved support for offloading session caching to an external Infinispan caching service by using adding a new link:https://github.com/wildfly/wildfly-proposals/blob/master/clustering/web/WFLY-7719_HotRod-based_distributed_session_manager.adoc[HotRod-based distributed session manager].
+* Applications that use HA singleton services can now link:https://github.com/wildfly/wildfly-proposals/blob/master/clustering/singleton/WFLY-11098_Singleton_Service_Election_Listener.adoc[register listeners to receive notifications] when the service starts and stops, which will include information on which cluster member was elected as the new primary provider. 
+* If you configure session sharing between wars in an ear, you can now link:https://github.com/wildfly/wildfly-proposals/blob/master/clustering/web/WFLY-5497_Distributable_Shared_Session_Config.adoc[configure whether those sessions are handled with 'distributable' semantics.] Being able to turn off 'distributable' semantics is necessary for applications that need to store non-serializable objects in the session.
+
+Messaging Improvements
+----------------------
+
+* We've added support for link:https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-11829_artemis_clusters_with_http_load_balancer.adoc[messaging clusters behind http load balancers] by disabling automatic topology updates on clients. (This allows the client to continue to address the load balancer rather than trying to communicate with the servers behind the load balancer.)
+* The timeout the embedded messaging broker uses for opening journal files link:https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-11404_configurable_journal_file_open_timeout.adoc[is now configurable.]
+* Configurability of connections to remote AMQ brokers has been link:https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-12038_enable1prefixes.adoc[enhanced].
+
+Other Notable Items
+-------------------
+
+* Web access logs in JSON format can now be link:https://github.com/wildfly/wildfly-proposals/blob/master/undertow/WFLY-11031_Formatted_Access_Logs.adoc[configured to use a formatted structure for main log message], instead of a simple opaque string.
+* Elytron JDBC security realms now support link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-3542_WFCORE-3832-JDBC-realm-mod_crypt_hex.adoc[hex encoding of hashes, passwords and salts.] Support has also been added for mod_crypt encoding of passwords.
+* The title of the HAL management console can now be link:https://github.com/wildfly/wildfly-proposals/blob/master/console/HAL-1578_Customise_Browser_Title.adoc[customized by the user].
+* Client-side resolution of properties can now be link:https://github.com/wildfly/wildfly-proposals/blob/master/cli/EAP7-1190_Prop_Reso_Option.adoc[enabled without editing the CLI's xml configuration file.]
+
+
+WildFly in the Cloud
+--------------------
+As we continue with our link:http://lists.jboss.org/pipermail/wildfly-dev/2017-December/006250.html[quarterly delivery model], a major focus continues to be on making WildFly as easy and productive as possible to use on the cloud, particularly on Kubernetes and OpenShift.  Quite a lot has happened this past quarter:
+
+First, there's now a launcher allowing you to use WildFly as a backend runtime at https://launch.openshift.io !
+
+Second, I'm very pleased to announce the first release of our link:https://issues.redhat.com/browse/WFLY-11824[WildFly Operator for Kubernetes/OpenShift]. It's link:https://operatorhub.io/operator/wildfly[available at operatorhub.io] -- try it out! Or even better lend a hand at https://github.com/wildfly/wildfly-operator . This is a key step in making it easier to manage WildFly-based applications in the cloud, with more to come.
+
+Finally, the Galleon-driven cloud image prototype work that link:https://wildfly.org/news/2019/03/01/Galleon_Openshift/[Jean-Francois Denise described in March] is making very good progress. It's leading to the next generation of link:https://github.com/wildfly/wildfly-s2i[source-to-image (s2i) for WildFly]. Later this week Jean-Francois will be uploading WildFly 17-based images to link:https://quay.io/organization/wildfly[quay.io]. In the meantime, I encourage you to link:https://github.com/wildfly/wildfly-s2i/blob/master/README.md[learn more about these efforts] or even have a go at building the images yourself.
+
+For those of you who have previously used the link:https://github.com/openshift-s2i/s2i-wildfly[OpenShift s2i image for WildFly], please note that going forward development will be happening at the link:https://github.com/wildfly/wildfly-s2i[new source repo under the wildfly GitHub organization].
+
+
+JDK 12 and 13
+-------------
+Our goal with WildFly is to have our releases run well for most use cases on the most recent GA JDK version available on the WildFly final release date. I'm pleased to report that this is the case with WildFly 17 and JDK 12. By run well, I mean our main testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what the latest JVM means for their applications to be able to look to WildFly as their development platform. It may not always be possible to attain this goal, but it's one we take seriously.
+
+Although JDK 13 is still in the EA stages, Richard Opalka continues to informally test WildFly against the EA releases as they come out and he reports that it is working well.
+
+While we do want to run well on the most recent JDK, our recommendation is that you run WildFly on the most recent long-term support release, i.e. on JDK 11 for WildFly 17.  We do considerably more testing on the LTS JDKs.
+
+WildFly 17 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 18, and probably beyond.
+
+Please note that WildFly runs on Java 11, 12 and 13 in classpath mode.
+
+
+Jira Release Notes
+------------------
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12341151[here]. Issues resolved in the WildFly Core 9 releases included with WildFly 17 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342171[here] and link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342201[here].
+
+Enjoy, and as always, thank you so much for your support of WildFly!

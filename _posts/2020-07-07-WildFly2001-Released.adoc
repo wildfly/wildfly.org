@@ -1,0 +1,21 @@
+---
+layout: post
+title:  "WildFly 20.0.1 is released!"
+date:   2020-07-07
+tags:   announcement release
+author: bstansberry
+description: WildFly 20.0.1.Final is now available for download!
+otherimage: wildflycarousel_20.png
+---
+
+= WildFly 20.0.1 is released!
+
+WildFly 20.0.1.Final is now available link:{base_url}/downloads[for download].
+
+It's been about a month since the WildFly 20 release, so it's time for a small bug fix update, WildFly 20.0.1.
+
+The full list of issues resolved in WildFly 20.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12346151[here]. Issues resolved in the WildFly Core 12.0.2 and 12.0.3 releases included with WildFly 20.0.1 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12346092[here] and link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12346603[here].
+
+Onward to WildFly 21!  
+
+Enjoy.

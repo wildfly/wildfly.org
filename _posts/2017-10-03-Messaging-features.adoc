@@ -1,0 +1,119 @@
+---
+layout: post
+title:  "Messaging features in WildFly 11"
+date:   2017-10-03 19:00:00 +0100
+tags:   wildfly messaging
+author: jmesnil
+---
+
+= Messaging features in WildFly 11
+
+WildFly 11 is integrating http://activemq.apache.org/artemis/[Apache ActiveMQ Artemis 1.5] to provides its messaging features.
+
+== New features
+
+With the integration of Artemis 1.5, WildFly has udpated its `messaging-activemq` subsystem to provides new Artemis features through WildFly management model.
+
+The two new main features are the *JDBC Store* and the configuration for *ActiveMQ client thread pools*.
+
+=== JDBC Store
+
+The JDBC store is an alternative to Artemis File journal that uses a SQL database to store broker state (messages, addresses and other application state) instead of files.
+
+It relies on a `data-source` resource configured in the https://wildscribe.github.io/WildFly/11.0.CR1/subsystem/datasources/index.html[`datasources subsystem`] to connect to the database.
+
+To use a JDBC store in WildFly, you need to configure the `journal-datasource` attribute on its https://wildscribe.github.io/WildFly/11.0.CR1/subsystem/messaging-activemq/server/index.html[`server` resource] that corresponds to a JDBC DataSource configured in the `datasources` subsystem:
+
+....
+[standalone@localhost:9990 /] /subsystem=messaging-activemq/server=default:write-attribute(name=journal-datasource, value=ExampleDS)
+....
+
+=== Configuration of ActiveMQ client thread pools
+
+Artemis uses thread pools for its clients that are running inside the application server. They can now be configured in the `messaging-activemq` subsystem to ensure that their sizes fit the application deployed in WildFly:
+
+[source, xml]
+--
+<subsystem xmlns="urn:jboss:domain:messaging-activemq:1.1">
+  <global-client thread-pool-max-size="${activemq.artemis.client.global.thread.pool.max.size}"
+    scheduled-thread-pool-max-size="${activemq.artemis.client.global.scheduled.thread.pool.core.size}" />
+  <server ...>
+  </server>
+  ...
+</subsystem>
+--
+
+
+NOTE: By default, the maximum size for client thread pool is not defined. In that case, Artemis will configure them to be 8 x the number of available processors.
+
+=== Message-Driven Beans Features
+
+We have also added new features for Message-Driven Beans (MDBs) related to their use in a cluster of Artemis brokers.
+
+==== Full support for Clustered Singleton MDB
+
+When an MDB is identified as a clustered singleton and deployed in a cluster, it will always be active only on one node at a time. When the server node fails or is shut down, the clustered singleton MDB is activated on a different node and starts consuming messages on that node.
+
+NOTE: The https://github.com/wildfly/quickstart/tree/11.x/messaging-clustering-singleton[messaging-clustering-singleton quickstart] demonstrates how to setup and configure MDB to support clustered singleton.
+
+=== Rebalancing of all inbound MDB connections
+
+WildFly 11 provides the `rebalanceConnections` activation configuration property for MDBs. This parameter allows for rebalancing of all inbound MDB connections when the underlying Artemis cluster topology changes so that when nodes are added/removed from the cluster, the MDB can connect to them instead of being _stuck_ to the topology when the MDB initially connected to the cluster.
+This property can also be configured on the `messaging-activemq`'s https://wildscribe.github.io/WildFly/11.0.CR1/subsystem/messaging-activemq/server/pooled-connection-factory/index.html[`pooled-connection-factory` resources] using the `rebalance-connections` attribute:
+
+....
+[standalone@localhost:9990 /] /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=rebalance-connections, value=true)
+....
+
+
+=== Generic JMS Resource Adapter 2.0
+
+WildFly supports messaging with Artemis out of the box.
+It also provides the https://github.com/jms-ra/generic-jms-ra[Generic JMS Resource Adapter] that allows to use out of the box JMS brokers that does not provides a resource adapter (such as TIBCO EMS for example).
+MDBs can the connect to these external JMS brokers through the use of the Generic JMS RA. This component has been updated to support the JMS 2.0 API (provided that the external JMS broker behind it supports it).
+
+== Improvements
+
+There were also many improvements to the messaging features that were in WildFly 10.
+
+=== Monitoring of JMS pooled connections
+
+The `messaging-activemq`  https://wildscribe.github.io/WildFly/11.0.CR1/subsystem/messaging-activemq/server/pooled-connection-factory/index.html[`pooled-connection-factory` resources] now offers statistics on their pools.
+They must first be enabled by setting the `statistics-enabled` attribute to `true`:
+
+....
+[standalone@localhost:9990 /] /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=statistics-enabled, value=true)
+....
+
+Once statistics are enabled, the `pooled-connection-factory` resource will have a `statistics=pool` child resource that will returns metrics on the pool used by the `pooled-connection-factory`:
+
+[source, ruby]
+--
+[standalone@localhost:9990 /] /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra/statistics=pool:read-resource(include-runtime)
+{
+    "outcome" => "success",
+    "result" => {
+        "ActiveCount" => 15,
+        "AvailableCount" => 20,
+        ...
+    }
+}
+--
+
+=== Web console improvements
+
+The management Web console that is bundled with WildFly 11 has been substantially improved to be able to manage messaging resources more efficiently.
+
+* https://wildscribe.github.io/WildFly/11.0.CR1/subsystem/messaging-activemq/jms-bridge/index.html[JMS Bridges] can now be added and managed using the Web console.
+* The Web console now displays prepared transactions for integrated Artemis brokers. You can then commit or rollback these prepared transactions from the Web console too.
+
+=== Elytron integration with the `messaging-activemq` subsystem
+
+The https://github.com/wildfly-security/wildfly-elytron[WildFly Elytron project] is a security framework used to unify security across the entire application server. The `elytron` subsystem enables a single point of configuration for securing both applications and the management interfaces and replaces the legacy `security` subsystem.
+
+The `messaging-activemq` subsystem has been integrated with Elytron to provide its security features (authentication and authorization).
+
+== Bug fixes
+
+There were also many many messaging bug fixes since last WildFly release.
+However if you find any new issues or want to request enhancements, do not hesitate to use http://issues.jboss.org/browse/WFLY[WildFly issue tracker].

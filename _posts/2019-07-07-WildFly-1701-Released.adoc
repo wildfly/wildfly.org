@@ -1,0 +1,174 @@
+---
+layout: post
+date:   2019-07-07 08:00:00 -0600
+tags:   announcement, release, galleon
+author: bstansberry
+description: WildFly 17.0.1.Final is now available for download!
+otherimage: wildflycarousel_17.png
+---
+
+= WildFly 17.0.1 is released!
+
+WildFly 17.0.1 Final is now available link:{base_url}/downloads[for download].
+
+We had a number of important bug fixes ready to go so we decided to do a micro release for WildFly 17. I also wanted to blog a bit about using link:https://docs.wildfly.org/galleon/[Galleon] to update an existing Galleon-provisioned WildFly installation after a new release comes out.
+
+== Jira Release Notes
+
+The full list of issues resolved in WildFly 17.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342471[here]. Issues resolved in the WildFly Core 9.0.2 release included with WildFly 17.0.1 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12342214[here].
+
+== Using Galleon to Update a WildFly Installation
+
+As discussed in the link:https://wildfly.org/news/2019/02/27/WildFly16-Final-Released[WildFly 16 release announcement], you can use the link:https://docs.wildfly.org/galleon/[Galleon] tool to create a customized WildFly installation. Once you've done that, if a new WildFly release comes out you can use Galleon to update your installation. In this post I'll walk through the basics of doing that.
+
+If you want to follow along with the examples, link:https://github.com/wildfly/galleon/releases[download the latest Galleon command line tool], unzip it and add the bin dir to your PATH.
+
+=== Feature Packs and Channels
+
+The simplest command to install the latest version of WildFly into the directory _my-wildfly_ is to call:
+
+[source,options="nowrap"]
+----
+$ galleon.sh install wildfly:current --dir=my-wildfly
+----
+
+Most of that command is self-explanatory, but what about the `wildfly:current` part? That's a _feature-pack location_ or _FPL_. An FPL has a link:https://docs.wildfly.org/galleon/#_feature_pack_location[rich possible syntax], but most commonly you'll see something simple like `wildfly:current`. This consists of two parts:
+
+* `wildfly` -- the name of the feature pack
+* `current` -- the name of a _channel_ from which the feature pack should be consumed. A channel represents a source of backward compatible releases. A feature pack may be available over numerous channels, with different channels restricting which versions of the channel are available.  The `current` channel for WildFly feature packs includes all versions.
+
+Use the `list-feature-packs` command to see what packs and channels are available:
+
+[source,options="nowrap"]
+----
+$ galleon.sh list-feature-packs
+=============== ============== ============ 
+Product         Update Channel Latest Build 
+=============== ============== ============ 
+wildfly         current/final  17.0.1.Final 
+wildfly         17.0/final     17.0.1.Final 
+wildfly-core    current/final  9.0.2.Final  
+wildfly-core    9.0/final      9.0.2.Final  
+wildfly-servlet current/final  17.0.1.Final 
+wildfly-servlet 17.0/final     17.0.1.Final
+----
+
+Feature packs for `wildfly`, `wildfly-core` and `wildfly-servlet` are available, with `wildfly-core` and `wildfly-servlet` providing subsets of the traditional functionality of the WildFly application server.  There are two channels for each, the `current` channel, which will have the latest release available, regardless of major/minor version, and then the `17.0` and `9.0` channels for `wildfly`/`wildfly-servlet` and `wildfly-core` respectively. The `final` in the _Update Channel_ column for each channel indicates that the default link:https://docs.wildfly.org/galleon/#_frequency[frequency] for the channel is final releases. This means that unless instructed otherwise by the user the Galleon tool when looking for releases from the channel will limit itself to final releases.
+
+When provisioning a new server to which you anticipate applying updates when new versions come out, it's good to consider which channel you want, as that will become the default place the Galleon tool looks for future updates. When doing an update you can specify the channel to use, but if you don't do that, the channel associated with the installation will be used. So, if you don't want your WildFly 17 installation accidentally updated to WildFly 18, use the `17.0` channel.
+
+=== Installing and updating from the 17.0 Channel
+
+This blog is about updating an installation to 17.0.1.Final, so first we want to install 17.0.0. I'm going to install a customized build that uses the cloud-profile plus standard management functionality.
+
+[source,options="nowrap"]
+----
+$ galleon.sh install wildfly:17.0#17.0.0.Final --dir=my-wildfly --layers=cloud-profile,core-server,core-tools
+----
+
+Note the `#17.0.0.Final` in the FPL. I included this because by default Galleon would install the latest final version in the channel, i.e. 17.0.1.Final. Since this post is about _updating_ to 17.0.1 I didn't want to start there, so I added a specific feature pack version to the FPL. Normally you wouldn't need to include that when provisioning a server.
+
+The `get-info` command tells us the status of the installation:
+
+[source,options="nowrap"]
+----
+$ galleon.sh get-info --dir=my-wildfly
+
+======= ============ ============== 
+Product Build        Update Channel 
+======= ============ ============== 
+wildfly 17.0.0.Final 17.0
+----
+
+If I'm working inside a Galleon-provisioned installation, then I don't need the `--dir=my-wildfly` in all the commands:
+
+[source,options="nowrap"]
+----
+$ cd my-wildfly
+$ galleon.sh get-info
+
+======= ============ ============== 
+Product Build        Update Channel 
+======= ============ ============== 
+wildfly 17.0.0.Final 17.0
+----
+
+Use `check-updates` to find out if updates are available for an installation:
+
+[source,options="nowrap"]
+----
+$ galleon.sh check-updates
+Feature-packs resolved. 
+Some updates and/or patches are available.
+======= ============= ============ ============== 
+Product Current Build Update       Update Channel 
+======= ============= ============ ============== 
+wildfly 17.0.0.Final  17.0.1.Final 17.0
+----
+
+And then, `update` to do the upgrade:
+
+[source,options="nowrap"]
+----
+$ galleon.sh update
+----
+
+Galleon will prompt you with a y/n prompt to confirm. You can pass a `--yes` param to the `update` command to suppress this confirmation prompt.
+
+[NOTE]
+====
+I've observed that if I'm inside an installation directory and update it, for subsequent commands Galleon throws exceptions, until I maneuver out of the directory and back in.
+[source,options="nowrap"]
+----
+$ galleon.sh get-info
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory
+Error occurred during initialization of VM
+java.lang.Error: Properties init: Could not determine current working directory.
+	at java.lang.System.initProperties(Native Method)
+	at java.lang.System.initializeSystemClass(System.java:1166)
+
+$ cd ../my-wildfly/
+$ galleon.sh get-info
+
+======= ============ ============== 
+Product Build        Update Channel 
+======= ============ ============== 
+wildfly 17.0.1.Final 17.0
+----  
+====
+
+If for some reason you don't like the result of a provisioning step, use the `undo` command to revert the most recent provisioning change (i.e. the update):
+
+[source,options="nowrap"]
+----
+$ galleon.sh undo
+$ cd ../my-wildfly/
+$ galleon.sh get-info
+
+======= ============ ============== 
+Product Build        Update Channel 
+======= ============ ============== 
+wildfly 17.0.0.Final 17.0
+----
+
+Finally, same as with the `install` command, you can provide the FPL of the feature pack to update. (Its dependencies will also be updated.) This can be useful, for example, if an installation was associated with the `current` channel but you want to be sure to only update to a WildFly 17 release.
+
+[source,options="nowrap"]
+----
+$ galleon.sh update wildlfy:17.0 --yes
+----
+
+In that example I included the `--yes` param to tell Galleon to skip the y/n confirmation prompt.
+
+=== Dealing with a modified installation
+
+Of course in the real world you probably don't provision a server, do nothing with it, and then update it. Instead, you probably modify the installation in some way after the initial install; e.g. add a deployment or use the CLI to change a configuration value.  If you've done this, when you do an update, Galleon tracks the changes you have made and reapplies them.
+
+This asciinema recording shows this kind of workflow in action. It also demonstrates the Galleon CLI's interactive shell, where you can provide a series of commands without having to type `galleon.sh` all the time.
+
+I start the recording after the initial provisioning.
+++++
+<script id="asciicast-6XbfLDapkOl53mOnMmcJ9KGGa" src="https://asciinema.org/a/6XbfLDapkOl53mOnMmcJ9KGGa.js" async></script>
+++++
+
+Enjoy, and as always, thank you so much for your support of WildFly!  And many thanks to Jean-Francois Denise for his help with this post!

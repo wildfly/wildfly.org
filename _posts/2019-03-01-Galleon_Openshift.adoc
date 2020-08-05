@@ -1,0 +1,392 @@
+---
+layout: post
+date:   2019-03-01 19:00:00 +0100
+tags:   wildfly, galleon
+author: jfdenise
+---
+
+= WildFly 16 and Galleon, towards a cloud native EE application server
+
+This post has been co-authored with Jorge Morales and Josh Wood from the OpenShift Developer Advocacy Team. 
+Jorge is passionate about Developer experience, Java programming, and, most importantly, 
+improving the integration of Red Hat’s Middleware into the OpenShift platform. Josh is committed to 
+constructing the future of utility computing with open source technologies like Kubernetes.
+
+== Problem space
+Containers are becoming the default deployment strategy for applications in the enterprise. 
+We’ve seen the software packaged in those containers adapt to this new deployment paradigm. 
+The WildFly team was an early adopter of container technology, driven by running our software on Red Hat’s OpenShift 
+Container Platform. However, only recently have we started adapting WildFly to take advantage of 
+the “link:https://opensource.com/article/18/7/what-are-cloud-native-apps[cloud-native]” features of 
+containers and platforms like Kubernetes and OpenShift, such as elasticity, scalability, and lifecycle automation.
+
+We maintain a pair of WildFly container images. One is a link:https://github.com/jboss-dockerfiles/wildfly[classic container] 
+for Docker and other Open Container Image (OCI) compatible runtimes. link:https://github.com/openshift-s2i/s2i-wildfly[The second] 
+is a variant incorporating OpenShift’s link:https://github.com/openshift/source-to-image[Source-to-Image (s2i)] 
+mechanism to work with the platform’s build support. Both have been updated with each WildFly version since WildFly 8.
+
+In that time, we’ve learned a lot about what’s needed to make WildFly and the WildFly container images 
+for OpenShift and Kubernetes more cloud-native -- more able to take advantage of the facilities of the 
+environments where they run today. We’ve gathered feedback from many sources, including upstream 
+developers as well as enterprise end-users and customers, and we’ve tried to apply 
+their insight to our own experience.
+
+One recurring theme we’ve heard about is image sizes. The size of a WildFly container 
+image is driven by these three factors:
+
+* The size of the base layer, or `FROM` image, that typically provides the essential 
+Operating System user space including the runtimes needed for a Java application.
+* The size of the WildFly runtime added to the image.
+* The size of the application itself.
+
+We can only control the second factor, the size of the WildFly runtime added to the image. 
+In this post, we introduce some experiments we’ve been working on, with the aim of producing 
+more “cloud-native” WildFly image for OpenShift or any other Kubernetes-based container platform
+
+== Intro to Galleon
+link:https://docs.wildfly.org/galleon/[Galleon] is a provisioning tool for working 
+with Maven repositories. Galleon automatically retrieves released WildFly Maven 
+artifacts to compose a software distribution of a WildFly-based application server 
+according to a user’s configuration. With no configuration, Galleon installs a complete 
+WildFly server. Users can express which configuration, such as standalone only, 
+or which set of features, such as web-server, jpa, jaxrs, cdi, etc., they want to install.
+
+=== WildFly Galleon Layers
+Starting with link:http://wildfly.org/news/2019/02/27/WildFly16-Final-Released/[WildFly 16], 
+we can use link:https://docs.wildfly.org/galleon/#_layers[Galleon layers] to control the set of 
+features present in a WildFly server. A Galleon layer identifies one or more server 
+features that can be installed on its own or in combination with other layers. 
+For example, if your application, some-microservice, makes use of only the jaxrs and 
+cdi server features, you can choose to install just the jaxrs and cdi layers. 
+The configuration in `standalone.xml` would then contain only the required subsystems and their dependencies.
+
+If you want to follow along with the examples, link:https://github.com/wildfly/galleon/releases[download the latest Galleon command line tool].
+
+Using the link:http://docs.wildfly.org/galleon/#_galleon_cli_tool[Galleon cli tool], 
+creating such a jaxrs and cdi-only server distribution would look like:
+
+[source,bash]
+----
+galleon.sh install wildfly:current --layers=jaxrs,cdi --dir=my-wildfly-server
+----
+
+This command installs the jaxrs and cdi layers of the latest released version 
+of WildFly (wildfly:current argument) into the my-wildfly-server directory specified 
+in the --dir argument. The my-wildfly-server directory will contain only the artifacts needed to run your application.
+
+Here’s a  list of commonly used layers. You can find a complete list of wildfly 
+layers in the link:http://docs.wildfly.org/16/Admin_Guide.html#defined-galleon-layers[WildFly Admin Guide]
+
+* __web-server__: Servlet container
+* __cloud-profile__: Aggregates layers often required for cloud applications. jaxrs, cdi, jpa (hibernate), and jms (external broker connections)
+* __core-server__: Aggregates management features (management, elytron, jmx, logging, and others)
+* __core-tools__: Contains management tools (jboss-cli, add-user, and others)
+
+To provision a lightweight microservice with the management features, run a command like:
+
+[source,bash]
+----
+galleon.sh install wildfly:current --layers=cloud-profile,core-server,core-tools --dir=my-wildfly-server
+----
+
+Galleon also defines an XML file to describe an installation in a fine-grained way. 
+The following *provisioning.xml* file provisions a WildFly server with support for jaxrs:
+
+[source, xml]
+----
+<installation xmlns="urn:jboss:galleon:provisioning:3.0">
+    <feature-pack location="wildfly@maven(org.jboss.universe:community-universe):current">
+        <default-configs inherit="false"/>
+        <packages inherit="false"/>
+    </feature-pack>
+    <config model="standalone" name="standalone.xml">
+        <layers>
+            <include name="jaxrs"/>
+        </layers>
+    </config>
+    <options>
+        <option name="optional-packages" value="passive+"/>
+    </options>
+</installation>
+----
+
+In a nutshell, this file captures the following installation customizations:
+
+* Do not include default configurations.
+* Do not include all packages (JBoss Module modules and other content).
+* Generate a standalone.xml configuration that includes only the jaxrs layer.
+* Include only packages related to the jaxrs layer (option passive+).
+
+Using the Galleon CLI tool’s provision subcommand, we can  install from an XML provisioning file like the example above:
+
+[source, bash]
+----
+galleon.sh provision <path to XML file> --dir=my-wildfly-server
+----
+
+This asciinema recording shows these CLI commands in action, as well as the generated server content and image sizes.
+++++
+<script id="asciicast-230500" src="https://asciinema.org/a/230500.js" async></script>
+++++
+
+== Creating a WildFly server with OpenShift builds 
+By coupling OpenShift build features with Galleon, we can create customized images according to application requirements. 
+
+=== S2I image for Galleon
+For this demonstration, we built an link:https://github.com/jorgemoralespou/s2i-wildfly-galleon[S2I image] 
+that adds Galleon tools to the WildFly S2I image. When building your source code into this image, 
+both the application and server are built. The S2I build process looks for the presence of 
+a *provisioning.xml* file at the root of the application project. If it finds one, 
+it is used as input to Galleon to provision the server it defines. The S2I image has been 
+deployed on link:https://quay.io/repository/jorgemoralespou/s2i-wildfly-galleon[quay.io].
+
+[NOTE]
+====
+You must add link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/blob/master/ose3/galleon-s2i-imagestream.yml[this image stream] 
+in OpenShift to continue following the example: 
+
+[source, bash]
+----
+oc create -f https://raw.githubusercontent.com/jorgemoralespou/s2i-wildfly-galleon/master/ose3/galleon-s2i-imagestream.yml
+----
+====
+
+== Two Build Stages Optimize Production Image Size
+In this link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/blob/master/ose3/galleon-s2i-template.yml[OpenShift template] 
+that automates the build and deployment, we’ve split the build to create 2 separate images:
+
+. A “development” image built from the Galleon S2I image. This is a “*fat*” image containing all of 
+the tooling to build the application (JDK, Maven, Galleon, …). This image is runnable, but it consumes a 
+larger amount of resources. We build it first to produce the artifacts we need for an optimized image intended for production.
+. A “production” image, built from JRE-8, into which the WildFly server and `.war` files are copied. 
+This image has a smaller footprint. It contains only the dependencies needed to run the WildFly server and the application.
+
+The template creates a deployment for each image. The “development image” is the primary 
+deployment and scaled to 1 instance, the “production image” is a replica and scaled to 0 
+instances. When one wants to use the “production image”, this would need to be scaled to 1, 
+and the route will need to be balanced to this “production” deployment. To be conservative on 
+resources, the “development” deployment can be downscaled to 0.
+
+You can add the template to your OpenShift project by running:
+
+[source,bash]
+----
+oc create -f https://raw.githubusercontent.com/jorgemoralespou/s2i-wildfly-galleon/master/ose3/galleon-s2i-template.yml
+----
+
+=== Building the development image
+We use OpenShift’s s2i support to build the application. Note the *s2i-wildfly-galleon:16.0.0.Final* 
+image stream specified in this BuildConfig excerpt:
+
+[source,yaml]
+----
+    source:
+      git:
+        ref: master
+        uri: https://github.com/jorgemoralespou/s2i-wildfly-galleon
+      contextDir: test/test-app-jaxrs
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: s2i-wildfly-galleon:16.0.0.Final
+      type: Source
+----
+
+Once this build is complete, the server is installed in */output/wildfly* and the compiled 
+application is written to */output/deployments/ROOT.war*.
+
+=== Building the production image
+
+This build stage only needs to copy the */output/wildfly* directory and */output/deployments/ROOT.war* 
+file into a new image. The copy operations comprise most of our production image `Dockerfile`. 
+It also sets the `CMD` to start the server when the container image runs:
+
+[source,bash]
+----
+FROM openjdk:8-jre
+COPY /wildfly /wildfly
+COPY /deployments /wildfly/standalone/deployments
+EXPOSE 8080
+CMD ["/wildfly/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
+----
+
+OpenShift BuildConfig excerpt:
+
+[source,yaml]
+----
+images:
+  - from: 
+      kind: ImageStreamTag
+      name: dev-image:latest
+    paths: 
+    - sourcePath: /output/wildfly
+      destinationDir: "."
+  - from: 
+      kind: ImageStreamTag
+      name: dev-image:latest
+    paths: 
+    - sourcePath: /output/deployments
+      destinationDir: "."
+----
+== Sample Applications
+We have developed 3 sample applications to exercise our experimental Galleon S2I image:
+
+* link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/tree/master/test/test-app[A simple web server app] 
+that serves an HTML and JSP page (derived from the link:https://github.com/openshift/openshift-jee-sample[OpenShift sample app]). 
+Its *provisioning.xml* file tells Galleon to provision a WildFly server configured with the *web-server* layer.
+* link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/tree/master/test/test-app-jaxrs[A toy JSON endpoint app] 
+that depends on jaxrs to expose a simple service that returns some JSON. Its *provisioning.xml* 
+file tells Galleon to provision a WildFly server configured with the *jaxrs* layer. Some JBoss Module modules, 
+such as the datatype providers, are useless in this image and can be excluded by Galleon. 
+This makes the server’s footprint even smaller.
+* link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/tree/master/test/test-app-postgres[A persistent state demonstration app] 
+that depends on jaxrs, cdi, and jpa to persist user-created tasks (derived from the
+ link:https://github.com/wildfly/quickstart/tree/master/tasks-rs[tasks-rs WildFly quickstart]). 
+Postgresql is used as the storage backend. This sample app’s *provisioning.xml* file tells Galleon to 
+provision a WildFly server configured with *cdi*,*jaxrs*,and *jpa* layers.
+
+== Running the jaxrs JSON endpoint sample application
+NOTE: You must have added both the link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/blob/master/ose3/galleon-s2i-imagestream.yml[image stream] 
+and link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/blob/master/ose3/galleon-s2i-template.yml[template] to your OpenShift project. 
+
+. Click on “Add to Project/Select From Project” then select the template “App built 
+with Galleon S2I image and optionally connect to DB”.
+. Choose an Image name.
+. The GIT repository is *https://github.com/jorgemoralespou/s2i-wildfly-galleon*, 
+sub directory is *test/test-app-jaxrs*.
+. By default we are using the S2I Image Version *16.0.0.Final*. This image has all 
+WildFly artifacts present in the local Maven repository, making provisioning of the WildFly server faster. 
+When using the latest image tag, the artifacts of the latest released WildFly server are retrieved from remote repositories.
+. You can ignore the Postgresql JDBC URL and credentials, they are not used by this sample.
+. Click on Create
+. The development image starts to build. When it is complete, the build of the production 
+image starts. Once both are built, the 2 deployments are created on the OpenShift cluster 
+and a route is created through which external clients can access the JSON service.
+
+NOTE: Only the development image will have an active instance. The production image 
+is scaled to 0 to save on resources, and the route is balanced to send all traffic 
+to the development image. If you want to use/test the production image, you’ll need 
+to change the scaling of both deployments and the weights used in the route.
+
+== Adding Features to WildFly
+Developers frequently need to customize server configurations to match their applications. 
+For example, we often need to add a JDBC driver and datasource. In the following example, 
+we extend the server configuration with a PostgreSQL driver and datasource.
+Problems we need to solve:
+
+. Add a JBoss Module module for the PostgreSQL driver to the WildFly installation.
+. Add the driver to the *standalone.xml* configuration file.
+. Add a datasource to the *standalone.xml* configuration file. Datasources must be 
+configured with contextual information. The JDBC url, user, and password are specific 
+to a deployment and can’t be statically set in the server configuration. We need to adapt the 
+configuration to the container execution context.
+
+Galleon can help us solve these problems.
+
+=== Using the Galleon API to package a JDBC driver as a Galleon feature-pack
+NOTE: The creation of custom Galleon feature-packs is an advanced topic. The API and 
+overall technique may change in the future.
+
+Galleon has a concept called the *feature-pack*. The WildFly feature-pack is retrieved 
+when installation occurs. A feature-pack (a zip file) contains features, configurations, 
+layers, and content such as modules and scripts. Features are used to assemble a WildFly 
+configuration. We have been using the Galleon FeaturePack Creator API to build a 
+link:https://github.com/jfdenise/galleon-openshift/tree/master/PostGreDriver[PostgreSQL 
+feature-pack] that extends the standalone.xml configuration with a driver and contains the 
+postgresql driver jar file packaged as a JBoss Module module.
+
+This feature-pack can then be installed on top of an existing WildFly installation to 
+provision the PostgreSQL driver configuration and module. Once the feature-pack is 
+installed, the WildFly server has the plumbing it needs to connect to a PostgreSQL 
+server. We’ve solved problems 1) and 2), above.
+
+=== Evolving provisioning.xml with the PostgreSQL feature-pack and datasource
+As we saw earlier, Galleon allows you to describe the content of an installation 
+in an XML file, called *provisioning.xml* by convention. We are going to evolve this 
+file to describe both the server and the driver to install. In addition, we extend 
+the standalone configuration with a datasource. 
+link:https://github.com/jorgemoralespou/s2i-wildfly-galleon/blob/master/test/test-app-postgres/provisioning.xml[The resulting *provisioning.xml*] 
+file contains a complete description of the server installation. We use environment 
+variables to represent the JDBC URL, user, and password so they can be resolved for 
+each running instance of the container.
+
+=== Postgresql feature-pack installation inside S2I image
+The Postgresql feature-pack was built for the purposes of this demonstration. 
+It is not present in public Maven repositories. You can fetch it from link:https://github.com/jfdenise/galleon-openshift/releases[this location], 
+then install it in a local Maven repository. In order to inform S2I assembly that 
+some feature-packs must be downloaded and installed locally, the file *local-galleon-feature-packs.txt* 
+must be present at the root of your project.
+
+Each desired feature-pack is specified with two lines in this file, a line for the 
+feature-pack URL followed by a line naming the path inside the local Maven repository:
+
+[source,bash]
+----
+https://github.com/jfdenise/galleon-openshift/releases/download/1.0/postgresql-1.0.zip
+org/jboss/galleon/demo/postgresql/1.0/
+----
+
+=== Running the postgresql sample application
+Before these steps, you must deploy a PostgreSQL server in your project and create a database on it.
+
+. Click on “Add to Project/Select From Project” then select the template “App built with Galleon S2I image and optionally connect to DB”.
+. Choose an Image name.
+. The GIT repository is *https://github.com/jorgemoralespou/s2i-wildfly-galleon*, sub directory is *test/test-app-postgres*.
+. By default we are using the S2I Image Version *16.0.0.Final*. 
+. If needed, replace the host, port and database of the JDBC URL.
+. Set the Postgres user name and password.
+. Click on Create
+. The build of the development image starts. When completed, the build of the production 
+image starts. Once the two images are built, the deployments are created and a route 
+added through which you can access the service.
+. To add a new task, open a terminal and run 
+
+[source,bash]
+----
+curl -i  -H "Content-Length: 0" -X POST http://<your route hostname>/tasks/title/task1
+----
+
+== Reduced server footprint
+When using Galleon layers to provision a WildFly server, the image size as well as 
+runtime memory consumption varies according to the set of installed features. 
+Here are the total file sizes and for the servers we have provisioned in this post. 
+As a reference, a complete WildFly server is around 216MB.
+
+.WildFly server
+|===
+| Feature | Size
+| cdi, jaxrs, jpa | 122 MB
+| jaxrs | 57 MB
+| jaxrs with JSON data binding provider only | 49 MB
+| web-server | 43 MB
+| Full server | 216 MB
+|===
+
+.Sample memory sizes used by the WildFly server process
+|===
+| App | Features installed (layers) | Actual mem used | Full server mem used
+| PostgreSQL sample app | cdi, jaxrs, jpa | 30 MB | 35 MB
+| jaxrs sample app | jaxrs | 19 MB | 28 MB
+| jsp sample app | web-server | 16 MB | 27 MB
+|===
+
+== Conclusions
+One of the beauties of cloud platforms is that (ideally) you don’t need to care that 
+much about the infrastructure that runs your application. As a developer, you focus 
+on creating your application logic, and then rely on the platform, OpenShift, to keep 
+it available at all times, providing scalability and failover. Your application 
+may run on any worker node in the cluster. These worker nodes must download the container images 
+before running the application. The time it takes to download these images is reduced 
+by reducing the image sizes, although it’s not the only factor. Intelligent use 
+of the filesystem layering inside the container image is also key. Nevertheless, 
+a simple rule still holds: Take only what you need. Removing inessential components 
+not only speeds things up by making images smaller, it also helps reduce the vulnerability 
+surface of the image. A bug can’t be exploited if it is not installed.
+
+Producing smaller, more focused container images is a step toward a more cloud-ready 
+WildFly application server, but it’s not the only thing we’re working on. Integrating 
+with more of the cloud platform’s capabilities will be a topic for a later post.
+
+One last remark: everything here described is not part of the project and hence not supported. 

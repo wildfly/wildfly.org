@@ -1,0 +1,84 @@
+---
+layout: post
+date:   2019-10-07
+tags:   wildfly, galleon
+author: jfdenise
+---
+
+= WildFly 18 S2I image has been released on quay.io
+
+==  WildFly 18 S2I docker images
+
+WildFly s2i builder and runtime Docker images for WildFly 18 have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly]
+
+Changes since link:https://wildfly.org/news/2019/06/20/WildFly-s2i-17-released/[last release]:
+
+* New env variable _GALLEON_PROVISION_LAYERS=<layers list>_ that you can use during s2i to provision a custom WildFly server. It does replace the _GALLEON_PROVISION_SERVER_ that was only offering a subset of Galleon layers. 
+You can now provision WildFly server by directly providing Galleon layers. This offers a lot of flexibility when composing a server. 
+The list of Galleon layers can be found in the image repository link:https://github.com/wildfly/wildfly-s2i/blob/wf-18.0/README.md[README] file.
+* S2I chained build template updated with Galleon layers argument.
+* New _cloud-server_, _jaxrs-server_, _datasources-web-server_ base Galleon layers to help you provision _use-case adjusted_ servers.
+* Out of the box Keycloak support. This blog post highlight usage of this new feature.
+* _keycloak_ Galleon layer that you can combine with base Galleon layers to enable secure deployments for custom provisioned server.
+* Smaller s2i builder image size. The default server is a "slim" server with JBoss modules artifacts resolved from maven local cache.
+* New environment variables to fine tune the server at execution time, more information in link:https://github.com/wildfly/wildfly-s2i/blob/wf-18.0/README.md[README].
+
+
+For a complete documentation on how to use these images using s2i, OpenShift and Docker, 
+refer to link:https://github.com/wildfly/wildfly-s2i/blob/wf-18.0/README.md[README].
+
+== Adding imagestreams and template to OpenShift
+
+At some point the new images will be made available from OpenShift catalog and image repository. You can already use these images by adding them yourselves to your OpenShift cluster.
+
+* WildFly S2I builder image stream: _oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-18.0/imagestreams/wildfly-centos7.json_
+* WildFly runtime image stream: _oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-18.0/imagestreams/wildfly-runtime-centos7.json_
+* Chained build template: _oc create -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-18.0/templates/wildfly-s2i-chained-build-template.yml_
+
+NB: If you import the image streams in your project, be sure to set _ImageStreams Namespace_ to your project namespace in the template. _openshift_ being the default namespace.
+
+== Configuring WildFly server to secure deployments with Keycloak
+
+We have added support to automatically configure the WildFly server to secure your deployments using Keycloak. 
+The Keycloak configuration aspects are handled by the WildFly server at startup. The following example illustrate the steps required to secure your deployments using Keycloak.
+
+=== Deploy Keycloak server image
+
+* In Openshift, deploy the _jboss/keycloak_ image. You must set the following env variables to create an initial user _KEYCLOAK_USER=admin_, _KEYCLOAK_PASSWORD=admin_.
+
+* Access to the Keycloak admin console, add _user_ role and add _user_ role to the _admin_ user roles mapping.
+
+* Access to the _Realm Settings Keys_ and copy the public key (you will need it to configure the WildFly server).
+
+=== Build the application
+
+Once you have imported the WildFly image streams, use the WildFly s2i builder template. Select image version 18.0 and switch to 'Advanced options'.
+
+Use the git URL: _https://github.com/redhat-developer/redhat-sso-quickstarts_, context directory: _app-profile-jee-jsp_, branch: _7.0.x-ose_
+
+Build env variables:
+
+* _MAVEN_ARGS_APPEND=-Dmaven.compiler.source=1.6 -Dmaven.compiler.target=1.6_
+
+* _GALLEON_PROVISION_LAYERS=cloud-server,keycloak_ (Optional, default server supports Keycloak, only use Galleon to create trimmed down server). NB: If using galleon layers, be sure
+to update the quickstart to use the _keycloak_ security domain (for example link:https://github.com/jfdenise/redhat-sso-quickstarts/blob/7.0.x-ose/app-profile-jee-jsp/src/main/webapp/WEB-INF/jboss-web.xml[jboss-web.xml]). _other_ security domain is pre-configured by the _cloud-profile_ layer and can't be used for Keycloak.
+
+Deployment env variables:
+
+* _SSO_PUBLIC_KEY=<Keycloak server public key>_ (copied from Keycloak admin console)
+
+* _SSO_USERNAME=admin_
+
+* _SSO_PASSWORD=admin_
+
+* _SSO_URL=<Keycloak server route URL>_ (for example: http://keycloak-myproject.192.168.42.233.nip.io/auth)
+
+* _SSO_SECRET=my-secret_
+
+* _HOSTNAME_HTTP=<application hostname>_ (for example: my-app-myproject.192.168.42.233.nip.io)
+
+* _SSO_SECURITY_DOMAIN=other_ (by default security domain is named _keycloak_, the quickstart relies on the _other_ default security domain. 
+NB: If using Galleon with an updated quickstart, do not set this env variable).
+
+
+Build your application. Once deployed you can access to _<your external route>/app-profile-jsp_, click on _Login_ and use _admin_ user credentials.

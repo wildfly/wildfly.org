@@ -1,0 +1,56 @@
+---
+layout: post
+title:  "Jigsaw's Missing Pieces"
+date:   2016-12-12 13:00:00 -0600
+tags:   jigsaw java java9
+author: jgreene
+description: "A set of technical issues, currently under discussion, prevents Jigsaw from fully supporting Java EE, OSGi, or any other system with similar dynamic capabilities. We believe it’s critical that these gaps are addressed, as the existence of multiple incompatible standards would likely fragment the Java ecosystem."
+---
+
+= Jigsaw's Missing Pieces 
+
+Red Hat, with its years of experience supporting large scale software systems, has always been a strong proponent of modular Java. Over time, we have delivered many products and solutions that provide and support popular modular environments like Java EE, and OSGi. Since 2011, we introduced a flexible modular implementation called JBoss Modules, which is capable of supporting the core modularity needs of both Java EE and OSGi, but is usable in a standalone manner, without the need to bring in the full platform those specifications require. JBoss EAP and WildFly are built on this technology, which is a major contributor to the flexible runtime they provide.
+
+
+While the above technology allows us to meet the needs of our customers as well as our own, we are hopeful that link:https://www.jcp.org/en/jsr/detail?id=376[JSR-376 (Java Platform Modular System)], also known as link:http://openjdk.java.net/projects/jigsaw/[Project Jigsaw], will provide a standardized solution that could be embraced by the full Java community and lead to better software and better interoperability. Additionally, the Java EE expert group has long wanted to improve the overall modularity of the platform, but has deferred these goals hoping to leverage the common SE technology to be introduced by the above JSR.
+
+
+These goals were widely shared as noted in the agreed upon JSR submission. Relevant sections include:
+
+* _“This JSR will define an approachable yet scalable module system for the Java Platform. It will be approachable, i.e., easy to learn and easy to use, *so that developers can use it to construct and maintain libraries and large applications for both the Java SE and Java EE Platforms*.”_
+
+
+* _”This JSR targets Java SE 9. *We expect the module system to be leveraged by Java EE 9*, so we will make sure to take Java EE requirements into account.”_
+
+
+* _”Some members of the Java community have already invested significantly in applications and frameworks built on top of the OSGi Service Platform. The module system *will provide a means for an OSGi kernel to locate Java modules and resolve them using its own resolver*, except possibly for core system modules. This will enable OSGi bundles running in such a kernel to depend upon Java modules.”_
+
+
+Unfortunately, Jigsaw (JSR-376’s implementation), suffers from a number of significant gaps which may prevent these goals from being fully achieved.  As currently defined, Jigsaw is not capable of fully supporting Java EE, OSGi, or any other system with similar dynamic capabilities.  However in recent weeks, there have been a number of proposals and discussions to address these problems.
+
+
+We believe it’s critical that these gaps are addressed, as the existence of multiple incompatible standards would likely fragment the Java ecosystem. Application developers would be forced to artificially choose between a totally new static oriented universe of software based on Jigsaw, and the already existing universe, which handles more use-cases and encompases traditional Java SE, Java EE, and OSGi.  Framework developers may attempt to support both, but they will likely incur additional cost and potential defects to do so.  Finally, divergence will likely increase as standards such as Java EE 9 are forced to consider other options.
+
+
+While there are a number of issues under discussion, they can be categorized into the following areas:
+
+
+A. *Reflection is disallowed from operating on non-exported types, even with the use of setAccessible* [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#ReflectiveAccessToNonExportedTypes[1]]. This breaks anything using dependency injection or custom serialization (Java EE, Hibernate, Spring, CDI, JAXB, etc). The current proposal put forth by Oracle addresses this by allowing the user to declare packages “open” for reflection. 
+
+
+B. *Jigsaw has only limited support for the dynamic introduction and alteration of modules* [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#MutableConfigurations[2]]. This prevents modeling Java EE deployments or OSGi bundles as sets of modules as both require support for dynamic installation and hot redeployment. While layers could potentially act as a solution, layers do not support peer-to-peer inter-layer dependency graphs [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#NonHierarchicalLayers[3]]. Additionally everything is eagerly loaded, with a complete graph required to be known up front [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#LazyConfigurationAndInstantiation[4]]. This problem is still under active discussion, with some partial proposals. If certain hooks are added, it may be possible to bypass Jigsaw's native dependency resolution to work around the issue. On the other hand, this has some drawbacks. It requires replicating Jigsaw's resolution in a dynamic fashion, and it will likely hide information from reflection that a developer might wish to see, but it opens the door for advanced/specialized behavior.
+
+
+C. *Restrictions that make interoperability with alternative modular systems difficult.* [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#CyclicDependences[5]] [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#ModuleNameCharacters[6]] [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#ResourceExistenceAndSize[7]]. Bypassing or mangling Jigsaw’s dependency resolution would allow for a custom implementation to provide support for cyclic dependencies [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#CyclicDependences[5]]. There is a proposal to allow more flexibility in terms of allowed characters and escaping with module names [link:http://openjdk.java.net/projects/jigsaw/spec/issues/#ModuleNameCharacters[6]].  
+
+
+In summary, we believe fragmentation of the Java ecosystem must be avoided, as it will overly burden Java developers and stifle innovation. We remain hopeful that continued progress on these issues will not only prevent such an outcome, but allow the full Java community to embrace and benefit from standardized modularity.
+
+
+[1] http://openjdk.java.net/projects/jigsaw/spec/issues/#ReflectiveAccessToNonExportedTypes +
+[2] http://openjdk.java.net/projects/jigsaw/spec/issues/#MutableConfigurations +
+[3] http://openjdk.java.net/projects/jigsaw/spec/issues/#NonHierarchicalLayers +
+[4] http://openjdk.java.net/projects/jigsaw/spec/issues/#LazyConfigurationAndInstantiation +
+[5] http://openjdk.java.net/projects/jigsaw/spec/issues/#CyclicDependences +
+[6] http://openjdk.java.net/projects/jigsaw/spec/issues/#ModuleNameCharacters +
+[7] http://openjdk.java.net/projects/jigsaw/spec/issues/#ResourceExistenceAndSize +

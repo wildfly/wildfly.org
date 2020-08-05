@@ -1,0 +1,87 @@
+---
+layout: post
+title:  "WildFly 20 S2I images have been released on quay.io"
+date:   2020-06-12
+tags:   wildfly galleon
+author: jfdenise
+---
+
+= WildFly 20 S2I images have been released on quay.io
+
+==  WildFly 20 S2I Docker images
+
+The WildFly S2I (Source-to-Image) builder and runtime Docker images for WildFly 20 have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
+
+Changes since the link:https://wildfly.org/news/2020/03/20/WildFly-s2i-19-released/[last release]:
+
+* Upgraded link:https://www.keycloak.org/[Keycloak] client adapters to version 10.0.2.
+
+* Reduced the size of the image generated during s2i chained build template (image named _<app>-build-artifacts_).
+ 
+For a complete documentation on how to use these images using S2I, OpenShift and Docker, 
+refer to the WildFly S2I link:https://github.com/wildfly/wildfly-s2i/blob/wf-20.0/README.md[README].
+
+== Adding the imagestreams and template to OpenShift
+
+At some point the new images will be made available from the OpenShift catalog and image repository. But you can already use these images by adding them yourselves to your OpenShift cluster.
+
+* WildFly S2I builder image stream:
+```
+oc create -n myproject -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-20.0/imagestreams/wildfly-centos7.json
+```
+* WildFly runtime image stream: 
+```
+oc create -n myproject -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-20.0/imagestreams/wildfly-runtime-centos7.json
+```
+* Chained build template: 
+```
+oc create -n myproject -f https://raw.githubusercontent.com/wildfly/wildfly-s2i/wf-20.0/templates/wildfly-s2i-chained-build-template.yml
+```
+
+NB: If you import the image streams into your project, be sure to set the _ImageStreams Namespace_ (`IMAGE_STREAM_NAMESPACE` argument) to your project namespace in the template. _openshift_ being the default namespace.
+
+== Eclipse Microprofile OpenAPI example
+
+Since version 19, link:https://docs.wildfly.org/20/[WildFly] implements a support for the 
+link:https://download.eclipse.org/microprofile/microprofile-open-api-1.0/microprofile-openapi-spec.html[Microprofile OpenAPI specification].
+
+We are here deploying the WildFly link:https://github.com/wildfly/quickstart/tree/20.0.0.Final/microprofile-openapi[microprofile-openapi] quickstart inside OpenShift.  
+
+In order to tailor WildFly to our use-case (jaxrs service) 
+we are using link:https://docs.wildfly.org/20/Admin_Guide.html#defined-galleon-layers[WildFly Galleon Layers] during s2i build 
+to construct a WildFly server composed of jaxrs and Microprofile OpenAPI (plus their required dependencies). 
+
+=== Build and run the application
+
+The quickstart is a jaxrs service that exposes a set of operations to manage a store inventory. 
+We are retrieving the service interface (HTTP operations, URL paths and data types) through the ```openapi``` 
+endpoint that WildFly exposes in the root context (eg: ```http://127.0.0.1:8080/openapi```).
+
+* Build the application image:
+```
+oc new-app wildfly-s2i-chained-build-template -p APPLICATION_NAME=openapi-app \
+      -p GIT_REPO=https://github.com/wildfly/quickstart \
+      -p GIT_CONTEXT_DIR=microprofile-openapi \
+      -p GIT_BRANCH=20.0.0.Final \
+      -p GALLEON_PROVISION_LAYERS=jaxrs,microprofile-openapi \
+      -p IMAGE_STREAM_NAMESPACE=myproject \
+      --build-env=MAVEN_ARGS_APPEND="-Dcom.redhat.xpaas.repo.jbossorg"
+```
+
+* Create an application from the application image:
+
+```
+oc new-app myproject/openapi-app
+```
+
+* Expose the service:
+```
+oc expose svc/openapi-app
+```
+
+* The OpenAPI service definition is exposed at the following well known location: ```<application route>/openapi```
+
+* From the service definition we can retrieve the HTTP operations and URL paths that the service supports. 
+For example, the HTTP GET sent to ```<application route>/fruit``` returns a JSON array containing the fruits present in the inventory.
+
+Enjoy the Apples and Pineapples!

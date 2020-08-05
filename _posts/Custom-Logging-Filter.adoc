@@ -1,0 +1,82 @@
+---
+layout: post
+date:   2020-01-03 16:16:16 -0800
+tags:   wildfly, logging, filter
+author: jperkins
+---
+
+= Custom Filters in WildFly
+
+== What is a log filter?
+
+A log filter is used to add fine grained control over a log message. In the case of WildFly this is a
+https://docs.oracle.com/javase/8/docs/api/java/util/logging/Filter.html[`java.util.logging.Filter`]. As of WildFly 18
+there is the ability to use custom log filters.
+
+== Creating a Filter
+
+To create a filter you must implement the
+https://docs.oracle.com/javase/8/docs/api/java/util/logging/Filter.html[`java.util.logging.Filter`] interface. The
+filter must be in a module and can be defined on a logger or a handler via the `filter-spec` attribute. A custom filter
+can also be combined on the `filter-spec` attribute with a filter expression. For example
+`any(match(".\*WELD.*"), myCustomFilter)`.
+
+The below example will filter log messages based on the current thread's context class loader. It takes advantage of
+WildFly's use of JBoss Modules to get the module name from the class loader. The name is then checked to see if it
+matches the pattern configured on the filter.
+
+=== Example Filter
+[source,java]
+----
+public class ClassLoaderFilter implements Filter {
+
+    @Override
+    public boolean isLoggable(final LogRecord record) {
+        final ClassLoader cl = getClassLoader();
+        String value;
+        if (cl instanceof ModuleClassLoader) {
+            value = ((ModuleClassLoader) cl).getName();
+        } else {
+            value = cl.toString();
+        }
+        if (pattern == null || pattern.matcher(value).matches()) {
+            MDC.put("moduleName", value);
+            return true;
+        }
+        MDC.remove("moduleName");
+        return false;
+    }
+ }
+----
+
+== Adding a Filter
+
+A filter can be added to WildFly by first creating a module based on the library the filter is in. We then need to
+create a `filter` resource on the logging subsystem based on this new module and filter. Finally the filter can be
+added to a logger or handler resource.
+
+=== Example CLI Commands
+
+----
+module add --name=org.jboss.example.filter --resources=/path/to/log-filter.jar --dependencies=org.jboss.modules,java.logging,org.jboss.logging
+/subsystem=logging/json-formatter=json:add(exception-output-type=formatted, date-format="yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
+/subsystem=logging/filter=clFilter:add(module=org.jboss.example.filter, class=org.jboss.example.filter.ClassLoaderFilter, properties={pattern=".*deployment\.app.*"})
+/subsystem=logging/file-handler=DEPLOYMENT:add(file={relative-to=jboss.server.log.dir, path=deployment.log}, level=TRACE, append=false, autoflush=true,named-formatter=json, filter-spec=clFilter)
+/subsystem=logging/root-logger=ROOT:add-handler(name=DEPLOYMENT)
+----
+
+In the example above we create a filter which uses the pattern `.\*deployment\.app.*`. This will match the module name
+from the current thread's context class loader and only accept messages where the module name matches the pattern. In
+our case this will only log messages that are associated with our deployment.
+
+We then add the filter created to the file handler created with a JSON formatter. Finally we add the file handler to
+the root logger.
+
+== Example Project
+
+An example project can be found at https://github.com/jamezp/wildfly-examples/tree/master/custom-log-filter. To use the
+example project simply download the source and run `mvn clean wildfly:run`. Once started and the application is deployed
+you can access the example at http://localhost:8080/app.
+
+You should initially see some log messages that were logged during the deployment process. You can then log a custom
+message or start a job which logs a message at the defined number of seconds.

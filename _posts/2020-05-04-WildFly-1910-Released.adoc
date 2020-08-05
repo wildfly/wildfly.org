@@ -1,0 +1,87 @@
+---
+layout: post
+date:   2020-05-04 08:00:00 -0600
+tags:   announcement, release
+author: bstansberry
+description: WildFly 19.1.0.Final is now available for download!
+otherimage: wildflycarousel_19.png
+---
+
+= WildFly 19.1.0 is released!
+
+WildFly 19.1.0 Final is now available link:{base_url}/downloads[for download].
+
+As we usually do between WildFly majors, we've done an update release to provide the WildFly community with important bug fixes and component upgrades that have become available. Typically these are micro releases, but this time we had one feature that we wanted to make available, so we changed the version to 19.1.0 and released a minor.
+
+The feature is related to handling of link:https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-5.3.7[`SameSite` cookie attributes].  Undertow has link:https://issues.redhat.com/browse/UNDERTOW-1600[added support] for `SameSite="None"` cookie attributes and support for a new `SameSiteCookieHandler` that sets `SameSite` attributes on cookies that match a cookie name pattern. With this handler, web developers can remain compliant with the latest changes in some browsers.
+
+To use the `SameSiteCookieHandler`, add a `undertow-handlers.conf` file to your WAR's WEB-INF directory that includes a line like the following: 
+
+....
+samesite-cookie(mode=<mode>)
+....
+
+Valid values for the `mode` parameter are `Strict`, `Lax` or `None`, ignoring case. See link:https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-5.3.7[RFC6265bis] for more information on the meaning of these modes.
+
+Further details, including other parameters you can use to configure the `SameSiteCookieHandler`, are discussed in the link:https://github.com/wildfly/wildfly-proposals/blob/master/undertow/WFLY-13003_Support_SameSite_Cookie_Attribute.adoc#wfly-13003-support-samesite-cookie-attribute[WFLY-13003 feature analysis] document. 
+
+If you want to add the SameSite handler to your application without changing the application code, look into using a link:https://docs.wildfly.org/19.1/Admin_Guide.html#Deployment_Overlays[deployment overlay] to add the `WEB-INF/undertow-handlers.conf' file to existing deployments. 
+
+The full list of issues resolved in WildFly 19.1.0 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12345176[here]. Issues resolved in the WildFly Core 11.1.0 release included with WildFly 19.1.0 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12345151[here].
+
+== Note for Galleon Users
+
+
+If you provisioned a WildFly server associated with the `19.0` channel, a simple Galleon update won't update your installation to 19.1.0, as 19.1.0 is not part of that channel's version range.  There's a new `19.1` channel that you'll need to specify.
+
+For example, if you'd originally provisioned your server like this:
+
+....
+$ galleon.sh install wildfly:19.0 --dir=my-wildfly --layers=jaxrs-server
+Feature-packs resolved. 
+Feature-packs resolved. 
+Packages installed. 
+JBoss modules installed. 
+Configurations generated. 
+Feature pack installed.
+======= ============ ============== 
+Product Build        Update Channel 
+======= ============ ============== 
+wildfly 19.0.0.Final 19.0
+....
+
+Then a simple update will do nothing:
+
+....
+$ galleon.sh update --dir=my-wildfly
+Feature-packs resolved. 
+Up to date. No available updates nor patches.
+....
+
+To get the update change the channel to 19.1:
+
+....
+$ galleon.sh update --feature-packs=wildfly:19.1#19.1.0.Final --dir=my-wildfly
+Feature-packs resolved. 
+Some updates and/or patches are available.
+======= ============= ============ ============== 
+Product Current Build Update       Update Channel 
+======= ============= ============ ============== 
+wildfly 19.0.0.Final  19.1.0.Final 19.1           
+
+Proceed with latest updates [y/n]?
+Feature-packs resolved. 
+Packages installed. 
+JBoss modules installed. 
+Configurations generated. 
+
+$ galleon.sh get-info --dir=my-wildfly
+
+======= ============ ============== 
+Product Build        Update Channel 
+======= ============ ============== 
+wildfly 19.1.0.Final 19.1
+....
+
+
+I hope you enjoy WildFly 19.1. If you have any questions or feedback please find us at the link:https://groups.google.com/forum/#!forum/wildfly[WildFly forums].

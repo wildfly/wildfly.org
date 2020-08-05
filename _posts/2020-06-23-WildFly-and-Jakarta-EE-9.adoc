@@ -1,0 +1,36 @@
+---
+layout: post
+title:  "WildFly and Jakarta EE 9"
+date:   2020-06-23
+tags:   announcement release microprofile
+author: bstansberry
+description: WildFly and Jakarta EE 9
+---
+
+= WildFly and Jakarta EE 9
+
+Congratulations to the Jakarta EE community for the recent great progress on Jakarta EE 9!
+
+The Jakarta EE community has been making great strides in its work on Jakarta EE 9, and given today's link:https://twitter.com/JakartaEE/status/1275435941906137089[Jakarta EE 9 milestone release] I wanted to give the WildFly community an update on what's been going on regarding EE 9 in WildFly and a heads up on what I expect will be happening over the summer and the rest of this year.
+
+As discussed in the link:https://eclipse-ee4j.github.io/jakartaee-platform/jakartaee9/JakartaEE9ReleasePlan[Jakarta EE 9 Release Plan], EE 9 is primarily about implementing the necessary change in the Jakarta EE APIs from the javax.* package namespace to the jakarta.* namespace. It isn't about bringing new functionality to end users; the focus is on providing a platform that all of us in the EE ecosystem can use to adapt to the namespace change, ensuring we're all in a solid position to take advantage of new features and approaches to doing things that we'd like to see in EE 10.
+
+The WildFly project is an important part of the EE ecosystem, so of course we're going to participate in this. Besides work from WildFly community members on the Jakarta platform (big shout out to Scott Marlow for his TCK work) and the different specs, there's been background prototyping work going on exploring how WildFly can provide an EE 9 compatible distribution. That work is now far enough along that it's time to make it a part of the main WildFly development work.
+
+The javax.* to jakarta.* transition is a big task and it's going to take a while to percolate through our ecosystem. I don't think it's good for WildFly to stop providing new features and fixes to our community while we take this on, so I'd like WildFly's primary distribution to continue to be based on the EE 8 APIs. I think this should continue to be the case until we begin work toward EE 10.
+
+But we also need to provide an EE 9 server so our community can see what EE 9 will mean to them and so they can use us in their own EE 9 work. So I'd like us to begin producing a tech preview/beta EE 9 variant of WildFly. Ideally there would be at least one very early alpha type milestone over the summer but I don't expect the first version to appear on the wildfly.org/downloads page until some time after the WildFly 21 release, perhaps late September or October. Then another version shortly after the WildFly 22 release, probably in December or early January. Eventually I'd like these to start coming out at the same time as the main WildFly releases. 
+
+The main goal of these is to allow people to adapt to the jakarta.* namespace change. However, I would also like them to serve as a bit of a preview for how we see WildFly evolving in the future. For example WildFly 21 will still have the legacy Picketbox-based security as the default security layer, but I'd prefer not to have that layer even be present in the EE 9 variant.
+
+Although I'd like this EE 9 variant to be an evolution from what we have now, and a good way to adapt to the namespace change, it's important to point out that any EE 10 variant of WildFly may evolve quite significantly from what we'll be doing with EE 9. There is some uncertainty around how EE 10 will evolve and an expectation that EE 10 and Eclipse MicroProfile alignment will be a key focus, so what we're doing with EE 9 is likely not going to align fully with our efforts in the future. We are working on getting this notion better codified.
+
+WildFly is a huge codebase, so maintaining two completely distinct flavors of it is not feasible. Furthermore, for a long time at least some of the binaries we ship will have been compiled against EE 8 APIs, with no native EE 9 variant available. To make this work, the EE 9 server would be based on a separate Galleon feature pack from what we use for the main distribution. The large majority of the software artifacts that feature pack references will be the same as what's in the EE 8 distribution. However, as part of provisioning, any EE 8 content in the server will be transformed (primarily bytecode transformation) to use the EE 9 APIs. Scott Marlow, Richard Opalka and Jean-Francois Denise, with much appreciated assistance from B.J. Hargrave and others on the Eclipse Transformer project, have been making good progress on the needed transformation technology, and Jean-Francois has done well with the needed Galleon tooling. Jean-Francois's latest POC is able to provision a server that can pass a significant chunk of the WildFly testsuite. That's a good sign that it's time for this work to start surfacing in the main WildFly and WildFly Core repos.
+
+Expect to hear more discussion, JIRAs, PRs, etc about this in the coming few weeks as we begin implementing changes in the main code base to make the EE 9 variant more maintainable and as development branches get underway. I'd love to hear your voices!
+
+To be honest, when the need for the javax.* to jakarta.* transition came up last year I was dreading dealing with it, but now I think it will be a lot of fun. Part of the overall goal with what we've been doing with Galleon has been to make it easier for users to have the WildFly they want. That rightfully should include truly distinct flavors, not just different subsets of a single flavor. This EE 9 work is going to be a great opportunity for us to make progress on that goal.
+
+Best regards,
+
+Brian

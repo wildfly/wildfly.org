@@ -1,0 +1,478 @@
+---
+layout: post
+date:   2020-04-13
+tags:   wildfly, galleon
+author: yborgess
+---
+
+= Configuring WildFly S2I image by using CLI Management Operations
+
+== Introduction
+
+The standard and recommended way to configure the WildFly cloud images is by using environment variables. However, you could find it useful for your use case to configure the server by using a custom CLI https://docs.wildfly.org/19/Admin_Guide.html#operations[management operations] script.
+
+The following post describes how you can apply management operations to configure the WildFly server image. We will show you how you can execute CLI scripts at the https://github.com/openshift/source-to-image[Source-to-Image (S2I)] phase and how to use the extensions mechanism provided by the WildFly cloud image to execute CLI management operations at runtime.
+
+This practical guide uses https://github.com/code-ready/crc[Red Hat CodeReady Containers] as a local OpenShift cluster. It assumes you have basic knowledge of OpenShift and you know how to configure the WildFly S2I image by using environment variables.
+
+== Executing a CLI management operations script at the Source-to-Image (S2I) phase
+
+Source-to-Image is the tool used internally by OpenShift to build container images from application source code. When we are creating an OpenShift new application using the WildFly image stream, S2I takes our application source code from a Git repository, provisions the WildFly server by using Galleon layers and builds the final image that runs the assembled application.
+
+In this example we are going to assemble this https://github.com/yersan/jaxrs-postgresql-demo[JAX-RS PostgreSQL] demo application with the WildFly server provisioned by Galleon with the PostgreSQL drivers. Our demo application expects a data source available under the following `java:jboss/datasources/PostgreSQLDS` JNDI resource. This data source will be configured executing the following https://github.com/yersan/jaxrs-postgresql-demo/blob/cli-at-s2i/s2i-config/config-ds.cli[config-ds.cli] CLI script:
+
+[source, bash]
+----
+data-source add --jndi-name=java:/jboss/datasources/PostgreSQLDS \
+    --name=PostgreSQLPool \
+    --connection-url=jdbc:postgresql://database-server:5432/demodb \
+    --driver-name=postgresql \
+    --user-name=postgre \
+    --password=admin
+----
+
+[NOTE]
+====
+You can take a look at https://wildfly.org/news/2019/11/11/WildFly-s2i-openshift-Datasource-configuration/[Configuring WildFly S2I image Datasources on OpenShift] post where it was explained how to configure a Datasource in WildFly S2I image using Galleon layers and environment variables.
+====
+
+=== S2i build time WildFly server customization hooks to execute a CLI script
+
+The WildFly server customization hooks offer a way to execute a CLI script when your application is being assembled at S2I phase. To do so you have to configure the `S2I_IMAGE_SOURCE_MOUNTS` variable pointing out to the directory that will contain your configuration scripts. This directory is checked during S2I phase, and if an **install.sh** file is located in the root of the mount point, then this file is executed. This hook gives you the opportunity to execute any task you need to tweak the final image created by the S2I tool.
+
+In our example, the https://github.com/yersan/jaxrs-postgresql-demo/blob/cli-at-s2i/s2i-config/install.sh[install.sh] file is located under `s2i-config` directory on our Git repository and we have https://github.com/yersan/jaxrs-postgresql-demo/blob/cli-at-s2i/.s2i/environment[S2I_IMAGE_SOURCE_MOUNTS] variable configured with this directory location relative to our Git repository root.
+
+[NOTE]
+====
+Notice you can set any S2I environment variables in the application source code. These variables are passed to the build, and the assemble script consumes them. All environment variables are also present in the output application image. These variables are defined in the `.s2i/environment` file inside the application sources. The format of this file is a simple key-value.
+====
+
+The content of our **install.sh** script is the following:
+
+[source, bash]
+----
+#!/usr/bin/env bash
+source /usr/local/s2i/install-common.sh
+
+injected_dir=$1
+echo "Running on injected_dir=${injected_dir}"
+
+run_cli_script "${injected_dir}/config-ds.cli"
+
+echo "End CLI configuration"
+----
+
+The script is a regular bash file. It starts with sourcing `/usr/local/s2i/install-common.sh` file. This file is included in the WildFly S2I image and contains the following functions that can be used by the **install.sh** script to install and configure JBoss Modules modules, drivers, generic deployments and execute CLI scripts:
+
+* `install_deployments`: Copy the file passed as an argument to the server deployment directory.
+* `install_modules`: Copy all the JBoss Modules modules in the directory passed as argument to the server modules directory.
+* `configure_drivers`: Configure the desired drivers using the environment file passed as an argument.
+* `run_cli_script`: Execute the CLI script passed as an argument.
+
+This **install.sh** script is invoked by the WildFly S2I image by passing it as an argument the location of the `S2I_IMAGE_SOURCE_MOUNTS` directory inside of the final image filesystem. You can use this argument to point out to other files or directories included in your application sources.
+
+Behind the scenes `run_cli_script` will start the WildFly embedded server which will execute the CLI script file you supply as an argument to this function. In our example, we have passed the CLI script which is available at `"${injected_dir}/config-ds.cli"` inside of the assembled image.
+
+If you need it, you can also create your CLI script on the fly when the **install.sh** is being executed so you can grab values for any https://docs.openshift.com/container-platform/4.2/builds/creating-build-inputs.html#builds-build-environment_creating-build-inputs[build environment variables] and use those values to tweak your script.
+
+For example suppose we need to pass the data source username and password via environment variables. You can get them in the **install.sh** script and use their values when you are creating the CLI script file:
+
+[source, bash]
+----
+#!/usr/bin/env bash
+source /usr/local/s2i/install-common.sh
+
+injected_dir=$1
+echo "Running on injected_dir=${injected_dir}"
+
+# This creates the CLI file on the fly so you can grab env build config variables and use them in your script
+echo "data-source add --jndi-name=java:/jboss/datasources/PostgreSQLDS \
+    --name=PostgreSQLPool \
+    --connection-url=jdbc:postgresql://database-server:5432/demodb \
+    --driver-name=postgresql \
+    --user-name=${DS_USERNAME} \
+    --password=${DS_PASSWORD}" > ${injected_dir}/my-script.cli
+
+run_cli_script "${injected_dir}/my-script.cli"
+
+echo "End CLI configuration"
+----
+
+One advantage of configuring the server at S2I phase is you could gain speed when the server is being started at runtime. Your final image will be already configured by the https://docs.openshift.com/container-platform/4.2/builds/understanding-buildconfigs.html[OpenShift build config]. However, currently you cannot use the standard WildFly S2I environment variables at build time, and tweak the server configuration at this stage could break possible configurations done later by the environment variables at runtime.
+
+=== Test the application
+
+The following commands shows you all the required steps to import the WildFly S2I image into CodeReady Containers, start the PostgreSQL server and assemble our demo application application that will execute the CLI script at S2I Phase.
+
+First of all, start CodeReady Containers, import the WildFly image, create the wildfly-demo project and start the PostgreSQL server:
+
+[source, bash]
+----
+$ crc start
+...
+INFO Starting OpenShift cluster ... [waiting 3m]
+INFO
+INFO To access the cluster, first set up your environment by following 'crc oc-env' instructions
+INFO Then you can access it by running 'oc login -u developer -p developer https://api.crc.testing:6443'
+INFO To login as an admin, run 'oc login -u kubeadmin -p kKdPx-pjmWe-b3kuu-jeZm3 https://api.crc.testing:6443'
+INFO
+INFO You can now run 'crc console' and use these credentials to access the OpenShift web console
+Started the OpenShift cluster
+WARN The cluster might report a degraded or error state. This is expected since several operators have been disabled to lower the resource usage. For more information, please consult the documentation
+
+$ oc login -u kubeadmin -p kKdPx-pjmWe-b3kuu-jeZm3 https://api.crc.testing:6443
+Login successful.
+
+You have access to 53 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+
+$ oc import-image wildfly --confirm \--from quay.io/wildfly/wildfly-centos7 --insecure -n openshift
+imagestream.image.openshift.io/wildfly imported
+
+$ oc new-project wildfly-demo
+Now using project "wildfly-demo" on server "https://api.crc.testing:6443".
+
+$ oc new-app --name database-server \
+      --env POSTGRESQL_USER=postgre \
+      --env POSTGRESQL_PASSWORD=admin \
+      --env POSTGRESQL_DATABASE=demodb \
+      postgresql
+--> Found image 40d2ad9 (2 months old) in image stream "openshift/postgresql" under tag "10" for "postgresql"
+
+    PostgreSQL 10
+    -------------
+    PostgreSQL is an advanced Object-Relational database management system (DBMS). The image contains the client and server programs that you'll need to create, run, maintain and access a PostgreSQL DBMS server.
+
+    Tags: database, postgresql, postgresql10, rh-postgresql10
+
+    * This image will be deployed in deployment config "database-server"
+    * Port 5432/tcp will be load balanced by service "database-server"
+      * Other containers can access this service through the hostname "database-server"
+
+--> Creating resources ...
+    imagestreamtag.image.openshift.io "database-server:10" created
+    deploymentconfig.apps.openshift.io "database-server" created
+    service "database-server" created
+--> Success
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose svc/database-server'
+    Run 'oc status' to view your app.
+----
+
+Now let us create the OpenShift application from our JAX-RS PostgreSql demo application. We use the `cli-at-s2i` branch:
+
+[source, bash]
+----
+$ oc new-app --name wildfly-app \
+    https://github.com/yersan/jaxrs-postgresql-demo.git#cli-at-s2i \
+    --image-stream=wildfly \
+    --build-env GALLEON_PROVISION_LAYERS=jaxrs-server,postgresql-driver
+--> Found image bdf6490 (13 days old) in image stream "openshift/wildfly" under tag "latest" for "wildfly"
+
+    WildFly 19.0.0.Final
+    --------------------
+    Platform for building and running JEE applications on WildFly 19.0.0.Final
+
+    Tags: builder, wildfly, wildfly19
+
+    * The source repository appears to match: jee
+    * A source build using source code from https://github.com/yersan/jaxrs-postgresql-demo.git#cli-at-s2i will be created
+      * The resulting image will be pushed to image stream tag "wildfly-app:latest"
+      * Use 'oc start-build' to trigger a new build
+    * This image will be deployed in deployment config "wildfly-app"
+    * Ports 8080/tcp, 8778/tcp will be load balanced by service "wildfly-app"
+      * Other containers can access this service through the hostname "wildfly-app"
+
+--> Creating resources ...
+    imagestream.image.openshift.io "wildfly-app" created
+    buildconfig.build.openshift.io "wildfly-app" created
+    deploymentconfig.apps.openshift.io "wildfly-app" created
+    service "wildfly-app" created
+--> Success
+    Build scheduled, use 'oc logs -f bc/wildfly-app' to track its progress.
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose svc/wildfly-app'
+    Run 'oc status' to view your app.
+----
+
+Once we have created the `wildfly-app` application, we can inspect the logs of the pod in charge of building the image where the S2I Phase took in place:
+
+[source, bash]
+----
+$ oc get pods
+NAME                       READY   STATUS      RESTARTS   AGE
+database-server-1-deploy   0/1     Completed   0          4m36s
+database-server-1-mj9z4    1/1     Running     0          4m25s
+wildfly-app-1-build        0/1     Completed   0          3m38s
+wildfly-app-1-deploy       0/1     Completed   0          58s
+wildfly-app-1-dvnv6        1/1     Running     0          55s
+
+
+$ oc logs wildfly-app-1-build
+Caching blobs under "/var/cache/blobs".
+Getting image source signatures
+Copying blob sha256:ab5ef0e5819490abe86106fd9f4381123e37a03e80e650be39f7938d30ecb530
+...
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 16.275 s
+[INFO] Finished at: 2020-04-01T14:15:13Z
+[INFO] Final Memory: 17M/112M
+[INFO] ------------------------------------------------------------------------
+[WARNING] The requested profile "openshift" could not be activated because it does not exist.
+INFO Copying deployments from target to /deployments...
+'/tmp/src/target/jaxrs-postgresql-demo.war' -> '/deployments/jaxrs-postgresql-demo.war'
+INFO Processing ImageSource mounts: s2i-config
+INFO Processing ImageSource from /tmp/src/s2i-config
+Running on injected_dir=/tmp/src/s2i-config
+INFO Configuring the server using embedded server
+INFO Duration: 4164 milliseconds
+End CLI configuration
+INFO Copying server to /s2i-output
+...
+Successfully pushed image-registry.openshift-image-registry.svc:5000/wildfly-demo/wildfly-app@sha256:6057c3bbc0a9071b102b4d0404f9592edebb0ef7c4dfbca9b00e50a2a117adcd
+Push successful
+----
+
+We can see in the log how the image source mount named *s2i-config* was processed, the value of the injected directory, in this case */tmp/src/s2i-config*, which is a directory on the filesystem of the image being assembled, and a trace that tells us the server was configured by the embedded server.
+
+Let us now check test the application exposing the application to the outside world and fetching some information:
+
+[source, bash]
+----
+$ oc expose svc/wildfly-app --name wildfly-app
+route.route.openshift.io/wildfly-app exposed
+
+$ curl http://$(oc get routes/wildfly-app --template={{.spec.host}})/jaxrs-postgresql-demo/api/tasks
+[{"id":1,"title":"This is the task-1"},{"id":2,"title":"This is the task-2"},{"id":3,"title":"This is the task-3"},{"id":4,"title":"This is the task-4"},{"id":5,"title":"This is the task-5"}]
+----
+
+We can also open a remote connection and inspect the relevant data source configuration:
+
+The datasources subsystem configuration is the following:
+
+[source, bash]
+----
+$ oc rsh wildfly-app-1-dvnv6
+sh-4.2$ cat /opt/wildfly/standalone/configuration/standalone.xml
+----
+
+[source, xml]
+----
+<subsystem xmlns="urn:jboss:domain:datasources:5.0">
+    <datasources>
+        <datasource jndi-name="java:/jboss/datasources/PostgreSQLDS" pool-name="PostgreSQLPool">
+            <connection-url>jdbc:postgresql://database-server:5432/demodb</connection-url>
+            <driver>postgresql</driver>
+            <security>
+                <user-name>postgre</user-name>
+                <password>admin</password>
+            </security>
+        </datasource>
+        <drivers>
+            <driver name="postgresql" module="org.postgresql.jdbc">
+                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+            </driver>
+        </drivers>
+    </datasources>
+</subsystem>
+----
+
+Now clean up the wildfly-app keeping the PostgreSQL server running, we will use it for the next example:
+
+[source, bash]
+----
+$ oc delete all -l app=wildfly-app
+pod "wildfly-app-1-dvnv6" deleted
+replicationcontroller "wildfly-app-1" deleted
+service "wildfly-app" deleted
+deploymentconfig.apps.openshift.io "wildfly-app" deleted
+buildconfig.build.openshift.io "wildfly-app" deleted
+build.build.openshift.io "wildfly-app-1" deleted
+imagestream.image.openshift.io "wildfly-app" deleted
+----
+
+== Using the extension mechanism to configure the Server
+
+The extension mechanism allows the execution of arbitrary bash scripts before and after the server is configured by using environment variables. An interesting use case could be you want to tweak the server configuration after it has been configured by the environment variables, for example, there is a specific configuration that is not exposed directly by an environment variable.
+
+When the server is launched at runtime, the `$JBOSS_HOME/extensions` directory on the image filesystem is examined to look for any of these two files:
+
+* `$JBOSS_HOME/extensions/preconfigure.sh`
+* `$JBOSS_HOME/extensions/postconfigure.sh`
+
+If **preconfigure.sh** exists, then it is executed as an initial step before configuring the server by using the environment variables. Similarly, once the server is configured, if **postconfigure.sh** exists, it is executed. Those specific scripts give you the opportunity to prepare the image for the server configuration and to execute any task once the server is configured.
+
+In the following example we are going to use our **postconfigure.sh** to perform a datasource connection pool tuning configuring the following attributes:
+
+* `pool-use-strict-min`: This attribute specifies whether WildFly allows the number of connections in the pool to fall below the specified minimum.
+* `idle-timeout-minutes`: This attribute specifies the maximum time, in minutes, a connection may be idle before being closed. As idle connections are closed, the number of connections in the pool will shrink down to the specified minimum.
+
+Since we are going to supply our **postconfigure.sh** file in our application Git repository, we will use **install.sh** script to copy this file to the place expected by the WildFly S2I image so it gets executed when the server is launched.
+
+[NOTE]
+====
+As alternative, in OpenShift you can also supply this file by using a config map mounted to `$JBOSS_HOME/extensions`.
+====
+
+Let us examine the content of our files. First, the https://github.com/yersan/jaxrs-postgresql-demo/blob/cli-extensions/s2i-config/install.sh[install.sh] file:
+
+[source, bash]
+----
+#!/usr/bin/env bash
+
+injected_dir=$1
+
+echo "Copy ${injected_dir}/extensions/postconfigure.sh to ${JBOSS_HOME}/extensions/"
+
+mkdir -p "${JBOSS_HOME}/extensions/"
+cp "${injected_dir}/extensions/postconfigure.sh" "${JBOSS_HOME}/extensions/"
+----
+
+Its content is pretty simple; it creates the `${JBOSS_HOME}/extensions/` if it does not exist yet, and copies our **postconfigure.sh** script.
+
+Now let us look at the content of our https://github.com/yersan/jaxrs-postgresql-demo/blob/cli-extensions/s2i-config/extensions/postconfigure.sh[postconfigure.sh] script:
+
+[source, bash]
+----
+#!/usr/bin/env bash
+
+echo "Appending CLI operations to ${CLI_SCRIPT_FILE}"
+
+echo "
+  /subsystem=datasources/data-source=database_server-DATABASE_SERVER:write-attribute(name=pool-use-strict-min, value=true)
+  /subsystem=datasources/data-source=database_server-DATABASE_SERVER:write-attribute(name=idle-timeout-minutes, value=5)
+" >> "${CLI_SCRIPT_FILE}"
+----
+
+We can append CLI operations to the final CLI script used by the WildFly image. You can access this file through the environment variable `CLI_SCRIPT_FILE` which is available in this script environment.
+
+The management operations executed in this script assume there is already a datasource named `database_server-DATABASE_SERVER`. This datasource will be created and configured by using the standard environment variables.
+
+=== Test the application
+
+Assuming your database server is already configured as in our previous example, let us now create our OpenShift application using this time the `cli-extensions` branch and by passing in the environment variables that configure our data source:
+
+[source, bash]
+----
+$ oc new-app --name wildfly-app \
+         https://github.com/yersan/jaxrs-postgresql-demo.git#cli-extensions  \
+         --image-stream=wildfly \
+         --env DATASOURCES=DATABASE_SERVER \
+         --env DATABASE_SERVER_JNDI="java:/jboss/datasources/PostgreSQLDS" \
+         --env DATABASE_SERVER_DATABASE="demodb" \
+         --env DATABASE_SERVER_USERNAME="postgre" \
+         --env DATABASE_SERVER_PASSWORD="admin" \
+         --env DATABASE_SERVER_DRIVER="postgresql" \
+         --env DATABASE_SERVER_MAX_POOL_SIZE=10 \
+         --env DATABASE_SERVER_MIN_POOL_SIZE=5 \
+         --env DATABASE_SERVER_NONXA=true \
+         --build-env GALLEON_PROVISION_LAYERS=jaxrs-server,postgresql-driver
+--> Found image bdf6490 (13 days old) in image stream "openshift/wildfly" under tag "latest" for "wildfly"
+
+    WildFly 19.0.0.Final
+    --------------------
+    Platform for building and running JEE applications on WildFly 19.0.0.Final
+
+    Tags: builder, wildfly, wildfly19
+
+    * The source repository appears to match: jee
+    * A source build using source code from https://github.com/yersan/jaxrs-postgresql-demo.git#cli-extensions will be created
+      * The resulting image will be pushed to image stream tag "wildfly-app:latest"
+      * Use 'oc start-build' to trigger a new build
+    * This image will be deployed in deployment config "wildfly-app"
+    * Ports 8080/tcp, 8778/tcp will be load balanced by service "wildfly-app"
+      * Other containers can access this service through the hostname "wildfly-app"
+
+--> Creating resources ...
+    imagestream.image.openshift.io "wildfly-app" created
+    buildconfig.build.openshift.io "wildfly-app" created
+    deploymentconfig.apps.openshift.io "wildfly-app" created
+    service "wildfly-app" created
+--> Success
+    Build scheduled, use 'oc logs -f bc/wildfly-app' to track its progress.
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose svc/wildfly-app'
+    Run 'oc status' to view your app.
+----
+
+Let us explain a bit the uses of these environment variables. You could have noticed we have not defined how our application will connect to the database server since there is no environment variable defining the database server host name / IP or port
+
+The `DATASOURCES` declaration defines the prefix for our data source, in this case the prefix is `DATABASE_SERVER`. By using this definition, the WildFly S2I configuration scripts will pick up the database host name and port from the following variables:
+
+ * <PREFIX>_SERVICE_HOST
+ * <PREFIX>_SERVICE_PORT
+
+We have created a database server with the name *database-server*, which in turns created a service with the same name. Because of the existence of this service, when our application pod is started, OpenShift will initialize the following variables:
+
+* DATABASE_SERVER_SERVICE_HOST
+* DATABASE_SERVER_SERVICE_PORT
+
+The WildFly S2I scripts will take the database host IP and port from those variables and will create the datasource using their values.
+
+You can verify the presence and the values of these variables executing a remote command:
+
+[source, bash]
+----
+$ oc get pods
+NAME                       READY   STATUS      RESTARTS   AGE
+database-server-1-deploy   0/1     Completed   0          46m
+database-server-1-mj9z4    1/1     Running     0          46m
+wildfly-app-1-build        0/1     Completed   0          23m
+wildfly-app-1-deploy       0/1     Completed   0          20m
+wildfly-app-1-sww2q        1/1     Running     0          20m
+
+$ oc exec wildfly-app-1-sww2q -- env | grep "DATABASE_SERVER_SERVICE_PORT\|DATABASE_SERVER_SERVICE_HOST"
+DATABASE_SERVER_SERVICE_PORT=5432
+DATABASE_SERVER_SERVICE_HOST=172.30.142.21
+----
+
+We can check the data source subsystem configuration to verify it was configured as expected:
+
+[source, bash]
+----
+$ oc exec wildfly-app-1-sww2q -- cat /opt/wildfly/standalone/configuration/standalone.xml
+----
+
+[source, xml]
+----
+<subsystem xmlns="urn:jboss:domain:datasources:5.0">
+    <datasources>
+        <datasource jta="true" jndi-name="java:/jboss/datasources/PostgreSQLDS" pool-name="database_server-DATABASE_SERVER" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
+            <connection-url>jdbc:postgresql://172.30.142.21:5432/demodb</connection-url>
+            <driver>postgresql</driver>
+            <pool>
+                <min-pool-size>5</min-pool-size>
+                <max-pool-size>10</max-pool-size>
+                <use-strict-min>true</use-strict-min>
+            </pool>
+            <security>
+                <user-name>postgre</user-name>
+                <password>admin</password>
+            </security>
+            <validation>
+                <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                <validate-on-match>true</validate-on-match>
+                <background-validation>false</background-validation>
+                <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+            </validation>
+            <timeout>
+                <idle-timeout-minutes>5</idle-timeout-minutes>
+            </timeout>
+        </datasource>
+        <drivers>
+            <driver name="postgresql" module="org.postgresql.jdbc">
+                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+            </driver>
+        </drivers>
+    </datasources>
+</subsystem>
+----
+
+Finally, delete the project created to clean up all the resources:
+
+[source, bash]
+----
+$ oc delete project wildfly-demo
+----
