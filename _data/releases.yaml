@@ -1,3 +1,50 @@
+- version: 21.0.0.Beta1
+  version_shortname: 21 Beta1
+  date: 2020-09-18
+  link:
+   - name: Jakarta EE Full & Web Distribution
+     licence: LGPL
+     items:
+       - format: zip
+         size: 200 MB
+         url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1.zip
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1.zip.sha1
+       - format: tgz
+         size: 199 MB
+         url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1.tar.gz
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1.tar.gz.sha1
+   - name: Servlet-Only Distribution
+     licence: LGPL
+     items:
+       - format: zip
+         size: 52 MB
+         url: https://download.jboss.org/wildfly/21.0.0.Beta1/servlet/wildfly-servlet-21.0.0.Beta1.zip
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/21.0.0.Beta1/servlet/wildfly-servlet-21.0.0.Beta1.zip.sha1
+       - format: tgz
+         size: 52 MB
+         url: https://download.jboss.org/wildfly/21.0.0.Beta1/servlet/wildfly-servlet-21.0.0.Beta1.tar.gz
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/21.0.0.Beta1/servlet/wildfly-servlet-21.0.0.Beta1.tar.gz.sha1
+   - name: Application Server Source Code
+     licence: LGPL
+     items:
+       - format: zip
+         size: 40 MB
+         url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1-src.zip
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1-src.zip.sha1
+       - format: tgz
+         size: 25 MB
+         url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1-src.tar.gz
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1-src.tar.gz.sha1
+   - name: Release Notes
+     items:
+       - format: Notes
+         url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12345864
 - version: 20.0.1.Final
   version_shortname: 20
   date: 2020-07-07
