@@ -41,10 +41,15 @@
           url: https://download.jboss.org/wildfly/21.0.0.Final/wildfly-21.0.0.Final-src.tar.gz
           checksum: SHA-1
           checksum_url: https://download.jboss.org/wildfly/21.0.0.Final/wildfly-21.0.0.Final-src.tar.gz.sha1
+    - name: Quick Start Source Code
+      licence: AL
+      items:
+        - format: Source
+          url: https://github.com/wildfly/quickstart/tree/21.0.0.Final
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12350472
+          url: https://wildfly.org/news/2020/10/13/WildFly21-Final-Released/
 - version: 21.0.0.Beta1
   version_shortname: 21 Beta1
   date: 2020-09-18
