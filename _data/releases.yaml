@@ -44,7 +44,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12350472
+          url: https://wildfly.org/news/2020/10/13/WildFly21-Final-Released/
 - version: 21.0.0.Beta1
   version_shortname: 21 Beta1
   date: 2020-09-18

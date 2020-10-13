@@ -1,0 +1,115 @@
+---
+layout: post
+title:  "WildFly 21 is released!"
+date:   2020-10-13
+tags:   announcement release microprofile
+author: bstansberry
+description: WildFly 21.0.0.Final is now available for download!
+---
+
+= WildFly 21 is released!
+
+I'm excited to announce that the WildFly 21 Final zip is now available link:https://wildfly.org/downloads[for download].
+
+== Bootable JAR / Galleon Layers
+ 
+The biggest thing in WildFly 21 is Jean-Francois Denise and the team have added GA-level support for the link:https://github.com/wildfly/wildfly-proposals/blob/master/bootable-jar/WFLY-13305_Bootable_Jar.adoc[Bootable JAR] feature that we've been link:https://www.wildfly.org/news/2020/06/18/Bootable-jar-Wildfly-20/[working on over the last two releases].
+
+The bootable jar feature allows you to add a link:https://repository.jboss.org/org/wildfly/plugins/wildfly-jar-maven-plugin/2.0.0.Final[maven plugin] to your application's pom and have your build package your application deployment and the WildFly server needed to run it inside a single executable jar file. Running your application can be as simple as ``java -jar my-application.jar``.
+
+A bootable jar can be particularly useful for cloud deployment use cases. For example, you can use the JKube maven plugin to link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Final/examples/jkube[build and deploy your application on OpenShift].
+
+You can learn more about bootable jars in our new link:https://docs.wildfly.org/21/Bootable_Guide.html[Bootable JAR Guide].
+
+To get the most benefit from a bootable jar, you'll want to customize the WildFly server in it provide only the functionality you need, while leaving out configuration and binaries that are not relevant. To support this kind of customization, the bootable jar maven plugin lets you link:https://docs.wildfly.org/21/Bootable_Guide.html#wildfly-jar-maven-plugin-galleon-configuration[specify a list of names of the WildFly functionality you'd like]. Each of those names identifies one of the link:https://docs.wildfly.org/galleon/#_layers[Galleon layers] that WildFly provides.
+
+To help ensure your experience with bootable jars is a good one, in WildFly 21 we greatly expanded the link:https://docs.wildfly.org/21/Bootable_Guide.html#wildfly_layers[list of Galleon layers we provide]. New in 21 are:
+
+* `batch-jberet` -- Support for Jakarta Batch.
+* `ejb` -- Support for Jakarta Enterprise Beans, excluding the IIOP protocol.
+* `ejb-dist-cache` -- Infinispan-based distributed caching for stateful session beans. An alternative to the default local caching.
+* `ejb-lite` -- Support for Jakarta Enterprise Beans Lite.
+* `ejb-local-cache` -- Infinispan-based local caching for stateful session beans. An alternative to distributed caching.
+* `jdr` -- Support for the JBoss Diagnostic Reporting (JDR) subsystem.
+* `jsf` -- Support for Jakarta Server Faces.
+* `jsonb` -- Support for Jakarta JSON Binding.
+* `jsonp` -- Support for Jakarta JSON Processing. 
+* `mail` -- Support for Jakarta Mail.
+* `messaging-activemq` -- Support for connections to a remote Jakarta Messaging Service broker.
+* `microprofile-platform` -- Support for all available Eclipse MicroProfile platform specifications.
+* `pojo` -- Support for legacy JBoss Microcontainer applications.
+* `remote-activemq` -- Support for connections to a remote Apache Activemq Artemis JMS broker.
+* `sar` -- Support for SAR archives to deploy MBeans.
+* `webservices` -- Support for Jakarta XML Web Services
+* `web-console` -- Support for loading the HAL web console from the /console context on the HTTP management interface.
+
+More details along with the link:https://docs.wildfly.org/21/Bootable_Guide.html#wildfly_layers[full set of layers WildFly provides] is available in the bootable jar documentation.
+
+There are now a variety of ways use WildFly: by unzipping the traditional server zip, by link:https://docs.wildfly.org/21/Galleon_Guide.html[provisioning a customized WildFly instance] using the Galleon CLI tool, and by building a running a bootable jar. We've added a brief link:https://docs.wildfly.org/21/Installation_Guide.html[Installation Guide] to help you decide which approach best fits your needs.
+
+Many thanks to Tomask Adamski, Tommaso Borgato, Yeray Borges, Fabio Burzigotti, Jean-Francois Denise, Vladimir Dousodil, Cheng Fang, Darragh Fitzmaurice, Emmanuel Hugonnet, Rado Husar, Bob Johnson, Jan Kasik, Darran Lofthouse, Jim Ma, Roberto Oliveira and James Perkins for all of your hard work on this this summer.
+
+But, of course, we weren't entirely focused on bootable jar and Galleon! So, what else is new?
+
+== Other Enhancements
+
+=== Security
+
+Once again, the folks working on security have brought us some new toys:
+
+* A RESTEasy client can now link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFLY-11868_RESTEasy_client_integration_with_Elytron.adoc[make use of Elytron’s configuration on the client side of a REST deployment] to use credentials, bearer tokens and SSLContexts. For this to happen, the Elytron client artifacts must be present on the classpath during the build of RESTEasy client.
+* Users are now able to configure Elytron to link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/ELY-1921-http-external-mechanism.adoc[use credentials established externally from the server] to authenticate the client with HTTP. This will allow users to propagate authentication from mod-cluster/ajp to WildFly.
+* Two new kinds of Elytron security realms have been added:
+** A link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4486-multiple-security-realms-failover.adoc[failover-realm] is a security realm wrapper containing a delegate and a failover realm. If the delegate throws a RealmUnavailableException during identity lookup, it will be caught and failover realm will be used instead.
+** A link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4485-multiple-security-realms-distributed-identities.adoc[distributed-realm] is a security realm wrapper containing a list of other security realms allowing the server to sequentially invoke them until one succeeds.
+* It is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4842-tls-1.3-with-openssl.adoc[use TLS 1.3 with WildFly when using the OpenSSL TLS provider with Elytron].
+
+=== EJB
+
+* EJB invocations over the HTTP protocol can now be link:https://github.com/wildfly/wildfly-proposals/blob/master/ejb/WFLY-12190-http-server-to-server-config.adoc[used in server-to-server configurations].
+* The EJB client protocol allows for compression of the invocation message and the open-session message payload. Configuration of such compression link:https://github.com/wildfly/wildfly-proposals/blob/master/ejb/WFLY-13090-Enable-compression-on-remoting-globally-for-EJB-calls.adoc[can now be configured globally].
+
+
+=== Managing WildFly
+
+* WildFly's MicroProfile Health implementation now includes link:https://github.com/wildfly/wildfly-proposals/blob/master/microprofile/WFLY-12342_server_readiness_probes.adoc[three vendor-specific checks] as part of server readiness checking. These check the management kernel's view of the overall server status and the status of all deployments, and that the server booted without errors.
+* In the standalone.conf(.bat|.ps1) script configuration file you can now link:https://github.com/wildfly/wildfly-proposals/blob/master/core/WFCORE-4748-expose-module-options.adoc[add a MODULE_OPTS=-javaagent:my-agent.jar environment variable]. This allows you to take advantage of JBoss Modules' link:https://issues.redhat.com/browse/MODULES-393[ability to run as a java agent invoke other agents]. Taking advantage of this is useful for occasions when previously the log manager was required on the boot class path.
+* WildFly users can use a Git repository to manage their configuration file history of their standalone server. While previously it was only possible to establish a connection with HTTP authentication, it is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4484-ssh-authentication-git-persistence.adoc[establish a connection with SSH authentication] using an Elytron configuration file to specify the credentials to be used.
+
+
+== Standards Support
+
+WildFly 21.0.0 is a Jakarta EE 8 compatible implementation, with both the Full Platform and the Web Profile. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_21.0.0.Final/jakarta-full-platform.adoc#tck-results[for the Full Platform] and link:https://github.com/wildfly/certifications/blob/EE8/WildFly_21.0.0.Final/jakarta-web-profile.adoc#tck-results[for the Web Profile].
+
+WildFly 21 is also a compatible implementation of Java EE 8.
+
+WildFly 21 is also a compliant implementation of the Eclipse MicroProfile 3.3 platform specification.
+
+While we made a lot of progress on an link:https://www.wildfly.org/news/2020/06/23/WildFly-and-Jakarta-EE-9/[EE 9 compatible variant of WildFly] during the WildFly 21 cycle, I chose not to include a variant of that as part of the WildFly 21 release. I would like to produce an alpha of that fairly early during the WildFly 22 development cycle.
+
+
+== JDK Support
+
+Our recommendation is that you run WildFly on the most recent long-term support JDK release, i.e. on JDK 11 for WildFly 21. While we do do some testing of WildFly on JDK 12 and 13, we do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 8 or 11.
+
+WildFly 21 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 22, and probably beyond.
+
+While we recommend using an LTS JDK release, I do believe WildFly runs well on JDK 13. By run well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform. We do see a couple of test failures with JDK 13 when using the deprecated Picketlink subsystem and WS Trust.
+
+Work to allow WildFly to run on JDK 14 and 15 is ongoing. We haven't had time to digest fully some of the package removals that came in JDK 14, particularly in the security area. We did make significant progress in this area during WildFly 21 development though. The biggest barrier we face is the deprecated legacy security implementation based on Picketbox cannot support JDK 14. We intend to remove support for that security implementation after WildFly 23 and to only provide Elytron-based security. A lot of behind-the-scenes work to make that possible got accomplished during the WildFly 21 cycle.
+
+Please note that WildFly runs on Java 11 and later in classpath mode.
+
+== Documentation
+
+The WildFly 21 documentation is available at the link:https://docs.wildfly.org/21/[docs.wildfly.org site].
+
+As a reminder, starting with WildFly 19 we shifted the location of the auto-generated documentation of the appserver management API from the link:https://wildscribe.github.io//[wildscribe.github.io] site to a make it part of the general documentation for a release. The WildFly 21 management API documentation is in the link:https://docs.wildfly.org/21/wildscribe[wildscribe section of the WildFly 21 docs].
+
+== Jira Release Notes
+
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12350472[here]. Issues resolved in the WildFly Core 13 releases included with WildFly 21 are available link:https://issues.redhat.com/secure/ConfigureReport.jspa?versions=12346407&versions=12350978&sections=all&style=none&selectedProjectId=12315422&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin%3Areleasenotes&atl_token=AQZJ-FV3A-N91S-UDEU_328111ac5ac4d21b0bc1e529abe5c9a759d57e55_lin&Next=Next[here].
+
+== Enjoy!
+
+We hope you enjoy WildFly 21.  Please give it a try, particularly the bootable jar features, and link:https://groups.google.com/forum/#!forum/wildfly[give us your feedback]. But most important, please stay safe and well!
