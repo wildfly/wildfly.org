@@ -564,12 +564,12 @@
      items:
        - format: zip
          size: 172 MB
-         url: https://download.jboss.org/wildfly/15.0.0.Final/wildfly-15.0.0.Final.zip
+         url: https://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.zip
          checksum: sha-1
          checksum_url: https://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.zip.sha1
        - format: tgz
          size: 171 MB
-         url: https://download.jboss.org/wildfly/15.0.0.Final/wildfly-15.0.0.Final.tar.gz
+         url: https://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.tar.gz
          checksum: sha-1
          checksum_url: https://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.tar.gz.sha1
    - name: Servlet-Only Distribution
