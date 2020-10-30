@@ -1,0 +1,228 @@
+---
+layout: post
+title: How to properly stop batch processing job and step in WildFly
+date: 2021-01-14
+tags: wildfly jberet batch
+synopsis: How to properly stop a running batch job with API and WildFly tools, and how to stop an individual step.
+author: chengfang
+---
+
+Batch jobs are long-running background processing tasks, and therefore it's
+common that user may need to pause or stop the execution.  WildFly, which
+implements batch processing through its jberet component based on JSR 352
+and https://projects.eclipse.org/projects/ee4j.batch[Jakarta Batch Specification],
+offers a variety of ways to achieve that requirement.  This post will
+demonstrate how to stop a running job execution, or individual step execution,
+and some design and implementation consideration.
+
+## Properly stop a running job execution
+
+Batch spec defines a standard API for stopping a running job execution:
+https://jakarta.ee/specifications/platform/9/apidocs/jakarta/batch/operations/JobOperator.html#stop-long-[javax.batch.operations.JobOperator#stop]
+
+As stated in its https://javaee.github.io/javaee-spec/javadocs/javax/batch/operations/JobOperator.html#stop-long-[javadoc],
+calling `JobOperator.stop()` sends a stop request to the batch container, which tries its best effort to stop
+the running job execution. So it's important to implement batch application that properly responds to a stop request.
+In the following sections, I'll explain what it entails for the two different types of steps: batchlet step and chunk step.
+
+### Stop a running job execution that contains batchlet step
+
+A batchelt step represents a free-form, opaque task that is fully controlled by the batch application. The batch container
+has no chance to intervene once the batchlet starts its processing. So the batchlet class is responsible for providing
+a way to stop itself, if it wants to support graceful stop. That's why `javax.batch.api.Batchlet` interface declares a
+`stop()` method that a batchlet class must implement.
+
+In the example batchlet class below, once it receives a stop request in its `stop()` method, it sets the `toStop` flag
+to `true`. Its `process()` method periodically checks this flag to determine if it needs to stop processing.
+
+Note that bathlet `stop()` method is called asynchronously while the batchlet `process()` method is running in a
+different thread. And the batchlet class should be implemented to properly handle concurrency.
+
+[source,java]
+----
+@Named
+public class Batchlet1 implements Batchlet {
+    private final AtomicBoolean toStop = new AtomicBoolean();
+
+    @Override
+    public String process() throws Exception {
+        String exitStatus = "BATCHLET1_COMPLETED";
+        while (true) {
+            if (toStop.get()) {
+                exitStatus = "BATCHLET1_STOPPED";
+                break;
+            }
+            // perform batchlet task, such as downloading and copying files, sending emails, etc.
+        }
+        return exitStatus;
+    }
+
+    @Override
+    public void stop() throws Exception {
+        toStop.set(true);
+    }
+}
+----
+
+After the batch application is deployed to WildFly, you can start and stop a job execution in WildFly CLI:
+
+[source,text]
+----
+# To start a new job execution
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet:start-job(job-xml-name=numbers)
+{
+    "outcome" => "success",
+    "result" => 1L
+}
+
+# To stop the running job execution
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet:stop-job(execution-id=1)
+{"outcome" => "success"}
+----
+
+The above `stop-job` CLI operation calls `JobOperator.stop(jobExecutionId)` behind the scene, and eventually the
+batchlet `stop()` method is called to receive the stop request.
+
+The following CLI commands checks the status of the stopped job execution, and a stopped job execution can be
+restarted from where it left off.
+
+[source,text]
+----
+# To check the status of the stopped job execution:
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet/job=numbers/execution=1:read-resource(include-runtime, recursive)
+{
+    "outcome" => "success",
+    "result" => {
+        "batch-status" => "STOPPED",
+        "create-time" => "2020-10-29T19:33:13.843-0400",
+        "end-time" => "2020-10-29T19:33:30.258-0400",
+        "exit-status" => "STOPPED",
+        "instance-id" => 1L,
+        "last-updated-time" => "2020-10-29T19:33:30.258-0400",
+        "start-time" => "2020-10-29T19:33:13.853-0400"
+    }
+}
+
+# To restart the previously stopped job execution:
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet:restart-job(execution-id=3)
+{
+    "outcome" => "success",
+    "result" => 4L
+}
+----
+
+You can also perform all the above operations in WildFly Management Console. For example, the following
+screenshot shows the UI to stop a job execution:
+
+image::jberet/jberet-stop-job.png[Stop Batch Job Execution]
+
+
+### Stop a running job execution that contains chunk step
+
+A chunk step is basically a read-process-write loop and naturally supports stop operation. The batch container can
+intervene at certain junctures amid the iterations. So unlike a batchlet step, there is no required method to implement
+in order to support stop.
+
+However, since a graceful stop will wait for the current chunk to complete, the chunk step
+should choose a suitable chunk size (configured in `item-count`, `time-limit`, or custom checkpoint policy in job xml).
+
+If the chunk size is too big, and the stop request arrives shortly after the current chunk starts, it may take a long time
+for the current chunk to complete before the batch container can safely stop the current step execution. On the other hand,
+a small chunk size results in more frequent checkpointing and quicker response to stop request at the expense of processing
+speed.
+
+## Properly stop an individual running step
+
+The previous section describes ways to stop the entire job execution. You may be wondering if there is a way to stop
+an individual step only while allowing the rest of the job to continue. Since this is slightly deviates from the standard,
+you cannot use `JobOperator.stop(jobExecutionId)` or `Batchlet.stop()` to achieve that. Instead, I would consider this
+a special case of normal execution, which should be implemented by the batch application itself.
+
+### Stop an individual running batchlet step
+
+Batchlet class can watch for some condition to determine if it should stop its processing. It can exit its `process()`
+method with different exit status to signal different outcomes to subsequent steps. For example, `Batchlet1` below
+polls the system property `job1.batchlet1.stop`; once it's set to true, `process()` method returns with exit status
+`BATCHLET1_STOPPED`.
+
+Similarly, the condition can be a marker file in the file system, a column value in a database table, a shared state
+in a single bean, etc.
+
+Once the batchlet is stopped this way, the batch status of the step will be `COMPLETED`, and its exit status will be
+`BATCHLET1_STOPPED`. The job execution will continue to the next step configured in job xml.
+
+[source,java]
+----
+@Named
+public class Batchlet1 implements Batchlet {
+    @Override
+    public String process() throws Exception {
+        String exitStatus = "BATCHLET1_COMPLETED";
+        while (true) {
+            if (shouldStop()) {
+                exitStatus = "BATCHLET1_STOPPED";
+                break;
+            }
+            // perform batchlet task
+            // Thread.sleep(5000);
+        }
+        return exitStatus;
+    }
+
+    private boolean shouldStop() {
+        return Boolean.getBoolean("job1.batchlet1.stop");
+    }
+
+    @Override
+    public void stop() throws Exception {
+        // implement stop() method to respond to incoming request
+        // to stop this batchlet step and entire job execution
+    }
+}
+----
+
+In WildFly CLI, you can set and unset a system property as a flag to batch application:
+
+[source,text]
+----
+# set system property in WildFly as a flag to stop the step execution
+#
+/system-property=job1.batchlet1.stop:add(value=true)
+{"outcome" => "success"}
+
+# clean up afterwards and remove the system property
+#
+/system-property=job1.batchlet1.stop:remove()
+{"outcome" => "success"}
+----
+
+### Stop an individual running chunk step
+
+Stopping an individual running chunk step is more complicated than a batchlet step. When implement this case as
+a special case of normal processing, a possible strategy is:
+
+* A graceful stop should wait for the current chunk to complete, and then stop the next chunk. The batch application can poll certain
+    condition in `javax.batch.api.chunk.listener.ChunkListener#beforeChunk` method, and save the condition, e.g.,
+    in `javax.batch.runtime.context.StepContext#setTransientUserData`.
+* `javax.batch.api.chunk.ItemReader#readItem` can check the condition from `javax.batch.runtime.context.StepContext#getTransientUserData`,
+    and if true, return null. This will cause the chunk step to complete normally as if there is no more data to read.
+
+Once the chunk step is stopped this way, the batch status of the step will be `COMPLETED`, and its exit status will be
+`COMPLETED` unless reset by the batch application. The job execution will continue to the next step configured in job xml.
+
+## Summary
+
+In this post we went through ways to stop either a job execution or an individual step execution. It's possible to
+combine them, so the batch application can support graceful stop of both the entire job execution and any individual step.
+
+In most cases, I'd recommend designing your batch application, adhering to the batch spec and leveraging the well-defined
+stop behavior. It makes your batch application and workflow easier to understand and maintain. Standard stop operation
+also supports restarting the previously stopped job execution from where it left off (e.g., stopped step or checkpoint).
+
+When some batch applications really need to stop an individual step, the design choice and implementation should be
+well documented to convey the justification and implications. As this type of stop is disguised as a normal execution,
+it does not support restart. Care should be taken to avoid data loss and data corruption.
