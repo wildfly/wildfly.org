@@ -61,6 +61,13 @@ ehsavoie:
   bio: "Emmanuel works at Red Hat on WildFly Core. He currently works on domain management and also maintains the NetBeans WildFly plugin."
   avatar: ehsavoie.png
   twitter: "ehsavoie"
+fjuma:
+  name: "Farah Juma"
+  location: "Canada"
+  occupation: "Software Engineer"
+  bio: "Farah works at Red Hat on WildFly. She co-leads the WildFly Elytron project with Darran Lofthouse."
+  avatar: fjuma.jpg
+  twitter: "farahjuma"
 jmesnil:
   name: "Jeff Mesnil"
   location: "France"
