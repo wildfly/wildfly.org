@@ -4,7 +4,7 @@ links:
   - title: Navigation
     subfolderitems:
       - page: Downloads
-        url: /wildflysite/downloads
+        url: /downloads
       - page: Docs
         url: https://docs.wildfly.org
       - page: Github

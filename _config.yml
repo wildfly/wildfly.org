@@ -57,7 +57,7 @@ asciidoctor:
   base_dir: :docdir
   safe: unsafe
   attributes:
-    imagesdir: /wildflysite/assets/img/news/
+    imagesdir: /assets/img/news/
 
 # Pages permalink
 defaults:
