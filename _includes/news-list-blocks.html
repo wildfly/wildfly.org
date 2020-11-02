@@ -7,7 +7,7 @@
     {% if forloop.index <= 8 %}
       <div class="news-block-item grid__item width-3-12">
         <div class="post-title grid__item">
-          <h4><a href="{{site.baseurl}}{{ post.url }}">{{ post.title }}</a></h4>
+          <h4><a href="{% if post.link %}{{ post.link }}{% else %}{{site.baseurl}}{{ post.url }}{% endif %}" {% if post.link %}target="_blank"{% endif %}>{{ post.title }}</a></h4>
         </div>
         <p class="byline">By {{ author.name }} | {{ post.date | date: '%B %d, %Y' }}</p>
         {% if post.synopsis %}
@@ -15,7 +15,7 @@
         {% else %}
           <p>{{ post.content | strip_html | truncatewords: 75 }}</p>
         {% endif %}
-        <a href="{{site.baseurl}}{{ post.url }}">Read More ></a>
+        <a href="{% if post.link %}{{ post.link }}{% else %}{{site.baseurl}}{{ post.url }}{% endif %}" {% if post.link %}target="_blank"{% endif %}>Read More ></a>
       </div>
     {% endif %}
   {% endfor %}

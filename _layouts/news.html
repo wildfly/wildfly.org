@@ -16,7 +16,7 @@ layout: base
       {% assign author = site.data.authors[post.author] %}
       <div class="news-list-item grid-wrapper">
         <div class="post-title grid__item width-12-12">
-          <h2><a href="{{site.baseurl}}{{ post.url }}">{{ post.title }}</a></h2>
+          <h2><a href="{% if post.link %}{{ post.link }}{% else %}{{site.baseurl}}{{ post.url }}{% endif %}" {% if post.link %}target="_blank"{% endif %}>{{ post.title }}</a></h2>
         </div>
         <div class="grid__item width-6-12 width-12-12-m">
           <p class="byline">By {{ author.name }} | {{ post.date | date: '%B %d, %Y' }}</p>
@@ -29,7 +29,7 @@ layout: base
             <p>{{ post.content | strip_html | truncatewords: 75 }}</p>
           {% endif %}
         </div>
-        <div class="grid__item width-12-12"><a href="{{site.baseurl}}{{ post.url }}">Read More ></a></div>
+        <div class="grid__item width-12-12"><a href="{% if post.link %}{{ post.link }}{% else %}{{site.baseurl}}{{ post.url }}{% endif %}" {% if post.link %}target="_blank"{% endif %}>Read More ></a></div>
       </div>
     {% endfor %}
     {% if paginator.total_pages > 1 %}
