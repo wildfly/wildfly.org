@@ -113,6 +113,13 @@ jmartisk:
   occupation: "Software Engineer"
   bio: "Jan Martiska is a software engineer at Red Hat, currently working on MicroProfile, its implementations, and their integration into various runtimes, like Quarkus and WildFly."
   avatar: jmartisk.jpg
+dvilkola:
+  name: "Diana Krepinska Vilkolakova"
+  location: "Czechia"
+  occupation: "Software Engineer"
+  bio: "Diana is a software engineer at Red Hat. She joined the team in 2018 and is working on WildFly Elytron project."
+  avatar: dvilkola.jpg
+  twitter: "Skylardia"
 soniazaldana:
   name: "Sonia Zaldana Calles"
   location: "Canada"
