@@ -5,7 +5,6 @@ date:   2020-08-13
 tags:   wildfly galleon microprofile graphql smallrye
 author: jmartisk
 description: Introducing the WildFly MicroProfile GraphQL Feature Pack
-projectlink: https://github.com/wildfly-extras/wildfly-graphql-feature-pack/tree/1.0.0.Beta1
 ---
 
 = Introducing the WildFly MicroProfile GraphQL Feature Pack
@@ -25,7 +24,7 @@ For now, the GraphQL support is distributed as a feature pack rather than integr
 To install the feature pack, link:https://github.com/wildfly/galleon/releases[download] the latest version of Galleon. At the time of writing this is 4.2.5. Unzip it somewhere, and add its `bin/` folder to your path.
 
 Next, save a copy of
-link:{projectlink}/provision.xml[provision.xml] somewhere, and go to that folder in a terminal window. Then run:
+link:https://github.com/wildfly-extras/wildfly-graphql-feature-pack/tree/1.0.0.Beta1/provision.xml[provision.xml] somewhere, and go to that folder in a terminal window. Then run:
 ----
 $galleon.sh provision ./provision.xml --dir=my-wildfly
 ----
@@ -35,7 +34,7 @@ from Maven. Once that is done, subsequent attempts will be fast.
 What this command does is:
 
 * Provision a slimmed version (compared to the full download) of WildFly containing the relevant
-parts for a server running in the cloud. The main link:{projectlink}/README.md[README] of the project repository contains more information about this part. You can adjust this file to choose
+parts for a server running in the cloud. The main link:https://github.com/wildfly-extras/wildfly-graphql-feature-pack/tree/1.0.0.Beta1/README.md[README] of the project repository contains more information about this part. You can adjust this file to choose
 other parts of the server you may be interested in.
 * Next it provisions the full contents of the feature pack into our new server instance.
 * The provisioned server will be output in the `my-wildfly` subdirectory, and can be started via the usual `my-wildfly/bin/standalone.sh` command.
