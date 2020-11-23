@@ -120,3 +120,10 @@ dvilkola:
   bio: "Diana is a software engineer at Red Hat. She joined the team in 2018 and is working on WildFly Elytron project."
   avatar: dvilkola.jpg
   twitter: "Skylardia"
+soniazaldana:
+  name: "Sonia Zaldana Calles"
+  location: "Canada"
+  occupation: "Software Engineer"
+  bio: "Sonia works at Red Hat on WildFly. She is completing a 16-month internship."
+  avatar: szaldana.png
+  twitter: "SoniaDZaldana"
