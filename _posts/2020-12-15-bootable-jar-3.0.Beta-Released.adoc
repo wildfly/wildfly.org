@@ -1,0 +1,83 @@
+---
+layout: post
+title: WildFly Bootable JAR 3.0.0.Beta1 is released!
+date: 2020-12-15
+tags: wildfly galleon bootable jar bootable-jar
+synopsis: Bootable JAR Maven plugin 3.0.0.Beta1 has been released. This release brings a new Maven plugin goal to speed-up development.  
+author: jfdenise
+---
+
+The 3.0.0.Beta1 version of the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/[WildFly bootable JAR Maven plugin] has been released.
+
+This  https://github.com/wildfly-extras/wildfly-jar-maven-plugin/releases/tag/3.0.0.Beta1[release]  is not yet Final, 
+it is "just a beta", but we think that it is of enough good quality to acquire feedback on it.
+
+For people who are not familiar with WildFly bootable JAR, I strongly recommend that you read 
+this link:https://www.wildfly.org/news/2020/10/19/bootable-jar-2.0-released/[blog post] that covers it in details. 
+
+In addition to bug fixes, this release brings 2 new goals:
+
+* `help`: to display the plugin goals and configuration elements descriptions. 
+* `dev-watch`: an evolution of the `dev` goal that makes repackaging of your application no more required. 
+
+## Dev-watch goal
+
+The current `dev` goal, although offering an efficient workflow to develop WildFly applications, requires an explicit repackaging of your application. 
+This is currently done in two steps:
+
+* `mvn wildfly-jar:dev` 
+** that builds and starts the server in background. The deployment scanner monitors the `target/deployments` directory for new deployed content.
+* `mvn package -Ddev`
+** that builds your application then copy the deployment to the `target/deployments` directory.
+* Update your src, re-call `mvn package -Ddev`
+* When done call `mvn wildfly-jar:shutdown`
+** that kills the running server (NB: requires the `management` layer to be provisioned).
+ 
+So each time a change is made to your application, `mvn package -Ddev` must be called for the deployment to be re-deployed. 
+
+Furthermore, when the plugin configuration located in the pom.xml file is modified (e.g.: a new Galleon layer is added), 
+when a CLI script is updated or when some extra content is added, the running server must be killed and `wildfly-jar:dev` must then be re-called.
+
+This knowledge of when to re-build a bootable JAR, when to stop/re-start it, when to re-build your sources and when to re-deploy 
+is now under the control of the `dev-watch` goal.
+
+The new workflow introduced by the goal is:
+
+* `mvn wildfly-jar:dev-watch`
+** that builds your application (if needed), builds and starts the server, deploys your application and finally watches for file changes in your project.
+** Note that this call is blocking. The `dev-watch` goal and the server write traces to the console.
+* Update your files.
+** changes are detected. The goal advertises in the console what is the action it is taking (re-build, re-deploy, …). 
+* Refresh your browser (if needed) to access the re-deployed application.
+* When done, send `Ctrl-C` in the shell.
+
+Integration in IDE is straightforward. As an example I have created a Maven action named 'dev-watch' that calls `wildfly-jar:dev-watch` 
+goal in link:https://netbeans.org/[NetBeans IDE]. Once called, the goal traces are displayed in the IDE output windows. You can then forget 
+about the execution and start modifying your files in the IDE and refresh your web browser to visualize changes.  
+
+## New Examples
+
+We have added some new examples:
+
+* An link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.0.Beta1/examples/jaxws[example] that shows how to use the link:https://docs.wildfly.org/21/Bootable_Guide.html#gal.webservices[webservices] Galleon layer.
+* An link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.0.Beta1/examples/gradle-mdb-rar[example] that shows how to integrate the Maven plugin from Graddle.
+* An link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.0.Beta1/examples/mdb-rar[example] that shows how to deploy activemq rar file and 
+use the https://docs.wildfly.org/21/Bootable_Guide.html#gal.ejb[ejb] Galleon layer.
+
+## Plugin configuration changes
+
+We have fixed the `extraServerContent` configuration element to be `extraServerContentDirs`. That was required to align 
+its name with the `extra-server-content-dirs` alias. If you are already using  `extra-server-content-dirs` (that is the advised way), 
+then nothing change for you, if you are using `extraServerContent`, you will have to update your pom file.
+
+## To conclude
+
+We hope that you are seeing the benefits of the new features that this release is bringing.
+We would really appreciate your link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/issues[feedback] on the `dev-watch` goal. We aim toward a smooth and efficient 
+first class WildFly developer experience and we need you there!
+
+Thank-you.
+
+JF Denise
+
+
