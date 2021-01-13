@@ -1,3 +1,63 @@
+- version: 22.0.0.Final
+  version_shortname: 22 Final
+  date: 2021-01-13
+  link:
+   - name: WildFly Preview EE 9 Distribution
+     licence: LGPL
+     items:
+       - format: zip
+         size: 201 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-preview-22.0.0.Final.zip
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-preview-22.0.0.Final.zip.sha1
+       - format: tgz
+         size: 200 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-preview-22.0.0.Final.tar.gz
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-preview-22.0.0.Final.tar.gz.sha1
+   - name: Jakarta EE Full & Web Distribution
+     licence: LGPL
+     items:
+       - format: zip
+         size: 203 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final.zip
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final.zip.sha1
+       - format: tgz
+         size: 202 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final.tar.gz
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final.tar.gz.sha1
+   - name: Servlet-Only Distribution
+     licence: LGPL
+     items:
+       - format: zip
+         size: 53 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/servlet/wildfly-servlet-22.0.0.Final.zip
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/servlet/wildfly-servlet-22.0.0.Final.zip.sha1
+       - format: tgz
+         size: 53 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/servlet/wildfly-servlet-22.0.0.Final.tar.gz
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/servlet/wildfly-servlet-22.0.0.Final.tar.gz.sha1
+   - name: Application Server Source Code
+     licence: LGPL
+     items:
+       - format: zip
+         size: 40 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final-src.zip
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final-src.zip.sha1
+       - format: tgz
+         size: 25 MB
+         url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final-src.tar.gz
+         checksum: SHA-1
+         checksum_url: https://download.jboss.org/wildfly/22.0.0.Final/wildfly-22.0.0.Final-src.tar.gz.sha1
+   - name: Release Notes
+     items:
+       - format: Notes
+         url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12352781
 - version: 22.0.0.Beta1
   version_shortname: 22 Beta1
   date: 2020-12-16
