@@ -57,7 +57,7 @@
    - name: Release Notes
      items:
        - format: Notes
-         url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12352781
+         url: https://wildfly.org/news/2021/01/13/WildFly22-Final-Released/
 - version: 22.0.0.Beta1
   version_shortname: 22 Beta1
   date: 2020-12-16
