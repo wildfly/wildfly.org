@@ -1,0 +1,95 @@
+---
+layout: post
+title: WildFly Bootable JAR 3.0 is released!
+date: 2021-01-15
+tags: wildfly galleon bootable jar bootable-jar
+synopsis: Bootable JAR Maven plugin 3 has been released. This release brings a new Maven plugin goal to speed-up development.  
+author: jfdenise
+---
+
+The version 3.0 of the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/[WildFly Bootable JAR Maven plugin] has been released.
+
+For people who are not familiar with WildFly Bootable JAR, I strongly recommend that you read 
+this link:https://www.wildfly.org/news/2020/10/19/bootable-jar-2.0-released/[blog post] that covers it in detail. 
+
+The new features that come in this release (in particular the  `dev-watch` goal) have already been covered 
+when link:https://www.wildfly.org/news/2020/12/15/bootable-jar-3.0.Beta-Released/[announcing] the Beta1 release. The Bootable JAR link:https://docs.wildfly.org/bootablejar/[documentation]
+ contains a new link:https://docs.wildfly.org/bootablejar/#_development_mode_with_source_watching[chapter] that provides details on the `dev-watch` goal.
+
+Since Beta1, the Bootable JAR link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.2.Final/examples/[examples]  have been evolved to use WildFly 22.0.0.Final 
+that has just been link:https://www.wildfly.org/news/2021/01/13/WildFly22-Final-Released/[released].
+
+In this blog post I will focus on the integration with link:https://www.keycloak.org/[Keycloak]. This integration is now possible
+thanks to the Keycloak Galleon feature-pack that is new in link:https://www.keycloak.org/downloads[Keycloak 12.0.0].
+
+## Keycloak Galleon feature-pack
+
+The link:https://repo1.maven.org/maven2/org/keycloak/keycloak-adapter-galleon-pack/[Keycloak Galleon feature-pack] provides 
+an OIDC client adapter by the means of a Galleon layer.
+The `keycloak-client-oidc` Galleon layer brings the OIDC keycloak subsystem (and associated JBoss modules) and 
+configures the server security. For more information on the Keycloak Galleon feature-pack usage with WildFly, 
+you can read the link:https://docs.wildfly.org/22/WildFly_Elytron_Security.html#Keycloak_Integration[dedicated chapter] in the WildFly documentation.
+
+Using the Bootable JAR Maven plugin, you can combine layers coming from multiple Galleon feature-packs. 
+
+In your plugin configuration it looks like:
+
+[source,xml]
+----
+<configuration>
+  <feature-packs>
+    <feature-pack>
+      <location>wildfly@maven(org.jboss.universe:community-universe)</location>
+    </feature-pack>
+    <feature-pack>
+       <location>org.keycloak:keycloak-adapter-galleon-pack:12.0.1</location>
+     </feature-pack>
+  </feature-packs>
+  <layers>
+    <layer>web-server</layer>
+     <layer>keycloak-client-oidc</layer>
+  </layers>
+...        
+</configuration>
+----
+
+You will notice that the `<location>` element is structured differently for the WildFly feature-pack and the Keycloak one.
+
+The WildFly feature-pack is accessible from the Galleon `community-universe`. Retrieving the WildFly feature-pack from this universe
+allows us to not specify any version and get the latest one. 
+
+Since the Keycloak Galleon feature-pack is not registered inside an universe, you need to specify its Maven coordinates.
+
+When building a Bootable JAR, the plugin retrieves the feature-packs from Maven repositories and provisions a server based on the set of Galleon layers.
+
+You can follow the steps documented in this link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.2.Final/examples/keycloak[example] 
+to secure a servlet deployed inside a Bootable JAR using Keycloak. 
+
+## Developing on OpenShift with Bootable JAR
+
+We are currently working at defining link:https://odo.dev/[ODO] dev files in order to make for a smooth and 
+efficient development experience on OpenShift. Changes done in your local Maven project fire automatic 
+re-build and re-deploy of your application in the remote  OpenShift cluster POD. 
+
+To achieve this, we are leveraging the ODO source watching capabilities to push changes onto your OpenShift POD. 
+`dev-watch` goal, that is running in the POD, takes over and automatically re-build/re-deploy your application.
+
+Stay tuned!
+
+## Known issues
+
+We have encountered an issue when using the `dev-watch` goal with the link:https://github.com/wildfly/quickstart/tree/22.0.0.Final[WildFly microprofile-* quickstarts]. You need to upgrade the plugin to 3.0.2.Final 
+to allow for `dev-watch` to properly operate. The Maven command to use is: `mvn wildfly-jar:dev-watch -Pbootable-jar -Dversion.wildfly-jar.maven.plugin=3.0.2.Final`
+
+## To conclude
+
+If you have an interesting use-case, simple enough to be reduced to a simple example, and it is not covered 
+by the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.2.Final/examples/[examples],  then 
+feel free to link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/pulls[contribute] one. We will be very happy to help you integrate your example in the project. Just ask!
+
+Finally we would really appreciate that you keep us posted with your feedback and new requirements (that you can log as new 
+link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/issues[project issues]), this will help evolve the WildFly Bootable JAR experience in the right direction.
+
+Thank-you!
+
+JF Denise
