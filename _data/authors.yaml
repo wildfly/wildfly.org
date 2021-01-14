@@ -127,3 +127,8 @@ soniazaldana:
   bio: "Sonia works at Red Hat on WildFly. She is completing a 16-month internship."
   avatar: szaldana.png
   twitter: "SoniaDZaldana"
+chengfang:
+  name: "Cheng Fang"
+  location: "Boston, MA"
+  occupation: "Software Engineer"
+  bio: "Cheng is a software engineer at Red Hat, and is the lead of WildFly EJB and JBeret batch processing."
