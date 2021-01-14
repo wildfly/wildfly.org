@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Using case principal transformers in Elytron'
+date: 2021-01-14
+tags: elytron wildfly
+synopsis: With WildFly 22, it is now possible to configure a principal transformer in the Elytron subsystem to convert a principal to upper or lower case. This blog post goes through a complete example on how to use this new feature.
+author: soniazaldana
+link: https://wildfly-security.github.io/wildfly-elytron/blog/case-principal-transformer/
+---
