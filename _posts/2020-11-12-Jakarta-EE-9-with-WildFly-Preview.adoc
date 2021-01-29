@@ -7,7 +7,7 @@ author: bstansberry
 description: WildFly 22.0.0.Alpha1 is now available for download!
 ---
 
-= WildFly 22 Alpha1 is released!
+= Jakarta EE 9 with WildFly Preview
 
 I'm pleased to announce that the WildFly 22 Alpha1 zips are now available link:https://wildfly.org/downloads[for download]. This includes the first release of a new 'WildFly Preview' distribution of WildFly, which we're using to give our community a tech preview look at things we see coming down the road in our main WildFly distribution. Right now this is mostly about what we are doing with Jakarta EE 9, although there are some other differences that I'll get into below.
 
