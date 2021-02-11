@@ -62,7 +62,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://wildfly.org/news/2021/02/11/WildFly2201-Final-Released/
+          url: https://wildfly.org/news/2021/02/11/WildFly2201-Released/
 - version: 22.0.0.Final
   version_shortname: 22 Final
   date: 2021-01-13
