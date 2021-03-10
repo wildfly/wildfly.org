@@ -309,7 +309,6 @@ $ oc logs pods/wildfly-clustering-demo-s2i-1-build
 +
 ----
 $ mvn oc:apply -Popenshift
-$ mvn oc:apply -Popenshift
 [INFO] Scanning for projects...
 [INFO]
 [INFO] --------------< org.wildfly.s2i:wildfly-clustering-demo >---------------
@@ -421,5 +420,10 @@ $ curl --cookie /tmp/session.txt -XGET $(oc get route wildfly-clustering-demo -o
 == Conclusion
 
 Combining the Bootable JAR with the JKube maven plugin is one option to simplify the workflow developing applications on OpenShift. Firstly, we have seen how you can work with your application locally and then, with minimal effort, how to adapt it to be deployed on OpenShift. In this specific example, we have explored the default discovery mechanism available on the Bootable JAR. This mechanism requires granting permissions on your cluster to add to JGroups the ability to discover other cluster members.
+
+[NOTE]
+====
+If you are interested in learning how to configure the *DNS_PING* protocol instead of *KUBE_PING*, this https://www.wildfly.org/news/2021/03/12/Bootable-jar-jkube-clustering-dns-ping-openshift/[follow-up] blog post describes how to do it.
+====
 
 You can find out more examples of how to use and work with the Bootable JAR https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.2.Final/examples/[here]. If you have any question related, feel free to contact us joining to the https://groups.google.com/forum/#!forum/wildfly[WildFly community forums] or https://wildfly.zulipchat.com/[Zulip Chat].
