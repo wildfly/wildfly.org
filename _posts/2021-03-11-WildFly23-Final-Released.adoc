@@ -113,7 +113,7 @@ The WildFly project still produces the `wildfly-core` and `wildfly-servlet` feat
 
 == Standards Support
 
-WildFly 23.0.0 is a Jakarta EE 8 compatible implementation, with both the Full Platform and the Web Profile. 
+WildFly 23.0.0 is a Jakarta EE 8 compatible implementation, with both the Full Platform and the Web Profile. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_23.0.0.Final/jakarta-full-platform.adoc#tck-results[for the Full Platform] and link:https://github.com/wildfly/certifications/blob/EE8/WildFly_23.0.0.Final/jakarta-web-profile.adoc#tck-results[for the Web Profile].
 
 Beginning with WildFly 23 we will be exclusively focusing on the Jakarta EE test suite for EE certification / compliance.
 
