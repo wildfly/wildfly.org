@@ -15,9 +15,9 @@ It's been a busy time since the January WildFly 22 release, with a bit shorter d
 
 == New Features
 
-=== Eclipse MicroProfile 4.0
+=== MicroProfile 4.0
 
-In this release we have moved our Eclipse MicroProfile platform implementations from the 3.3 platform specification versions to the 4.0 versions. WildFly 23 supports the following Eclipse MicroProfile platform specifications:
+In this release we have moved our MicroProfile platform implementations from the 3.3 platform specification versions to the 4.0 versions. WildFly 23 supports the following MicroProfile platform specifications:
 
 [cols=",",options="header"]
 |===
@@ -117,7 +117,7 @@ WildFly 23.0.0 is a Jakarta EE 8 compatible implementation, with both the Full P
 
 Beginning with WildFly 23 we will be exclusively focusing on the Jakarta EE test suite for EE certification / compliance.
 
-WildFly 23 is also a compliant implementation of the Eclipse MicroProfile 4.0 platform specification.
+WildFly 23 is also a compliant implementation of the MicroProfile 4.0 platform specification.
 
 The WildFly Preview distribution released today is not yet a compatible implementation of Jakarta EE 9 or MicroProfile 4.0. We're continuing to make good progress toward being able to certify compatibility, but we're not there yet. The main area where users may hit meaningful issues related to EE compliance is in webservices if deployment descriptors using the EE 9 xml schemas are used. This can be worked around by using EE 8 schemas, which are functionally equivalent.
 
