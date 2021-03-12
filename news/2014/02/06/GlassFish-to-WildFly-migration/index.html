@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="Migrating a Java EE App from GlassFish to WildFly">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Migrating a Java EE App from GlassFish to WildFly</h1>
+    
+    <p class="byline">By Arun Gupta | February 06, 2014</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>by <strong>Hildeberto Mendonça</strong> and <strong>Efraim Gentil</strong> from CEJUG</p>
+</div>
+<div class="paragraph">
+<p>Serious open source projects should be backed up by at least one company who has genuine interest to be profitable with that project in the long run. It&#8217;s a matter of fitting the project in the current economic model, where people can be employed full time to address the continuous flow of issues and features coming from users all over the world. That&#8217;s what happens all the time at RedHat and that&#8217;s what stopped happening at Oracle in the case of GlassFish.</p>
+</div>
+<div class="paragraph">
+<p>GlassFish users, who take open source seriously and care about the transparency of what is running on their servers, are currently looking for alternatives and WildFly is the strongest candidate because it:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>follows the evolution of Java EE specifications faster than any other vendor;</p>
+</li>
+<li>
+<p>is a continuation of JBoss, which is a rock solid application server with years of expertise on critical business applications;</p>
+</li>
+<li>
+<p>is supported by Red Hat, a consistently growing IT company.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This article helps you to migrate from GlassFish to WildFly. We initially take into account the most common configurations, such as database connection, JavaMail session, Security Realm and Java EE libraries. More advanced topics will come in future articles.</p>
+</div>
+<div class="paragraph">
+<p>You will notice in the coming sections that server configuration is definitely not part of the Java EE specification. Each application server is configured in a different way and we hope you will get a good deal of WildFly configuration tips through this article.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installing-wildfly-8">Installing WildFly 8</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The installation is very straightforward. Download the latest installation package from [<a href="http://www.wildfly.org/downloads/" class="bare">http://www.wildfly.org/downloads/</a>](<a href="http://www.wildfly.org/downloads/" class="bare">http://www.wildfly.org/downloads/</a>) and unzip it in a place you can easily remember. We will leave it to your decision about the best location to install it because it depends on the operating system, the server configuration and personal preferences. We refer to the location you chose to unzip WildFly as <code>WILDFLY_HOME</code>.</p>
+</div>
+<div class="paragraph">
+<p>WildFly requires JDK 7 or higher. Before starting WildFly, make sure either the variable <code>JAVA_HOME</code> is pointing to a certified JDK 7 installation or <code>bin</code> directory of JDK is in the system path.</p>
+</div>
+<div class="paragraph">
+<p>Go to the folder <code>WILDFLY_HOME/bin</code> and execute the command to start WildFly in standalone mode:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>#&gt; ./standalone.sh (Linux)
+#&gt; standalone.bat (Windows)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Make sure you have stopped GlassFish or any other application server  before doing this to avoid TCP/IP ports conflicts. You know when the startup finishes when you see the following message:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>WildFly 8.0.0.CR1 "WildFly" started in 1846ms</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Open a web browser and access the url [<a href="http://localhost:8080" class="bare">http://localhost:8080</a>](<a href="http://localhost:8080" class="bare">http://localhost:8080</a>) to see the WildFly welcome page.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuring-wildfly-8">Configuring WildFly 8</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>From this point on, we are going to configure WildFly to support Java EE applications. Changes in the configuration reflect in one of these files:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>WILDFLY_HOME/domain/configuration/domain.xml</code>: when you have a clustered environment, which usually happens in production, where there is a domain controller and at least two synchronised server instances. This configuration is taken into account when the command <code>WILDFLY_HOME/bin/domain.sh(.bat)</code> is executed to start WildFly. In addition, the file <code>host.xml</code>, located in the same folder, is used to configure each host that joins the domain.</p>
+</li>
+<li>
+<p><code>WILDFLY_HOME/standalone/configuration/standalone.xml</code>: when you have a single WildFly instance for less demanding applications or for the development environment. This configuration is taken into account when the command <code>WILDFLY_HOME/bin/standalone.sh(.bat)</code> is executed to start WildFly.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We refer to those files simply as ``configuration file'' throughout the text. Be careful when changing those files. Things can stop working just because of a simple distraction. It&#8217;s recommended to use the command line or the admin console to make sure the XML content is correctly defined. Syntax changes from a version to another may happen sometimes, so it&#8217;s better to delegate changes to a specialised tool.</p>
+</div>
+<div class="sect2">
+<h3 id="the-admin-console">The Admin Console</h3>
+<div class="paragraph">
+<p>You can change the configuration through the administration console or the command line. The console is a web application available at [<a href="http://localhost:9990" class="bare">http://localhost:9990</a>](<a href="http://localhost:9990" class="bare">http://localhost:9990</a>). Unlike GlassFish, it is not accessible by default. We have to create a user in the administration realm to be able to operate the admin console. Therefore, there is no risk of forgetting to protect the admin console. To create one, execute the file <code>WILDFLY_HOME/bin/add-user.sh(.bat)</code> and follow the instructions, remembering to note the username and password as they will be needed later.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-command-line">The Command Line</h3>
+<div class="paragraph">
+<p>All admin operations can be also done through the command line. To activate WildFly command line prompt start WildFly, go to the <code>WILDFLY_HOME/bin</code> folder and execute the command:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>#&gt; jboss-cli.sh(.bat) --connect</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It connects to <code>localhost</code> and port <code>9990</code> by default. The prompt looks like <code>[standalone@localhost:9990 /]</code>, indicating it is ready to accept admin commands. Type <code>quit</code> when you are done. Command line examples are spreaded througout the text. Before using them, please remove all line breaks and identation spaces, making them a continous text string. For example:</p>
+</div>
+<div class="paragraph">
+<p>Instead of doing exactly this:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mysql:add(
+    driver-name=mysql,
+    driver-module-name=com.mysql,
+    driver-class-name=com.mysql.jdbc.Driver
+)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should do this:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql,driver-class-name=com.mysql.jdbc.Driver)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We decided to change the presentation to improve readability.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="migrating-the-database-connection">Migrating The Database Connection</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let&#8217;s start discussing about the database connection, which is by far the most frequent need of a Java EE application.</p>
+</div>
+<div class="sect2">
+<h3 id="jdbc-driver">JDBC Driver</h3>
+<div class="paragraph">
+<p>On GlassFish the JDBC driver becomes available when it is visible in the classpath. The practical way of doing it is dropping the driver in the lib folder, then a connection pool can be created and tested using that driver.</p>
+</div>
+<div class="paragraph">
+<p>On WildFly, you have two ways of installing the JDBC driver: whether you deploy it as any other application package or you install it as a module. You can always choose to deploy the driver, but it&#8217;s specially recommend when you have a cluster environment, since the deployments are automatically propagated in the server groups.</p>
+</div>
+<div class="paragraph">
+<p>You may have issues with the deployment if the driver is not JDBC4-compliant. In this case, installing the driver as a module solves those issues. The advantage of the JDBC driver as a module is the possibility of creating a custom WildFly bundle for your organization. This way, you can repeat exactly the same installation throughout several machines, preserving the same configuration. This is perfect for the development environment.</p>
+</div>
+<div class="paragraph">
+<p>We use MySQL to illustrate the deployment and the creation of a module for the JDBC Driver. If you use another database, you will probably go through the same steps, but using different parameters.</p>
+</div>
+<div class="sect3">
+<h4 id="deploying-the-jdbc-driver">Deploying the JDBC Driver</h4>
+<div class="paragraph">
+<p>In the admin console, go to <code>Runtime &gt; Server &gt; Manage Deployments</code> and click on <code>Add</code> to deploy the MySQL driver. Upload the driver and give a new name to it. Any JDBC4-compliant driver is automatically recognised by WildFly and made available for new datasources. If not using a JDBC4 driver, then click on <code>En/Disable</code> right after the deployment`.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="creating-a-module">Creating a Module</h4>
+<div class="paragraph">
+<p>To create a module:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to <code>WILDFLY_HOME/modules/system/layers/base/com</code> and create the folder <code>mysql/main</code>;</p>
+</li>
+<li>
+<p>Visit the page [<a href="http://dev.mysql.com/downloads/connector/j/" class="bare">http://dev.mysql.com/downloads/connector/j/</a>](<a href="http://dev.mysql.com/downloads/connector/j/" class="bare">http://dev.mysql.com/downloads/connector/j/</a>) and download MySQL&#8217;s JDBC Driver;</p>
+</li>
+<li>
+<p>Unzip the downloaded file and copy the file <code>mysql-connector-java-5.1.23-bin.jar</code> to the new folder <code>WILDFLY_HOME/modules/system/layers/base/com/mysql/main</code></p>
+</li>
+<li>
+<p>create the file <code>module.xml</code> in the same folder with the following content:</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;module xmlns="urn:jboss:module:1.1" name="com.mysql"&gt;
+            &lt;resources&gt;
+                &lt;resource-root path="mysql-connector-java-5.1.23-bin.jar"/&gt;
+            &lt;/resources&gt;
+            &lt;dependencies&gt;
+                &lt;module name="javax.api"/&gt;
+                &lt;module name="javax.transaction.api"/&gt;
+            &lt;/dependencies&gt;
+        &lt;/module&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The name of the driver file may vary, so make sure you declare exactly the same name in the <code>resource-root</code> tag. At this point, the module is not available yet. We still need to reference the module as a driver in WildFly configuration. Do it using the following command:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mysql:add(
+    driver-name=mysql,
+    driver-module-name=com.mysql,
+    driver-class-name=com.mysql.jdbc.Driver
+)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The command returns <code>{"outcome" &#8658; "success"}</code> in case of success. This command resulted in the following part in the configuration file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;datasources&gt;
+        {...}
+        &lt;drivers&gt;
+            {...}
+            &lt;driver name="mysql" module="com.mysql"&gt;
+                &lt;driver-class&gt;com.mysql.jdbc.Driver&lt;/driver-class&gt;
+            &lt;/driver&gt;
+        &lt;/drivers&gt;
+    &lt;/datasources&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It makes the JDBC driver module available for the datasource creation.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="datasource">Datasource</h3>
+<div class="paragraph">
+<p>On GlassFish the datasource is nothing but a JNDI name to a connection pool. On WildFly, a datasource really means a datasource. It contains a connection pool and the JNDI name is just another property.</p>
+</div>
+<div class="paragraph">
+<p>The JNDI name is used by the application to reference the datasource. That&#8217;s a fundamental difference between GlassFish and WildFly. Your current JNDI name may look like <code>jdbc/appds</code> in GlassFish, but in WildFly you need to append the prefix <code>java:/</code> or <code>java:jboss/</code>, resulting in <code>java:/jdbc/appds</code> or <code>java:jboss/jdbc/appds</code> respectively.</p>
+</div>
+<div class="paragraph">
+<p>On the admin console:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to <code>Profile &gt; subsytems &gt; Connector &gt; Datasources</code> and click on Add to create a datasource.</p>
+</li>
+<li>
+<p>Give a name to the datasource to easily identify it in the console. We use <code>AppDS</code> in our example.</p>
+</li>
+<li>
+<p>Define the JNDI name appending the prefix <code>java:/</code> to your current datasource name like <code>java:/jdbc/AppDS</code> and click <code>Next</code>.</p>
+</li>
+<li>
+<p>Select the driver you deployed or added as a module and click <code>Next</code>.</p>
+</li>
+<li>
+<p>Fill in the connection parameters to your database and click <code>Done</code> when finished. For example:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Connection URL: <code>jdbc:mysql://localhost:3306/AppDS</code></p>
+</li>
+<li>
+<p>Username: <code>db_user</code></p>
+</li>
+<li>
+<p>Password: <code>secret</code></p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>These are the very basic steps to have the datasource working. Next, we are going to configure the connection pool:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Select the datasource you just created and click on <code>Disable</code> (if it is not already disabled) to be able to edit it.</p>
+</li>
+<li>
+<p>Select the tab <code>Pool</code> and then click on <code>Edit</code>.</p>
+</li>
+<li>
+<p>Update values for <code>Min Pool Size</code> and <code>Max Pool Size</code> for 5 and 15 respectively, or values ​​you may find optimal.</p>
+</li>
+<li>
+<p>Click on <code>Save</code> and restart the server to all changes take effect.</p>
+</li>
+<li>
+<p>Go back to  <code>Profile &gt; subsytems &gt; Connector &gt; Datasources</code>, select the recently created datasource, select the tab <code>Connection</code> and click on <code>Test connection</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A success message may appear if everything is correctly configured. If not, then recheck the connection parameters and the precise execution of the steps above.</p>
+</div>
+<div class="paragraph">
+<p>The same datasource can be created using the following command:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>  [standalone@localhost:9990 /] /subsystem=datasources/data-source=AppDS:add(
+      driver-name=mysql,
+      user-name=db_user,
+      password=secret,
+      connection-url=jdbc:mysql://localhost:3306/appdb,
+      min-pool-size=5,
+      max-pool-size=15,
+      jndi-name=java:/jdbc/AppDS,
+enabled=true,
+      validate-on-match=true,
+      valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker,
+      exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter
+  )</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The resulting part made by the console/command in the configuration file are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;datasources&gt;
+        {...}
+        &lt;datasource jndi-name="java:/jdbc/AppDS" pool-name="AppDS" enabled="true" use-java-context="true"&gt;
+            &lt;connection-url&gt;jdbc:mysql://localhost:3306/app&lt;/connection-url&gt;
+            &lt;driver&gt;mysql&lt;/driver&gt;
+            &lt;pool&gt;
+                &lt;min-pool-size&gt;5&lt;/min-pool-size&gt;
+                &lt;max-pool-size&gt;15&lt;/max-pool-size&gt;
+                &lt;prefill&gt;true&lt;/prefill&gt;
+            &lt;/pool&gt;
+            &lt;security&gt;
+                &lt;user-name&gt;db_user&lt;/user-name&gt;
+                &lt;password&gt;secret&lt;/password&gt;
+            &lt;/security&gt;
+            &lt;validation&gt;
+                &lt;validate-on-match&gt;true&lt;/validate-on-match&gt;
+                &lt;valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker”/&gt;
+                &lt;exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter”/&gt;
+            &lt;/validation&gt;
+        &lt;/datasource&gt;
+        {...}
+    &lt;/datasources&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more datasource examples, please consult the <a href="https://access.redhat.com/site/documentation/en-US/JBoss_Enterprise_Application_Platform/6/html/Administration_and_Configuration_Guide/sect-Example_Datasources.html">JBoss EAP 6 documentation</a> that also applies to WildFly.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="application-configuration-for-the-datasource">Application Configuration for the Datasource</h3>
+<div class="paragraph">
+<p>Because of differences in the JNDI naming rules, it&#8217;s necessary to change all occurrences of the previous JNDI name to the new one. So, search for <code>jdbc/AppDS</code> and change it to <code>java:/jdbc/AppDS</code>. If you are using JPA, you find the reference to the datasource in the file <code>persistence.xml</code>, as illustrated below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;persistence-unit name="app-pu" transaction-type="JTA"&gt;
+        &lt;jta-data-source&gt;java:/jdbc/AppDS&lt;/jta-data-source&gt;
+        &lt;exclude-unlisted-classes&gt;false&lt;/exclude-unlisted-classes&gt;
+        &lt;properties/&gt;
+    &lt;/persistence-unit&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may also find such references in <code>@Resource</code> annotations. Change them to <code>@Resource(name = "java:/jdbc/AppDS")</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="migrating-the-javamail-session">Migrating the JavaMail Session</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configuring WildFly to send emails with JavaMail is also slightly different from GlassFish. Every inbound and outbound communication through TCP/IP should be declared in the socket binding group. Since SMTP uses TCP/IP to communicate, then we have to create an Outbound Socket Binding for that. To proceed:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the admin console, go to <code>Profile &gt; General Configuration &gt; Socket Binding</code>.</p>
+</li>
+<li>
+<p>In standard-sockets, click on <code>View &gt;</code>, select the tab <code>Outbound Remote</code>, and click on <code>Add</code>.</p>
+</li>
+<li>
+<p>Fill the form with the data to connect to your SMTP server. For instance:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>name: <code>mail-smtp-gmail</code></p>
+</li>
+<li>
+<p>host: <code>smtp.gmail.com</code></p>
+</li>
+<li>
+<p>port: <code>465</code></p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The second step is to create the JavaMail session that uses the socket binding. To proceed:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Go to <code>Profile &gt; Subsytems &gt; Connector &gt; Mail</code> and click on <code>Add</code>.</p>
+</li>
+<li>
+<p>Define a JNDI name like <code>java:/mail/app</code> and save.</p>
+</li>
+<li>
+<p>Click on <code>View &gt;</code> in the session you just created and click on <code>Add</code>.</p>
+</li>
+<li>
+<p>Fill the form with the data to connect to the SMTP server. For instance:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Socket Binding: <code>mail-smtp-gmail</code></p>
+</li>
+<li>
+<p>Type: <code>smtp</code></p>
+</li>
+<li>
+<p>Use SSL?: <code>true</code></p>
+</li>
+<li>
+<p>Username: <code>johnsmith@gmail.com</code></p>
+</li>
+<li>
+<p>Password: <code>supersecret</code></p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You can also perform the same configuration using the following command lines:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[standalone@localhost:9990 /] /socket-binding-group=standard-sockets/
+   remote-destination-outbound-socket-binding=mail-smtp-gmail:add(host=smtp.gmail.com, port=465)</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[standalone@localhost:9990 /] /subsystem=mail/mail-session=App:add(jndi-name=java:/mail/app)</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[standalone@localhost:9990 /] /subsystem=mail/mail-session=App/server=smtp:add(
+       outbound-socket-binding-ref=mail-smtp-gmail,
+	username=your_email@gmail.com,
+	password=secret,
+	ssl=true)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s necessary to change all occurrences of the previous JNDI name to the new one. So, search for <code>mail/App</code> and change it to <code>java:/mail/App</code>. You may find such references in <code>@Resource</code> annotations. Change them to <code>@Resource(name = "java:/mail/App")</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="migrating-the-security-realm">Migrating the Security Realm</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are several ways of configuring a security realm on GlassFish. It would require a full article on that to cover all possibilities. For now, we simply cover a realm for authentication and authorization, using the database as the source of users and groups. In GlassFish it is called JDBCRealm, which is pretty restrictive. It requires you do provide a database model such as the one in the figure below.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/img/news/2014-02-06-security-model.png" alt="2014 02 06 security model">
+</div>
+</div>
+<div class="paragraph">
+<p>You won&#8217;t have too much freedom out of that model. Fortunately, WildFly is far more flexible than that. You are going to configure a security domain, which is the equivalent to a security realm for an application. Instead of specifying fixed tables and columns for users and groups, you can actually specify a SQL query that finds in the database what the security domain needs to authenticate and to authorize users.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+At the time of this writing, WildFly Beta&#8217;s admin console was not mature enough to allow the configuration of the application&#8217;s security. So, we had to do it using the command line only.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Considering the data model in the figure above, go to the command line and type the following command to create the security domain:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>./subsystem=security/security-domain=app:add(cache-type="default")
+  cd ./subsystem=security/security-domain=app
+     ./authentication=classic:add(
+       login-modules=[ {
+         code="Database",
+         flag="required",
+         module-options={
+           dsJndiName="java:/jdbc/AppDS",
+           principalsQuery="select password from authentication where username=?",
+           rolesQuery="select group_name, 'Roles'
+                       from user_group ug inner join authentication a on ug.user_id = a.user_account
+                       where a.username = ?", hashAlgorithm="SHA-256",
+           hashEncoding="BASE64",
+           unauthenticatedIdentity="guest"
+         }
+       }, {
+         code="RoleMapping",
+         flag="required",
+         module-options={
+           rolesProperties="file:${jboss.server.config.dir}/app.properties",
+           replaceRole="false"
+         }
+       }
+     ])</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The resulting part made by the command in the configuration file are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;security-domain name="app" cache-type="default"&gt;
+      &lt;authentication&gt;
+        &lt;login-module code="Database" flag="required"&gt;
+          &lt;module-option name="dsJndiName" value="java:jboss/datasources/AppDS"/&gt;
+          &lt;module-option name="principalsQuery" value="select password from authentication where username=?"/&gt;
+          &lt;module-option name="rolesQuery" value="select group_name, 'Roles' from user_group ug inner join authentication a on ug.user_id = a.user_account where a.username = ?"/&gt;
+          &lt;module-option name="hashAlgorithm" value="SHA-256"/&gt;
+          &lt;module-option name="hashEncoding" value="BASE64"/&gt;
+          &lt;module-option name="unauthenticatedIdentity" value="guest"/&gt;
+        &lt;/login-module&gt;
+        &lt;login-module code="RoleMapping" flag="required"&gt;
+          &lt;module-option name="rolesProperties" value="file:${jboss.server.config.dir}/app.properties"/&gt;
+          &lt;module-option name="replaceRole" value="false"/&gt;
+        &lt;/login-module&gt;
+      &lt;/authentication&gt;
+    &lt;/security-domain&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The role-group mapping you have in the file <code>WEB-INF/glassfish-web.xml</code> should be migrated to the file <code>app.properties</code>, where <code>app</code> is the name of the security domain, as defined above. Save this file in the folder <code>WILDFLY_HOME/standalone/configuration</code> or <code>WILDFLY_HOME/domain/configuration</code> to be taken into account.</p>
+</div>
+<div class="paragraph">
+<p>The following <code>glassfish-web.xml</code> content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;security-role-mapping&gt;
+        &lt;role-name&gt;admin&lt;/role-name&gt;
+        &lt;group-name&gt;admins&lt;/group-name&gt;
+    &lt;/security-role-mapping&gt;
+    &lt;security-role-mapping&gt;
+        &lt;role-name&gt;leader&lt;/role-name&gt;
+        &lt;group-name&gt;leaders&lt;/group-name&gt;
+        &lt;group-name&gt;admins&lt;/group-name&gt;
+    &lt;/security-role-mapping&gt;
+    &lt;security-role-mapping&gt;
+        &lt;role-name&gt;helper&lt;/role-name&gt;
+        &lt;group-name&gt;helpers&lt;/group-name&gt;
+        &lt;group-name&gt;leaders&lt;/group-name&gt;
+        &lt;group-name&gt;admins&lt;/group-name&gt;
+    &lt;/security-role-mapping&gt;
+    &lt;security-role-mapping&gt;
+        &lt;role-name&gt;member&lt;/role-name&gt;
+        &lt;group-name&gt;members&lt;/group-name&gt;
+        &lt;group-name&gt;helpers&lt;/group-name&gt;
+        &lt;group-name&gt;leaders&lt;/group-name&gt;
+        &lt;group-name&gt;admins&lt;/group-name&gt;
+    &lt;/security-role-mapping&gt;
+    &lt;security-role-mapping&gt;
+        &lt;role-name&gt;partner&lt;/role-name&gt;
+        &lt;group-name&gt;partners&lt;/group-name&gt;
+        &lt;group-name&gt;leaders&lt;/group-name&gt;
+        &lt;group-name&gt;admins&lt;/group-name&gt;
+    &lt;/security-role-mapping&gt;
+    &lt;security-role-mapping&gt;
+        &lt;role-name&gt;speaker&lt;/role-name&gt;
+        &lt;group-name&gt;speakers&lt;/group-name&gt;
+    &lt;/security-role-mapping&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>is drastically simplified in the <code>app.properties</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    admins=admin,leader,helper,member,partner
+    leaders=leader,helper,member,partner
+    members=member
+    helpers=helper,member
+    partners=partner</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>where groups are listed on the left of the equal operator and roles are listed on the right. In the example above, users in the group <code>admins</code> fulfill the role of <code>admin</code>, <code>leader</code>, <code>helper</code>, <code>member</code> and <code>partner</code>.</p>
+</div>
+<div class="paragraph">
+<p>To finish the configuration, add the file <code>jboss-web.xml</code> in the folder WEB-INF of your web module with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;jboss-web&gt;
+	      &lt;security-domain&gt;app&lt;/security-domain&gt;
+    &lt;/jboss-web&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you don&#8217;t use a database as a security repository, you can find more details about available login modules for WildFly in its <a href="https://docs.jboss.org/author/display/WFLY8/Security+subsystem+configuration">online documentation</a>.</p>
+</div>
+<div class="paragraph">
+<p>At this point, your application probably has what it takes to be deployed and run on WildFly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="java-ee-implementation">Java EE Implementation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Migrating to another application server also means migrating to other implementations of Java EE specifications (i.e. EJB, CDI, JSF, JPA, etc.). In general, you don&#8217;t have to do anything in your application to make it work with other implementations, unless you are using extra features, out of the specification, or you want to stick to a specific implementation. It&#8217;s very common in the case of the JPA specification.</p>
+</div>
+<div class="paragraph">
+<p>GlassFish provides EclipseLink as JPA implementation while WildFly provides Hibernate. To be completely implementation independent, your code should reference classes from the package <code>javax.persistence.<strong></code> only. If it happens to reference classes from <code>org.eclipse.persistence.</strong></code>, then your application depends on EclipseLink to work properly. Whether you refactor it to use <code>javax.persistence</code> classes or you change WildFly to also include EclipseLink jars. In the last case, you can follow the instructions in the <a href="https://docs.jboss.org/author/display/WFLY8/JPA+Reference+Guide#JPAReferenceGuide-UsingEclipseLink">WildFly JPA Reference Guide</a>. You can explicitly declare in the <code>persistence.xml</code> the use of EclipseLink instead of Hibernate by adding the tag <code>provider</code> as illustrated below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;persistence-unit name="app-pu" transaction-type="JTA"&gt;
+        &lt;jta-data-source&gt;java:/jdbc/AppDS&lt;/jta-data-source&gt;
+        &lt;provider&gt;org.eclipse.persistence.jpa.PersistenceProvider&lt;/provider&gt;
+        &lt;exclude-unlisted-classes&gt;false&lt;/exclude-unlisted-classes&gt;
+        &lt;properties/&gt;
+    &lt;/persistence-unit&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then add the following dependence to your <code>pom.xml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">    &lt;dependency&gt;
+        &lt;groupId&gt;org.eclipse.persistence&lt;/groupId&gt;
+        &lt;artifactId&gt;eclipselink&lt;/artifactId&gt;
+        &lt;version&gt;2.5.1&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can find a complete list of Java EE implementations provided by WildFly on this <a href="http://blog.arungupta.me/2013/10/java-ee-7-implementations-in-wildfly-tech-tip-3/">Arun Gupta&#8217;s blog post</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Despite rigorous tests to make sure that the implementation respects all specification requirements, there is always the risk of finding some differences. Therefore, do not forget to create new unit and integration tests for every refactoring you dealt with due to implementation differences.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To keep this text on the limits of readability, we could not cover all sorts of possibilities. We&#8217;ve focused on those configurations most people need. But you can consider this text as an invitation to give feedback about your particular environment. It will help us to plan future articles about migrating to WildFly.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Make sure to report every strange behavior in <a href="https://groups.google.com/forum/#!forum/wildfly">WildFly&#8217;s forum</a>, <a href="https://lists.jboss.org/mailman/listinfo/wildfly-dev">mailing list</a> or even <a href="https://issues.jboss.org/browse/WFLY">submit a bug</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

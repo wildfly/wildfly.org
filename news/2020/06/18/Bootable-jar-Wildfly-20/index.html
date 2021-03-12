@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="A bootable JAR for WildFly 20">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">A bootable JAR for WildFly 20</h1>
+    
+    <p class="byline">By Jean-François Denise | June 18, 2020</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div class="sect1">
+<h2 id="introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that WildFly supports <a href="https://projects.eclipse.org/projects/technology.microprofile">Eclipse Microprofile</a> this seems the appropriate time to introduce
+a way to package a WildFly application as a bootable JAR (also known as a "fat JAR"). Bootable JAR packaging is well suited for microservices to be run on cloud and bare metal.</p>
+</div>
+<div class="paragraph">
+<p>A bootable JAR allows us to package both the container and the application in a single JAR file and execute it with a simple
+command such as <code><code>java -jar myapp-wildfly.jar</code></code>.</p>
+</div>
+<div class="paragraph">
+<p>Packaging the server and your app in a JAR makes sense when you can control the set of server features you want to see present.
+Packaging a complete WildFly server (250+MB) for a simple microservice would defeat the purpose of the bootable JAR. <a href="https://docs.wildfly.org/galleon/">Galleon</a> technology
+server trimming capabilities have made a bootable JAR for WildFly a valid solution.</p>
+</div>
+<div class="paragraph">
+<p>WildFly defines a set of <a href="https://docs.wildfly.org/20/Admin_Guide.html#defined-galleon-layers">Galleon layers</a>
+(with new Galleon layers added nearly for each major WildFly releases) that you can combine in order to tailor the server to your application needs.
+The tooling to build a bootable JAR relies on WildFly Galleon layers to provision the tailored server that is bundled in the JAR file.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="wildfly-jar-maven-plugin">WildFly JAR Maven plugin</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The project hosted in <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin">wildfly-extras/wildfly-jar-maven-plugin</a> defines a new Maven plugin allowing you
+to build a bootable JAR for WildFly (starting with version 20.0.0.Final). Although currently incubating, the project has gained enough maturity that you can start using it. Obviously,
+things could still evolve in the near future. It is worth noting that the project has already entered the WildFly
+feature process in order to become a fully qualified WildFly tooling. The new feature proposal can be found <a href="https://github.com/wildfly/wildfly-proposals/pull/306">here</a>.</p>
+</div>
+<div class="paragraph">
+<p>A WildFly bootable JAR contains both the server and your packaged application (a JAR, an EAR or a WAR).
+Once the application has been built and packaged as a bootable JAR, you can start the application using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>java -jar target/myapp-wildfly.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A WildFly bootable JAR behaves in a way that is similar to a WildFly server unzipped on the file system:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It supports the main standalone server startup arguments.</p>
+</li>
+<li>
+<p>It can be administered/monitored using the WildFly CLI.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-started">Getting started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to help you start using the <code><code>org.wildfly.plugins:wildfly-jar-maven-plugin</code></code> Maven plugin, we have defined a
+set of <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples">examples</a> that cover common use-cases.</p>
+</div>
+<div class="paragraph">
+<p>To retrieve the examples:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>git clone -b 2.0.0.Alpha4 http://github.com/wildfly-extras/wildfly-jar-maven-plugin
+cd wildfly-jar-maven-plugin/examples</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A good example to start with is the <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/jaxrs">jaxrs</a> example.
+To build and run the jaxrs example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>cd jaxrs
+mvn package
+java -jar target/jaxrs-wildfly.jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The plugin documentation (currently an <code><code>index.html</code></code> file to download) can be found <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/releases/download/2.0.0.Alpha4/index.html">here</a>.
+It contains a comprehensive list of the options you can use to fine tune the Maven build and create a bootable JAR.</p>
+</div>
+<div class="paragraph">
+<p>Be sure to read the <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/README.md">examples/README</a>
+that contains required information to run the examples in an OpenShift context.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="main-features">Main features</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The main features are covered in detail in the plugin <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/releases/download/2.0.0.Alpha4/index.html">documentation</a>.
+Here is a summary of what the Maven plugin and created bootable JAR offer.</p>
+</div>
+<div class="sect2">
+<h3 id="maven-plugin">Maven Plugin</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Supports WildFly Galleon layers to create a use-case tailored bootable JAR.</p>
+</li>
+<li>
+<p>Supports WildFly CLI script execution to fine tune your server during build (configure security, logging, &#8230;&#8203;).</p>
+</li>
+<li>
+<p>Supports the ability to package extra content inside the bootable JAR (eg: a keystore)</p>
+</li>
+<li>
+<p>Supports the creation of a "hollow" JAR (a JAR containing only the WildFly server, the application to deploy being provided at runtime).</p>
+</li>
+<li>
+<p>Offers a "dev" mode to speed-up development by skipping the bootable JAR re-build.</p>
+</li>
+<li>
+<p>Offers goals to start and shutdown a bootable JAR.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="created-bootable-jar">Created bootable JAR</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Supports the main WildFly standalone server startup arguments.</p>
+</li>
+<li>
+<p>Can be built and deployed in OpenShift using the <code><code>registry.access.redhat.com/openjdk/openjdk-11-rhel7</code></code> java s2i image
+(see <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/mp-config">mp-config</a> and
+<a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/postgresql">postgresql</a> examples).</p>
+</li>
+<li>
+<p>Can be deployed inside a <a href="https://github.com/GoogleContainerTools/jib">JIB</a> container (see <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/2.0.0.Alpha4/examples/jib">jib</a> example).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="to-conclude">To conclude</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We hope that you will have an interest in using this new way to build and run your WildFly applications. Feel free to give us feedback, this will help improve tooling and bootable JAR execution.</p>
+</div>
+<div class="paragraph">
+<p>Thank-you.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="WildFly Swarm Initial Release">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly Swarm Initial Release</h1>
+    
+    <p class="byline">By Bob McWhirter | May 05, 2015</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Happy Cinco De Mayo!</p>
+</div>
+<div class="paragraph">
+<p>Crack open a cold adult beverage and start retooling your JavaEE skills
+towards microservices.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-wildfly-swarm">What is WildFly Swarm?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://github.com/wildfly-swarm/wildfly-swarm">WildFly Swarm</a> <sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup> is a
+new sidecar project supporting WildFly 9.x to enable
+deconstructing the WildFly AS and pasting just enough of it back together
+with your application to create a self-contained executable jar.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jax-rs-is-a-microservice">JAX-RS is a microservice?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the simplest case, you make small adjustments to your existing
+Maven <code>pom.xml</code> that generates a WAR file and you&#8217;ll get another
+artifact with a name akin to <code>myproject-1.0-swarm.jar</code>.</p>
+</div>
+<div class="paragraph">
+<p>Simply add the <code>wildfly-swarm-plugin</code> to your <code>pom.xml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;plugin&gt;
+  &lt;groupId&gt;org.wildfly.swarm&lt;/groupId&gt;
+  &lt;artifactId&gt;wildfly-swarm-plugin&lt;/artifactId&gt;
+  &lt;version&gt;${version.wildfly-swarm}&lt;/version&gt;
+  &lt;executions&gt;
+    &lt;execution&gt;
+      &lt;phase&gt;package&lt;/phase&gt;
+      &lt;goals&gt;
+        &lt;goal&gt;create&lt;/goal&gt;
+      &lt;/goals&gt;
+    &lt;/execution&gt;
+  &lt;/executions&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add a <code>&lt;dependency&gt;</code> block or two:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.wildfly.swarm&lt;/groupId&gt;
+    &lt;artifactId&gt;wildfly-swarm-jaxrs&lt;/artifactId&gt;
+    &lt;version&gt;${version.wildfly-swarm}&lt;/version&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Build your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>mvn package</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And run that sucker:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>java -jar ./target/myproject-1.0-swarm.jar</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="can-i-get-fancier">Can I get fancier?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You betcha!</p>
+</div>
+<div class="paragraph">
+<p>Since WildFly Swarm is based upon WildFly 9.x, you have most of the power
+of WildFly available to you.  This includes subsystems such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Undertow (Servlets)</p>
+</li>
+<li>
+<p>JAX-RS</p>
+</li>
+<li>
+<p>Naming/JNDI</p>
+</li>
+<li>
+<p>Transactions</p>
+</li>
+<li>
+<p>Messaging</p>
+</li>
+<li>
+<p>Datasources</p>
+</li>
+<li>
+<p>Logging</p>
+</li>
+<li>
+<p>Weld (CDI)</p>
+</li>
+<li>
+<p>JBoss MSC</p>
+</li>
+<li>
+<p>Security</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Additionally, if you want to provide your own <code>main(&#8230;&#8203;)</code> method to
+instantiate the <code>Container</code>, configure some of the subsystems, and
+perform whatever deployments you need, that&#8217;s possible also!</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Container container = new Container();
+
+        container.subsystem(new MessagingFraction()
+                        .server(
+                                new MessagingServer()
+                                        .enableInVmConnector()
+                                        .topic("my-topic")
+                                        .queue("my-queue")
+                        )
+        );
+
+        // Start the container
+        container.start();
+
+        JaxRsDeployment appDeployment = new JaxRsDeployment();
+        appDeployment.addResource(MyResource.class);
+
+        // Deploy your JAX-RS app
+        container.deploy(appDeployment);
+
+        // Create an MSC deployment
+        ServiceDeployment deployment = new ServiceDeployment();
+        deployment.addService(new MyService("/jms/topic/my-topic" ) );
+
+        // Deploy the services
+        container.deploy( deployment );
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="can-i-use-it-in-production">Can I use it in production?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We wouldn&#8217;t recommend it.  We just released 1.0.0.Alpha1.  It&#8217;s pretty
+new and we&#8217;re sure there&#8217;s some dark corners that we have not addressed.</p>
+</div>
+<div class="paragraph">
+<p>If you come across any issues or desire any improvements, file
+<a href="https://github.com/wildfly-swarm/wildfly-swarm/issues">an issue</a>
+over at GitHub, and we&#8217;ll do our best to make you happy.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="do-you-have-more-examples">Do you have more examples?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Yes indeed! We have a bunch of buildable and runnable examples
+at GitHub:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-servlet">Servlet WAR</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-jaxrs">JAX-RS WAR</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-jaxrs-shrinkwrap">JAX-RS with ShrinkWrap</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-jaxrs-shrinkwrap">JAX-RS with ShrinkWrap</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-datasource-subsystem">Datasource via Subsystem Config</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-datasource-deployment">Datasource via Deployment</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-msc">JBoss MSC Services</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly-swarm/example-messaging">Messaging, JAX-RS and MSC</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-do-i-download">What do I download?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There is no special download or installation instructions.  Simply start
+using <code>org.wildfly.swarm</code> artifacts in your <code>pom.xml</code>, throw in the plugin
+and continue doing your builds.  Everything is available through Maven Central.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="stay-in-touch">Stay in Touch</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can keep up with the project through the <a href="https://www.hipchat.com/gSW9XYz69">WildFly HipChat</a>
+room, <a href="http://twitter.com/wildflyswarm">@wildflyswarm on Twitter</a>, or through
+<a href="https://github.com/wildfly-swarm/wildfly-swarm/issues">GitHub Issues</a>.</p>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. never to be called just "Swarm", because Legal
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

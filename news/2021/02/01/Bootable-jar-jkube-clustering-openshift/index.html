@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="WildFly Bootable JAR cluster application with JKube openshift-maven-plugin">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly Bootable JAR cluster application with JKube openshift-maven-plugin</h1>
+    
+    <p class="byline">By Yeray Borges | February 01, 2021</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div class="sect1">
+<h2 id="introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This post is a step-by-step guide describing how you can build and deploy on OpenShift an example of a WildFly Bootable JAR application that caches the HTTP session state. We will explore how Bootable JAR uses the <a href="http://www.jgroups.org/manual5/index.html#_kube_ping">KUBE_PING</a> protocol for clustering discovery mechanisms and how you can use <a href="https://www.eclipse.org/jkube/docs/openshift-maven-plugin">JKube openshift-maven-plugin</a> to deploy the application on OpenShift.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-started">Getting started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="https://github.com/yersan/wildfly-clustering-demo.git">demo application</a> is a minimalistic shopping cart that stores items in the HTTP session. The key points are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>We want our session data to be replicated across all cluster members. The Jakarta Servlet specification supports distributable web applications. If you want to share your session data, you need to specify your session is distributable on the
+<em>web.xml</em> file:</p>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0"&gt;
+    &lt;distributable /&gt;
+&lt;/web-app&gt;</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Our bootable JAR application is built by using <a href="https://docs.wildfly.org/22/Bootable_Guide.html#wildfly_bootable_JAR_development">wildfly-jar-maven-plugin</a>. This is the default configuration in our <em>pom.xml</em>:</p>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;plugin&gt;
+    &lt;groupId&gt;org.wildfly.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;wildfly-jar-maven-plugin&lt;/artifactId&gt;
+    &lt;configuration&gt;
+        &lt;feature-pack-location&gt;wildfly@maven(org.jboss.universe:community-universe)#22.0.0.Final&lt;/feature-pack-location&gt;
+        &lt;layers&gt;
+            &lt;layer&gt;jaxrs-server&lt;/layer&gt;
+            &lt;layer&gt;web-clustering&lt;/layer&gt;
+        &lt;/layers&gt;
+    &lt;/configuration&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;package&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <strong>feature-pack-location</strong> is an expression used to resolve feature-pack artifacts from the remote repository. The feature-packs determine the WildFly version in use. Using a feature pack location has some advantages when you are interested in an automatic version resolution.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you are more comfortable by using maven GAVs, the above <strong>feature-pack-location</strong> can be replaced by the equivalent feature pack:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;feature-packs&gt;
+    &lt;feature-pack&gt;
+        &lt;groupId&gt;org.wildfly&lt;/groupId&gt;
+        &lt;artifactId&gt;wildfly-galleon-pack&lt;/artifactId&gt;
+        &lt;version&gt;22.0.0.Final&lt;/version&gt;
+    &lt;/feature-pack&gt;
+&lt;/feature-packs&gt;</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>The layers section specify the <a href="https://docs.wildfly.org/22/Bootable_Guide.html#wildfly_layers">Galleon layers</a> we want for our application:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>jaxrs-server: It adds support for JAX-RS, CDI and JPA. The application stores the items in the session by using a JAX-RS resource.</p>
+</li>
+<li>
+<p>web-clustering: Support for distributable web applications. This layer will supply the Infinispan web container cache and the JGroups subsystem.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The default maven profile the application uses is to build and deploy the application locally. When we are going to deploy on Openshift, we will activate the <a href="https://github.com/yersan/wildfly-clustering-demo/blob/master/pom.xml#L55">openshift maven profile</a> which adds on top of the default maven configuration the required configuration for running the application in OpenShift.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>In the aim to get a better understanding, firstly, we will build and verify the application locally. Then we will deploy and verify on OpenShift.</p>
+</div>
+<div class="sect2">
+<h3 id="building-and-testing-the-application-locally">Building and testing the application locally</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Clone the application and build it:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ git clone https://github.com/yersan/wildfly-clustering-demo.git
+$ cd wildfly-clustering-demo
+wildfly-clustering-demo$ mvn package</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can launch two server instances to verify the cluster works as expected. If you are running a Bootable JAR cluster application locally, you have to specify the node name for each server instance and deal with the port numbers to avoid port conflicts between the launched instances.</p>
+</div>
+</li>
+<li>
+<p>Launch the first application. In a terminal window execute the following:</p>
+<div class="listingblock">
+<div class="content">
+<pre>wildfly-clustering-demo$ java -jar ./target/wildfly-clustering-demo-bootable.jar -Djboss.node.name=node1</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Launch the second application in a different terminal taking care of the port conflicts:</p>
+<div class="listingblock">
+<div class="content">
+<pre>wildfly-clustering-demo$ java -jar ./target/wildfly-clustering-demo-bootable.jar -Djboss.node.name=node2 -Djboss.socket.binding.port-offset=10</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see in the logs that a cluster has been formed, and the name of the nodes that have been joined to it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>16:15:06,908 INFO  [org.infinispan.CLUSTER] (ServerService Thread Pool -- 44) ISPN000094: Received new cluster view for channel ejb: [node1|1] (2) [node1, node2]</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When you have built the Bootable JAR application locally, without any further configuration, by default the JGroups subsystem is configured to use the UDP protocol and send messages to discover other cluster members to the 230.0.0.4 multicast address. If you do not see the above log trace, verify that your Operating System is capable of sending and receiving multicast datagrams and can route them to the 230.0.0.4 IP through your ethernet interface.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We are now ready to add some items to our HTTP session. We do not have a load balancer locally, so we will add items by using the first instance. Later, we will stop that instance and verify the session is replicated correctly.</p>
+</div>
+</li>
+<li>
+<p>Add some items to the application cart:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl --cookie-jar /tmp/session.txt -XPOST http://localhost:8080/api/jeans/2
+$ curl --cookie /tmp/session.txt -XPOST http://localhost:8080/api/shorts/4</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Check the cart items accessing to the first instance:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl --cookie /tmp/session.txt -XGET http://localhost:8080/api/cart
+{"host":"localhost","sessionId":"vcVIqIU80USV7W11Qoh3QyJU1PPEFFxOPwI-HcEZ","cart":[{"item":"shorts","quantity":4},{"item":"jeans","quantity":2}]}</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Stop the first instance and check the cart again by accessing to the second node; notice the port is now 8090:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl --cookie /tmp/session.txt -XGET http://localhost:8090/api/cart
+{"host":"localhost","sessionId":"vcVIqIU80USV7W11Qoh3QyJU1PPEFFxOPwI-HcEZ","cart":[{"item":"shorts","quantity":4},{"item":"jeans","quantity":2}]}</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>We see the same session id and items on the second node. The session data is correctly replicated. Our cluster and application is working locally.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="moving-to-openshift">Moving to OpenShift</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The demo application uses a specific maven profile to configure the particularities to build and deploy on OpenShift.</p>
+</div>
+<div class="sect2">
+<h3 id="adapting-the-wildfly-jar-maven-plugin-for-the-cloud-executions">Adapting the <em>wildfly-jar-maven-plugin</em> for the cloud executions</h3>
+<div class="paragraph">
+<p>The <em>wildfly-jar-maven-plugin</em> has to know that we intend to build the WildFly Bootable JAR application for cloud execution. In the <em>openshift</em> maven profile, we extend the default configuration adding the cloud configuration item as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;plugin&gt;
+    &lt;groupId&gt;org.wildfly.plugins&lt;/groupId&gt;
+    &lt;artifactId&gt;wildfly-jar-maven-plugin&lt;/artifactId&gt;
+    &lt;configuration&gt;
+        &lt;cloud/&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This setting adds specific server configuration to run the Bootable JAR in the cloud context, for example, the JGroups subsystem is now configured to use the KUBE_PING protocol for both tcp (default stack) and udp, the <em>microprofile-health</em> Galleon layer is automatically provisioned, the <em>jboss.node.name</em> is set automatically to the pod hostname. You can check <a href="https://docs.wildfly.org/bootablejar/#wildfly_jar_configuring_cloud">Configuring the server for cloud execution</a> section in the Bootable JAR documentation to get more details about this setting.</p>
+</div>
+<div class="paragraph">
+<p>With the KUBE_PING protocol enabled, cluster member discovery is done by asking Kubernetes for a list of IP addresses of running pods. In order to make it work we need the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Our pods have to have the <strong>KUBERNETES_NAMESPACE</strong> environment variable set. This environment variable is used to define the namespace JGroups will use to discover other cluster members from this pod. The JKube OpenShift maven plugin sets this environment for us.</p>
+</li>
+<li>
+<p>We need to grant authorization to the service account the pod is running under so that it can access the Kubernetes REST API to get the list of addresses of all cluster nodes. We need to manually complete this step before deploying the Bootable JAR application.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="using-openshift-maven-plugin-to-deploy-on-openshift">Using <em>openshift-maven-plugin</em> to deploy on OpenShift</h3>
+<div class="paragraph">
+<p>To deploy the application on OpenShift we will use <a href="https://www.eclipse.org/jkube/docs/openshift-maven-plugin">openshift-maven-plugin</a>. This maven plugin is integrated with the Bootable JAR. It allows us to use some defaults for starting up applications keeping a simple and tidy configuration. It also adds automatically the readiness and liveness probes to the Bootable JAR application. These probes are just simple HTTP gets for following endpoints:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Readiness: <a href="http://localhost:9990/health/ready" class="bare">http://localhost:9990/health/ready</a></p>
+</li>
+<li>
+<p>Liveness: <a href="http://localhost:9990/health/live" class="bare">http://localhost:9990/health/live</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you add readiness / liveness checks on your application code, those checks will be taken into account when you are deploying with the JKube plugin, since those checks will be available on the built-in microprofile-health capabilities added by the Bootable JAR maven plugin as an additional Galleon layer. Let us take a look at the JKube plugin configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;profiles&gt;
+    &lt;profile&gt;
+        &lt;id&gt;openshift&lt;/id&gt;
+        &lt;properties&gt;
+            &lt;jkube.generator.from&gt;registry.redhat.io/ubi8/openjdk-11:latest&lt;/jkube.generator.from&gt;
+        &lt;/properties&gt;
+        &lt;build&gt;
+            &lt;plugins&gt;
+                &lt;plugin&gt;
+                    &lt;groupId&gt;org.eclipse.jkube&lt;/groupId&gt;
+                    &lt;artifactId&gt;openshift-maven-plugin&lt;/artifactId&gt;
+                    &lt;version&gt;1.0.2&lt;/version&gt;
+                    &lt;configuration&gt;
+                        &lt;resources&gt;
+                            &lt;env&gt;
+                                &lt;GC_MAX_METASPACE_SIZE&gt;256&lt;/GC_MAX_METASPACE_SIZE&gt;
+                                &lt;GC_METASPACE_SIZE&gt;96&lt;/GC_METASPACE_SIZE&gt;
+                            &lt;/env&gt;
+                        &lt;/resources&gt;
+                    &lt;/configuration&gt;
+                    &lt;executions&gt;
+                        &lt;execution&gt;
+                            &lt;goals&gt;
+                                &lt;goal&gt;resource&lt;/goal&gt;
+                                &lt;goal&gt;build&lt;/goal&gt;
+                                &lt;goal&gt;apply&lt;/goal&gt;
+                            &lt;/goals&gt;
+                        &lt;/execution&gt;
+                    &lt;/executions&gt;
+                &lt;/plugin&gt;
+            &lt;/plugins&gt;
+        &lt;/build&gt;
+    &lt;/profile&gt;
+&lt;/profiles&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <em>jkube.generator.from</em> specifies the base image our application is going to use. The Zero-Config capability of the JKube maven plugin will add
+one base layer if you do not specify this configuration. However, for our demo, we have chosen <a href="https://catalog.redhat.com/software/containers/ubi8/openjdk-11/5dd6a4b45a13461646f677f4">registry.redhat.io/ubi8/openjdk-11</a> as base image.</p>
+</div>
+<div class="paragraph">
+<p>When we are using this ubi8/openjdk-11 base image, we have to configure the GC metaspace sizes. We can add environment variables by specifying them in the <strong>resources/env</strong> section.</p>
+</div>
+<div class="paragraph">
+<p>We have also configured the <strong>oc:resource</strong>, <strong>oc:build</strong> and <strong>oc:apply</strong> maven goals on the JKube plugin. With the above configuration, we should be able to execute <em>mvn install -Popenshift</em> to kick off all the process to build and deploy on OpenShift. In the following sections, we will go step by step, so we can explain what happens behind the scenes in each phase.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="building-and-verifying-the-bootable-jar-application-on-openshift">Building and verifying the Bootable Jar application on OpenShift</h3>
+<div class="paragraph">
+<p>We will use <a href="https://github.com/code-ready/crc">Red Hat CodeReady Containers (CRC)</a> as a local OpenShift cluster. It brings a minimal OpenShift 4 cluster with one node to our local computer.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start CRC and create the new project where we are going to work on:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ crc start -p crc_license.txt
+$ oc login -u kubeadmin -p dpDFV-xamBW-kKAk3-Fi6Lg https://api.crc.testing:6443
+$ oc new-project wildfly-cluster-demo
+Now using project "wildfly-cluster-demo" on server "https://api.crc.testing:6443".</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Our application uses the KUBE_PING protocol so we need to grant authorization to the service account the pod is running under:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)
+clusterrole.rbac.authorization.k8s.io/view added: "system:serviceaccount:wildfly-cluster-demo:default"</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Build our application by using the <em>openshift</em> maven profile:</p>
+<div class="listingblock">
+<div class="content">
+<pre>wildfly-clustering-demo$ mvn clean package -Popenshift</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let us take a look at some points at this stage:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The JKube <em>oc:resource</em> is bound to the resource maven phase:</p>
+<div class="listingblock">
+<div class="content">
+<pre>[INFO] --- openshift-maven-plugin:1.0.2:resource (default) @ wildfly-clustering-demo ---
+[INFO] oc: Using docker image name of namespace: wildfly-cluster-demo
+[INFO] oc: Running generator wildfly-jar
+[INFO] oc: wildfly-jar: Using Docker image registry.redhat.io/ubi8/openjdk-11:latest as base / builder
+[INFO] oc: Using resource templates from /home/yborgess/dev/projects/wildfly-clustering-demo/src/main/jkube
+[INFO] oc: jkube-controller: Adding a default DeploymentConfig
+[INFO] oc: jkube-service: Adding a default service 'wildfly-clustering-demo' with ports [8080]
+[WARNING] oc: jkube-image: Environment variable GC_MAX_METASPACE_SIZE will not be overridden: trying to set the value 256, but its actual value is 256
+[WARNING] oc: jkube-image: Environment variable GC_METASPACE_SIZE will not be overridden: trying to set the value 96, but its actual value is 96
+[INFO] oc: jkube-healthcheck-wildfly-jar: Adding readiness probe on port 9990, path='/health/ready', scheme='HTTP', with initial delay 10 seconds
+[INFO] oc: jkube-healthcheck-wildfly-jar: Adding liveness probe on port 9990, path='/health/live', scheme='HTTP', with initial delay 60 seconds
+[INFO] oc: jkube-revision-history: Adding revision history limit to 2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At the resource phase, JKube prepares all the OpenShift resources needed to deploy the application. You can inspect what resources are going to be deployed by looking at <strong>target/classes/META-INF/jkube/openshift.yml</strong> file. You will find the following:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>A <em>service</em> exposing the 8080 port.</p>
+</li>
+<li>
+<p>A <em>route</em> exposing this service.</p>
+</li>
+<li>
+<p>A <em>deploymentConfig</em> which defines and starts our pods. On this file you can see the probes, and our required environment variables; GC_MAX_METASPACE_SIZE and GC_METASPACE_SIZE added manually by us on the plugin configuration, KUBERNETES_NAMESPACE added automatically.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Create the OpenShift specific builds:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ mvn oc:build -Popenshift</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At this step, JKube has created by us:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Our contanerized application. You can check the generated dockerfile at <strong>target/docker/wildfly-clustering-demo/1.0/build/Dockerfile</strong>.</p>
+</li>
+<li>
+<p>An OpenShift <em>BuildConfig</em> object that uses as the source base image our containerized application:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc describe buildconfig/wildfly-clustering-demo-s2i
+Name:		wildfly-clustering-demo-s2i
+Namespace:	wildfly-cluster-demo
+Created:	47 minutes ago
+Labels:		app=wildfly-clustering-demo
+            group=org.wildfly.s2i
+            provider=jkube
+            version=1.0
+Annotations:	&lt;none&gt;
+Latest Version:	1
+
+Strategy:		Source
+From Image:		DockerImage registry.redhat.io/ubi8/openjdk-11:latest
+Pull Secret Name:	pullsecret-jkube
+Output to:		ImageStreamTag wildfly-clustering-demo:1.0
+Binary:			provided on build</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This <em>BuildConfig</em> is built automatically resulting in an <em>ImageStreamTag</em> available. You can verify the build by issuing:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc logs pods/wildfly-clustering-demo-s2i-1-build</pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>We have now an <em>ImageStreamTag</em> named <em>wildfly-clustering-demo:1.0</em> built. Now we can deploy the application by using <em>oc:apply</em> maven goal:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ mvn oc:apply -Popenshift
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------&lt; org.wildfly.s2i:wildfly-clustering-demo &gt;---------------
+[INFO] Building maven-web 1.0
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO]
+[INFO] --- openshift-maven-plugin:1.0.2:apply (default-cli) @ wildfly-clustering-demo ---
+[INFO] oc: Using OpenShift at https://api.crc.testing:6443/ in namespace wildfly-cluster-demo with manifest /home/yborgess/dev/projects/wildfly-clustering-demo/target/classes/META-INF/jkube/openshift.yml
+[INFO] oc: OpenShift platform detected
+[INFO] oc: Using project: wildfly-cluster-demo
+[INFO] oc: Creating a Service from openshift.yml namespace wildfly-cluster-demo name wildfly-clustering-demo
+[INFO] oc: Created Service: target/jkube/applyJson/wildfly-cluster-demo/service-wildfly-clustering-demo.json
+[INFO] oc: Creating a DeploymentConfig from openshift.yml namespace wildfly-cluster-demo name wildfly-clustering-demo
+[INFO] oc: Created DeploymentConfig: target/jkube/applyJson/wildfly-cluster-demo/deploymentconfig-wildfly-clustering-demo.json
+[INFO] oc: Creating Route wildfly-cluster-demo:wildfly-clustering-demo host: null
+[INFO] oc: HINT: Use the command `oc get pods -w` to watch your pods start up
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We should have in our local OpenShift cluster the following <em>DeploymentConfig</em> object created by JKube:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc describe dc/wildfly-clustering-demo
+Name:		wildfly-clustering-demo
+Namespace:	wildfly-cluster-demo
+Created:	57 seconds ago
+Labels:		app=wildfly-clustering-demo
+		group=org.wildfly.s2i
+		provider=jkube
+		version=1.0
+Annotations:	app.openshift.io/vcs-ref=master
+		app.openshift.io/vcs-uri=https://github.com/yersan/wildfly-clustering-demo.git
+		jkube.io/git-branch=master
+		jkube.io/git-commit=b5cfa009b7724065260c3a5c9d45733978626797
+		jkube.io/git-url=https://github.com/yersan/wildfly-clustering-demo.git
+Latest Version:	1
+Selector:	app=wildfly-clustering-demo,group=org.wildfly.s2i,provider=jkube
+Replicas:	1
+Triggers:	Config, Image(wildfly-clustering-demo@1.0, auto=true)
+Strategy:	Rolling
+Template:
+Pod Template:
+  Labels:	app=wildfly-clustering-demo
+		group=org.wildfly.s2i
+		provider=jkube
+		version=1.0
+  Annotations:	app.openshift.io/vcs-ref: master
+		app.openshift.io/vcs-uri: https://github.com/yersan/wildfly-clustering-demo.git
+		jkube.io/git-branch: master
+		jkube.io/git-commit: b5cfa009b7724065260c3a5c9d45733978626797
+		jkube.io/git-url: https://github.com/yersan/wildfly-clustering-demo.git
+  Containers:
+   wildfly-jar:
+    Image:	image-registry.openshift-image-registry.svc:5000/wildfly-cluster-demo/wildfly-clustering-demo@sha256:e8274e7de4c7b9d280ff20cb595a627754a80052b4c1e5e54738c490ac7e86e7
+    Ports:	8080/TCP, 9779/TCP, 8778/TCP
+    Host Ports:	0/TCP, 0/TCP, 0/TCP
+    Liveness:	http-get http://:9990/health/live delay=60s timeout=1s period=10s #success=1 #failure=3
+    Readiness:	http-get http://:9990/health/ready delay=10s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      GC_MAX_METASPACE_SIZE:	256
+      GC_METASPACE_SIZE:	96
+      KUBERNETES_NAMESPACE:	 (v1:metadata.namespace)
+...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice the environment variables used in the pod template section and the probes. The deployment is also started automatically. You can monitor the progress by checking the pods running on the current OpenShift project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc get pods -w</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Once your deployment finishes, scale up the application pod:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc scale dc wildfly-clustering-demo --replicas=2
+deploymentconfig.apps.openshift.io/wildfly-clustering-demo scaled</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you check the logs of your pods, you should notice a cluster has been created, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>17:15:23,842 INFO  [org.infinispan.CLUSTER] (ServerService Thread Pool -- 49) ISPN000094: Received new cluster view for channel ee: [clustering-demo-1-vrt7h|1] (2) [clustering-demo-1-vrt7h, clustering-demo-1-cmmzn]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we can verify our cluster is working as expected and verify the session data is replicated across all the cluster members.</p>
+</div>
+</li>
+<li>
+<p>Create session data and retrieve it to see on which pod it was created:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ curl --cookie-jar /tmp/session.txt -XPOST $(oc get route wildfly-clustering-demo -o=jsonpath='{.spec.host}')/api/jeans/2
+
+$ curl --cookie /tmp/session.txt -XPOST $(oc get route wildfly-clustering-demo -o=jsonpath='{.spec.host}')/api/shorts/4
+
+$ curl --cookie /tmp/session.txt -XGET $(oc get route wildfly-clustering-demo -o=jsonpath='{.spec.host}')/api/cart
+{"host":"wildfly-clustering-demo-1-zs8fg","sessionId":"rLHbOGXWUBUmAoySM-1HpxNwFULzbyuhHTdcHUtv","cart":[{"item":"shorts","quantity":4},{"item":"jeans","quantity":2}]}</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Delete the pod which gave you the latest response and get the cart again through the same route. OpenShift will balance the load to the other pod available. We should get the same session data, verifying the replication works as expected:</p>
+<div class="listingblock">
+<div class="content">
+<pre>$ oc delete pod wildfly-clustering-demo-1-zs8fg
+pod "wildfly-clustering-demo-1-zs8fg" deleted
+
+$ curl --cookie /tmp/session.txt -XGET $(oc get route wildfly-clustering-demo -o=jsonpath='{.spec.host}')/api/cart
+{"host":"wildfly-clustering-demo-1-cdv27","sessionId":"rLHbOGXWUBUmAoySM-1HpxNwFULzbyuhHTdcHUtv","cart":[{"item":"shorts","quantity":4},{"item":"jeans","quantity":2}]}</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Combining the Bootable JAR with the JKube maven plugin is one option to simplify the workflow developing applications on OpenShift. Firstly, we have seen how you can work with your application locally and then, with minimal effort, how to adapt it to be deployed on OpenShift. In this specific example, we have explored the default discovery mechanism available on the Bootable JAR. This mechanism requires granting permissions on your cluster to add to JGroups the ability to discover other cluster members.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you are interested in learning how to configure the <strong>DNS_PING</strong> protocol instead of <strong>KUBE_PING</strong>, this <a href="https://www.wildfly.org/news/2021/03/12/Bootable-jar-jkube-clustering-dns-ping-openshift/">follow-up</a> blog post describes how to do it.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can find out more examples of how to use and work with the Bootable JAR <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.2.Final/examples/">here</a>. If you have any question related, feel free to contact us joining to the <a href="https://groups.google.com/forum/#!forum/wildfly">WildFly community forums</a> or <a href="https://wildfly.zulipchat.com/">Zulip Chat</a>.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

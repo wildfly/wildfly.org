@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="How to properly stop batch processing job and step in WildFly">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">How to properly stop batch processing job and step in WildFly</h1>
+    
+    <p class="byline">By Cheng Fang | January 14, 2021</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div class="paragraph">
+<p>Batch jobs are long-running background processing tasks, and therefore it&#8217;s
+common that user may need to pause or stop the execution.  WildFly, which
+implements batch processing through its jberet component based on JSR 352
+and <a href="https://projects.eclipse.org/projects/ee4j.batch">Jakarta Batch Specification</a>,
+offers a variety of ways to achieve that requirement.  This post will
+demonstrate how to stop a running job execution, or individual step execution,
+and some design and implementation consideration.</p>
+</div>
+<div class="sect1">
+<h2 id="properly-stop-a-running-job-execution">Properly stop a running job execution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Batch spec defines a standard API for stopping a running job execution:
+<a href="https://jakarta.ee/specifications/platform/9/apidocs/jakarta/batch/operations/JobOperator.html#stop-long-">javax.batch.operations.JobOperator#stop</a></p>
+</div>
+<div class="paragraph">
+<p>As stated in its <a href="https://javaee.github.io/javaee-spec/javadocs/javax/batch/operations/JobOperator.html#stop-long-">javadoc</a>,
+calling <code>JobOperator.stop()</code> sends a stop request to the batch container, which tries its best effort to stop
+the running job execution. So it&#8217;s important to implement batch application that properly responds to a stop request.
+In the following sections, I&#8217;ll explain what it entails for the two different types of steps: batchlet step and chunk step.</p>
+</div>
+<div class="sect2">
+<h3 id="stop-a-running-job-execution-that-contains-batchlet-step">Stop a running job execution that contains batchlet step</h3>
+<div class="paragraph">
+<p>A batchelt step represents a free-form, opaque task that is fully controlled by the batch application. The batch container
+has no chance to intervene once the batchlet starts its processing. So the batchlet class is responsible for providing
+a way to stop itself, if it wants to support graceful stop. That&#8217;s why <code>javax.batch.api.Batchlet</code> interface declares a
+<code>stop()</code> method that a batchlet class must implement.</p>
+</div>
+<div class="paragraph">
+<p>In the example batchlet class below, once it receives a stop request in its <code>stop()</code> method, it sets the <code>toStop</code> flag
+to <code>true</code>. Its <code>process()</code> method periodically checks this flag to determine if it needs to stop processing.</p>
+</div>
+<div class="paragraph">
+<p>Note that bathlet <code>stop()</code> method is called asynchronously while the batchlet <code>process()</code> method is running in a
+different thread. And the batchlet class should be implemented to properly handle concurrency.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Named
+public class Batchlet1 implements Batchlet {
+    private final AtomicBoolean toStop = new AtomicBoolean();
+
+    @Override
+    public String process() throws Exception {
+        String exitStatus = "BATCHLET1_COMPLETED";
+        while (true) {
+            if (toStop.get()) {
+                exitStatus = "BATCHLET1_STOPPED";
+                break;
+            }
+            // perform batchlet task, such as downloading and copying files, sending emails, etc.
+        }
+        return exitStatus;
+    }
+
+    @Override
+    public void stop() throws Exception {
+        toStop.set(true);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After the batch application is deployed to WildFly, you can start and stop a job execution in WildFly CLI:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text"># To start a new job execution
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet:start-job(job-xml-name=numbers)
+{
+    "outcome" =&gt; "success",
+    "result" =&gt; 1L
+}
+
+# To stop the running job execution
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet:stop-job(execution-id=1)
+{"outcome" =&gt; "success"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above <code>stop-job</code> CLI operation calls <code>JobOperator.stop(jobExecutionId)</code> behind the scene, and eventually the
+batchlet <code>stop()</code> method is called to receive the stop request.</p>
+</div>
+<div class="paragraph">
+<p>The following CLI commands checks the status of the stopped job execution, and a stopped job execution can be
+restarted from where it left off.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text"># To check the status of the stopped job execution:
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet/job=numbers/execution=1:read-resource(include-runtime, recursive)
+{
+    "outcome" =&gt; "success",
+    "result" =&gt; {
+        "batch-status" =&gt; "STOPPED",
+        "create-time" =&gt; "2020-10-29T19:33:13.843-0400",
+        "end-time" =&gt; "2020-10-29T19:33:30.258-0400",
+        "exit-status" =&gt; "STOPPED",
+        "instance-id" =&gt; 1L,
+        "last-updated-time" =&gt; "2020-10-29T19:33:30.258-0400",
+        "start-time" =&gt; "2020-10-29T19:33:13.853-0400"
+    }
+}
+
+# To restart the previously stopped job execution:
+#
+/deployment=numbers-chunk.war/subsystem=batch-jberet:restart-job(execution-id=3)
+{
+    "outcome" =&gt; "success",
+    "result" =&gt; 4L
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also perform all the above operations in WildFly Management Console. For example, the following
+screenshot shows the UI to stop a job execution:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="/assets/img/news/jberet/jberet-stop-job.png" alt="Stop Batch Job Execution">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="stop-a-running-job-execution-that-contains-chunk-step">Stop a running job execution that contains chunk step</h3>
+<div class="paragraph">
+<p>A chunk step is basically a read-process-write loop and naturally supports stop operation. The batch container can
+intervene at certain junctures amid the iterations. So unlike a batchlet step, there is no required method to implement
+in order to support stop.</p>
+</div>
+<div class="paragraph">
+<p>However, since a graceful stop will wait for the current chunk to complete, the chunk step
+should choose a suitable chunk size (configured in <code>item-count</code>, <code>time-limit</code>, or custom checkpoint policy in job xml).</p>
+</div>
+<div class="paragraph">
+<p>If the chunk size is too big, and the stop request arrives shortly after the current chunk starts, it may take a long time
+for the current chunk to complete before the batch container can safely stop the current step execution. On the other hand,
+a small chunk size results in more frequent checkpointing and quicker response to stop request at the expense of processing
+speed.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="properly-stop-an-individual-running-step">Properly stop an individual running step</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The previous section describes ways to stop the entire job execution. You may be wondering if there is a way to stop
+an individual step only while allowing the rest of the job to continue. Since this is slightly deviates from the standard,
+you cannot use <code>JobOperator.stop(jobExecutionId)</code> or <code>Batchlet.stop()</code> to achieve that. Instead, I would consider this
+a special case of normal execution, which should be implemented by the batch application itself.</p>
+</div>
+<div class="sect2">
+<h3 id="stop-an-individual-running-batchlet-step">Stop an individual running batchlet step</h3>
+<div class="paragraph">
+<p>Batchlet class can watch for some condition to determine if it should stop its processing. It can exit its <code>process()</code>
+method with different exit status to signal different outcomes to subsequent steps. For example, <code>Batchlet1</code> below
+polls the system property <code>job1.batchlet1.stop</code>; once it&#8217;s set to true, <code>process()</code> method returns with exit status
+<code>BATCHLET1_STOPPED</code>.</p>
+</div>
+<div class="paragraph">
+<p>Similarly, the condition can be a marker file in the file system, a column value in a database table, a shared state
+in a single bean, etc.</p>
+</div>
+<div class="paragraph">
+<p>Once the batchlet is stopped this way, the batch status of the step will be <code>COMPLETED</code>, and its exit status will be
+<code>BATCHLET1_STOPPED</code>. The job execution will continue to the next step configured in job xml.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Named
+public class Batchlet1 implements Batchlet {
+    @Override
+    public String process() throws Exception {
+        String exitStatus = "BATCHLET1_COMPLETED";
+        while (true) {
+            if (shouldStop()) {
+                exitStatus = "BATCHLET1_STOPPED";
+                break;
+            }
+            // perform batchlet task
+            // Thread.sleep(5000);
+        }
+        return exitStatus;
+    }
+
+    private boolean shouldStop() {
+        return Boolean.getBoolean("job1.batchlet1.stop");
+    }
+
+    @Override
+    public void stop() throws Exception {
+        // implement stop() method to respond to incoming request
+        // to stop this batchlet step and entire job execution
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In WildFly CLI, you can set and unset a system property as a flag to batch application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text"># set system property in WildFly as a flag to stop the step execution
+#
+/system-property=job1.batchlet1.stop:add(value=true)
+{"outcome" =&gt; "success"}
+
+# clean up afterwards and remove the system property
+#
+/system-property=job1.batchlet1.stop:remove()
+{"outcome" =&gt; "success"}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="stop-an-individual-running-chunk-step">Stop an individual running chunk step</h3>
+<div class="paragraph">
+<p>Stopping an individual running chunk step is more complicated than a batchlet step. When implement this case as
+a special case of normal processing, a possible strategy is:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A graceful stop should wait for the current chunk to complete, and then stop the next chunk. The batch application can poll certain
+condition in <code>javax.batch.api.chunk.listener.ChunkListener#beforeChunk</code> method, and save the condition, e.g.,
+in <code>javax.batch.runtime.context.StepContext#setTransientUserData</code>.</p>
+</li>
+<li>
+<p><code>javax.batch.api.chunk.ItemReader#readItem</code> can check the condition from <code>javax.batch.runtime.context.StepContext#getTransientUserData</code>,
+and if true, return null. This will cause the chunk step to complete normally as if there is no more data to read.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Once the chunk step is stopped this way, the batch status of the step will be <code>COMPLETED</code>, and its exit status will be
+<code>COMPLETED</code> unless reset by the batch application. The job execution will continue to the next step configured in job xml.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="summary">Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this post we went through ways to stop either a job execution or an individual step execution. It&#8217;s possible to
+combine them, so the batch application can support graceful stop of both the entire job execution and any individual step.</p>
+</div>
+<div class="paragraph">
+<p>In most cases, I&#8217;d recommend designing your batch application, adhering to the batch spec and leveraging the well-defined
+stop behavior. It makes your batch application and workflow easier to understand and maintain. Standard stop operation
+also supports restarting the previously stopped job execution from where it left off (e.g., stopped step or checkpoint).</p>
+</div>
+<div class="paragraph">
+<p>When some batch applications really need to stop an individual step, the design choice and implementation should be
+well documented to convey the justification and implications. As this type of stop is disguised as a normal execution,
+it does not support restart. Care should be taken to avoid data loss and data corruption.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

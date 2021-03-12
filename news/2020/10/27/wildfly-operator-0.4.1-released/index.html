@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="Release of WildFly Operator 0.4.1">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Release of WildFly Operator 0.4.1</h1>
+    
+    <p class="byline">By Jeff Mesnil | October 27, 2020</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div class="paragraph">
+<p>The WildFly Operator helps deploy and manage WildFly applications on Kubernetes and OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>With the recently released 0.4.1 version, the WildFly Operator is now able to provide seamless upgrades of your application on OpenShift.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+This feature is specific to OpenShift as it relies on resources such as <code>ImageStreams</code> that are not provided by vanilla Kubernetes.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The WildFly operator was using the <code>applicationImage</code> field to identify and deploy your application on the container platform.
+This field accepts different types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the name of the image: quay.io/jmesnil/wildfly-demo-app:step-1</p>
+</li>
+<li>
+<p>a tag: quay.io/jmesnil/wildfly-demo-app:step-1</p>
+</li>
+<li>
+<p>a digest: quay.io/wildfly-quickstarts/wildfly-operator-quickstart@sha256:0af38bc38be93116b6a1d86a9c78bd14cd527121970899d719baf78e5dc7bfd2</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In all these cases, the container platform would pull the image when the application is deployed and uses it for the whole application lifecycle.
+If you wanted to deploy a new image, you had to edit the <code>applicationImage</code> manually and specify the checksum of the new image to deploy.</p>
+</div>
+<div class="paragraph">
+<p>Now, with the 0.4.1 release, the WildFly Operator also accepts an <code>ImageStreamTag</code> for its <code>applicationImage</code> field, for example <code>wildfly-demo-app:latest</code>.
+This imagestream tag must belong to an <code>ImageStream</code> in the same namespace than the application. With that simple setting, any changes to the imagestream tag will trigger a new deployment of the application without having to modify any resources.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This article does not provide an extensive explanation on how Images are managed by OpenShift with ImageStreams and ImageStreamTags.
+Please refer to the <a href="https://docs.openshift.com/container-platform/4.5/openshift_images/images-understand.html">OpenShift documentation</a> for a complete description.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect1">
+<h2 id="create-a-demo-application">Create a Demo application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To illustrate this feature, I wrote a very simple MicroProfile application that return a JSONified version of "Hello, World!":
+ <a href="https://github.com/jmesnil/wildfly-operator-demo-app" class="bare">https://github.com/jmesnil/wildfly-operator-demo-app</a></p>
+</div>
+<div class="listingblock">
+<div class="title">AppEndpoint.java</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Path("/")
+@ApplicationScoped
+public class AppEndpoint {
+
+    @Inject
+    @ConfigProperty(name = "greetings", defaultValue = "Hello")
+    String greetings;
+
+    @GET
+    @Produces({ "application/json" })
+    public String getText() {
+        String text = "{\"text\":\"" + greetings + ", World!\"}";
+        return text;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As the application has access to the full MicroProfile APIs (including MicroProfile Config), it is possible to configure the greetings returned by the application by setting the <code>greetings</code> config property (which defaults to <code>"Hello"</code>).
+It can be configured using an environment variable named <code>GREETINGS</code>.</p>
+</div>
+<div class="paragraph">
+<p>I have built a Docker image of this application and pushed it to <code>quay.io/jmesnil/wildfly-demo-app:step-1</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can run it directly from Docker:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -p 8080:8080 -e GREETINGS=Bonjour quay.io/jmesnil/wildfly-demo-app:step-1
+...
+$ curl http://localhost:8080
+{"text":"Bonjour, World!"}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>I created this Docker image from the <code>step-1</code> tag of the Git repository. It uses the <a href="https://quay.io/repository/wildfly/wildfly-centos7">WildFly 21 S2I image</a> and the <code>microprofile-platform</code> layer so that the image contains only what is needed to run a MicroProfile application.
+The command I used to create the application image is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ s2i build https://github.com/jmesnil/wildfly-operator-demo-app.git \
+    --ref=step-1                                                     \
+    quay.io/wildfly/wildfly-centos7:21.0                             \
+    -e GALLEON_PROVISION_LAYERS=microprofile-platform                \
+    wildfly-demo-app:step-1</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To show how we can seamlessly upgrade to a new version of this application, I created a second image of the application corresponding to the <code>step-2</code> tag where the text is now returned in uppercase:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public String getText() {
+    String text = "{\"text\":\"" + (greetings + ", World!").toUpperCase() + "\"}";
+    return text;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This second image is pushed to <code>quay.io/jmesnil/wildfly-demo-app:step-2</code> and can also be run directly from Docker:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -p 8080:8080 -e GREETINGS=Ahoj quay.io/jmesnil/wildfly-demo-app:step-2
+...
+$ curl http://localhost:8080
+{"text":"AHOJ, WORLD!"}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="install-the-wildfly-operator-on-openshift">Install the WildFly Operator on OpenShift</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We will first install the WildFly Operator on OpenShift in a new project named <code>wildfly-demo</code></p>
+</div>
+<div class="paragraph">
+<p>First, we create the new project (and the corresponding namespace):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc new-project wildfly-demo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we install a <code>CatalogSource</code> to get access to the WildFly Operator that is in the operatorhub.io catalog:</p>
+</div>
+<div class="listingblock">
+<div class="title">operatorhub-io-catalogsource.yaml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: operatorhub-io
+spec:
+  displayName: Operators from operatorhub.io
+  image: quay.io/operatorhubio/catalog:latest
+  sourceType: grpc</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We install it by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc apply -f operatorhub-io-catalogsource.yaml
+catalogsource.operators.coreos.com/operatorhub-io created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we create a subscription for the current version (0.4.1) of the WildFly Operator:</p>
+</div>
+<div class="listingblock">
+<div class="title">wildfly.yaml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: wildfly
+  labels:
+    operators.coreos.com/wildfly.wildfly-demo: ''
+spec:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: wildfly
+  source: operatorhub-io
+  sourceNamespace: wildfly-demo
+  startingCSV: wildfly-operator.v0.4.1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Again, we install it on OpenShift by running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc apply -f wildfly.yaml
+subscription.operators.coreos.com/wildfly created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We will then wait until the WildFly Operator is installed by monitoring its installation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc get csv -w
+NAME                      DISPLAY   VERSION   REPLACES   PHASE
+wildfly-operator.v0.4.1   WildFly   0.4.1
+wildfly-operator.v0.4.1   WildFly   0.4.1                Pending
+...
+wildfly-operator.v0.4.1   WildFly   0.4.1                InstallReady
+...
+wildfly-operator.v0.4.1   WildFly   0.4.1                Installing
+...
+wildfly-operator.v0.4.1   WildFly   0.4.1                Succeeded</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>For the purpose of this example, the WildFly Operator is only be installed in the current <code>wildfly-demo</code> namespace.
+All resources that are created must also be installed in that same namespace.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="create-an-imagestream">Create an ImageStream</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Before we can deploy our application on OpenShift using the WildFly Operator, we will first create
+an <code>ImageStream</code> named <code>wildfly-demo-app</code> that will contain a stream of all our application images</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc import-image wildfly-demo-app:step-1          \
+    --from quay.io/jmesnil/wildfly-demo-app:step-1 \
+    --confirm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have added the <code>wildfly-demo-app:step-1</code> imagestream tag to this imagestream by importing the Docker image from <code>quay.io/jmesnil/wildfly-demo-app:step-1</code>.</p>
+</div>
+<div class="paragraph">
+<p>Then we tag it with the <code>latest</code> tag that will be referenced from our deployments.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc tag wildfly-demo-app:step-1  wildfly-demo-app:latest</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At this point, we have an <code>ImageStreamTag</code> <code>wildfly-demo-app:latest</code> that we can use to deploy our application and upgrade it later seamlessly.</p>
+</div>
+<div class="paragraph">
+<p>We have finally the image inside OpenShift  and are ready to deploy our application.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deploy-the-application">Deploy the Application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To deploy the application, we create a <code>WildFlyServer</code> resource with the <code>applicationImage</code> set to <code>wildfly-demo-app:latest</code>.
+This will let OpenShift pull the image from the <code>latest</code> imagestream tag in the <code>wildfly-demo-app</code> imagestream.</p>
+</div>
+<div class="listingblock">
+<div class="title">wildfly-app.yaml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">apiVersion: wildfly.org/v1alpha1
+kind: WildFlyServer
+metadata:
+  name: wildfly-app
+spec:
+  applicationImage: 'wildfly-demo-app:latest'
+  env:
+    - name: GREETINGS
+      value: Guten Tag
+  replicas: 2</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc apply -f wildfly-app.yaml
+wildflyserver.wildfly.org/wildfly-app created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The WildFly Operator will then configure and deploy the application on OpenShift.
+It will also automatically create a <code>Route</code> to access it outside of the cluster.</p>
+</div>
+<div class="paragraph">
+<p>The application is thoroughly described by the <code>oc describe</code> command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>Name:         wildfly-app
+Namespace:    wildfly-demo
+Kind:         WildFlyServer
+Metadata:
+  ...
+Spec:
+  Application Image:  wildfly-demo-app:latest
+  Env:
+    Name:    GREETINGS
+    Value:   Guten Tag
+  Replicas:  2
+Status:
+  Hosts:
+    wildfly-app-route-wildfly-demo.apps.jmesnil-80cs.eapqe.psi.redhat.com
+  Pods:
+    Name:            wildfly-app-0
+    Pod IP:          10.128.2.199
+    State:           ACTIVE
+    Name:            wildfly-app-1
+    Pod IP:          10.128.2.200
+    State:           ACTIVE
+  Replicas:          2
+  Scalingdown Pods:  0
+Events:              &lt;none&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The only information we need is the <code>hosts</code> field that contains the public URL of our application.
+If we access it, we can get our text message:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl http://$(oc get wfly/wildlfy-app -o jsonpath="{.status.hosts[0]}")
+{"text":"Guten Tag, World!"}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="seamless-upgrade-to-a-new-version-of-the-application-image">Seamless Upgrade to a New Version of the Application Image</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We now want to deploy the second version of our application without disrupting our services.
+We can take advantage of seamless upgrades to do it.</p>
+</div>
+<div class="paragraph">
+<p>First, we will import the <code>quay.io/jmesnil/wildfly-demo-app:step-2</code> image in the <code>wildfly-demo-app</code> imagestream with the <code>step-2</code> tag:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc import-image wildfly-demo-app:step-2          \
+    --from quay.io/jmesnil/wildfly-demo-app:step-2 \
+    --confirm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At this point, nothing has changed, the image is available in OpenShift but the WildFly Operator will not use it as it only references the <code>wildfly-demo-app:latest</code> imagestream tag.
+Let&#8217;s now change this <code>latest</code> tag to point to the <code>wildfly-demo-app:step-2</code> tag.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc tag wildfly-demo-app:step-2 wildfly-demo-app:latest
+Tag wildfly-demo-app:latest set to wildfly-demo-app@sha256:a9970ab8cebad210d7248e090ea88d6af87e8f910c7a087a3aac03c951cd764e.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once this is done, OpenShift will observe that the <code>latest</code> tag has changed (it corresponds to a new image) and will notify the WildFly Operator to trigger a new deployment
+of the application.</p>
+</div>
+<div class="paragraph">
+<p>If you continue to access the public route of the application, you will see that it will eventually return the upper case version of the text:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl http://$(oc get wfly/wildlfy-demo-app -o jsonpath="{.status.hosts[0]}")
+{"text":"GUTEN TAG, WORLD!"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It can take some time as OpenShift will terminate and redeploy all the Pods that runs the application.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="image-build-pipeline">Image Build Pipeline</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This short demo illustrates that it is now possible to seamlessly upgrade an application maintained by the WildFly Operator by using an imagestream tag to refer to the application image.</p>
+</div>
+<div class="paragraph">
+<p>To illustrate this, we did a step-by-step demo to understand how and when the upgrade is triggered. However, in normal use, most of these steps are automated and the upgrade becomes really seamless (and do not require user intervention).</p>
+</div>
+<div class="paragraph">
+<p>There is a lot more that can be achieved by taking full advantage of the OpenShift ecosystem to <a href="https://docs.openshift.com/container-platform/4.5/openshift_images/images-understand.html">build and deploy images</a>.</p>
+</div>
+<div class="paragraph">
+<p>I have built the application image using S2I outside of OpenShift but it is possible to use <code>BuildConfig</code> resources to build the image <em>inside</em> OpenShift and automatically tag them with the <code>latest</code> imagestream tag.
+Using <code>BuildConfig</code> to build the images has two main benefits:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can specify hooks to trigger building new images when the code from a remote Git repository is updated.</p>
+</li>
+<li>
+<p>You can also trigger building new images when WildFly S2I images are upgraded. In that case, seamless upgrades apply not only to the application image but also to the WildFly S2I images that are used to build the application image.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In a more realistic example, we could have a staging cluster with a <code>BuildConfig</code> that would trigger new application images when the code is updated (or when a new Git tag is pushed to a remote repository) or when new WildFly S2I images are released.
+This would automatically trigger a test pipeline to test and verify the new application image.</p>
+</div>
+<div class="paragraph">
+<p>Once this new application image has been validated (automatically or manually), we can then push this new application image in our production cluster and tag it with <code>latest</code> to trigger an upgrade of the application in production.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="summary">Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When it is running on OpenShift, the WildFly Operator can leverage its ecosystem around Images to provide seamless upgrades of applications to trigger new deployments
+when anything in the build pipeline (application code or WildFly images) changes.
+This simplifies application maintenance and reduces security risks by automating the upgrades and making sure that the application is always built on top of the latest application code and WildFly images.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="more-information">More information</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly/wildfly-operator/blob/master/doc/user-guide.adoc">User Documentation for WildFly Operator</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly/wildfly-s2i">WildFly S2I Project</a></p>
+</li>
+<li>
+<p><a href="https://docs.openshift.com/container-platform/4.5/openshift_images/images-understand.html">OpenShift Documentation - Understanding containers, images, and imagestreams</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

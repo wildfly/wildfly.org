@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="WildFly 11 CR1 is now available!">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly 11 CR1 is now available!</h1>
+    
+    <p class="byline">By Jason Greene | August 26, 2017</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly 11 CR1 is now available <a href="{base_url}/downloads">for download</a>!</p>
+</div>
+<div class="paragraph">
+<p>Since the Beta, 66 issues have been resolved. You can find the full list below. Provided that no major issues are found, we hope to release the final very soon.</p>
+</div>
+<div class="paragraph">
+<p>The highlights of WildFly 11 are as follows:</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="elytron-new-security-infrastructure">Elytron - New Security Infrastructure</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The biggest change in WildFly 11 is unification on a new common security framework across the full application server.  Previously we had two separate security infrastructures (picketbox and security-realms), each covering separate use cases, and largely operating independent of the other. In addition to unification, Elytron brings a number of advanced capabilities such as privilege propagation across multiple service invocations, identity switching, pre-request TLS verification, and rich security policies. Finally it improves the overall extensibility of the system allowing for tight integration with SSO / IDP systems such as KeyCloak.</p>
+</div>
+<div class="paragraph">
+<p>While WildFly 11 introduces a new security infrastructure, the existing security-domain and security-realm configurations and APIs are all present and internally mapped to Elytron. To further  ease the impact of this change, WildFly 11’s default configurations still use the legacy security-domains and security-realms. A subsequent release will convert the default configurations over to the new configuration model.</p>
+</div>
+<div class="paragraph">
+<p>For more information see the Elytron documentation:
+<a href="https://docs.jboss.org/author/display/WFLY/WildFly+Elytron+Security" class="bare">https://docs.jboss.org/author/display/WFLY/WildFly+Elytron+Security</a></p>
+</div>
+<div class="paragraph">
+<p>As well as the section on migration:
+<a href="https://docs.jboss.org/author/display/WFLY/Migrate+Legacy+Security+to+Elytron+Security" class="bare">https://docs.jboss.org/author/display/WFLY/Migrate+Legacy+Security+to+Elytron+Security</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="simplified-ejb-naming-proxies">Simplified EJB / Naming Proxies</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>JNDI and EJB invocation have both been simplified and enhanced in WildFly 11. There is a new naming client library, WildFly Naming Client that allows you to easily configure access to WildFly with minimal properties and configuration. EJBs (and other resources) can be accessed in a dynamic discovery mode, or alternatively, in a new point to point mode that locks all EJB proxies to a specified address. This replaces the previous scoped context feature with more intuitive semantics that are ideal for ad-hoc behavior. Additionally, with the new Elytron authentication infrastructure, the user identity can now be changed in between requests. Finally, older clients from past WildFly releases can still be used with WildFly 11.</p>
+</div>
+<div class="paragraph">
+<p>See the following for more information on the new WildFly Naming client:<br>
+<a href="https://github.com/wildfly/wildfly-naming-client" class="bare">https://github.com/wildfly/wildfly-naming-client</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="request-oriented-ejbjndi-over-http">Request oriented EJB/JNDI over HTTP</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Since WildFly 8, all protocols (with the exception of IIOP) can utilize HTTP Upgrade to communicate over a reduced set of ports on the server (one for management, and one for applications). However, since HTTP Upgrade converts the connection to the native protocol used, any HTTP load-balancers acting as an intermediary can only balance on initial connection establishment. To allow for balancing at the individual invocation level, a new “pure” HTTP protocol was added. Clients which utilize http:// URLs as opposed to remoting+http:// will obtain this new behavior. Since this protocol utilizes standard HTTP behavior, it can be efficiently balanced by any load-balancer, not just the one built into EAP.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="wildfly-openssl-http2">WildFly OpenSSL &amp; HTTP/2</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly 11 now provides a JSSE provider that can offload TLS handling from the JVM’s internal implementation to an OpenSSL library on your system, typically improving TLS performance. If the version discovered and/or specified is 1.0.2 or greater, then WildFly will utilize OpenSSL’s ALPN support to provide HTTP/2 support. HTTP/2 support will be disabled on versions less than 1.0.2.</p>
+</div>
+<div class="paragraph">
+<p>Note that HTTP/2 is also supported without OpenSSL, out of the box, on Java 8 (on VMs derived from OpenJDK) and Java 9 (using the new standard ALPN API).</p>
+</div>
+<div class="paragraph">
+<p>You can enable OpenSSL in the default configurations with the following CLI command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>/core-service=management/security-realm=ApplicationRealm/server-identity=ssl:write-attribute(name=protocol,value=openssl.TLS)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If your openssl library is not installed in a standard location, you will need to additionally set the org.wildfly.openssl.path system property to point to the location of the library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>-Dorg.wildfly.openssl.path=/path/to/dir/with/openssl/lib</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="new-load-balancer-configs">New Load-Balancer Configs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In order to simplify the setup of EAP as an HTTP load-balancer, there is an additional standalone-load-balancer.xml configuration in the distribution, which is an instance slimmed to just running the load balancing services. Additionally the stock domain.xml also includes this as a profile configuration that can be referenced by server groups.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="graceful-shutdownstartup-improvements">Graceful Shutdown/Startup Improvements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Distributed transactions are now handled by the graceful shutdown mechanism. Existing transactions will allow local operations to continue, but any new in-flowed transaction will be rejected. Additionally there is a new EJB parameter that allows for additional remote calls to occur against an established/active remote transaction. Finally you can now start the server directly in suspended mode, for staging changes. This is now part of the default start sequence where the server enters suspend first, and then resumes after all services have launched, so new requests aren’t accepted during the brief window of the server starting.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="web-console-improvements">Web Console Improvements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A number of Web Console improvements are included in WildFly 11, including the ability to see recent configuration changes, to manage active JMS transactions, manage active batch jobs, manage Undertow filters, and test data-sources during creation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="management-and-configuration-improvements">Management and Configuration Improvements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly 11 now supports remote managed exploded deployments, which allows remote management clients the ability to update content within the deployment, such as html and jsp files without requiring a full redeployment. Additionally there is a new management operation that can be used to read individual files in any deployment. In addition to these new capabilities, errors in the XML now lead to pretty printed easier to understand error messages,</p>
+</div>
+<div class="paragraph">
+<p>Also notable is that CLI tab completion can now tab complete attribute reference values that have capabilities present, such as references to socket bindings.  Finally, there is a new SPI for server extensions, that can be used to register a process state listener, and react to server life-cycle changes (such as the server stopping).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jira-release-notes">Jira Release Notes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The full list of issues resolved is available <a href="https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12328764">here</a>.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

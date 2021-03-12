@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="WildFly 8 Final is released!">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly 8 Final is released!</h1>
+    
+    <p class="byline">By Jason Greene | February 12, 2014</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I&#8217;m happy to announce the release of <a href="{base_url}/downloads/">WildFly 8.0.0.Final</a>. This means
+we feel the project is now stable and ready for general use. We received excellent
+feedback from the community regarding the CR1 release, and are looking forward to hearing more
+about your experiences with 8 Final.</p>
+</div>
+<div class="paragraph">
+<p>We will be highlighting notable WildFly 8 articles, videos and resources on our new
+<a href="{base_url}/8/">WildFly 8 Resources</a> page. Please keep an eye on it for future developments.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="java-ee7-certified">Java EE7 Certified</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The biggest development in this release is that WildFly 8 is now officially Java EE7 certified,
+meeting both the Web and the Full profiles.</p>
+</div>
+<div class="paragraph">
+<p>For those unfamiliar with Java EE7, it is an industry leading specification that offers
+applications productivity improving capabilities, including support for the modern web,
+batch processing, and improvements in dependency injection.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="high-performance-web-server-undertow-io">High Performance Web Server (<a href="http://undertow.io/">Undertow.io</a>)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Undertow, the new cutting-edge web server in WildFly 8, is designed for
+maximum throughput and scalability, including environments with over a
+million connections. It supports non-blocking and blocking handlers,
+traditional and asynchronous servlets, and JSR-356 web socket handlers.
+It is highly customizable, with the ability for applications to
+implement nearly anything from dynamic request routing to custom
+protocols. It can also function as a very efficient, pure non-blocking
+reverse proxy, allowing WildFly to delegate to other web servers with
+minimal impact to running applications. This release adds numerous
+improvements including greater extensibility and enhanced security
+capabilities.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="port-reduction">Port Reduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By utilizing HTTP upgrade, WildFly 8 has moved nearly all of its protocols to be multiplexed
+over two HTTP ports: a management port, and an application port.  This is a big benefit to
+cloud providers (such as OpenShift) who run hundreds to thousands of instances on a single
+server.</p>
+</div>
+<div class="paragraph">
+<p>In total, our default configuration now only has two ports:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Ports</caption>
+<colgroup>
+<col style="width: 7.6923%;">
+<col style="width: 76.923%;">
+<col style="width: 15.3847%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Port</th>
+<th class="tableblock halign-left valign-top">Protocols                                                                                            </th>
+<th class="tableblock halign-left valign-top">Bound Interface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">9990</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP/JSON Management, HTTP Upgraded Remoting - (Native Management &amp; JMX), Web Administration Console</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">management</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8080</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP (Servlet, JAX-RS, JAX-WS), Web Sockets, HTTP Upgraded Remoting (EJB Invocation, Remote JNDI)    </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">application</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Note that since CR1 we have finally dropped the native management port 9999, which instead uses the HTTP management port (9990).
+Our full profile configuration also dropped the native JMS ports 5445 and 5455, which instead are multiplexed over port 8080. However,
+all of these original ports can still be enabled if desired.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="management-role-based-access-control-rbac-auditing">Management Role Based Access Control (RBAC) &amp; Auditing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly can now support organizations with separated management
+responsibilities and restrictions. Roles represent different sets of
+permissions such as runtime operation execution, configuration areas
+that can read or written, and the ability to audit changes and manage
+users. As part of this work, LDAP integration was improved to support
+group mapping to roles, as well as configurable caching strategies.
+Finally, a new restricted audit log can be enabled including
+the ability to offload to a secure syslog server.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="security-manager">Security Manager</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly now provides a specialized Java security manager that allows you to define
+per-deployment security permissions, and also greatly improves upon the performance
+of using the standard Java security manager. In addition to the standard Java EE permissions.xml,
+a more flexible jboss-permissions.xml descriptor is also supported.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="logging">Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The management API now supports the ability to list and view the available log files on a server.</p>
+</div>
+<div class="paragraph">
+<p>There is also a new ablity to define a custom formatters other than the default pattern formmatter.</p>
+</div>
+<div class="paragraph">
+<p>For deployments that wish to bypass container logging, there is now an attribute,
+add-logging-api-dependencies, to disable the adding of the implicit server logging dependencies.
+Another option is to use a jboss-deployment-structure.xml to exclude the logging subsystem which
+will stop the logging subsystem from processing a deployment.</p>
+</div>
+<div class="paragraph">
+<p>Finally, use-deployment-logging-config, has been added to enable or disable processing pf
+logging configuration files found in a deployment.</p>
+</div>
+<div class="paragraph">
+<p>Note that the system property org.jboss.as.logging.per-deployment to disable per-deployment logging has
+been deprecated.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jca-datasources">JCA &amp; Datasources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly 8 now supports a DistributedWorkManager implementation based on the JGroups project, and
+the JCA connection manager has been enhanced with the lazy connection manager extensions.</p>
+</div>
+<div class="paragraph">
+<p>The data sources and resource adapters subsystems allow setting capacity policies and additional
+flush strategies as well. Resource adapters now allows a security inflow policy per deployment.</p>
+</div>
+<div class="paragraph">
+<p>More information is available <a href="http://www.ironjacamar.org/news/2013/08/06/IronJacamar110Finalreleased.html">here</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="clustering">Clustering</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Clustering support was heavily refactored in WildFly 8 and includes the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>New/optimized distributed web session implementation for use with
+Undertow</p>
+</li>
+<li>
+<p>mod_cluster support for Undertow</p>
+</li>
+<li>
+<p>New/optimized distributed single sign-on support for Undertow</p>
+</li>
+<li>
+<p>New/optimized distributed @Stateful EJB caching implementation</p>
+<div class="ulist">
+<ul>
+<li>
+<p>SFSB state is now replicated by default, if supported by the server
+profile.  Replication can be disabled per bean by via
+@Stateful(passivationCapable=false).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>New public clustering API</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Allows applications to view cluster topology and listen for topology
+changes</p>
+</li>
+<li>
+<p>Allows applications to broadcast/submit commands to nodes in the
+cluster for remote execution</p>
+</li>
+<li>
+<p>Requisite modules are automatically made available to deployments,
+if supported by the server profile</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>New public API for creating singleton services</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A singleton service is a decorated MSC service that only runs on one
+node in the cluster at any given time.</p>
+</li>
+<li>
+<p>Exposes a builder API that simplifies the process of installing an
+MSC service as a singleton service.</p>
+</li>
+<li>
+<p>Requisite modules are automatically made available to deployments,
+if supported by the server profile</p>
+</li>
+<li>
+<p>Maintain hot backups of cache data across distinct clusters (i.e.
+remote locations)</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cli-improvements">CLI Improvements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Within the CLI configuration it is now possible to define aliases to
+servers that you regularly connect to allowing you to specify the name
+of an alias when using the 'connect' command instead of requiring the
+full URL.</p>
+</div>
+<div class="paragraph">
+<p>The CLI GUI now lets you "Explore" any node in the tree.  This makes it much
+easier to work on a single section of the tree and is particularly
+useful in domain mode when the tree gets huge.
+<a href="https://community.jboss.org/wiki/AGUIForTheCommandLineInterface#explore" class="bare">https://community.jboss.org/wiki/AGUIForTheCommandLineInterface#explore</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="patching">Patching</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The infrastructure to support the application of patches to an existing
+install has been implemented. This capability allows for a remote client
+to install and rollback new static modules and binary files using the
+WildFly management protocol.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="new-minimalistic-core-distribution">New Minimalistic "Core" Distribution</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A new download option is now available in WildFly 8, called the "core" distribution.
+This distribution is ideal for framework authors that want to build their own application
+runtime using the powerful WildFly 8 architecture.</p>
+</div>
+<div class="paragraph">
+<p>This architecture includes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Rich management later supporting configuration persistence, hot runtime updates, and unified set of tools and protocols.</p>
+</li>
+<li>
+<p>Fully concurrent service container with advanced capabilities</p>
+</li>
+<li>
+<p>Modular class loading which enables multi-tenancy of applications</p>
+</li>
+<li>
+<p>Pluggable hot deployment layer</p>
+</li>
+<li>
+<p>Built-in lightweight web server (supports the HTTP/JSON management protocol)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="improved-jdk8-compatibility">Improved JDK8 Compatibility</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This release has improved compatibility with JDK8, and we now encourage everyone interested
+in Java 8 to run WildFly 8 on it as well. Expect future releases of WildFly to include APIs that
+take advantage of the new language features.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="web-services">Web Services</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A number of major web services improvements also occured in this release:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>WebServiceFeature to control when to create new Apache CXF Bus
+instances and when / how to share them in the container. You can read
+more about the new feature
+<a href="https://docs.jboss.org/author/display/WFLY8/Apache+CXF+integration#ApacheCXFintegration-BusselectionstrategiesforJAXWSclients">here</a>.</p>
+</li>
+<li>
+<p>WS-Policy code-first improvements (@PolicySets) allow users to choose desired policy assertions
+among a list of pre-defined groups and scenarios. More information is available <a href="https://docs.jboss.org/author/display/WFLY8/WS-Policy#WS-Policy-Policysets">here</a>.</p>
+</li>
+<li>
+<p>WS-Discovery support allows selected deployments to be automatically registered with the discovery service so that outside consumers can discover available endpoints. See the <a href="https://docs.jboss.org/author/display/WFLY8/WS-Discovery">documentation</a> for more information.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="rest">REST</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly 8 includes RESTEasy 3 which supports the standard Java EE REST APIs (JAX-RS 2.0) and also
+provides a number of useful extensions including JSON Web Encryption, Jackson, Yaml, JSON-P, and Jettison.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="hibernate-search">Hibernate Search</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Hibernate Search is now offered out of the box in WildFly. Hibernate Search indexes objects for fast
+full-text searching. Multiple data sources are supported including Infinispan and standard database entities.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="pruning">Pruning</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Java EE7 no longer requires the following technologies:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>CMP - JPA offers much more performant and flexible API.</p>
+</li>
+<li>
+<p>JAX-RPC - JAX-WS offers a much more accurate and complete solution.</p>
+</li>
+<li>
+<p>JSR-88 - Very little adoptionr. Most preferred the more complete deployment APIs provided by venders.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We decided to completely remove support for these technologies due to the high maintenance cost, low community interest, and
+much better alternative solutions. If you are not able to port at this time, we recommend looking at JBoss EAP6, which provides
+long term maintenance and support of these technologies,</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="other-notable-updates">Other Notable Updates</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Non-clustered session persistence (disabled by default, might be enabled in a future release)</p>
+</li>
+<li>
+<p>CDI integration and performance improvements</p>
+</li>
+<li>
+<p>EJB SLSB pooling is disabled by default, which is a better performing configuration for most applications</p>
+</li>
+<li>
+<p>A number of significant JPA improvements including better support for OpenJPA and EclipseLink</p>
+</li>
+<li>
+<p>Batch now supports JDBC based backends, including a number of DB providers</p>
+</li>
+<li>
+<p>Generic JMS RAR for simplifying integration with third party messaging providers</p>
+</li>
+<li>
+<p>JASPIC compliance has greatly improved after a number of community contributions and testing (Thanks!)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="issue-resolution">Issue Resolution</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>211 issues were resolved since CR1</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="component-updates">Component Updates</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Arquillian 1.1.2.Final-wildfly-1</p>
+</li>
+<li>
+<p>Byteman 2.1.4</p>
+</li>
+<li>
+<p>EJB Client 2.0.0.Final</p>
+</li>
+<li>
+<p>Eclipse JDT Core Compiler 4.3.1</p>
+</li>
+<li>
+<p>Groovy 2.2.1</p>
+</li>
+<li>
+<p>Hal 2.1.1.Final</p>
+</li>
+<li>
+<p>Hibernate 4.3.1.Final</p>
+</li>
+<li>
+<p>Hibernate Search 4.5.0.Final</p>
+</li>
+<li>
+<p>Hibernate Validator 5.0.3.Final</p>
+</li>
+<li>
+<p>Hornetq 2.4.1.Final</p>
+</li>
+<li>
+<p>Invocation 1.2.1.Final</p>
+</li>
+<li>
+<p>Ironjacamar 1.1.3.Final</p>
+</li>
+<li>
+<p>JBeret 1.0.0.Final</p>
+</li>
+<li>
+<p>JBoss Logging 3.1.4.GA</p>
+</li>
+<li>
+<p>JBoss Logmanager 1.5.2.Final</p>
+</li>
+<li>
+<p>JBoss Marshalling 1.4.3.Final</p>
+</li>
+<li>
+<p>JGroups 3.4.2.Final</p>
+</li>
+<li>
+<p>Jackson 1.9.13</p>
+</li>
+<li>
+<p>Jastow 1.0.0.Final</p>
+</li>
+<li>
+<p>Jipijapa 1.0.1.Final</p>
+</li>
+<li>
+<p>Log4j JBoss LogManager 1.1.0.Final</p>
+</li>
+<li>
+<p>Metadata 8.0.0.Final</p>
+</li>
+<li>
+<p>Mod_cluster 1.3.0.Final</p>
+</li>
+<li>
+<p>Mojarras 2.2.5-jbossorg-3</p>
+</li>
+<li>
+<p>Msc 1.2.0.Final</p>
+</li>
+<li>
+<p>Narayana 5.0.0.Final</p>
+</li>
+<li>
+<p>Netty 4.0.15.Final</p>
+</li>
+<li>
+<p>Netty-xnio-transport 0.1.1.Final</p>
+</li>
+<li>
+<p>PicketBox 4.0.20.Final</p>
+</li>
+<li>
+<p>PicketLink 2.5.2.Final</p>
+</li>
+<li>
+<p>Remote naming 2.0.0.Final</p>
+</li>
+<li>
+<p>Remoting 4.0.0.Final</p>
+</li>
+<li>
+<p>Remoting JMX 2.0.0.Final</p>
+</li>
+<li>
+<p>SASL 1.0.4.Final</p>
+</li>
+<li>
+<p>Santuario 1.5.6</p>
+</li>
+<li>
+<p>Undertow 1.0.0.Final</p>
+</li>
+<li>
+<p>Weld 2.1.2.Final</p>
+</li>
+<li>
+<p>Wildfly Security Manager 1.0.0.Final</p>
+</li>
+<li>
+<p>XNIO 3.2.0.Final</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

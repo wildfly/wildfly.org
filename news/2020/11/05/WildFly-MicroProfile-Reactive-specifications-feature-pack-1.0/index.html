@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="WildFly MicroProfile Reactive Specifications Feature Pack 1.0.0.Final Released!">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="WildFly MicroProfile Reactive Specifications Feature Pack 1.0.0.Final Released!">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly MicroProfile Reactive Specifications Feature Pack 1.0.0.Final Released!</h1>
+    
+    <p class="byline">By Kabir Khan | November 05, 2020</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I am happy to announce the 1.0.0.Final release of the MicroProfile Reactive specifications feature pack for WildFly. It is tested against both WildFly 20 and 21.</p>
+</div>
+<div class="paragraph">
+<p>The main changes since 1.0.0.Beta1 are essentially upgrades to the latest SmallRye implementations of all the MicroProfile Reactive specifications, and fixing problems related to memory leaks and redeployments. The MicroProfile Reactive specifications are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/eclipse/microprofile-reactive-messaging/releases">MicroProfile Reactive Messaging 1.0</a> - this is a framework for building event-driven, data streaming and event sourcing applications using CDI. The streams, or channels, can be backed by a variety of messaging technologies. We currently ship connectors for: Apache Kafka, AMQP and MQTT.</p>
+</li>
+<li>
+<p><a href="https://github.com/eclipse/microprofile-reactive-streams-operators/releases">MicroProfile Reactive Streams Operators 1.0</a> - Reactive Messaging is built on Reactive Streams. RSO gives you a way to manipulate and handle those streams.</p>
+</li>
+<li>
+<p><a href="https://github.com/eclipse/microprofile-context-propagation/releases">MicroProfile Context Propagation 1.0</a> - The traditional way of propagating state using ThreadLocals does not work well in the reactive world. Async/reactive code often creates a 'pipeline' of code blocks that get executed 'later' - in practice after the method defining them has returned. MicroProfile Context Propagation is there to help you deal with this, so that your deferred code can still for example latch onto the transaction initiated by the calling method.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We have also renamed the layers (mainly by prefixing <code>microprofile-</code> to their names) to bring them in line with the upcoming work to eventually bring
+this into WildFly. As mentioned in the <a href="https://www.wildfly.org/news/2020/06/18/Introducing-the-WildFly-MicroProfile-Reactive-specifications-feature-pack/">original 1.0.0.Beta1 announcement</a> this feature pack is an incubator for WildFly.</p>
+</div>
+<div class="paragraph">
+<p>The 1.0.0.Beta1 announcement also contains some background information about the specifications, as well as how to install and use the feature pack, so be sure to read that first if you are not familiar with this feature pack. Also, the <a href="https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/tree/1.0.0.Final">feature pack README</a> contains more detailed information about how to provision servers with this feature pack. We will not announce every single bug fix release here, so please make sure to check for the latest release on the <a href="https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/releases">releases page</a> (links to the tags with an up-to-date <code>README</code> are just to the left of each release in the list).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-coming-up">What is coming up?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We plan to provide Reactive Messaging in WildFly for either WildFly 22 or 23. The initial focus for WildFly will be on MicroProfile Reactive Messaging 1.0 with support for Kafka. This means that MicroProfile Reactive Messaging, MicroProfile Reactive Streams Operators and the Kafka connector will be moved over to WildFly.
+That WIP currently lives in the <a href="https://github.com/kabir/wildfly/tree/reactive-port" class="bare">https://github.com/kabir/wildfly/tree/reactive-port</a> branch. MicroProfile Context Propagations which we don&#8217;t see as immediately useful for the use-cases provided by MicroProfile Reactive Messaging 1.0 will remain in the feature pack. Also the AMQP and MQTT connectors will remain in the feature pack for now.</p>
+</div>
+<div class="paragraph">
+<p>In short WildFly will eventually contain parts of what the feature pack currently contains, while the remainder remains in a trimmed version of the feature pack.</p>
+</div>
+<div class="paragraph">
+<p>The feature pack <a href="https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/tree/master">master</a> branch will still be where we cut the stable releases from if we need to fix something for the current incarnation of the feature pack. For example if we find some bugs, or if we don&#8217;t make the cutoff for WildFly 22.</p>
+</div>
+<div class="paragraph">
+<p>The reorganisation of the feature pack to deal with the partial migration of the MicroProfile Reactive specifications to WildFly will happen in the feature pack <a href="https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/tree/development">development</a> branch.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="feedback">Feedback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;re keen to hear your feedback! Please raise any issues found at <a href="https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/issues" class="bare">https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/issues</a>.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

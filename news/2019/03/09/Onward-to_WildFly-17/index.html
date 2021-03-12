@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly</title>
+  <meta name="description" content="Onward to WildFly 17 and Beyond!">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+
+
+</head>
+
+<body class="Onward to WildFly 17 and Beyond!">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Onward to WildFly 17 and Beyond!</h1>
+    
+    <p class="byline">By Brian Stansberry | March 09, 2019</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Following the <a href="https://wildfly.org/news/2019/02/27/WildFly16-Final-Released">release of WildFly 16</a>, I thought it would be a good time to give the WildFly community a sense of what I see coming in the project over the next few releases.</p>
+</div>
+<div class="paragraph">
+<p>WildFly will continue with the <a href="http://lists.jboss.org/pipermail/wildfly-dev/2017-December/006250.html">quarterly delivery model</a> we began last year with WildFly 12. These releases are essentially time-boxed; i.e. we typically won&#8217;t significantly delay a release in order to get a feature in. So when I discuss general feature roadmaps I&#8217;ll be talking in terms of the next two or three releases rather than just WildFly 17.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="wildfly-on-the-cloud">WildFly on the Cloud</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A major focus will be on making WildFly as easy and productive as possible to use on the cloud, particularly on Kubernetes and OpenShift. In particular we&#8217;ll be working on the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Creation of an <a href="https://coreos.com/blog/introducing-operators.html">Operator</a> to help automate best practices for deploying and managing a WildFly-based application on Kubernetes and OpenShift. Work on this has just <a href="http://lists.jboss.org/pipermail/wildfly-dev/2019-March/006798.html">kicked off</a>; we&#8217;d love to have your participation!</p>
+</li>
+<li>
+<p>Continuation of our efforts to <a href="http://wildfly.org/news/2019/03/01/Galleon_Openshift/">use Galleon to make WildFly a truly "cloud native" application server</a>. This will involve a number of areas, including:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Further development and greater testing of the <a href="http://docs.wildfly.org/16/Admin_Guide.html#Galleon_Provisioning">Galleon layers provided by WildFly</a>.</p>
+</li>
+<li>
+<p>Enhancements to the Galleon tooling for creating feature packs.</p>
+</li>
+<li>
+<p>Fleshing out the image build processes.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Adding an <a href="https://launch.openshift.io/launch/">openshift.io launcher</a> for WildFly and enhancing it as best practices for cloud-native application development evolve.</p>
+</li>
+<li>
+<p>Improved support for offloading session caching to an external Infinispan caching service by using a <a href="https://issues.redhat.com/browse/WFLY-7719">HotRod-based distributed session manager</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jakarta-ee">Jakarta EE</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Of course, the EE standards are very important to WildFly. We&#8217;re very focused on Jakarta EE, with a number of members of the WildFly community involved in the various specs. We&#8217;re keeping a close eye on the finalization of Jakarta EE 8 with certification a high priority. As work on Jakarta EE 9 ramps up we&#8217;ll be active participants, although I don&#8217;t expect significant change in WildFly related to EE 9 until the fall at earliest.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="security">Security</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Darran Lofthouse and Farah Juma do an excellent job of maintaining a roadmap for security-related work in WildFly. I encourage you to read Darran&#8217;s recent <a href="https://darranl.blogspot.com/2019/03/security-features-for-wildfly-17.html">blog post</a> to learn more about what&#8217;s coming in WildFly 17.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="other-items">Other Items</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Besides the broader topics I&#8217;ve touched on above, there are always individual items that are in progress. Here are a few noteworthy ones:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for messaging clusters behind http load balancers by disabling automatic topology updates on clients. (This allows the client to continue to address the load balancer rather than trying to communicate with the servers behind the load balancer.)</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-6143">WFLY-6143</a>&#8201;&#8212;&#8201;Ability to configure server-side EJB interceptors that should apply to all deployments. Client-side interceptors are <a href="https://issues.redhat.com/browse/WFLY-6144">also being considered</a>.</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFCORE-1295">WFCORE-1295</a>&#8201;&#8212;&#8201;Support for expression resolution for deployment descriptors parsed by WildFly Core, e.g. jboss-deployment-structure.xml and permissions.xml.</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFCORE-4227">WFCORE-4227</a>&#8201;&#8212;&#8201;Ability for the CLI SSL security commands to be able to obtain a server certificate from Let&#8217;s Encrypt.</p>
+</li>
+<li>
+<p>In the clustering area:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-5550">WFLY-5550</a>&#8201;&#8212;&#8201;A separate subsystem for configuring distributed web session managers. This will help users avoid common configuration mistakes, and is also a prerequisite for the aforementioned <a href="https://issues.redhat.com/browse/WFLY-7719">HotRod-based distributed session manager</a> and for&#8230;&#8203;</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-6944">WFLY-6944</a>&#8201;&#8212;&#8201;Support for encoding web session affinity using multiple routes, if supported by the load balancer.</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-11098">WFLY-11098</a>&#8201;&#8212;&#8201;Support for Singleton Service election listeners.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="future-work">Future Work</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I regularly hear from community members asking about MicroProfile.  Last year we added subsystems to bring support of MicroProfile Config, Health, Metrics and OpenTracing.  The overall focus there was on "observability" of WildFly, particular in the cloud. These subsystems were oriented toward allowing monitoring and management tooling to observe the behavior of WildFly servers. The MicroProfile specs were a good choice because observers want to work in a standardized way.</p>
+</div>
+<div class="paragraph">
+<p>As this year continues we&#8217;ll think about adding support for some other MicroProfile specifications, perhaps as new subsystems within the main WildFly codebase, or perhaps via new projects in the <a href="https://github.com/wildfly-extras">WildFly Extras organization</a> along with a <a href="http://docs.wildfly.org/galleon/#_feature_packs">Galleon feature pack</a> and a <a href="https://docs.wildfly.org/galleon/#_layers">Galleon layer</a> to allow easy integration into a WildFly installation.</p>
+</div>
+<div class="paragraph">
+<p>I suspect anything on this would be in WildFly 18 or later.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="wildfly-feature-delivery-process-following-development">WildFly Feature Delivery Process / Following Development</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I&#8217;d love to have input both into our roadmap and into the requirements for the implementations of features. If you&#8217;re interested in following WildFly feature development one thing to do is to monitor the <a href="https://issues.redhat.com/projects/WFLY/summary">WFLY</a> and <a href="https://issues.redhat.com/projects/WFCORE/summary">WFCORE</a> projects in JIRA. Beyond that I encourage you to subscribe to the <a href="https://lists.jboss.org/mailman/listinfo/wildfly-dev">wildfly-dev mailing list</a>. It&#8217;s relatively low traffic, and I&#8217;ve been encouraging folks to post a brief note to the list when work on a new feature kicks off. So that&#8217;s a good way to hear early on about work to which you may have something to add.</p>
+</div>
+<div class="paragraph">
+<p>When we went to the quarterly time-boxed release model, we formalized our feature development process quite a bit. In order to reliably release on time, we needed to be sure that features were truly ready for release before they ever got merged. No more merging things that were 90% done with the expectation of further improvements before the final release. To help facilitate this we started requiring the creation of an asciidoc analysis document at the start of feature work. This document is meant to cover:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Who is going to work on the feature, both in terms of development and of testing.</p>
+</li>
+<li>
+<p>What the requirements for the feature are. (This IMHO is the most important part.)</p>
+</li>
+<li>
+<p>How the feature will be tested.</p>
+</li>
+<li>
+<p>How the feature will be documented. (Some form of documentation is required, either in <a href="https://docs.wildfly.org">the WildFly docs</a> or, for simple things, in the software itself, e.g. in help messages.)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The analysis documents are all submitted as github pull requests to <a href="https://github.com/wildfly/wildfly-proposals/pulls">a github repo we created for them</a>. Discussion of the document is done via comments on and updates to the PR. The document remains unmerged until the feature code itself is merged. The analysis is meant to be a living document, revised as necessary as new things are learned as the feature is developed.</p>
+</div>
+<div class="paragraph">
+<p>One of the goals we had with all this is encourage community input to the feature requirements. So I very much encourage you to have a look at and comment on the PRs for any features in which you&#8217;re interested. The announcement posts to wildfly-dev that I mentioned are meant to inform you when new PRs are submitted.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="key-wildfly-17-schedule-dates">Key WildFly 17 Schedule Dates</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Following are the expected key dates associated with the WildFly 17 release:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Fri, May 10&#8201;&#8212;&#8201;Completion date for features coming in via WildFly Core</p>
+</li>
+<li>
+<p>Tue, May 14&#8201;&#8212;&#8201;All features ready</p>
+</li>
+<li>
+<p>Wed, May 15&#8201;&#8212;&#8201;WildFly 17 Beta. No new features after this date.</p>
+</li>
+<li>
+<p>Fri, May 24&#8201;&#8212;&#8201;All changes for WildFly Core ready</p>
+</li>
+<li>
+<p>Tue, May 28&#8201;&#8212;&#8201;All changes for WildFly ready</p>
+</li>
+<li>
+<p>Thu, May 30&#8201;&#8212;&#8201;WildFly 17 Final released</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Finally, thanks, as always, for your interest in and support of WildFly!</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>
