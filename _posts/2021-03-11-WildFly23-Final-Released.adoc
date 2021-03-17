@@ -87,7 +87,7 @@ Users of the deprecated Picketbox-vault-backed expression resolution mechanism a
 === Other areas
 
 * The Jakarta Concurrency managed executors provided by the `ee` subsystem can be link:https://github.com/wildfly/wildfly-proposals/blob/master/concurrency/WFLY-12896_EE_Concurrency_Hung_Tasks_Termination.adoc[configured to detect and automatically terminate tasks] that have been executing for an unexpectedly long time. Such tasks can also be manually terminated.
-* The `transaction` subsystem now supports link:https://github.com/wildfly/wildfly-proposals/blob/master/transaction/WFLY-10009_EAP7-981_Introduce_Maximum_Timeout.adoc[configuring a maximum timeout] for transactions.
+* The `transaction` subsystem now supports link:https://github.com/wildfly/wildfly-proposals/blob/master/transactions/WFLY-10009_EAP7-981_Introduce_Maximum_Timeout.adoc[configuring a maximum timeout] for transactions.
 * The `undertow` subsystem can now be link:https://github.com/wildfly/wildfly-proposals/blob/master/undertow/WFLY-12473_obfuscate-session-route.adoc[configured to obfuscate the server instance-id data] included as part of the request and response `JSESSION_ID` cookie. 
 * Deployments can now depend on and use the APIs provided by the following Infinispan-related modules without getting a private API usage warning:
 ** `org.infinispan` (embedded cache)
