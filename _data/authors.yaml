@@ -132,3 +132,8 @@ chengfang:
   location: "Boston, MA"
   occupation: "Software Engineer"
   bio: "Cheng is a software engineer at Red Hat, and is the lead of WildFly EJB and JBeret batch processing."
+darranl:
+  name: "Darran Lofthouse"
+  location: "United Kingdom"
+  occupation: "Software Engineer"
+  twitter: "darran_l"
