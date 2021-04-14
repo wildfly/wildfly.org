@@ -1,3 +1,68 @@
+- version: 23.0.1.Final
+  version_shortname: 23.0.1
+  date: 2021-04-14
+  link:
+    - name: WildFly Preview EE 9 Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          size: 201 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-preview-23.0.1.Final.zip
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-preview-23.0.1.Final.zip.sha1
+        - format: tgz
+          size: 199 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-preview-23.0.1.Final.tar.gz
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-preview-23.0.1.Final.tar.gz.sha1
+    - name: Jakarta EE Full & Web Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          size: 203 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final.zip
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final.zip.sha1
+        - format: tgz
+          size: 202 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final.tar.gz
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final.tar.gz.sha1
+    - name: Servlet-Only Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          size: 52 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/servlet/wildfly-servlet-23.0.1.Final.zip
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/servlet/wildfly-servlet-23.0.1.Final.zip.sha1
+        - format: tgz
+          size: 52 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/servlet/wildfly-servlet-23.0.1.Final.tar.gz
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/servlet/wildfly-servlet-23.0.1.Final.tar.gz.sha1
+    - name: Application Server Source Code
+      licence: LGPL
+      items:
+        - format: zip
+          size: 40 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final-src.zip
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final-src.zip.sha1
+        - format: tgz
+          size: 25 MB
+          url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://download.jboss.org/wildfly/23.0.1.Final/wildfly-23.0.1.Final-src.tar.gz.sha1
+    - name: Quick Start Source Code
+      licence: AL
+      items:
+        - format: Source
+          url: https://github.com/wildfly/quickstart/tree/23.0.1.Final
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12354096
 - version: 23.0.0.Final
   version_shortname: 23 Final
   date: 2021-03-11
