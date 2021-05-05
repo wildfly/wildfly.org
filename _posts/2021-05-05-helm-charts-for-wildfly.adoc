@@ -1,9 +1,9 @@
 ---
 layout: post
-title: Helm Charts for WildFly
+title: Helm Chart for WildFly
 date: 2021-05-05
 tags: wildfly openshift helm
-synopsis: Helm Charts for WildFly simplifies deployment of WildFly applications on OpenShift.
+synopsis: Helm Chart for WildFly simplifies deployment of WildFly applications on OpenShift.
 author: jmesnil
 ---
 
