@@ -48,7 +48,7 @@ To write a News post:
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/wildfly/wildfly.org/tree/master/CONTRIBUTING.md) for details on the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/wildfly/wildfly.org/blob/master/contribute.md) for details on the process for submitting pull requests to us.
 
 **Important:** the guides are maintained in the wildfly.github.io repository and pull requests should be submitted there:
 https://github.com/wildfly/wildfly.github.io
