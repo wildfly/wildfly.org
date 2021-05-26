@@ -68,6 +68,11 @@ Bootable JAR (or to provision a server using Galleon) containing a JSF implement
 
 ### Incompatibility with Keycloak client adapter Galleon feature-pack
 
+[NOTE]
+====
+This issue is now solved when using keycloak adapter 13.0.1.
+====
+
 Due to some incompatible changes in the WildFly Galleon feature-pack (i.e. the removal of core and servlet Galleon feature-packs in the dependency chain) 
 the Keycloak 12.0.x OIDC client adapter Galleon feature-pack can't be used with the WildFly 23 Galleon feature-pack. 
 
