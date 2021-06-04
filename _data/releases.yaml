@@ -6,12 +6,12 @@
      licence: LGPL
      items:
        - format: zip
-         size: 200 MB
+         size: 199 MB
          url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-preview-24.0.0.Beta1.zip
          checksum: SHA-1
          checksum_url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-preview-24.0.0.Beta1.zip.sha1
        - format: tgz
-         size: 199 MB
+         size: 198 MB
          url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-preview-24.0.0.Beta1.tar.gz
          checksum: SHA-1
          checksum_url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-preview-24.0.0.Beta1.tar.gz.sha1
@@ -19,12 +19,12 @@
      licence: LGPL
      items:
        - format: zip
-         size: 203 MB
+         size: 202 MB
          url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-24.0.0.Beta1.zip
          checksum: SHA-1
          checksum_url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-24.0.0.Beta1.zip.sha1
        - format: tgz
-         size: 202 MB
+         size: 201 MB
          url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-24.0.0.Beta1.tar.gz
          checksum: SHA-1
          checksum_url: https://download.jboss.org/wildfly/24.0.0.Beta1/wildfly-24.0.0.Beta1.tar.gz.sha1
@@ -32,7 +32,7 @@
      licence: LGPL
      items:
        - format: zip
-         size: 52 MB
+         size: 53 MB
          url: https://download.jboss.org/wildfly/24.0.0.Beta1/servlet/wildfly-servlet-24.0.0.Beta1.zip
          checksum: SHA-1
          checksum_url: https://download.jboss.org/wildfly/24.0.0.Beta1/servlet/wildfly-servlet-24.0.0.Beta1.zip.sha1
