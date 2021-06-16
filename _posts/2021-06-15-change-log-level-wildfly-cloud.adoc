@@ -1,0 +1,131 @@
+---
+layout: post
+title: How to Change Logging Level for WildFly on the Cloud
+date: 2021-06-15
+tags: wildfly logging cloud openshift kubernetes
+synopsis: This article presents a simple script to change logging level on a WildFly application deployed in Kubernetes or OpenShift.
+author: jmesnil
+---
+
+When your WildFly application is running on the Cloud (on Kubernetes, OpenShift or any other container platform) and starts to behave unexpectedly, it is useful to be able to change the logging of the server to display debug logs to get a better insight.
+
+In this article, I will walkthrough a very simple script that can be used to change the logging level of a WildFly server in an application image on the (wild) fly.
+
+## WildFly Management Commands
+
+By default, the WildFly server is configured to display `INFO` logs on the console. 
+These logs are the output displayed by the command `kubectl logs <pod>)`:
+
+[source,nowrap]
+----
+$ kubectl logs wildfly-s2i-app-8f8b49957-b7xbk
+...
+08:10:40,347 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 23.0.2.Final (WildFly Core 15.0.1.Final) started in 15658ms - Started 288 of 383 services (156 services are lazy, passive or on-demand)
+08:10:40,348 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://0.0.0.0:9990/management
+08:10:40,348 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
+----
+
+If we need to change the logging level to display debug logs, we can use the `jboss-cli.sh` script located in the WildFly server directory to execute two management commands:
+
+[source,nowrap]
+----
+$ kubectl exec -it  wildfly-s2i-app-8f8b49957-b7xbk -- sh
+sh-4.2$ $JBOSS_HOME/bin/jboss-cli.sh -c
+[standalone@localhost:9990 /] /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)
+{"outcome" => "success"}
+[standalone@localhost:9990 /] /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)
+{"outcome" => "success"}
+----
+
+With that change, we can no see `DEBUG` logs in the console output:
+
+[source,nowrap]
+----
+$ kubectl logs wildfly-s2i-app-8f8b49957-b7xbk
+...
+08:26:35,002 DEBUG [io.undertow.request] (default I/O-2) Matched default handler path /config/value
+08:26:35,004 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) RESTEASY002315: PathInfo: /config/value
+08:26:35,005 DEBUG [org.jboss.resteasy.cdi.i18n] (default task-1) RESTEASY010520: Beans found for class org.wildfly.quickstarts.microprofile.config.ConfigResour
+ce : [Managed Bean [class org.wildfly.quickstarts.microprofile.config.ConfigResource] with qualifiers [@Any @Default]]
+08:26:35,006 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.spi.ResteasyProviderFactory$SortedKey
+08:26:35,006 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar
+----
+
+## JBOSS_HOME environment variable
+
+These commands work fine when the application image has been built with https://github.com/wildfly/wildfly-s2i[WildFly S2I] as the `JBOSS_HOME` environment variable is set and we can invoke `$JBOSS_HOME/bin/jboss-cli.sh` without any issue.
+
+However if the application image has been built with https://docs.wildfly.org/bootablejar/[Bootable Jar], there is no `JBOSS_HOME` as the server will be unzipped when the container is started.
+
+How can we then determine the actual location of the server?
+
+When the container image is started, a special file is created at `/opt/jboss/container/wildfly-bootable-jar/install-dir` whose content is the actual location of the unzipped WildFly server for _this_ specific pod:
+
+[source,nowrap]
+----
+$ kubectl exec -it wildfly-bootable-jar-app-7cf8bdc95c-j9mjk -- sh
+sh-4.4$ cat /opt/jboss/container/wildfly-bootable-jar/install-dir
+/tmp/wildfly-bootable-server15112249313411534387
+----
+
+With that knowledge, we can update our script to set the value of the `JBOSS_HOME` environment with the content of that file if it exists:
+
+[source,shell,nowrap]
+----
+sh-4.4$ [ -e /opt/jboss/container/wildfly-bootable-jar/install-dir ] && JBOSS_HOME=$( cat /opt/jboss/container/wildfly-bootable-jar/install-dir )
+sh-4.4$ echo $JBOSS_HOME
+/tmp/wildfly-bootable-server15112249313411534387
+----
+
+## change-log-level Script
+
+We can now write a very simple script that can be used to change the global logging level one any WildFly application image.
+
+The script is available at https://gist.github.com/jmesnil/78581f90c68f84ba9240ef48f627ff45
+
+and is straigthforward to use:
+
+[source,nowrap]
+----
+$ wget https://gist.githubusercontent.com/jmesnil/78581f90c68f84ba9240ef48f627ff45/raw/062b3f1a8f7cf6e85b233e69348c97d006003a92/change-log-level
+$ chmod u+x change-log-level
+
+$ ./change-log-level
+
+change-log-level is a script to change the logging level of the WildFly server inside an application image running on any Kubernetes cluster.
+Usage:
+  change-log-level <pod> <logging-level>
+Where the parameters are:
+  * <pod> - Name of the pod running the application image
+  * <logging-level> - The logging level to set (can be one of ALL, FINEST, FINER, TRACE, DEBUG, FINE, CONFIG, INFO
+    WARN, WARNING, ERROR, SEVERE, FATAL, OFF)
+
+$ ./change-log-level wildfly-bootable-jar-app-7cf8bdc95c-j9mjk DEBUG
+Change logging level to TRACE for WildFly server in wildfly-microprofile-config-app-7cf8bdc95c-j9mjk
+[standalone@localhost:9990 /] /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)
+{"outcome" => "success"}
+[standalone@localhost:9990 /] /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)
+{"outcome" => "success"}
+
+$ kubectl logs wildfly-bootable-jar-app-7cf8bdc95c-j9mjk
+10:14:10,380 DEBUG [io.undertow.request] (default I/O-1) Matched default handler path /
+10:14:10,381 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) RESTEASY002315: PathInfo: /
+10:14:10,382 DEBUG [org.jboss.resteasy.cdi.i18n] (default task-1) RESTEASY010520: Beans found for class org.wildfly.quickstarts.microprofile.config.RootResource
+ : [Managed Bean [class org.wildfly.quickstarts.microprofile.config.RootResource] with qualifiers [@Any @Default]]
+10:14:10,393 DEBUG [org.jboss.resteasy.plugins.validation.i18n] (default task-1) RESTEASY008510: ResteasyCdiExtension is on the classpath.
+10:14:10,394 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.spi.ResteasyProviderFactory$SortedKey
+10:14:10,394 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar
+----
+
+[NOTE]
+====
+This script is doing a brute-force switch of the root logger and will change the log level of *all* loggers in the WildFly server.
+
+In a more realistic case, you would have to adapt the management commands to change the log level on more specific loggers related to your application to reduce the noise from other loggers. This can easily be done by updating the script and changing the commands from the `WILDFLY_COMMANDS` property. 
+====
+
+
+## Conclusion
+
+This simple script is useful to be able to change the logging of the server to display debug logs to get a better insight.
+It can be used as the basis to run any kind of management commands on WildFly in an application image.
