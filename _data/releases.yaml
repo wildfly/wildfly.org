@@ -62,7 +62,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12358082
+          url: https://wildfly.org/news/2021/06/17/WildFly24-Final-Released/
 - version: 24.0.0.Beta1
   version_shortname: 24 Beta1
   date: 2021-06-04
