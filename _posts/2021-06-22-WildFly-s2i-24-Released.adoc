@@ -1,0 +1,34 @@
+---
+layout: post
+title:  "WildFly 24 S2I images have been released on quay.io"
+date:   2021-06-22
+tags:   wildfly galleon
+author: jfdenise
+---
+
+= WildFly 24 S2I images have been released on quay.io
+
+==  WildFly 24 S2I Docker images
+
+The WildFly S2I (Source-to-Image) builder and runtime Docker images for WildFly 24 have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
+
+The S2I builder image has been upgraded with the following content:
+ 
+* link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly datasources Galleon feature-pack 2.0]. This feature-pack defines some Galleon layers to provision drivers 
+and datasources for: MariaDB, Microsoft SQL Server,  MySQL, Oracle DB and PostgreSQL. 
+You can learn how to configure the drivers by reading the feature-pack link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/master/README.md[documentation].
+
+* link:https://www.keycloak.org/[Keycloak] adapter has been upgraded to the version 13.0.1.
+
+For a complete documentation on how to use these images using S2I, OpenShift and Docker, 
+refer to the WildFly S2I link:https://github.com/wildfly/wildfly-s2i/blob/master/README.md[README].
+
+== Helm Chart for WildFly
+
+link:https://github.com/wildfly/wildfly-charts/blob/main/charts/wildfly/README.md[Helm Chart for WildFly] has been updated to use the WildFly S2I 24.0 images.
+
+The link:https://github.com/wildfly/wildfly-charts/blob/main/examples/microprofile-config/README.adoc[microprofile example] is a good place to start using Helm Chart
+with the WildFly S2I images.
+ 
+
+Enjoy!
