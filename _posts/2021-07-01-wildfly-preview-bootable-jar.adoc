@@ -1,0 +1,208 @@
+---
+layout: post
+title: Run WildFly Preview of Jakarta EE 9.1 with Bootable Jar
+date: 2021-07-01
+tags: wildfly jakarta-ee9 bootable-jar cloud
+synopsis: This article demonstrates how to run a Jakarta EE 8 application on WildFly Preview for Jakarta EE 9.1 using the Bootable Jar.
+author: jmesnil
+---
+
+https://jakarta.ee/specifications/platform/9.1[Jakarta EE 9.1] has been recently released and WildFly 24.0.0.Final provides a preview to run existing Jakarta EE 8 applications on it.
+
+In this blog, we will take a simple existing Jakarta EE 8 applications (the WildFly https://github.com/wildfly/quickstart/tree/master/helloworld-rs[JAX-RS quickstart]) and modify the project structure to run it on WildFly with the EE 9.1 Preview.
+
+== Compiling with Jakarta EE 8, Running with Jakarta EE 9.1
+
+We will not change the code of the application itself that is compiled against Jakarta EE 8. We will only change its execution to run on top of Jakarta EE 9.1.
+
+The application in itself is a simple JAX-RS application that has a `/rest/json` HTTP endpoint.
+The application code imports the `javax.ws.rs.ApplicationPath` annotation. The `javax.ws.rs` package means that the code is compiled against Jakarta EE 8.
+In Jakarta EE 9.1, the specification is now named https://jakarta.ee/specifications/restful-ws/3.0[Jakarta RESTful Web Services)] and its package is `jakarta.ws.rs`.
+
+== Configuring Bootable Jar in pom.xml
+
+To run this application with WildFly EE 9.1 Preview, we will use the Bootable Jar mode that bundles WildFly and the application in a single runnable Jar.
+
+To achieve this, we have to modify the `pom.xml` and add the following section:
+
+[source,xml,nowrap]
+----
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-jar-maven-plugin</artifactId>
+                <version>5.0.0.Final</version>
+                <configuration>
+                    <feature-pack-location>wildfly-preview@maven(org.jboss.universe:community-universe)</feature-pack-location>
+                    <layers>
+                        <layer>jaxrs-server</layer>
+                    </layers>
+                    <plugin-options>
+                        <jboss-fork-embedded>true</jboss-fork-embedded>
+                    </plugin-options>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+----
+
+With that setting, the application will now be packaged by default using Bootable Jar when we run `mvn package`.
+
+There are 2 important lines in the code snippet:
+
+[source,xml]
+----
+<feature-pack-location>wildfly-preview@maven(org.jboss.universe:community-universe)</feature-pack-location>
+----
+
+This line means that we will use the `wildfly-preview` feature pack to install and provision the WildFly Server so that it runs with Jakarta EE 9.1. If we had specify instead `wildfly@maven(...)`, we would have install a regular WildFly server to run with Jakarta EE 8.
+
+
+[source,xml]
+----
+<layer>jaxrs-server</layer>
+----
+
+As our application is a simple JAX-RS application, we only provision the `jaxrs-server` layer when we install WildFly in the Bootable Jar. This ensures that we have all we need to run a JAX-RS application and nothing more.
+
+We can now package the application as a Bootable Jar by running the command:
+
+[source,shell]
+----
+$ mvn clean package
+----
+
+Once the Maven command is finished, we can start the application by running the command:
+
+[source,shell]
+----
+$ java -jar target/helloworld-rs-bootable.jar
+----
+
+There are some interesting lines in the log when the application starts:
+
+[source,shell]
+----
+08:36:38,676 INFO  [org.jboss.as] (MSC service thread 1-1) WFLYSRV0049: WildFly Preview 24.0.0.Final (WildFly Core 16.0.0.Final) starting
+----
+
+This line above shows that we are running `WildFly Preview` (and not the regular `WildFly`).
+
+[source,shell]
+----
+08:36:54,301 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 62) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.jboss.as.quickstarts.rshelloworld.JAXActivator$Proxy$_$$_WeldClientProxy
+----
+
+This line above confirms that we are running with Jakarta EE 9.1 as the application is deployed with `jakarta.ws.rs.core.Application` which is in the namespace for Jakarta EE 9.1.
+
+So we have deployed a Jakarta EE 8 application in a Jakarta EE 9.1 server, let's check that the application works as expected:
+
+[source,shell]
+----
+$ curl http://:8080/rest/json
+
+{"result":"Hello World!"}
+----
+
+== Run with Jakarta EE 9.1 on OpenShift
+
+We are now successfully running our JAX-RS application locally with WildFly EE 9.1 Preview. What do we need to run it on OpenShift?
+
+It turns out we don't need much more.
+
+We can leverage the JKube integration for WildFly Bootable Jar to create an application image and deploy it on OpenShit.
+
+We need to add another snippet to the pom.xml:
+
+[source,xml,nowrap]
+----
+    <profiles>
+        <profile>
+            <id>openshift</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <version>5.0.0.Final</version>
+                        <configuration>
+                            <cloud/>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.eclipse.jkube</groupId>
+                        <artifactId>openshift-maven-plugin</artifactId>
+                        <version>1.0.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>resource</goal>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <enricher>
+                                <config>
+                                    <jkube-service>
+                                        <type>NodePort</type>
+                                    </jkube-service>
+                                </config>
+                            </enricher>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+----
+
+This `openshift` profile ensures that the Bootable Jar will be configured for the cloud and that JKube will create all the required resources to run in on OpenShift.
+
+[NOTE]
+====
+To be able to deploy the application on OpenShift, you need access to an OpenShift cluster (such as the http://developers.redhat.com/developer-sandbox[Red Hat Developer Sandbox]) and have successfully logged in by running the `oc login ...` command
+====
+
+Once we have modify the `pom.xml`, we can deploy the application on OpenShift by running the command:
+
+[source,shell]
+----
+$ mvn oc:deploy -Popenshift
+----
+
+Once the Maven command is finished, we can verify that our application is running on OpenShift by looking at the pods state:
+
+[source,shell]
+----
+$ oc get pods -w
+helloworld-rs-1-deploy            0/1     Completed   0          2m28s
+helloworld-rs-1-h9w28             1/1     Running     0          2m20s
+----
+
+We can then access our application as JKube automatically created a `Route` to access it outside of the OpenShift cluster:
+
+[source,shell]
+----
+$ curl -L $(oc get route helloworld-rs -o jsonpath="{.spec.host}")/rest/json
+
+{"result":"Hello World!"}%
+----
+
+== Conclusion
+
+In this article, we presented the steps to run an existing Jakarta EE 8 application on WildFly EE 9.1 Preview. We were able to run the application locally and on OpenShift.
+
+The first step was to use WildFly Bootable Jar to bundle the application and uses the `wildfly-preview` feature pack to install the server with EE 9.1
+
+The second step was to configure JKube to be able to deploy the application with OpenShift.
+
+Theses steps can help starting the migration process of your applications from Jakarta EE 8 to Jakarta EE 9.1
