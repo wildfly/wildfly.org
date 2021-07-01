@@ -118,7 +118,7 @@ We are now successfully running our JAX-RS application locally with WildFly EE 9
 
 It turns out we don't need much more.
 
-We can leverage the JKube integration for WildFly Bootable Jar to create an application image and deploy it on OpenShit.
+We can leverage the JKube integration for WildFly Bootable Jar to create an application image and deploy it on OpenShift.
 
 We need to add another snippet to the pom.xml:
 
