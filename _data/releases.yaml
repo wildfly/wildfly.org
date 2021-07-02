@@ -15,7 +15,7 @@
           url: https://download.jboss.org/wildfly/24.0.0.Final/wildfly-preview-24.0.0.Final.tar.gz
           checksum: SHA-1
           checksum_url: https://download.jboss.org/wildfly/24.0.0.Final/wildfly-preview-24.0.0.Final.tar.gz.sha1
-    - name: Jakarta EE Full & Web Distribution
+    - name: Jakarta EE 8 Full & Web Distribution
       licence: LGPL
       items:
         - format: zip
@@ -67,7 +67,7 @@
   version_shortname: 24 Beta1
   date: 2021-06-04
   link:
-   - name: WildFly Preview EE 9 Distribution
+   - name: WildFly Preview EE 9.1 Distribution
      licence: LGPL
      items:
        - format: zip
