@@ -957,7 +957,7 @@
    - name: Release Notes
      items:
        - format: Notes
-         url: https://wildfly.org/news/2019/06/10/WildFly17-Final-Released/
+         url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12342471
 - version: 17.0.0.Final
   version_shortname: 17
   date: 2019-06-10
