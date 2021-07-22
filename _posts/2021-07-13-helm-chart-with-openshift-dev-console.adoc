@@ -78,7 +78,6 @@ Congratulations, you have built and deployed your first Java application with Wi
 ## Upgrade the Helm Release
 
 It is possible to upgrade the Helm Release to change its configuration from the OpenShift Developer Console.
-However due to a bug in the console, the steps to upgrade the release are a bit convoluted.
 
 * Click on the `Helm` in the left hand menu
 * Click on the `my-wildfly-app` link to open the page specific to our Helm release.
@@ -97,24 +96,28 @@ deploy:
       value: Bonjour depuis OpenShift
 ----
 
-At this point, if we click on `Upgrade`, we have an error "Failed to upgrade helm release".
-
-To workaround that error, we have to reload the initial Chart version and apply our changes.
-
-1. Copy the modified content of the `YAML view`.
-2. Change the "Chart version" in the right hand corner from `1.4.0 / App Version 24.0` to `1.4.0 / App Version 24.0 (Provided by Red Hat Helm Charts)`. A confirmation window will open, click on `Proceed` to accept the change
-3. Paste the YAML content that was just copied back in the `YAML view`
-
-We can now click on the `Upgrade` button to finally upgrade the Helm release.
+At this point, we click on `Upgrade` to upgrade the Helm release.
 
 As we have only modified the `deploy` section of the Helm release, we will reuse the existing application image and redeploy it with the new environment variable.
-
 Once the application is redeployed, if we click on the Route button and append `/config/value`, we see that the application has correctly been upgraded:
 
 [source]
 ----
 Bonjour depuis OpenShift
 ----
+
+[WARNING]
+====
+Prior to OpenShift 4.8, there was a bug preventing to directly upgrade the Helm Release.
+
+To workaround that error, we had to reload the initial Chart version and apply our changes.
+
+1. Copy the modified content of the `YAML view`.
+2. Change the "Chart version" in the right hand corner from `1.4.0 / App Version 24.0` to `1.4.0 / App Version 24.0 (Provided by Red Hat Helm Charts)`. A confirmation window will open, click on `Proceed` to accept the change
+3. Paste the YAML content that was just copied back in the `YAML view`
+
+We can now click on the `Upgrade` button to finally upgrade the Helm release.
+====
 
 ## Conclusion
 
