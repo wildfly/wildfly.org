@@ -241,6 +241,15 @@ table {
   }
 }
 
+.admonitionblock.warning, .warning {
+  tbody .icon {
+    background-color: $orange;
+  }
+  tbody .content {
+    background-color: $blue;
+  }
+}
+
 .listingblock,
 .literalblock,
 .imageblock,
