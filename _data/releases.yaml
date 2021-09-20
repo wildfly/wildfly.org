@@ -1,6 +1,6 @@
 - version: 25.0.0.Beta1
   version_shortname: 25 Beta1
-  date: 2021-09-17
+  date: 2021-09-20
   link:
     - name: WildFly Preview EE 9.1 Distribution
       licence: LGPL
