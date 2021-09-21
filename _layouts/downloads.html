@@ -25,7 +25,7 @@ layout: base
             <div class="grid__item width-6-12 version-table">
               <table class="tg">
                 <tr>
-                  <th colspan="3"><div class="version-name final">final<span class="release-date">{{versionId.date | date: "%b %d, %Y" }}</span></div>
+                  <th colspan="3"><div class="version-name final">{{versionId.qualifier | default: "Final" }}<span class="release-date">{{versionId.date | date: "%b %d, %Y" }}</span></div>
                 </tr>
                 {% for releaseItem in versionId.link %}
                 <tr>
