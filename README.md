@@ -5,6 +5,7 @@
 These instructions will get you a copy of the wildfly.org website up and running on your local machine for development purposes.
 
 ### Installation
+
 [Jekyll static site generator documentation](https://jekyllrb.com/docs/).
 
 1. Install a full [Ruby development environment](https://jekyllrb.com/docs/installation/#requirements).
