@@ -1,0 +1,82 @@
+---
+layout: post
+title:  "Changes Coming in WildFly"
+date:   2021-09-27
+tags:   announcement roadmap
+author: bstansberry
+description: WildFly's evolution will accelerate over the next few releases
+---
+
+= Changes are coming to WildFly
+
+As significant changes percolate through the enterprise Java ecosystem, particularly progress on Jakarta EE 10 and the move to the jakarta.* namespace for the EE APIs, changes are also going to be coming to WildFly. In this post I want to describe what I see happening over the next few WildFly releases, starting with the WildFly 25 release that will be out soon.
+
+== SE 17 and the WildFly security layer
+
+This month's GA release of the link:https://openjdk.java.net/projects/jdk/17[Java SE 17] LTS release has highlighted the importance of WildFly being a good choice for those wanting to run applications on the latest SE. As a result, a key focus in WildFly 25 has been completing our migration away from the legacy security layer that dates back to JBoss AS and onto the link:https://wildfly-security.github.io/wildfly-elytron/[WildFly Elytron]-based link:https://docs.wildfly.org/24/WildFly_Elytron_Security.html[security layer] introduced in WildFly 11. Using Elytron security has been our recommended approach for several years now, but since SE 17 does not provide packages that legacy security heavily relies upon, the time has come to complete the transition off of legacy security.
+
+We deprecated the use of legacy security long ago and in the WildFly 25 release we are removing support for it.
+
+As part of this change you will see a number of significant changes in WildFly 25:
+
+* Our standard configuration files no longer include legacy security realms. These are the 'security-realm' elements found under the 'management' element in a standalone.xml or host.xml file, administered via the CLI at '/core-service=management/security-realm=*' addresses.  The xml parsers no longer support these elements and the management API no longer provides resources at these addresses. Elytron subsystem resources are now used.
+* Use of the Picketbox-based security vault is no longer supported. Elytron credential stores should be used instead.
+* The 'org.wildlfy.extension.picketlink' extension and the 'picketlink-federation' and 'picketlink-idm' subsystems it provided are no longer supported on servers not running in 'admin-only' mode. They can still be used on a WildFly 25 Domain Controller to allow it to manage hosts running earlier versions of WildFly.
+* The 'org.jboss.as.security' extension and the 'security' subsystem it provides are no longer part of our standard configuration files. By the time WildFly 25.0.0.Final is released our intent is that these will no longer be supported on servers not running in 'admin-only' mode. The extension and subystem can still be used on a WildFly 25 Domain Controller to allow it to manage hosts running earlier versions of WildFly.
+
+Note that the reason use of the legacy security and picketlink extensions is allowed on an 'admin-only' server is to allow a server with a configuration using those to boot so an administrator can then use the CLI to alter the server configuration to use Elytron.
+
+I very much encourage any of you still using legacy security in your configuration to start experimenting with WildFly 25, including with the WildFly 25 Beta1 release we link:https://www.wildfly.org/news/2021/09/20/WildFly25-Beta-Released[announced last week].
+
+== EE 10 and the jakarta.* namespace
+
+Work on link:https://eclipse-ee4j.github.io/jakartaee-platform/jakartaee10/JakartaEE10ReleasePlan[Jakarta EE 10] is ramping up, with a _rough_ estimate GA date at the end of link:https://eclipse-ee4j.github.io/jakartaee-platform/jakartaee10/JakartaEE10#jakarta-ee-10-schedule[Q1 2022]. WildFly contributors are of course involved with EE 10, including back-to-the-early-JBoss-days veteran Scott Stark driving the release overall, Scott Marlow playing a key role on the TCK and WildFly contributors active on a number of specs. 
+
+WildFly intends to shift its EE support in its main distribution to EE 10 when it's available. The precise release when that will happen is as yet unknown, but WildFly 28 seems a reasonable candidate, as following our normal quarterly release cadence that would be the release in development when EE 10 is expected to go GA.
+
+The link:https://docs.wildfly.org/24/WildFly_and_WildFly_Preview.html[WildFly Preview] distribution of the server will shift toward EE 10 earlier than that. It currently targets EE 9.1 and has been an EE 9.1 compliant server since the 23.0.2 release. The primary purpose of WildFly Preview though is providing a tech preview look at what's coming in future standard WildFly releases, and not so much things like strict EE compliance. So, as EE 10 components start to become available (even betas), if they work well in WildFly Preview we'll start to integrate them in the WildFly Preview releases, even if that means we're no longer EE 9.1 compliant. This may begin to happen with the WildFly Preview 26 release (expected in December) and almost certainly will in WildFly Preview 27.
+
+=== Moving on from Jakarta EE 8 support in standard WildFly
+
+By the time standard WildFly moves to EE 10 support, my expectation is the project will no longer produce feature releases that support Jakarta EE 8. As what we've done with WildFly Preview demonstrates, the WildFly architecture allows the project to support different variants that support different Jakarta EE versions, but I don't believe the project will attempt to provide an EE 8 variant once the main distribution moves to EE 10. There are a number of reasons for this, all related to the effort involved:
+
+* The EE 10 APIs are going to differ from the EE 8 APIs in ways that go beyond the javax.* vs jakarta.* package name differences between EE 8 and EE 9. Where those differences affect the server integration of those specs, we'd need to provide separate integration logic for EE 8 vs EE 10. That is certainly technically possible, but shifting the focus of WildFly's contributors to developing and maintaining separate integrations would impact their ability to drive other innovation in the server.
+* Similarly, as components we integrate absorb the jakarta namespace change and evolve in general, it is likely that their own APIs will evolve distinctly between their javax.* releases and their jakarta.* ones. This again would likely result in the need to develop and maintain separate integration logic.
+* Different component sets between two variants of WildFly mean the need to monitor more component for CVEs and critical bugs.
+* There is a lot of continuous integration testing that backs standard WildFly. Trying to test two different variants of standard WildFly, plus WildFly Preview, would put excessive strain on our CI infrastructure.
+
+=== When will this transition happen?
+
+Honest answer: I'm not sure. 
+
+But it's possible even WildFly 26 at the end of this year could move from EE 8 to EE 9.1. And the chances are pretty good WildFly 27 will.
+
+What would be required for WildFly to move from EE 8 to EE 9.1?
+
+* We'd need to have native jakarta.* variants available in public maven repos of all components that use the EE APIs. WildFly Preview bytecode transforms components that use javax.* when it provisions a server, but for standard WildFly we would need to have components available from maven. We're progressing toward achieving that, and there's some possibility we'll get there during the WildFly 26 development cycle.
+* We would need to be able to continue to be EE 9.1 compliant with those components.
+
+Why would WildFly move to EE 9.1, instead of waiting for EE 10?
+
+The WildFly developers have been reluctant to move the standard distribution to EE 9.1, because it has no added functionality vs EE 8, it just brings a migration cost. So why would we move to EE 9.1 instead of just using WildFly Preview until EE 10 is ready?
+
+Basically what would drive this would be differences in our EE 8 vs EE 9+ components that force the need for overly-costly-to-maintain-and-test differences in the relevant server integration logic. It's possible this could occur during the WildFly 26 cycle, and the chances increase as we get to WildFly 27.
+
+My hope though is that we can avoid this and can provide EE 8 until our EE 10 support is ready.
+
+I will post more about this as work continues and the picture becomes clearer.
+
+== Support for SE 8
+
+WildFly has long supported running on SE 8, but I expect that to come to an end over the next few releases. EE 10 itself does not require its constituent APIs to support the SE 8 source or binary level, and it's very likely that a number of EE APIs will require SE 11. That means once WildFly itself is an EE 10 server, we will require SE 11 or later. It's also possible that we will make this transition earlier than that, particularly if one or more of our major components requires SE 11.
+
+It's possible this could happen as soon as WildFly 26, but I doubt it and would very much want to avoid it. As work on 26 proceeds, I'll be sure to communicate if things are happening that make a move off of SE 8 in WildFly 26 or 27 look likely.
+
+
+== Questions?
+
+If you have questions or want to provide feedback, I encourage you to post on the link:https://groups.google.com/g/wildfly[WildFly forum], on the link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/[wildfly-dev mail list] or in link:https://wildfly.zulipchat.com/[Zulip chat].
+
+Best regards,
+
+Brian
