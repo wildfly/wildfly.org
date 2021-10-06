@@ -1,6 +1,6 @@
 - version: 25.0.0.Final
   version_shortname: 25 Final
-  date: 2021-10-06
+  date: 2021-10-05
   qualifier: Final
   link:
     - name: WildFly Preview EE 9.1 Distribution
