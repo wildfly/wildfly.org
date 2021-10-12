@@ -1,0 +1,46 @@
+---
+layout: post
+title:  "WildFly 25 S2I images have been released on quay.io"
+date:   2021-10-12
+tags:   wildfly galleon
+author: jfdenise
+---
+
+= WildFly 25 S2I images have been released on quay.io
+
+==  WildFly 25 S2I Docker images
+
+The WildFly S2I (Source-to-Image) builder and runtime Docker images for WildFly 25 
+have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
+
+For complete documentation on how to use these images using S2I, OpenShift and Docker,
+refer to the WildFly S2I link:https://github.com/wildfly/wildfly-s2i/blob/master/README.md[README].
+
+== Important changes to mention in this release
+
+We have been evolving the s2i builder image to reflect part of the main changes that occurred in 
+link:https://www.wildfly.org/news/2021/10/05/WildFly25-Final-Released/[WildFly 25]. 
+
+In particular the s2i image content is impacted by the removal of ``legacy`` security:
+
+* Changes in the default server configuration:
+** Now secured with ``elytron``.
+** Security configuration based on legacy ``security-realms`` has been removed.
+** ``security`` subsystem and extension have been removed.
+* Impact on SSL configuration based on environment variables:
+** ``elytron`` is now used by default to configure SSL. The env variable ``CONFIGURE_ELYTRON_SSL=true`` is no more needed.
+* Impact on Keycloak integration:
+** By default when configuring Keycloak OIDC and SAML adapters ``elytron`` was already in use. Nothing changes there.
+** If you were using the env variable ``SSO_FORCE_LEGACY_SECURITY=true`` to rely on the legacy security subsystem,
+the server will fail to start, you will need to remove this env variable and rely on ``elytron`` integration.
+   
+== Anticipating a future support for OpenID Connect
+
+In this new release we are deprecating the usage of the ``keycloak`` Galleon layer and automatic configuration 
+based on link:https://github.com/wildfly/wildfly-cekit-modules/blob/master/jboss/container/wildfly/launch/keycloak/module.yaml[environment variables.] 
+
+We are planning in a future release to rely on the link:https://issues.redhat.com/browse/WFLY-14017[new WildFly subsystem] 
+that is providing a native support for OpenID Connect allowing to interact with Keycloak server but with also other servers compatible with the OIDC protocol. 
+
+Stay tuned!
+
