@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Open Source Day 2021 Recap'
+date: 2021-10-18
+tags: elytron wildfly security opensource
+synopsis: A recap of Open Source Day, held during the virtual Grace Hopper Celebration.
+author: fjuma
+link: https://wildfly-security.github.io/wildfly-elytron/blog/open-source-day-recap/
+---
