@@ -1,0 +1,19 @@
+---
+layout: post
+title:  "WildFly 25.0.1 is released!"
+date:   2021-11-04
+tags:   announcement release
+author: kkhan
+description: WildFly 25.0.1.Final is now available for download.
+---
+
+= WildFly 25.0.1 is released!
+
+WildFly 25.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+It's been about four weeks since the WildFly 25 release, so we've done a small bug fix update, WildFly 25.0.1. This includes an update to WildFly Preview.
+
+The full list of issues resolved in WildFly 25.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12375434[here]. Issues resolved in the WildFly Core updates (there were two) included with WildFly 25.0.1 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12375622[here] and link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12377083[here].
+  
+
+Enjoy!
