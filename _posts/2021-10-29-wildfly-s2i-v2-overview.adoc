@@ -184,7 +184,7 @@ $ docker run --rm quay.io/jfdenise/my-app:latest
 $ docker push quay.io/jfdenise/my-app:latest
 ``
 
-* Write a WildFly Heml Charts `my-app.yaml` file with the following content:
+* Write a WildFly Helm Charts `my-app.yaml` file with the following content:
 
 ```
 image:
