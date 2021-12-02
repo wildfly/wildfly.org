@@ -1,0 +1,26 @@
+---
+layout: post
+title:  "New WildFly 26 Beta1 release"
+date:   2021-12-02
+tags:   announcement release
+author: darranl
+description: WildFly 26 Beta1 is now available for download.
+---
+
+= WildFly 26 Beta1 is released!
+
+I'm pleased to announce that the new WildFly and WildFly Preview 26.0.0.Beta1 releases are available for download at https://wildfly.org/downloads.
+
+For more information about the changes included in this release please consult the release notes, in the meantime the
+developers are working hard on tasks needed to prepare the base to add support for Jakarta EE 10 as the specifications
+become available.
+
+== Release Notes
+
+The release notes for the release are link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12374338[here], with issues fixed in the underlying WildFly Core betas listed link:https://issues.redhat.com/issues/?jql=project%20%3D%20%22WildFly%20Core%22%20and%20fixVersion%20in%20(18.0.0.Beta1%2C%2018.0.0.Beta2%2C%2018.0.0.Beta3%2C%2018.0.0.Beta4%2C%2018.0.0.Beta5)[here].
+
+Please try it out and give us your feedback, while we get to work on WildFly 26 Final!
+
+Best regards,
+
+Darran
