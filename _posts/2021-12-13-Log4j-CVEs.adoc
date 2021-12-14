@@ -27,9 +27,13 @@ If your application does include the log4j-core artifact, the following are step
 
 ==== Set `formatMsgNoLookups=true`
 
-Update the `$WILDFLY_HOME/bin/standalone.conf` or `$WILDFLY_HOME/bin/domain.conf` file (or, for Windows users, the `.bat` or `.ps1` variants of those) to add `-Dlog4j2.formatMsgNoLookups=true` to the value of the `JAVA_OPTS` environment variable. (Which file you update depends on whether you are running a standalone server or a domain mode host.)
+Since its 2.10 release, Log4j provides a configuration option that lets you turn off the JNDI lookup behavior that results in the vulnerability.
 
-This is the quickest mitigation, but as soon as you can you should also...
+To use this, update the `$WILDFLY_HOME/bin/standalone.conf` or `$WILDFLY_HOME/bin/domain.conf` file (or, for Windows users, the `.bat` or `.ps1` variants of those) to add `-Dlog4j2.formatMsgNoLookups=true` to the value of the `JAVA_OPTS` environment variable. (Which file you update depends on whether you are running a standalone server or a domain mode host.)
+
+Note that if you are using a version of log4j-core prior to 2.10 this will have no effect.
+
+If you're on a recent enough log4j-core version setting this is the quickest mitigation, but whether you can use it or not as soon as you can you should also...
 
 ==== Upgrade log4j-core to the 2.15.0 or later release
 
