@@ -63,7 +63,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12378513
+          url: https://wildfly.org/news/2021/12/16/WildFly26-Final-Released/
 - version: 26.0.0.Beta1
   version_shortname: 26 Beta
   date: 2021-12-02
