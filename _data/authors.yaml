@@ -138,3 +138,9 @@ darranl:
   occupation: "Software Engineer"
   bio: "Darran is a software engineer at Red Hat, working on the WildFly Elytron project and WildFly security."
   twitter: "darran_l"
+araskar:
+  name: "Ashpan Raskar"
+  location: "Canada"
+  occupation: "Software Engineer"
+  bio: "Ashpan works at Red Hat as a Software Engineering Intern on WildFly Elytron team."
+  twitter: "ashpanr"

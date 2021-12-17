@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'New Security Features in WildFly'
+date: 2021-12-17
+tags: release jaas security-realm oidc filesystem-realm ssl tls
+synopsis: An overview of some new security features in WildFly.
+author: fjuma
+link: https://wildfly-security.github.io/wildfly-elytron/blog/new-security-features-wildfly/
+---
+
