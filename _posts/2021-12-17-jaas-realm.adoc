@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Using a JAAS realm in Elytron'
+date: 2021-12-17
+tags: jaas security-realm login-module login-context
+synopsis: An example of how to use a JAAS realm in WildFly.
+author: dvilkola
+link: https://wildfly-security.github.io/wildfly-elytron/blog/jaas-realm/
+---
+
