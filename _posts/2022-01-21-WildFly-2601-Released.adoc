@@ -1,0 +1,17 @@
+---
+layout: post
+title:  "WildFly 26.0.1 is released!"
+date:   2022-01-21
+tags:   announcement release
+author: jmesnil
+description: WildFly 26.0.1.Final is now available for download.
+---
+
+WildFly 26.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+It's been about four weeks since the WildFly 26 release, so we've done a small bug fix update, WildFly 26.0.1. This includes an update to WildFly Preview.
+
+The full list of issues resolved in WildFly 26.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12378705[here]
+  
+
+Enjoy!
