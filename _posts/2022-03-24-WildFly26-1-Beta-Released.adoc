@@ -1,0 +1,59 @@
+---
+layout: post
+title:  "New WildFly 26.1 Beta1 release"
+date:   2022-03-24
+tags:   announcement release
+author: darranl
+description: WildFly 26.1 Beta1 is now available for download.
+---
+
+= WildFly 26.1 Beta1 is released!
+
+I'm pleased to announce that the new WildFly and WildFly Preview 26.1.0.Beta1 releases are available for download at https://wildfly.org/downloads.
+
+Whilst normally at this point we would be bringing the Beta for the next major release our main branch is being used for active development for
+the upcoming support of Jakarta EE 10 so we are releasing a minor release in the WildFly 26 stream to bring some new features.
+
+Here are the features specifically backported to this release.
+
+*Batch*
+
+* link:https://issues.redhat.com/browse/WFLY-15525[WFLY-15525] - JBeret: Make it possible to limit number of records retrieved via a JDBC store
+
+*JCA*
+
+* link:https://issues.redhat.com/browse/WFLY-14266[WFLY-14266] - JCA: enable configuration of resource adapter validation log directory
+* link:https://issues.redhat.com/browse/WFLY-14347[WFLY-14347] - Allow to configure module for custom validation classes
+
+*JMS*
+
+* link:https://issues.redhat.com/browse/WFLY-15926[WFLY-15926] - Add an attribute to be able to define the address_queue_scan period
+
+*MicroProfile*
+
+* link:https://issues.redhat.com/browse/WFLY-15832[WFLY-15832] - MP Config: Ability to specify root config source directory
+
+*Security*
+
+* link:https://issues.redhat.com/browse/WFLY-14846[WFLY-14846] - Automatic registration of client side / JVM wide default SSLContext
+* link:https://issues.redhat.com/browse/WFLY-15075[WFLY-15075] - Add encryption support to FileSystemSecurityRealm
+* link:https://issues.redhat.com/browse/WFLY-16137[WFLY-16137] - Enchance keystore CLI commands
+
+
+Over the next couple of weeks we will be working on bug fixes needed for WildFly 26.1.0.Final so please try out this Beta release and let us know
+if you hit any bugs so we can review if we can address them.
+
+For more information about the changes included in this release please consult the release notes.
+
+I would like to thank everyone who has contributed to this release, especially whilst in parallel working hard on tasks needed to support Jakarta EE
+10 in our future releases.
+
+== Release Notes
+
+The release notes for the release are link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12380362[here], with issues fixed in the underlying WildFly Core beta listed link:https://issues.redhat.com/issues/?jql=project%20%3D%20%22WildFly%20Core%22%20and%20fixVersion%20in%20(18.1.0.Beta1)[here].
+
+Please try it out and give us your feedback, while we get to work on WildFly 26.1 Final!
+
+Best regards,
+
+Darran
