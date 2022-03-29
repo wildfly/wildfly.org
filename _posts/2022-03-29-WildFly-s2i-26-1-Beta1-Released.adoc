@@ -1,0 +1,33 @@
+---
+layout: post
+title:  "WildFly 26.1 Beta S2I images have been released on quay.io"
+date:   2022-03-29
+tags:   wildfly galleon
+author: jfdenise
+---
+
+= WildFly 26.1 Beta S2I images have been released on quay.io
+
+==  WildFly 26.1 Beta S2I Docker images
+
+The WildFly S2I (Source-to-Image) builder and runtime Docker images for WildFly 26.1 Beta 
+have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
+
+For complete documentation on how to use these images using S2I, OpenShift and Docker,
+refer to the WildFly S2I link:https://github.com/wildfly/wildfly-s2i/blob/master/README.md[README].
+   
+== Anticipating a future set of WildFly images
+
+The `quay.io/wildfly/wildfly-centos7` and `quay.io/wildfly/wildfly-runtime-centos7` have been deprecated since WildFly 26. 
+When building or running the server, a deprecation notice is displayed in the console.  
+
+This WildFly 26.1 Beta and the following 26.1 Final images will be the latest released in quay.io.
+
+We have started our migration to the new WildFly S2I images that will be released for WildFly 26.1. 
+
+The new architecture is based on the link:https://github.com/wildfly/wildfly-maven-plugin/[WildFly Maven plugin 3.0] and a new pair of docker images. 
+This link:https://www.wildfly.org/news/2021/10/29/wildfly-s2i-v2-overview/[post] has provided the details of this new approach. 
+
+Stay tuned!
+
+JF Denise
