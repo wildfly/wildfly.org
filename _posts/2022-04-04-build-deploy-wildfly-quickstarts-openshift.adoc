@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: Build and Deploy WildFly Quickstarts on OpenShift'
+date:   2022-04-04
+tags:   wildfly quickstarts openshift vlog
+synopsis: This video demonstrates how to build and deploy a quickstart for WildFly on OpenShift.
+author: jmesnil
+link: https://www.youtube.com/watch?v=Y2En5miRKjY
+---
