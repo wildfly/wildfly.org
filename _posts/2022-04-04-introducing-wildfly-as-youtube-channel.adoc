@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: Introducing the wildfly.org YouTube Channel'
+date:   2022-04-04
+tags:   wildfly vlog
+synopsis: This video gives an introduction to WildFly's new YouTube channel.
+author: smaestri
+link: https://www.youtube.com/watch?v=cRDv_Oi-7T8
+---

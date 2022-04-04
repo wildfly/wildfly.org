@@ -15,7 +15,7 @@
         {% else %}
           <p>{{ post.content | strip_html | truncatewords: 75 }}</p>
         {% endif %}
-        <a href="{% if post.link %}{{ post.link }}{% else %}{{site.baseurl}}{{ post.url }}{% endif %}" {% if post.link %}target="_blank"{% endif %}>Read More ></a>
+        <a href="{% if post.link %}{{ post.link }}{% else %}{{site.baseurl}}{{ post.url }}{% endif %}" {% if post.link %}target="_blank"{% endif %}>{% if post.link contains 'youtube' %}Watch Video >{% else %}Read More >{% endif %}</a>
       </div>
     {% endif %}
   {% endfor %}
