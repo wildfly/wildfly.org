@@ -63,7 +63,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: TODO
+          url: https://wildfly.org/news/2022/04/07/WildFly261-Final-Released/
 - version: 26.1.0.Beta1
   version_shortname: 26.1 Beta
   date: 2022-03-24
