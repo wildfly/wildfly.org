@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: HAL Standalone Mode'
+date:   2022-04-04
+tags:   hal management console openshift vlog
+synopsis: This video demonstrates the different ways how to use the WildFly management console.
+author: hpehl
+link: https://www.youtube.com/watch?v=plf7FLsHqe4
+---
