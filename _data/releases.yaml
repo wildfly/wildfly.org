@@ -1,6 +1,6 @@
 - version: 26.1.0.Final
   version_shortname: 26.1 Final
-  date: 2022-04-06
+  date: 2022-04-14
   qualifier: Final
   link:
     - name: WildFly Preview EE 9.1 Distribution
@@ -63,7 +63,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://wildfly.org/news/2022/04/07/WildFly261-Final-Released/
+          url: https://wildfly.org/news/2022/04/14/WildFly261-Final-Released/
 - version: 26.1.0.Beta1
   version_shortname: 26.1 Beta
   date: 2022-03-24
