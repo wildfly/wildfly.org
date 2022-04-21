@@ -153,3 +153,8 @@ baranowb:
   name: "Bartosz Baranowski"
   emailhash: "63a1027f6f22d9bbbb10fcd469c78136"
   bio: "https://github.com/baranowb"
+fabiobrz:
+  name: "Fabio Burzigotti"
+  location: "Italy"
+  occupation: "Software Quality Engineer"
+  bio: "Fabio is a senior software quality engineer at Red Hat. He works on MicroProfile integration, Bootable JAR and on application services interoperability in cloud contexts."
