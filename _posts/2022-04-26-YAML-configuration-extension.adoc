@@ -183,4 +183,4 @@ Paths can be absolute, relative to the current execution directory or relative t
 ./standalone.sh -y=/home/ehsavoie/dev/wildfly/config2.yml:config.yml -c standalone-full.xml
 ----
 
-video::GeoyWYctbsI[youtube,width=560,height=315,title="YouTube video player"]
+video::Yc3w4OKRkGA[youtube,width=560,height=315,title="YouTube video player"]
