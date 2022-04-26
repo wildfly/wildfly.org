@@ -1,0 +1,186 @@
+---
+layout: post
+title:  "Extending your configuration with YAML"
+date:   2022-04-26 06:00:00 +0100
+tags:   wildfly configuration management
+author: ehsavoie
+---
+
+= Extending your configuration with YAML
+
+In WildFly the configuration is managed and stored in the standalone.xml. You have several ways to customize your configuration: edit the XML manually (which is not the recommended approach) or create jboss-cli scripts that you can run on each upgrade.
+So why propose a 'new' solution to customize a server configuration ? 
+Well the idea was to be able to externalize the customization from the 'standard' provided configuration to facilitate server upgrades: just unzip the new release, install/provision your applications and run the same command line.
+This can also be done with cli scripts that  are executed on boot. But those are a bit tricky to write since you have no idempotence on each boot.
+That's why we have introduced a new way to do this by using YAML configuration files. The server will be started in read-only mode, that means that you can't update the configuration and expect your changes to be persisted.
+
+[WARNING]
+====
+Please note that this feature is considered *EXPERIMENTAL* and thus is *DISABLED* by default.
+====
+
+== Activating the feature ==
+
+To enable that feature you need to add a `ServiceLoader` configuration in the *org.jboss.as.controller*_* module.
+
+You need to create the following file: *META-INF/services/org.jboss.as.controller.persistence.ConfigurationExtension* containing a single line *org.jboss.as.controller.persistence.yaml.YamlConfigurationExtension* in the dir folder of the *org.jboss.as.controller* module.
+
+[source,options="nowrap"]
+----
+mkdir -p $WILDFLY_HOME/modules/system/layers/base/org/jboss/as/controller/main/dir/META-INF/services/
+
+echo 'org.jboss.as.controller.persistence.yaml.YamlConfigurationExtension' > $WILDFLY_HOME/modules/system/layers/base/org/jboss/as/controller/main/dir/META-INF/services/org.jboss.as.controller.persistence.ConfigurationExtension
+----
+
+== Writting the YAML ==
+
+[WARNING]
+====
+Note that the YAML structure doesn't follow the XML model but https://docs.wildfly.org/26/wildscribe/index.html[the  management model resource tree that is defined for jboss-cli].
+====
+
+The goal of the YAML files is to be able to customize an existing configuration. It is not here to replace the existing configuration support with XML. As such we won't support part of the management model.
+Only those elements would be `supported`:
+
+- core-service
+- interface
+- socket-binding-group
+- subsystem
+- system-property
+
+That means that at least those entries would be `ignored`:
+
+ - extension: to add extension to the server as this might require modules which can be missing.
+ - deployment: to add deployments to the server as this require more that just some configuration.
+ - deployment-overlay: to add deployment-overlays to the server as this require more that just some configuration.
+ - path: since those should already have been defined when the YAML files are parsed.
+
+The YAML root node must be *wildfly-configuration*, then you can follow the model tree to add, remove or update resources.
+If a resource is already present (created by the XML or a previous YAML file) then we will update it, otherwise we will create it.
+
+Sample YAML file to define a new PostGresql datasource:
+
+[source,yaml]
+----
+wildfly-configuration:
+  subsystem:
+    datasources:
+      jdbc-driver:
+        postgresql:
+          driver-name: postgresql
+          driver-xa-datasource-class-name: org.postgresql.xa.PGXADataSource
+          driver-module-name: org.postgresql.jdbc
+      data-source:
+        PostgreSQLDS:
+          enabled: true
+          exception-sorter-class-name: org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter
+          jndi-name: java:jboss/datasources/PostgreSQLDS
+          jta: true
+          max-pool-size: 20
+          min-pool-size: 0
+          connection-url: "jdbc:postgresql://localhost:5432}/demo"
+          driver-name: postgresql
+          user-name: postgres
+          password: postgres
+          validate-on-match: true
+          background-validation: false
+          background-validation-millis: 10000
+          flush-strategy: FailingConnectionOnly
+          statistics-enable: false
+          stale-connection-checker-class-name: org.jboss.jca.adapters.jdbc.extensions.novendor.NullStaleConnectionChecker
+          valid-connection-checker-class-name: org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker
+          transaction-isolation: TRANSACTION_READ_COMMITTED
+----
+
+As you can see, we are defining a _jdbc-driver_ called *postgresql* and a _data-source_ called *PostgreSQLDS*.
+[NOTE]
+====
+Note that binaries is not managed by the YAML file, you need to create or provision the *org.postgresql.jdbc* module.
+====
+
+=== Operations ===
+
+We also provide three operations using tags to provide more flexibility in what you can do with the YAML file.
+
+
+==== *!undefine*: to undefine an attribute ====
+
+Sample YAML file to undefine the CONSOLE logger level:
+[source,yaml]
+----
+wildfly-configuration:
+    subsystem:
+        logging:
+          console-handler:
+            CONSOLE:
+              level: !undefine
+----
+
+==== *!remove*: to remove the resource ====
+
+Sample YAML file to remove the embedded Artemis broker and connect to a remote broker:
+[source,yaml]
+----
+wildfly-configuration:
+  socket-binding-group:
+    standard-sockets:
+      remote-destination-outbound-socket-binding:
+        remote-artemis:
+          host: localhost
+          port: 61616
+  subsystem:
+    messaging-activemq:
+      server:
+        default: !remove
+      remote-connector:
+        artemis:
+          socket-binding: remote-artemis
+      pooled-connection-factory:
+        RemoteConnectionFactory:
+          connectors:
+            - artemis
+          entries:
+            - "java:jboss/RemoteConnectionFactory"
+            - "java:jboss/exported/jms/RemoteConnectionFactory"
+          enable-amq1-prefix: false
+          user: admin
+          password: admin
+    ejb3:
+      default-resource-adapter-name: RemoteConnectionFactory
+    ee:
+      service:
+        default-bindings:
+          jms-connection-factory: "java:jboss/RemoteConnectionFactory"
+----
+
+==== *!list-add*: to add an element to a list (with an optionnal index). ====
+
+Sample YAML file to add a RemoteTransactionPermission to the permissions list at the position 0:
+[source,yaml]
+----
+wildfly-configuration:
+    subsystem:
+        elytron:
+          permission-set:
+           default-permissions: 
+             permissions: !list-add 
+              - class-name: org.wildfly.transaction.client.RemoteTransactionPermission
+                module: org.wildfly.transaction.client
+                target-name: "*"
+                index: 0
+----
+
+As you may have noticed the *index* attribute doesn't exist. It is used to know where to place the entry.
+If none is defined then the entry will be appended to the list.
+
+== Starting with YAML files ==
+
+Using the `--yaml` or `-y` argument you can pass a list of YAML files. Each path needs to be separated by the `File.pathSeparator`.  It is a semicolon (;) on Windows and colon (:) on Mac and Unix-based operating systems.
+Paths can be absolute, relative to the current execution directory or relative to the standalone configuration directory.
+
+[source,options="nowrap"]
+----
+./standalone.sh -y=/home/ehsavoie/dev/wildfly/config2.yml:config.yml -c standalone-full.xml
+----
+
+video::GeoyWYctbsI[youtube,width=560,height=315,title="YouTube video player"]
