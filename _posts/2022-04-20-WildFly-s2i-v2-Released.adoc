@@ -104,10 +104,11 @@ This link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql-j
 
 [NOTE]
 ====
-When using the JDK17 image, you need to set the following env variable to workaround link:https://issues.redhat.com/browse/WFCORE-5835[WFCORE-5835]:
+When using JDK17 images of a version < 1.0.2, you need to set the following env variable to workaround link:https://issues.redhat.com/browse/WFCORE-5835[WFCORE-5835]:
 ```
 JAVA_OPTS_APPEND=--add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED
 ```
+The latest JDK17 images have been fixed.
 ====
 
 === Multiarch images preview
