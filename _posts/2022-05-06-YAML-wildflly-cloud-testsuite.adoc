@@ -1,0 +1,32 @@
+---
+layout: post
+title:  "WildFly Cloud Testsuite"
+date:   2022-05-09 00:00:00 +0100
+tags:   wildfly cloud testsuite
+author: kkhan
+---
+
+= WildFly Cloud Testsuite
+
+In addition to the WildFly zip download familiar to a lot of our users, a big part of the WildFly story is that it is very usable on the cloud. And of course for that we have a lot of tests, many of which are currently private.
+
+We now have a proof of concept public cloud testsuite which can be found at https://github.com/wildfly-extras/wildfly-cloud-tests.
+
+It does not aim to run the full testsuite from https://github.com/wildfly/wildfly/tree/main/testsuite. Rather, we want to focus attention on areas relevant to the cloud. So far it includes tests for:
+
+* our container launch scripts actually being able to connect to a database when configured with the documented environment variables to do so
+* configmaps and secrets can be read by the MicroProfile subsystem
+* being able to connect to Kafka provided by the https://strimzi.io[Strimzi] operator
+* that we are able to execute CLI command and REST calls on a server running on a pod
+
+It is still a proof of concept, but is something we're actively working on, so expect to see this grow and evolve as we identify more things we want to test. Once things are more settled we will move it over to the main wildfly organisation in GitHub.
+
+On the Java side, we are currently using https://dekorate.io[Dekorate] as our underlying framework, but are evaluating other alternatives. There are helpers to be able to connect to the correct pods running the application from the tests. More could be done to make the experience smoother. This will be done once we decide which framework to invest in. Also, it is quite flexible when it comes to the underlying framework, so we will be able to switch tests to something else in steps - it does not all need to be done in one go.
+
+Currently, the tests work against a locally running Kubernetes instance. This makes sense for the framework in its beginning since Openshift is based on Kubernetes, and of course very important for us to support. We will look at other cloud providers in the future, and also expand it to use Openshift as needed, i.e. when Kubernetes does not offer everything we need.
+
+The hope is that the testsuite can become a nice reference point for 'power users' to be able to see how to use WildFly on Openshift/Kubernetes, and provide ideas for how you can test your applications when running on OpenShift. Please see the project https://github.com/wildfly-extras/wildfly-cloud-tests/blob/main/README.md[README] for more instructions on how to write tests.
+
+If you would like to get involved, file issues in the https://github.com/wildfly-extras/wildfly-cloud-tests repository for things you would like to see implemented (as well as for bug reports). If you would like to discuss something more abstract, the repository also has discussions enabled.
+
+Enjoy :-)
