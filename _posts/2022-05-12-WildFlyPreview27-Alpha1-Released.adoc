@@ -1,0 +1,45 @@
+---
+layout: post
+title:  "WildFly Preview 27 Alpha1 is released!"
+date:   2022-05-12
+tags:   announcement release microprofile jakartaee
+author: bstansberry
+description: WildFly Preview 27.0.0.Alpha1 is now available for download
+---
+
+= WildFly Preview 27 Alpha1 is released
+
+Today we have released a 27.0.0.Alpha1 version of WildFly Preview. This release serves as a milestone on our way toward support for Jakarta EE 10 in WildFly Preview, and eventually in standard WildFly.
+
+As discussed in my January link:https://www.wildfly.org/news/2022/01/21/WildFly-2022/[WildFly Release Plans for 2022 post], the main focus of the WildFly developers as we work on WildFly 27 is implementing Jakarta EE 10 support. That work has now reached a point in WildFly Preview where it's useful to evaluate WildFly Preview as a compatible implementation of the new link:https://jakarta.ee/specifications/coreprofile/[Jakarta EE Core Profile]. In order to help with bringing the EE 10 Core Profile specification to completion, we've released WildFly Preview 27.0.0.Alpha1.
+
+Note that we are not adding 27.0.0.Alpha1 binaries for standard WildFly to link:https://wildfly.org/downloads[the downloads page]. Standard WildFly is still built with the Jakarta EE 8 APIs, but we plan to switch to EE 10 in our main branch soon, and we will not be doing a standard WildFly 27 Final release that supports EE 8. So, there is not much purpose looking at 27.0.0.Alpha1 for standard WildFly. (Its binaries can be found in the link://https://repository.jboss.org/[jboss.org maven repository though].)
+
+We're also not releasing quickstarts or cloud images for this release.
+
+== What's New?
+
+A couple of noteworthy items in this release are support for CDI 4.0 (via Weld 5), including CDI Lite, along with the much-asked-for transition from Hibernate 5.3 to Hibernate 6.
+
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12378526[in the WFLY JIRA project].
+
+
+== Java SE Support
+
+You can run 27.0.0.Alpha1 on Java SE 11 or Java SE 17. The WildFly project no longer supports Java SE 8 in our feature releases, although our planned 26.1.1 and 26.1.2 bug fix releases will support SE 8.
+
+
+== Standards Support
+
+The 27.0.0.Alpha1 release is not a compatible implementation of Jakarta EE 8 or 9.1, nor is it a compatible implementation of MicroProfile Platform 4.1 or 5. Strict specification compliance wasn't a focus of this alpha release, other than a desire to be compatible with the EE 10 Core Profile once that specification is released.
+
+== Upcoming Changes
+
+As discussed in my January link:https://www.wildfly.org/news/2022/01/21/WildFly-2022/[WildFly Release Plans for 2022 post], WildFly 26.1 was the last WildFly feature release that will support Java SE 8, Jakarta EE 8 and MicroProfile 4.1, while WildFly Preview 26.1 was the last release that will support Jakarta EE 9.1. The WildFly 27 release will require Java SE 11 or higher and will support Jakarta EE 10 and MicroProfile APIs based on the jakarta.* package namespace.
+
+We plan to do a WildFly 26.1.1 bug fix release in May. Something different from previous releases is we also intend to do a WildFly 26.1.2 bug fix release in the July-August time frame. The aim of that release will be to deliver any critical fixes we've discovered, particularly security related items. We recognize that moving on from SE 8 and EE 8 may be a substantial task for many of our users, so we want to help ease that transition by providing an extra bug fix release.
+
+
+== Enjoy!
+
+Thank you for your continued support of WildFly.  We'd love to hear your feedback at the link:https://groups.google.com/forum/#!forum/wildfly[WildFly forum]. 
