@@ -1,0 +1,21 @@
+---
+layout: post
+title:  "WildFly 26.1.1 is released!"
+date:   2022-05-19
+tags:   announcement release
+author: bstansberry
+description: WildFly 26.1.1.Final is now available for download.
+---
+
+= WildFly 26.1.1 is released!
+
+WildFly 26.1.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+It's been about five weeks since the WildFly 26.1 release, so we've done a small bug fix update, WildFly 26.1.1. This includes an update to WildFly Preview.
+
+The full list of issues resolved in WildFly 26.1.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12385081[here]. Issues resolved in the WildFly Core update included with WildFly 26.1.1 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12384088[here].
+
+Note that the release artifacts are available in public maven in the link:https://repository.jboss.org/nexus/content/groups/public[jboss.org maven repo] but at the time of writing we're aware of some issues with syncing artifacts from there to Maven Central, so there may be some delays before the 26.1.1.Final artifacts can be resolved from there.
+  
+
+Enjoy!
