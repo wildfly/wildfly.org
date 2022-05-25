@@ -4,6 +4,7 @@
 ---
 
 $baseurl: "{{ site.baseurl }}";
+$content-width: 1000px;
 
 @import "global";
 @import "grid";
