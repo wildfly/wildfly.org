@@ -1,5 +1,5 @@
 ---
 layout: downloads
-title: Downloads
+title: WildFly Downloads
 permalink: /downloads/
 ---

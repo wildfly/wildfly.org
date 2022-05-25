@@ -1,5 +1,5 @@
 ---
 layout: about
-title: About
+title: About WildFly
 permalink: /about/
 ---
