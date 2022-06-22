@@ -1,0 +1,9 @@
+---
+layout: post
+title: "Securing Jakarta Enterprise Beans with mutual TLS authentication"
+date: 2022-06-21
+tags: ejb tls sasl https credential-store keystore truststore
+synopsis: A demonstration on how to configure Elytron for secure connections to EJBs, using mutual TLS, SASL authentication mechanisms, and credential stores.
+author: cam-rod
+link: https://wildfly-security.github.io/wildfly-elytron/blog/ejb-over-tls/
+---
