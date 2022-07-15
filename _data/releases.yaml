@@ -1,3 +1,38 @@
+- version: 27.0.0.Alpha3
+  version_shortname: 27 Alpha3
+  date: 2022-07-15
+  qualifier: Alpha
+  link:
+    - name: WildFly Preview Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          size: 215 MB
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-preview-27.0.0.Alpha3.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-preview-27.0.0.Alpha3.zip.sha1
+        - format: tgz
+          size: 214 MB
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-preview-27.0.0.Alpha3.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-preview-27.0.0.Alpha3.tar.gz.sha1
+    - name: Application Server Source Code
+      licence: LGPL
+      items:
+        - format: zip
+          size: 42 MB
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-27.0.0.Alpha3-src.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-27.0.0.Alpha3-src.zip.sha1
+        - format: tgz
+          size: 26 MB
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-27.0.0.Alpha3-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha3/wildfly-27.0.0.Alpha3-src.tar.gz.sha1
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12391582 
 - version: 27.0.0.Alpha2
   version_shortname: 27 Alpha2
   date: 2022-07-08
