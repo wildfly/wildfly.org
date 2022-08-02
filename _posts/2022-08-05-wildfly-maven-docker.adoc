@@ -1,0 +1,276 @@
+---
+layout: post
+title: 'Use the wildfly-maven-plugin to create a Docker image of your application'
+date: 2022-08-05
+tags: cloud container
+description: This article explains how to use the new capabilities of the wildfly-maven-plugin to build container images.
+author: jmesnil
+---
+
+In this article, we will explain how a developer using the Docker image for WildFly can take advantage of the new capabilities of the `wildlfy-maven-plugin` and the new WildFly runtime image to build their container image.
+
+We will describe the changes required to move to this new architecture.
+Once the changes are done, we will provide some examples of the benefits that can be gained from this new architecture.
+
+## WildFly, Docker, S2I and what are the synergies?
+
+WildFly provides a Docker image at https://quay.io/repository/wildfly/wildfly?tab=info[quay.io/wildfly/wildfly] that provides a vanilla WildFly server based on its default standalone configuration.
+
+WildFly also provides Source-to-image (S2I) images to be able to create an application image from the application source using tools targeting OpenShift.
+
+These two types of images, the "vanilla" Docker image and the OpenShift S2I images, have no connection and no synergy.
+A lot of work has been done in WildFly around provisioning. The S2I images benefitted from this effort but the Docker image did not... until now.
+
+While S2I is a good technology to build application images on OpenShift, we realized that we could achieve a more flexible solution that would benefit other container platforms (Kubernetes, Azure) as well as users running WildFly on premise.
+
+We decided to focus on a Maven-centric approach to provision WildFly so that Maven (and the user) would be in control of the complete runtime (including the user deployment as well as the WildFly runtime).
+This Maven-centric approach can also benefit the users of the vanilla Docker image for WildFly and help them move to a consolidated architecture.
+
+## WildFly Docker image
+
+There are different ways to use the https://quay.io/repository/wildfly/wildfly?tab=info[quay.io/wildfly/wildfly] image to create an *application image* (that would contain both WildFly and your deployments) but the simplest one is to add the deployment archive to this base image and let WildFly deploy it when it starts.
+
+As an example, we will start from a simple Java application, the https://github.com/wildfly/quickstart/tree/main/microprofile-config[`microprofile-config`] quickstart.
+For the purpose of this exercise, the Java application is a blackbox and we will not look at it. We just want to ensure that we can create a application image that can run it.
+
+Let's clone the repository and build the application:
+
+[source,bash]
+----
+git clone https://github.com/wildfly/quickstart.git
+cd quickstart/microprofile-config
+mvn clean package
+----
+
+Once the Maven build is finished, the deployment archive has been created in `target/microprofile-config.war`.
+
+At this point, we can use the WildFly Docker image to create the application image with a simple `Dockerfile`:
+
+[source]
+----
+FROM quay.io/wildfly/wildfly
+ADD target/microprofile-config.war /opt/jboss/wildfly/standalone/deployments/
+----
+
+Let's build a `wildfly-app` image from this Dockerfile and run it locally:
+
+[source,bash]
+----
+docker build -t wildlfy-app .
+docker run -p 8080:8080 wildfly-app
+----
+
+That's all we needed to run WildFly and the application from docker. We can verify that it is working with:
+
+[source,bash]
+----
+curl http://localhost:8080/microprofile-config/
+----
+
+and it replies `MicroProfile Config quickstart deployed successfully. You can find the available operations in the included README file`.
+
+## WildFly Provisioning Architecture
+
+Let's now move to the new architecture for WildFly.
+Jean-Francois Denise extensively described it in the https://www.wildfly.org/news/2022/04/20/WildFly-s2i-v2-Released/[WildFly S2I new architecture is final!] article and focused on the Source-to-Image (S2I) capabilities of the architecture.
+
+In this article, we will see that this architecture also benefits users who are not using S2I and want to keep control of the creation of their application images.
+
+With this new architecture, the provisioning of WildFly (which provides the ability to download and create a distribution of WildFly fit for the application requirements) is handled by the Maven plugin `org.wildfly.plugins:wildfly-maven-plugin`.
+
+We can add it to the `<build>` section of application's `pom.xml` to provision WildFly when the `package` goal is executed by Maven:
+
+[source,xml]
+----
+<plugin>
+  <groupId>org.wildfly.plugins</groupId>
+  <artifactId>wildfly-maven-plugin</artifactId>
+  <version>4.0.0.Beta2</version>
+  <configuration>
+    <feature-packs>
+      <feature-pack>
+        <location>org.wildfly:wildfly-galleon-pack:26.1.1.Final</location>
+      </feature-pack>
+    </feature-packs>
+  </configuration>
+  <executions>
+    <execution>
+      <goals>
+        <goal>package</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+----
+
+If we run again `mvn clean package`, the `wildfly-maven-plugin` will provision WildFly using its feature pack. 
+Once maven is finished, there will be a `target/server` directory that contains _WildFly and the application deployment_.
+This means that you can directly run WildFly from this directory with the application deployed in it:
+
+[source,bash]
+----
+./target/server/bin/standalone.sh
+...
+12:32:00,134 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0010: Deployed "microprofile-config.war" (runtime-name : "microprofile-config.war")
+...
+12:32:00,196 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 26.1.1.Final (WildFly Core 18.1.1.Final) started in 8929ms - Started 423 of 623 services (341 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+
+This is the _fundamental change with this architecture_: the provisioning, capability trimming and customization of WildFly is now controlled by the application's `pom.xml`.
+
+In that sense, the application's `pom.xml` controls the full runtime of the application. You no longer need to install WildFly, create the deployment and deploy it in WildFly. Instead, the WildFly installation and the deployment is done as part of the Maven build process. 
+You can really see your `pom.xml` as the _central point of your application_ which is composed of the WildFly runtime and your deployment archive.
+
+To leverage this change, we have developed a new image  `quay.io/wildfly/wildfly-runtime-jdk11` that contains everything needed to *run* WildFly with OpenJDK 11.
+
+If we want to create an application image, we can change the `Dockerfile` to use this runtime image and add the `target/server` to it:
+
+[source]
+----
+FROM quay.io/wildfly/wildfly-runtime-jdk11
+COPY --chown=jboss:root target/server $JBOSS_HOME
+RUN chmod -R ug+rwX $JBOSS_HOME
+----
+
+Let's build again the `wildfly-app` image from this updated `Dockerfile` and run it:
+
+[source,bash]
+----
+docker build -t wildlfy-app .
+docker run -p 8080:8080 wildfly-app
+----
+
+We can see that there is no change from a caller perspective and the application can still be queried with:
+
+[source,bash]
+----
+curl http://localhost:8080/microprofile-config/
+----
+
+## Moving from WildFly Docker image to Runtime image
+
+Let's review what is needed to move from the vanilla Docker image to the new runtime image for WildFly:
+
+1. add the `org.wildfly.plugins:wildfly-maven-plugin` to the application's `pom.xml`
+2. udate the `Dockerfile` to use the new runtime image and add the `target/server` directory
+
+Now that we have moved to the new architecture, what are the benefits of it?
+
+## Capability Trimming
+
+WildFly provides capability trimming with https://docs.wildfly.org/26.1/Bootable_Guide.html#wildfly_layers[layers] so that WildFly is provisioned with only the components (mostly Java archives) that are needed to run your application and nothing more. There are two key benefits with capability trimming:
+
+* It reduces the security risk as you are not subject to security attacks if the affected components are not present in application at all.
+* It reduces the size of the server runtime.
+
+In our example, our `microprofile-config` quickstart requires MicroProfile to run. WildFly provides a convenient `microprofile-platform` that provisions everything that is needed to run MicroProfile applications. We can trim our runtime to only this layer by updating the `wildfly-maven-plugin`:
+
+[source,xml]
+----
+<configuration>
+    <feature-packs>
+        <feature-pack>
+            <location>org.wildfly:wildfly-galleon-pack:26.1.1.Final</location>
+        </feature-pack>
+    </feature-packs>
+    <layers>
+        <layer>microprofile-platform</layer>
+    </layers>
+</configuration>
+----
+
+If we package again the application with `mvn clean package`, we can notice that the size of the `target/server` went from `250M` to `73M` and a lot of jars that were not needed to run the application are no longer present.
+
+## Packaging Scripts
+
+The `wildfly-maven-plugin` also provides the ability to execute JBoss CLI commands when WildFly is provisioned. This allows you to substantially modify the standalone configuration to better fit the application requirements. It has no impact on the application image as these scripts are only invoked during provisioning. 
+
+As a basic example, let's say we want to support Cross-Origin Resource Sharing (CORS) that requires to add some resources to the `undertow` subsystem.
+
+To active CORS in our application, we need to write a CLI script that creates these resources and put them in the application project in the `src/main/scripts/cors.cli`:
+
+[source]
+----
+echo Adding Undertow Filters for CORS
+# Access-Control-Allow-Origin
+/subsystem=undertow/server=default-server/host=default-host/filter-ref="Access-Control-Allow-Origin":add()
+/subsystem=undertow/configuration=filter/response-header="Access-Control-Allow-Origin":add(header-name="Access-Control-Allow-Origin",header-value="${env.CORS_ORIGIN:*}")
+# Access-Control-Allow-Methods
+/subsystem=undertow/server=default-server/host=default-host/filter-ref="Access-Control-Allow-Methods":add()
+/subsystem=undertow/configuration=filter/response-header="Access-Control-Allow-Methods":add(header-name="Access-Control-Allow-Methods",header-value="GET, POST, OPTION, PUT, DELETE, PATCH")
+# Access-Control-Allow-Headers
+/subsystem=undertow/server=default-server/host=default-host/filter-ref="Access-Control-Allow-Headers":add()
+/subsystem=undertow/configuration=filter/response-header="Access-Control-Allow-Headers":add(header-name="Access-Control-Allow-Headers",header-value="accept, authorization, content-type, x-requested-with")
+# Access-Control-Allow-Credentials
+/subsystem=undertow/server=default-server/host=default-host/filter-ref="Access-Control-Allow-Credentials":add()
+/subsystem=undertow/configuration=filter/response-header="Access-Control-Allow-Credentials":add(header-name="Access-Control-Allow-Credentials",header-value="true")
+# Access-Control-Max-Age
+/subsystem=undertow/server=default-server/host=default-host/filter-ref="Access-Control-Max-Age":add()
+/subsystem=undertow/configuration=filter/response-header="Access-Control-Max-Age":add(header-name="Access-Control-Max-Age",header-value="1")
+----
+
+We can then add this script to the `wildfly-maven-plugin` by extending its configuration:
+
+[source,xml]
+----
+<plugin>
+  <groupId>org.wildfly.plugins</groupId>
+  <artifactId>wildfly-maven-plugin</artifactId>
+  <version>4.0.0.Beta2</version>
+  <configuration>
+    ...
+    <packaging-scripts>
+      <packaging-script>
+        <scripts>
+          <script>${project.build.scriptSourceDirectory}/cors.cli</script>
+        </scripts>
+      </packaging-script>
+    </packaging-scripts>
+    ...
+  </configuration>
+</plugin>
+----
+
+Once the `pom.xml` is modified, when you run `mvn package`, you can notice the CLI commands that are invoked during the packaging of the application:
+
+[source]
+----
+mvn clean package
+...
+[INFO] --- wildfly-maven-plugin:4.0.0.Beta2:package (default) @ microprofile-config ---
+[INFO] Provisioning server in /Users/jmesnil/Developer/quickstart/microprofile-config/target/server
+...
+[standalone@embedded /] echo Adding Undertow Filters for CORS
+Adding Undertow Filters for CORS
+...
+----
+
+With the ability to run CLI scripts when WildFly is provisioned, you are in total control of the configuration of WildFly.
+
+## Feature Packs
+
+WildFly uses feature packs as the building blocks to provision the server.
+
+The most important feature pack is WildFly's own feature pack: `org.wildfly:wildfly-galleon-pack:26.1.1.Final` to control the installation of WildFly itself.
+
+We are also providing additional feature packs to provide additional capabilities to WildFly.
+It is out of scope of this article to list all of them but let's discuss two interesting ones:
+
+* The https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] provides a set of additional features allowing you to configure a WildFly server to work on the cloud. It adapts WildFly to run on orchestration plaftorms in an optimized way. In particular, it automatically routes server logs to the console, it provisions the `health` subsystem to monitor the server health with healthiness probes, etc.
+* The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] provides JDBC drivers and datasources for various databases. If you include this feature pack, you only need to specify the layer corresponding to the databases you want to use (e.g. `postgresql-datasource`). You then only need to specify a few environment variables (e.g. DB URL and credentials) at runtime to connect to the database when WildFly is running.
+
+## Conclusion
+
+The `wildfly-maven-plugin` is currently at version 4.0.0.Beta2 with a Final release planned for WildFly 27.
+It builds on top of the experience we gained from the Bootable Jar and provides a compelling architecture to control the full runtime (WildFly + the application deployments) from the application's `pom.xml`.
+The full customization of WildFly (using feature packs, packaging scripts, etc.) is controlled by the developer so that the runtime fits the user's application.
+
+Creating a container image from this provisioned server is then just a matter of putting it in a runtime image that contains OpenJDK to run the application.
+
+We will continue to deliver the vanilla Docker image for WildFly but we are focusing on the new architecture and the new images to expand the capabilities of WildFly.
+We are looking forward to our users trying this new approach and validates how it improves their workflow. 
+
+We will also start an open conversation to bring additional synergies between the Docker and S2I images for WildFly that could benefit the whole community. In particular, we want to bring new capabilities such as additional architectures (in particular `linux/arm64`), newer versions of the JDK (with `17` being the priority), etc. to all our images.
+
+If you see any issue or improvements for this new architecture, please open issues on the https://issues.redhat.com/projects/WFLY[WFLY issue tracker].
+
