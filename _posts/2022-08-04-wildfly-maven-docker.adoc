@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Use the wildfly-maven-plugin to create a Docker image of your application'
-date: 2022-08-05
+date: 2022-08-04
 tags: cloud container
 description: This article explains how to use the new capabilities of the wildfly-maven-plugin to build container images.
 author: jmesnil
