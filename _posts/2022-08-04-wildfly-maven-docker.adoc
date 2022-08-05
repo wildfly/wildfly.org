@@ -31,7 +31,7 @@ This Maven-centric approach can also benefit the users of the vanilla Docker ima
 There are different ways to use the https://quay.io/repository/wildfly/wildfly?tab=info[quay.io/wildfly/wildfly] image to create an *application image* (that would contain both WildFly and your deployments) but the simplest one is to add the deployment archive to this base image and let WildFly deploy it when it starts.
 
 As an example, we will start from a simple Java application, the https://github.com/wildfly/quickstart/tree/main/microprofile-config[`microprofile-config`] quickstart.
-For the purpose of this exercise, the Java application is a blackbox and we will not look at it. We just want to ensure that we can create a application image that can run it.
+For the purpose of this exercise, the Java application is a blackbox and we will not look at it. We just want to ensure that we can create an application image that can run it.
 
 Let's clone the repository and build the application:
 
@@ -152,7 +152,7 @@ curl http://localhost:8080/microprofile-config/
 Let's review what is needed to move from the vanilla Docker image to the new runtime image for WildFly:
 
 1. add the `org.wildfly.plugins:wildfly-maven-plugin` to the application's `pom.xml`
-2. udate the `Dockerfile` to use the new runtime image and add the `target/server` directory
+2. update the `Dockerfile` to use the new runtime image and add the `target/server` directory
 
 Now that we have moved to the new architecture, what are the benefits of it?
 
