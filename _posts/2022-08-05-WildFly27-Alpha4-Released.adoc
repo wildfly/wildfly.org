@@ -1,0 +1,50 @@
+---
+layout: post
+title:  "WildFly Preview 27 Alpha4 is released!"
+date:   2022-08-05
+tags:   announcement release jakartaee
+author: bstansberry
+description: WildFly 27.0.0.Alpha4 is now available for download
+---
+
+= WildFly 27 Alpha4 is released
+
+Today we have released the 27.0.0.Alpha4 version of WildFly, now available on the link:https://www.wildfly.org/downloads/[downloads page]. This release serves as a major milestone on our way toward support for Jakarta EE 10 in WildFly, as it is the first release of standard WildFly that is based on the Jakarta EE APIs that are planned for the upcoming link:https://jakarta.ee/specifications/platform/10/[Jakarta EE 10 release]. Until this release, only link:https://docs.wildfly.org/26/WildFly_and_WildFly_Preview.html[WildFly Preview] has offered any kind of support for Jakarta EE beyond EE 8.
+
+As discussed in my January link:https://www.wildfly.org/news/2022/01/21/WildFly-2022/[WildFly Release Plans for 2022 post], the main focus of the WildFly developers as we work on WildFly 27 is implementing Jakarta EE 10 support. That work has now reached a point where it's useful for our community to have an early look at our planned EE 10 implementation.
+
+We've also done a WildFly Preview 27.0.0.Alpha4 release. The differences between standard WildFly and WildFly Preview are currently rather minimal, as the EE 9+ support that's been WildFly Preview's biggest calling card has now been brought into standard WildFly. A major difference between WildFly Preview and standard WildFly is Preview retains the feature that will bytecode transform deployments that use the EE 8 javax.* APIs so that they instead use the analogous jakarta.* APIs. We do not intend to include that feature in standard WildFly, but we're retaining it in WildFly Preview, at least for now.  (See 'WildFly Preview Support for EE 8 Deployments' in the link:https://www.wildfly.org/news/2020/11/12/Jakarta-EE-9-with-WildFly-Preview/[2020 Jakarta EE 9 with WildFly Preview announcement] for more on this feature.)
+
+Note that we have not added a 'Servlet-Only Distribution' variant of WildFly to link:https://wildfly.org/downloads[the downloads page]. The WildFly project is no longer producing that distribution. I encourage users looking for the kind of slimmer server installation formerly provided by the 'Servlet-Only Distribution' to use link:https://docs.wildfly.org/26/Galleon_Guide.html[Galleon to produce a server installation tailored to your needs].
+
+We're also not releasing quickstarts or cloud images for this release.
+
+== What's New?
+
+In a nutshell, what's new is that standard WildFly provides the EE 10 variant of all the EE specifications it has traditionally offered. EE 8 is no longer provided.
+
+The full list of issues resolved in Alpha 4 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12391771[in the WFLY JIRA project].
+
+Note that we've produced two other Alphas since I link:https://www.wildfly.org/news/2022/04/14/WildFly261-Final-Released/[blogged about the 27 Alpha 1 release]. Those alphas primarily provided additional milestones on the way to providing EE 10 support in WildFly Preview. The issues resolved in Alpha2 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12385705[here], while those in Alpha3 are link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12391582[here].
+
+
+== Java SE Support
+
+You can run 27.0.0.Alpha4 on Java SE 11 or Java SE 17. The WildFly project no longer supports Java SE 8 in our feature releases, although our planned 26.1.2 bug fix release will support SE 8.
+
+
+== Standards Support
+
+The 27.0.0.Alpha4 release is not a certified compatible implementation of any Jakarta EE specification, nor is it a certified compatible implementation of any MicroProfile specification. This is a milestone release for which we have not yet pursued any certification.
+
+
+== Upcoming Releases
+
+Over the next couple of weeks the WildFly developers will be finalizing plans for when we will release WildFly 27.0.0.Beta1, 27.0.0.Final, and 26.1.2.Final. Our intent is to release the latter later this month; we just need to work out precisely when. Personally, I think aiming for a WildFly 27.0.0.Final in the September timeframe would be good, with a single feature complete Beta released a couple of weeks before the Final.
+
+It's possible we will do a 27.0.0.Alpha5 before we move on to Beta1; if so I don't think it will be a major change from Alpha4.
+
+
+== Enjoy!
+
+Thank you for your continued support of WildFly.  We'd love to hear your feedback at the link:https://groups.google.com/forum/#!forum/wildfly[WildFly forum]. 
