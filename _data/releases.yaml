@@ -1,3 +1,45 @@
+- version: 27.0.0.Alpha4
+  version_shortname: 27 Alpha4
+  date: 2022-08-05
+  qualifier: Alpha
+  link:
+    - name: WildFly Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4.tar.gz.sha1
+    - name: WildFly Preview Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-preview-27.0.0.Alpha4.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-preview-27.0.0.Alpha4.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-preview-27.0.0.Alpha4.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-preview-27.0.0.Alpha4.tar.gz.sha1
+    - name: Application Server Source Code
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4-src.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4-src.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Alpha4/wildfly-27.0.0.Alpha4-src.tar.gz.sha1
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12391771 
 - version: 27.0.0.Alpha3
   version_shortname: 27 Alpha3
   date: 2022-07-15
