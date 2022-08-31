@@ -1,0 +1,20 @@
+---
+layout: post
+title:  "WildFly 26.1.2 is released!"
+date:   2022-08-31
+tags:   announcement release
+author: bstansberry
+description: WildFly 26.1.2.Final is now available for download.
+---
+
+= WildFly 26.1.2 is released!
+
+WildFly 26.1.2.Final is now available link:https://wildfly.org/downloads[for download].
+
+This is a bug fix release. The full list of issues resolved in WildFly 26.1.2 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12386470[here]. Issues resolved in the WildFly Core update included with WildFly 26.1.2 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12385713[here].
+
+As I've discussed in various posts that touch on link:https://www.wildfly.org/news/2022/01/21/WildFly-2022/[the WildFly project's plans for 2022], beginning with the upcoming WildFly 27 release WildFly releases will no longer support Java SE 8, Jakarta EE 8 and MicroProfile 4.1. We'll be moving on to Jakarta EE 10 and a minimum SE requirement of SE 11. We realize that moving applications to EE 10 will involve effort for our users, so we wanted to provide an extra bug fix release beyond the usual micro we produce about a month after each feature release. WildFly 26.1.2 is that release. My expectation is this will be the last WildFly release that supports SE 8 and EE 8.
+
+As part of this release we've also do a 26.1.2 release of link:https://docs.wildfly.org/26/WildFly_and_WildFly_Preview.html[WildFly Preview].  
+
+Thank you for your continued support of WildFly. We’d love to hear your feedback at the link:https://groups.google.com/g/wildfly[WildFly forum].
