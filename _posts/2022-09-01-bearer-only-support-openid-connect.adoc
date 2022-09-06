@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Bearer Token Support for the Elytron OIDC Client Subsystem'
+date: 2022-09-01
+tags: oidc bearer
+synopsis: An overview of how to secure an application with Bearer Token Authentication when using the Elytron OIDC Client subsystem.
+author: fjuma
+link: https://wildfly-security.github.io/wildfly-elytron/blog/bearer-only-support-openid-connect/
+---
+
