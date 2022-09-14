@@ -1,0 +1,163 @@
+---
+layout: post
+title: Remote dev-watch development with WildFly Jar Maven Plugin
+date: 2022-09-14
+tags: wildfly bootable jar bootable-jar openshift cloud remote
+synopsis: Bootable JAR Maven plugin 8.0.0.Alpha2 brings in a new way to make remote development easier.
+author: ehsavoie
+---
+
+The 8.0.0.Alpha2 version of the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/[WildFly bootable JAR Maven plugin] has been released.
+
+This https://github.com/wildfly-extras/wildfly-jar-maven-plugin/releases/tag/8.0.0.Alpha2[release] is not yet Final, as it is only there to gather feedback on a new feature that simplifies development on the "cloud" using the `dev-watch` goal.
+
+For people who are not familiar with WildFly bootable JAR and its `dev-watch` goal, I strongly recommend that you read 
+this link:https://www.wildfly.org/news/2020/12/15/bootable-jar-3.0.Beta-Released/[blog post] that covers it in details. 
+
+## Dev-watch goal
+
+The current `dev-watch` goal, although offering an efficient workflow to develop WildFly applications, requires the bootable application or server to run locally, in the same place as the project. The improvement made on this release is to allow the bootable application or server to run remotely so that it can be in an environment that is closer to the target runtime environment.
+We are going to use https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/main/examples/remote-microprofile-config[this example] to see how we can work remotely.
+
+IMPORTANT: This application applies the script `anonymous-management.cli` which disable security on the Management API of WildFly, please make sure not to include it when going to production.
+
+## Developping with a docker container.
+
+video::ESI6EmQy4c8[youtube,width=560,height=315]
+
+### Build and run the application with docker
+
+The first step is to create the container image where the application is running.
+For this we are going to use a very simple `Dockerfile`:
+
+[source,docker]
+----
+FROM registry.access.redhat.com/ubi8/openjdk-11:latest
+COPY --chown=jboss:root target/*.jar /deployments/.
+RUN chmod -R ug+rwX /deployments/.
+----
+
+To build that container image we are executing:
+[source,bash]
+----
+$ mvn clean install
+$ podman build -f Dockerfile -t remote-microprofile-config:latest
+----
+
+And then we are going to run the container and expose the ports *8080* and *9990*:
+[source,bash]
+----
+$ podman run -p 8080:8080 -p 9990:9990 -it remote-microprofile-config:latest
+----
+
+### Develop and update this application
+
+Now we need to run the `dev-watch` goal and remotely attach to the Wildfly Management API.
+For this we need to execute the following command line:
+[source,bash]
+----
+$ mvn org.wildfly.plugins:wildfly-jar-maven-plugin:8.0.0.Alpha2:dev-watch \
+-Dwildfly.bootable.remote=true \
+-Dwildfly.bootable.remote.username=admin \
+-Dwildfly.bootable.remote.password=passW0rd! \
+-Dwildfly.hostname=${container.ip.address}
+----
+
+Check that the application is running properly :
+
+[source,bash]
+----
+$ curl http://${container.ip.address}:8080
+config1 = Value from Config1 comes from an env var in the DeploymentConfig
+config2 = Value for config2 comes from a properties file inside the application
+config3 = Default value for config3 comes from my code
+----
+
+Once this is done you can edit the code and your changes will be automatically pushed to the remote container.
+For example:
+
+ * Change the `config2` property value to be "Hello from dev-watch remote" in the file: `src/main/resources/META-INF/microprofile-config.properties`.
+ * Save your changes
+ * The application is redeployed and the new configuration will be taken into account:
+
+[source,bash]
+----
+$ curl http://${container.ip.address}:8080
+config1 = Value from Config1 comes from an env var in the DeploymentConfig
+config2 = Hello from dev-watch remote
+config3 = Default value for config3 comes from my code
+----
+
+## Developping on OpenShift.
+
+### Build and run the application with OpenShift
+
+We first need to build the application :
+[source,bash]
+----
+$ mvn clean install
+----
+
+Then to deploy it you need to drag and drop the produced `remote-microprofile-config-bootable.jar` on the *Topology* page on OpenShift. Now we need to expose the management API of WilFly by first editing the service to add a TCP port for 9990, and then add a route to that port: 
+
+[source,bash]
+----
+$ oc create route edge management-remote-microprofile-config-bootable --service=remote-microprofile-config-bootable --port=9990 --insecure-policy='Redirect'
+----
+
+### Develop and update this application
+
+video::41uzSZsj7Og[youtube,width=560,height=315]
+
+Now we need to run the `dev-watch` goal and remotely attach to the Wildfly Management API.
+For this we need to execute the following command line:
+
+[source,bash]
+----
+$ mvn -P bootable-jar-remote -Dwildfly.hostname=$(oc get route management-remote-microprofile-config-bootable --template='{{ .spec.host }}') install
+----
+
+You may also use a command like this one:
+
+[source,bash]
+----
+$ mvn org.wildfly.plugins:wildfly-jar-maven-plugin:8.0.0.Alpha2:dev-watch \
+-Dwildfly.bootable.remote=true \
+-Dwildfly.port=443 \
+-Dwildfly.bootable.remote.protocol=remote+https \
+-Dwildfly.hostname=$(oc get route management-remote-microprofile-config-bootable --template='{{ .spec.host }}')
+----
+
+Check that the application is running properly :
+
+[source,bash]
+----
+$ curl https://$(oc get route remote-microprofile-config-bootable --template='{{ .spec.host }}')
+config1 = Value from Config1 comes from an env var in the DeploymentConfig
+config2 = Value for config2 comes from a properties file inside the application
+config3 = Default value for config3 comes from my code
+----
+
+Once this is done you can edit the code and your changes will be automatically pushed to the OpenShift instance.
+For example:
+
+* Change the `config2` property value to be "Hello from dev-watch remote" in the file: `src/main/resources/META-INF/microprofile-config.properties`.
+* Save your changes
+* The application is redeployed and the new configuration will be taken into account:
+
+[source,bash]
+----
+$ curl https://$(oc get route remote-microprofile-config-bootable --template='{{ .spec.host }}')
+config1 = Value from Config1 comes from an env var in the DeploymentConfig
+config2 = Hello from dev-watch remote
+config3 = Default value for config3 comes from my code
+----
+
+## Conclusion
+
+We hope that you are seeing the benefits of the new features that this release is bringing.
+
+We would really appreciate your link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/issues[feedback] on the `dev-watch` goal. We aim toward a smooth and efficient first class WildFly developer experience and we need you there!
+
+Thank-you.
+
