@@ -1,0 +1,63 @@
+---
+layout: post
+title:  "New WildFly 27 Beta1 release"
+date:   2022-09-29
+tags:   announcement release 
+author: bstansberry
+description: WildFly 27 Beta1 is now available for download.
+---
+
+= WildFly 27 Beta1 is released!
+
+I'm pleased to announce that the new WildFly and WildFly Preview 27.0.0.Beta1 releases are available for download at https://wildfly.org/downloads.
+
+== New and Notable
+
+As I noted in link:https://www.wildfly.org/news/2022/09/22/Jakarta-EE10-and-WildFly/[my last post], the key new thing in WildFly 27 is compatibility with the link:https://jakarta.ee/news/jakarta-ee-10-released/[recently released Jakarta EE 10]. Thanks so much to all the great WildFly contributors who worked so hard on our EE 10 journey!
+
+Besides Jakarta EE 10 support, here are some of the other new features in this release.
+
+*Observability*
+
+* link:https://issues.redhat.com/browse/WFLY-14947[WFLY-14947] - A new tech preview 'Micrometer' subsystem (WildFly Preview only)
+
+*EJB*
+
+* link:https://issues.redhat.com/browse/WFLY-14953[WFLY-14953] - A new 'distributable-ejb' subsystem
+* link:https://issues.redhat.com/browse/WFLY-7628[WFLY-7628] -- Support for use of an Infinispan cache as an EJB timer store
+
+*Security*
+
+* link:https://issues.redhat.com/browse/WFLY-15075[WFLY-15075] - Encryption  support in the FileSystemSecurityRealm
+* link:https://issues.redhat.com/browse/WFLY-16179[WFLY-16179] - Identity integrity support in the FileSystemSecurityRealm 
+
+*Provisioning*
+
+* link:https://issues.redhat.com/browse/WFLY-13798[WFLY-13798] - A new 'embedded-activemq' Galleon layer for embedded broker messaging
+* link:https://issues.redhat.com/browse/WFLY-17004[WFLY-17004] - A new 'hibernate-search' Galleon layer
+* link:https://issues.redhat.com/browse/WFLY-16453[WFLY-16453] -- New 'singleton-local' and 'singleton-ha' Galleon layers
+
+*Major Component Upgrades vs WildFly 26.x*
+
+There have been numerous component upgrades related to WildFly's transition from the javax namespace EE 8 to the jakarta namespace EE 10; too many to list here. However, besides those EE 10 driven updates, there are a number of other major component updates in WildFly 27 Beta1:
+
+* Hibernate 6.1 replaces Hibernate 5.3
+* Hibernate Search 6.1 replaces Hibernate Search 5.10
+* Infinispan 14 replaces Infinispan 13
+* JGroups 5.2 replaces JGroups 4.2
+* RESTEasy 6.2 replaces RESTEasy 4.7
+* Weld 5 replaces Weld 3.1
+
+== Removal of Support for EE 8 and SE 8
+
+As I discussed in my link:https://www.wildfly.org/news/2022/01/21/WildFly-2022/[WildFly Release Plans for 2022] post, Jakarta EE 8 and Jakarta SE 8 are no longer supported beginning with the WildFly 27 series. Use of SE 11 or later is required, with SE 17 recommended. Testing on SE 19 is in progress.
+
+== Release Notes
+
+The release notes for the release are link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12391241[here]. Note that this only covers the differences between 27 Beta1 and the recent 27 Alpha5; release notes for the 27 Alpha1 - 5 releases are available link:https://issues.redhat.com/projects/WFLY?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released[in the WildFly JIRA]. Issues fixed in the numerous underlying WildFly Core 19.0 beta releases are listed link:https://issues.redhat.com/projects/WFCORE?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released[in the WildFly Core JIRA].
+
+Please try it out and give us your feedback, while we get to work on WildFly 27 Final!
+
+Best regards,
+
+Brian
