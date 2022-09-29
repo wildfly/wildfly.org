@@ -1,3 +1,45 @@
+- version: 27.0.0.Beta1
+  version_shortname: 27 Beta1
+  date: 2022-09-29
+  qualifier: Beta
+  link:
+    - name: WildFly Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1.tar.gz.sha1
+    - name: WildFly Preview Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-preview-27.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-preview-27.0.0.Beta1.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-preview-27.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-preview-27.0.0.Beta1.tar.gz.sha1
+    - name: Application Server Source Code
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1-src.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1-src.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Beta1/wildfly-27.0.0.Beta1-src.tar.gz.sha1
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12391241
 - version: 27.0.0.Alpha5
   version_shortname: 27 Alpha5
   date: 2022-09-11
@@ -313,72 +355,6 @@
       items:
         - format: Notes
           url: https://wildfly.org/news/2022/04/14/WildFly261-Final-Released/
-- version: 26.1.0.Beta1
-  version_shortname: 26.1 Beta
-  date: 2022-03-24
-  qualifier: Beta
-  link:
-    - name: WildFly Preview EE 9.1 Distribution
-      licence: LGPL
-      items:
-        - format: zip
-          size: 215 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-preview-26.1.0.Beta1.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-preview-26.1.0.Beta1.zip.sha1
-        - format: tgz
-          size: 214 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-preview-26.1.0.Beta1.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-preview-26.1.0.Beta1.tar.gz.sha1
-    - name: Jakarta EE 8 Full & Web Distribution
-      licence: LGPL
-      items:
-        - format: zip
-          size: 209 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1.zip.sha1
-        - format: tgz
-          size: 207 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1.tar.gz.sha1
-    - name: Servlet-Only Distribution
-      licence: LGPL
-      items:
-        - format: zip
-          size: 51 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-servlet-26.1.0.Beta1.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-servlet-26.1.0.Beta1.zip.sha1
-        - format: tgz
-          size: 50 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-servlet-26.1.0.Beta1.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-servlet-26.1.0.Beta1.tar.gz.sha1
-    - name: Application Server Source Code
-      licence: LGPL
-      items:
-        - format: zip
-          size: 39 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1-src.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1-src.zip.sha1
-        - format: tgz
-          size: 25 MB
-          url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1-src.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/26.1.0.Beta1/wildfly-26.1.0.Beta1-src.tar.gz.sha1
-    - name: Quick Start Source Code
-      licence: AL
-      items:
-        - format: Source
-          url: https://github.com/wildfly/quickstart/tree/26.1.0.Beta1
-    - name: Release Notes
-      items:
-        - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12380362
 - version: 26.0.1.Final
   version_shortname: 26.0.1
   date: 2022-01-21
