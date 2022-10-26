@@ -1,0 +1,137 @@
+---
+layout: post
+title:  "What's new for WildFly 27 in the cloud."
+date:   2022-11-10
+tags:   wildfly galleon cloud wildfly-s2i openshift
+author: jfdenise
+---
+
+== WildFly S2I (Source To Image) images
+
+In April we announced the new WildFly architecture for the cloud. (link:https://www.wildfly.org/news/2022/04/20/WildFly-s2i-v2-Released/[WildFly architecture for the cloud]. I strongly 
+encourage you to read this post to get familiar with this new architecture.
+
+We have discontinued the release of WildFly s2i centos7 based images starting WildFly 26.1.2. 
+We are now only releasing UBI8 based JDK11/JDK17 s2i builder and runtime images as well as  
+Galleon link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] for new features and bug fixes.
+
+The latest artifacts that form the WildFly cloud experience are:
+
+* WildFly Source-to-Image (S2I) builder images (link:https://quay.io/repository/wildfly/wildfly-s2i-jdk11[JDK11] and link:https://quay.io/repository/wildfly/wildfly-s2i-jdk17[JDK17])
+* WildFly runtime images (link:https://quay.io/repository/wildfly/wildfly-runtime-jdk11[JDK11] and link:https://quay.io/repository/wildfly/wildfly-runtime-jdk17[JDK17])
+* link:https://github.com/wildfly/wildfly-maven-plugin/[WildFly Maven plugin 4.0.0.Final] 
+* link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[WildFly cloud Galleon feature-pack 2.0.0.Final] 
+* link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly datasources Galleon feature-pack 3.0.0.Final] 
+* link:https://github.com/wildfly/wildfly-charts[Helm Chart for WildFly 2.x]
+
+== New features overview
+
+* Generation of efficient WildFly s2i builder image. This feature, covered in detail in this blog post, is specified in this link:https://github.com/wildfly/wildfly-s2i/issues/393[enhancement description]. 
+The environment variables that allow you to configure an S2I build to produce a WildFly S2I builder for a given WildFly server 
+can be found link:https://github.com/wildfly/wildfly-cekit-modules/blob/main/jboss/container/wildfly/s2i/2.0/legacy/module.yaml[there].
+
+* `cloud-server` and `postgresql-server` WildFly s2i builders. The Maven projects link:https://github.com/wildfly/wildfly-s2i/tree/main/wildfly-builders/cloud-server[cloud-server] and link:https://github.com/wildfly/wildfly-s2i/tree/main/wildfly-builders/postgresql-server[postgresql-server] 
+define s2i builders maven project and Helm chart for WildFly yaml file that you can re-use to build s2i builders. Such builders will then be usable 
+to build your application images in an efficient way. This link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/optimized-builder[example] highlights the usage of the generated builders.
+
+* Support to automatically discover and register the deployments to be secured with OIDC. This support complies with this link:https://github.com/wildfly/wildfly-proposals/pull/434[WildFly proposal].
+This support is based on the `elytron-oidc-client` subsystem. It is equivalent to the Keycloak OIDC support provided in the legacy images.
+The environment variables that allow you to configure the server can be found link:https://github.com/wildfly/wildfly-cekit-modules/blob/main/jboss/container/wildfly/launch/oidc/module.yaml[there].
+
+* Enable Overriding env var. This feature, enabled by default in WildFly s2i images, is specified by this link:https://github.com/wildfly/wildfly-proposals/pull/404[proposal].
+WildFly on the cloud relies on container environment variables to customize its configuration to the container platform. 
+It is difficult to change the value of a management attribute from the standalone configuration if the attribute does not provide a default value with an expression 
+that can be resolved at runtime. This feature introduces a generic mechanism to let user override any __simple__ management attribute 
+using environment variables. Complex attributes (of type `OBJECT`, `LIST`, `PROPERTY`) are not impacted by this change.
+
+As an example, the user could set an env var when starting WildFly to change the value of this `proxy-address-forwarding` attribute with 
+the env var `SUBSYSTEM_UNDERTOW_SERVER_DEFAULT_SERVER_HTTP_LISTENER_DEFAULT__PROXY_ADDRESS_FORWARDING`.
+
+
+* Image streams that you can import in OpenShift and use with helm Charts:
+
+** WildFly s2i builder, JDK11 link:https://raw.githubusercontent.com/wildfly/wildfly-s2i/main/imagestreams/wildfly-s2i-jdk11.yaml[imagestream]
+** WildFly s2i builder, JDK17 link:https://raw.githubusercontent.com/wildfly/wildfly-s2i/main/imagestreams/wildfly-s2i-jdk17.yaml[imagestream]
+** WildFly runtime, JDK11 link:https://raw.githubusercontent.com/wildfly/wildfly-s2i/main/imagestreams/wildfly-runtime-jdk11.yaml[imagestream]
+** WildFly runtime, JDK17 link:https://raw.githubusercontent.com/wildfly/wildfly-s2i/main/imagestreams/wildfly-runtime-jdk17.yaml[imagestream]
+
+== WildFly S2I builder generation
+
+One of the main feedback we got for this new architecture is that an s2i build takes more time compared to legacy WildFly s2i images. 
+That is due to the maven resolution of the WildFly server artifacts (JBoss Modules modules jar retrieved from remote maven repositories) during provisioning.
+Although `incremental-build` (re-use of the maven cache from previous build) is enabled by default when using Helm chart for WildFly, when building multiple 
+applications, `incremental build` is not an answer, the maven local cache can't be shared among different build configs.
+
+In order to provide an answer to this issue, we have made the WildFly s2i builder image able to generate an S2i builder image for a given trimmed server. 
+Such builder contains an installed WildFly server in `$JBOSS_HOME` (`/opt/server`) in which deployment built during the next s2i phase is deployed. 
+This kind of builder offers an efficient build phase, no more provisioning is operated when building the application.
+
+The builder image size is also reduced compared to the legacy WildFly s2i builder image. The image contains only the needed trimmed server artifacts.
+
+NB: An interesting aspect of generated builders is that they can be shared across the s2i builds of application deployments that require the same server capabilities.
+
+
+The following diagrams covers the three S2I workflows.
+
+=== Legacy S2I workflow
+
+image::s2iv2/S2I_Legacy_Workflow.jpg[legacy S2I]
+
+=== New WildFly S2I workflow
+
+image::s2iv2/New_S2I_workflow.jpg[new S2I]
+
+=== 2 phases S2I build workflow based on generated builder
+
+image::s2iv2/Generated_Builder_S2I_workflow.jpg[generated builder]
+
+When building such WildFly s2i builder, the Maven and s2i environment variables that you would need to use (eg: configure maven repositories, maven args, ...) 
+need to be isolated in order to not collide with the same environment variables one could set when using the generated builder.
+For this isolation, you need to suffix any env variable with `_WILDFLY_SERVER_BUILDER` (for example `MAVEN_ARGS_APPEND_WILDFLY_SERVER_BUILDER`). 
+The suffix is automatically removed during build and the proper environment variable is exported.
+
+A WildFly s2i builder is built from sources (actually just a pom.xml file) located inside a maven project. The WildFly Maven Plugin is used to provision the server, configured 
+with the Galleon layers of your choice (eg: `jaxrs-server`, `cloud-server+ejb`, ...). The Galleon layers to use is not limited to the WildFly Galleon layers. 
+You can use different Galleon feature-packs to build-up your server. 
+This link:https://github.com/wildfly/wildfly-s2i/blob/main/wildfly-builders/postgresql-server/pom.xml[pom.xml] file contains the provisioning of a cloud-server + postgresql driver and datasource 
+that the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] defines.
+
+To make WildFly s2i builder generation possible using Helm chart for WildFly, we have evolved it with the following support:
+
+* Ability to disable the chained build that produces an application image. That is done thanks to the new `build.s2i.buildApplicationImage` property sets to `false`. 
+When set to `false`, the name of the generated image is the name of the chart. For example `helm install cloud-server-builder -f helm.yaml wildfly/wildfly` 
+will produce an Openshift imagestream named `cloud-server-builder`. The suffix `-build-artifacts` that is appended when the chained build is enabled is not added.
+The generated imagestream is what will then be used when building your application using the generated builder.
+
+* Ability to set different kind of image for the s2i builder image and the runtime image. By default the WildFly s2i docker images are used for s2i build 
+and chained build. In the context of a generated builder, the builder is of type imagestream (`ImageStreamTag` or `ImageStreamImage`). 
+You can set the builder type using the `build.s2i.builderKind` property. 
+
+This link:https://github.com/wildfly/wildfly-s2i/blob/main/wildfly-builders/cloud-server/helm.yaml[helm chart] file 
+shows how to configure an s2i build to produce a WildFly s2i builder.
+
+== New Examples
+
+WildFly 27 supports only Jakarta EE 10, the link:https://github.com/wildfly/wildfly-s2i/tree/main/examples[WildFly s2i examples] 
+have been migrated to jakarta EE 10.
+
+In addition to the set of examples that we introduced for WildFLy 26, new examples have been included:
+
+* Automatic discovery and registration of deployments secured with keycloak OIDC protocol link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/elytron-oidc-client-auto-reg[example].
+
+* A JMS broker, message provider and consumer link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/jms-broker[example] that relies on the new `embedded-activemq` Galleon layer that WildFly provides.
+
+* An link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql-multiple-datasources[example] to provision a postgresql driver and 
+multiple datasources.
+
+* An link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/optimized-builder[example] that highlights the new "WildFly s2i builder" generation features.
+
+== Enjoy!
+
+We hope that you will see an interest in these new features. 
+As usual we need your feedback to evolve WildFly on the cloud in the right direction. Feel free to log these as new 
+link:https://github.com/wildfly/wildfly-s2i/issues[project issues].
+
+Thank-you!
+
+JF Denise
