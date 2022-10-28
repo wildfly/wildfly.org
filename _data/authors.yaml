@@ -165,3 +165,10 @@ cam-rod:
   bio: "Cameron is a Software Engineering Intern at Red Hat, working on the WildFly Elytron team."
   emailhash: "aba64bbfde66646d5b5bc40d23b7e0de"
   twitter: "Racer_77"
+pferraro:
+  name: "Paul Ferraro"
+  location: "Boston, USA"
+  occupation: "Principal Software Engineer"
+  bio: "https://github.com/pferraro"
+  avatar: pferraro.png
+
