@@ -1,7 +1,6 @@
 ---
 layout: post
-title: 
-date: 2022-10-28
+date: 2022-11-10
 tags: wildfly ejb timers distributed clustered clustering infinispan
 synopsis: A new distributed Jakarta Enterprise Bean TimerService for WildFly
 author: pferraro
@@ -38,9 +37,11 @@ e.g.
 </subsystem>
 ----
 
-The `default-persistent-timer-management` and `default-transient-timer-management` that define the server-wide default timer management used for persistent and transient (i.e. non-persistent) timers referencing resources from the `distributable-ejb` subsystem (new to WildFly 27).
-Applications can also override this behavior per-EJB or per-deployment (via wildcard) within the jboss-ejb3.xml deployment descriptor.
+The `default-persistent-timer-management` and `default-transient-timer-management` attributes define the server-wide default timer management used for persistent and transient (i.e. non-persistent) timers, respectively.
+These attributes reference resources from the `distributable-ejb` subsystem (also new to WildFly 27).
+Applications can also override these values per-EJB or per-deployment (via wildcard) within the jboss-ejb3.xml deployment descriptor.
 e.g.
+
 [source,xml]
 ----
 <jboss:ejb-jar xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jboss="urn:jboss:jakartaee:1.0" xmlns:t="urn:timer-service:2.0" version="4.0">
@@ -67,7 +68,7 @@ e.g.
 ----
 
 This configures two providers for timer management: one for persistent timers, and one for transient (i.e. non-persistent) timers.
-Here, users can configure the maximum number of timers created by a given EJB that should retain in memory at a given time, as well as the marshaller implementation (JBoss Marshalling, by default) used to serialize the "info" associated with a given Timer.
+Here, users can configure the maximum number of timers (per TimerService) to retain in memory, and the marshaller implementation (JBoss Marshalling, by default) used to serialize the "info" associated with a given Timer.
 
 Both persistent and transient timer management are based on the same implementation and only differ by the Infinispan cache configuration they employ.
 The `cache-container` and `cache` attributes collectively reference resources within the Infinispan subsystem:
@@ -97,16 +98,16 @@ The `cache-container` and `cache` attributes collectively reference resources wi
 ----
 
 The "persistent" cache configuration uses a distributed cache configured with passivation to a file.
-Alternatively, persistent timers can use a replicated cache, or even an invalidation cache with a shared cache store - as all three cache types support the requisite consistent hash semantics to deterministically distribute timers among existing cluster members.
+Alternatively, persistent timers can instead use a replicated cache, or even an invalidation cache with a shared cache store, as these cache types support the requisite consistent hash semantics required to deterministically distribute timers among existing cluster members.
 
 The "transient" cache configuration uses a local cache configured with passivation to a file, but purges its store on restart (to conform to the non-persistent nature of these timers).
 
-Note that passivation thresholds are not configured by the cache configuration directly, but rather are configured by the associated timer-management configuration above.
+Note that passivation thresholds are not configured by the cache configuration directly, but rather are configured by the associated timer-management configuration above (via `max-active-timers`).
 Users should also take care to retain the default transaction and locking configuration, as these semantics are crucial for preventing duplicate or missed timeouts as the result of server shutdown or topology changes.
 
 == Demonstrating Distributed Jakarta Enterprise Bean Timers
 
-The https://github.com/wildfly/quickstart/tree/main/ejb-timer#using-timer-service-within-a-cluster[ejb-timer quickstart] is the easiest way to see this feature in action.
+The https://github.com/wildfly/quickstart/tree/27.0.0.Final/ejb-timer#using-timer-service-within-a-cluster[ejb-timer quickstart] is the easiest way to see this feature in action.
 This lets you easily observe how timer callbacks behave in response to new and dropped cluster members.
 
 == Give us your feedback
