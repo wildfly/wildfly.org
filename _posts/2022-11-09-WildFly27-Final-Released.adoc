@@ -172,11 +172,11 @@ WildFly's MicroProfile support includes implementations of the following specifi
 
 |MicroProfile JWT Authentication 2.0 |X |X
 
-|MicroProfile Metrics 4.0 (deprecated in WildFly; will be replaced by link:Admin_Guide{outfilesuffix}#Micrometer_Metrics[Micrometer]) |-- |X
+|MicroProfile Metrics 4.0 (deprecated in WildFly; will be replaced by link:https://docs.wildfly.org/27/Admin_Guide.html#Micrometer_Metrics[Micrometer]) |-- |X
 
 |MicroProfile OpenAPI 3.0 |-- |X
 
-|MicroProfile OpenTracing 3.0 (deprecated; use link:Admin_Guide{outfilesuffix}#Observability_Tracing[OpenTelemetry]) |X |X
+|MicroProfile OpenTracing 3.0 (deprecated; use link:https://docs.wildfly.org/27/Admin_Guide.html#Observability_Tracing[OpenTelemetry]) |X |X
 
 |MicroProfile Reactive Messaging 3.0 |-- |--
 
