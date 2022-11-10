@@ -114,7 +114,7 @@ Besides Jakarta EE 10 support, here are some of the other new features in this r
 
 *Cloud*
 
-WildFly 27 brings with it significant changes to the WildFly images for OpenShift. Jean-Francois Denise explains what's new in his link:https://www.wildfly.org/news/2022/11/09/WildFly-s2i-wildfly-27-final/[What's new for WildFly 27 in the cloud] post.
+WildFly 27 brings with it significant changes to the WildFly images for OpenShift. Jean-Francois Denise explains what's new in his link:https://www.wildfly.org/news/2022/11/09/WildFly-s2i-wildfly-27-final/[What's new for WildFly 27 in the cloud] post. We've also made exciting updates to the WildFly docker images (multi-arch, SE 17 and SE 19 support; new base images).  Jeff Mesnil explains the details in his link:https://www.wildfly.org/news/2022/11/10/wildfly-docker-temurin/[Updates on WildFly Docker Images] post. We've also made link:https://www.wildfly.org/news/2022/11/10/bootable-jar-8.1.Final-Released/[improvements in our bootable jar support].
 
 Additionally, for those of you who deploy WildFly on AWS, we've added support for the link:https://issues.redhat.com/browse/WFLY-8770[`aws.SE_PING` JGroups discovery prootocol].
 
