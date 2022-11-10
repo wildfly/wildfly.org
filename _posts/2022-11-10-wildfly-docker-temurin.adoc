@@ -9,7 +9,7 @@ author: jmesnil
 
 In this article, we give an update on changes made to the https://github.com/jboss-dockerfiles/wildfly[WildFly Docker images] to enhance their capabilities.
 
-Thanks to contributions from https://github.com/Henri-Laiho[Henri-Laiho] and https://github.com/krisgerhard[Kris-Gerhard], we have updated the images to use the JDK images from https://adoptium.net/[Eclipe Temurin] as their base images.
+Thanks to contributions from https://github.com/Henri-Laiho[Henri-Laiho] and https://github.com/krisgerhard[Kris-Gerhard], we have updated the images to use the JDK images from https://adoptium.net/[Eclipse Temurin] as their base images.
 This provides the following highly requested capabilities:
 
 * Provides multiarch images. The WildFly images now support `linux/arm64` in addition to `linux/amd64`
