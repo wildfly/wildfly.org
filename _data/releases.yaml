@@ -1,3 +1,45 @@
+- version: 27.0.0.Final
+  version_shortname: 27 Final
+  date: 2022-11-09
+  qualifier: Final
+  link:
+    - name: WildFly Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.tar.gz.sha1
+    - name: WildFly Preview Distribution
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-preview-27.0.0.Final.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-preview-27.0.0.Final.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-preview-27.0.0.Final.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-preview-27.0.0.Final.tar.gz.sha1
+    - name: Application Server Source Code
+      licence: LGPL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final-src.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final-src.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final-src.tar.gz.sha1
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://wildfly.org/news/2022/11/09/WildFly27-Final-Released/
 - version: 27.0.0.Beta1
   version_shortname: 27 Beta1
   date: 2022-09-29

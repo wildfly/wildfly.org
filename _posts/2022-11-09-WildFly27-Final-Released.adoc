@@ -1,0 +1,216 @@
+---
+layout: post
+title:  "New WildFly 27 Final release"
+date:   2022-11-09
+tags:   announcement release
+author: bstansberry
+description: WildFly 27 Final is now available for download.
+---
+
+= WildFly 27 Final is released!
+
+It gives me tremendous pleasure to announce that the new WildFly and WildFly Preview 27.0.0.Final releases are available for download at https://wildfly.org/downloads.
+
+== Jakarta EE 10 Support
+
+For sure the biggest new thing in WildFly 27 is support for link:https://jakarta.ee/release/10/[Jakarta EE 10]. WildFly 27 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile] and the new link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile]. WildFly is EE 10 compatible when running on both Java SE 11 and Java SE 17.
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications] repository on GitHub:
+
+* Jakarta EE 10 Full Platform
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_27.0.0.Final/jakarta-full-platform-jdk11.adoc#tck-results[SE 11]
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_27.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17]
+* Jakarta EE 10 Web Profile
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_27.0.0.Final/jakarta-web-profile-jdk11.adoc#tck-results[SE 11]
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_27.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17]
+* Jakarta EE 10 Core Profile
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_27.0.0.Final/jakarta-core-jdk11.adoc#jakarta-core-profile-1001-tck-java-se-11-results[SE 11]
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_27.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17]
+
+Jakarta EE 8 and EE 9.1 are no longer supported beginning with the WildFly 27 release.
+
+WildFly's EE 10 support includes the following specifications in our "full" (e.g. `standalone-full.xml`) and "default" (e.g `standalone.xml`) configurations:
+
+[cols=",,,,",options="header"]
+|=======================================================================
+|Jakarta EE Platform Technology |Jakarta EE Full Platform |Jakarta EE Web
+Profile |WildFly Full Configuration |WildFly Default Configuration
+
+|Jakarta Activation 2.1 |X |-- |X |X
+
+|Jakarta Annotations 2.1 |X |X |X |X
+
+|Jakarta Authentication 3.0 |X |X |X |X
+
+|Jakarta Authorization 2.1 |X |-- |X |--
+
+|Jakarta Batch 2.1 |X |-- |X |X
+
+|Jakarta Bean Validation 3.0 |X |X |X |X
+
+|Jakarta Concurrency 3.0 |X |X |X |X
+
+|Jakarta Connectors 2.1 |X |-- |X |X
+
+|Jakarta Contexts and Dependency Injection 4.0 |X |X |X |X
+
+|Jakarta Debugging Support for Other Languages 2.0 |X |X |X |X
+
+|Jakarta Dependency Injection 2.0 |X |X |X |X
+
+|Jakarta Enterprise Beans 4.0 |X |X(Lite) |X |X(Lite)
+
+|Jakarta Enterprise Web Services 2.0 |Optional |-- |X |X
+
+|Jakarta Expression Language 5.0 |X |X |X |X
+
+|Jakarta Interceptors 2.1 |X |X |X |X
+
+|Jakarta JSON Binding 3.0 |X |X |X |X
+
+|Jakarta JSON Processing 2.1 |X |X |X |X
+
+|Jakarta Mail 2.1 |X |-- |X |X
+
+|Jakarta Messaging 3.1 |X |-- |X |--
+
+|Jakarta Persistence 3.1 |X |X |X |X
+
+|Jakarta RESTful Web Services 3.1 |X |X |X |X
+
+|Jakarta Security 3.0 |X |X |X |X
+
+|Jakarta Server Faces 4.0 |X |X |X |X
+
+|Jakarta Server Pages 3.1 |X |X |X |X
+
+|Jakarta Servlet 6.0 |X |X |X |X
+
+|Jakarta SOAP with Attachments 1.3 |Optional |-- |X |X
+
+|Jakarta Standard Tag Library 3.0 |X |X |X |X
+
+|Jakarta Transactions 2.0 |X |X |X |X
+
+|Jakarta WebSocket 2.1 |X |X |X |X
+
+|Jakarta XML Binding 4.0 |Optional |X |X |X
+
+|Jakarta XML Web Services 4.0 |Optional |-- |X |X
+
+|=======================================================================
+
+WildFly Preview 27 also provides the EE 10 APIs, although at this time we have not chosen to certify compatibility. Unlike the previous major and minor releases, in the 27 releases the EE API and implementation libraries are the same between standard WildFly and WildFly Preview. (For more on the differences between WildFly and WildFly Preview, see the link:https://docs.wildfly.org/27/WildFly_and_WildFly_Preview.html[WildFly documentation].)
+
+The move to EE 10 was a truly massive undertaking and I'm full of appreciation and admiration for the tremendous group of WildFly and component project developers who have pulled this off, along with all of the hard-working participants in Jakarta. I'm also deeply grateful to the WildFly community for their support of and feeback on our efforts doing this journey.
+
+== Other New and Notable Things
+
+Besides Jakarta EE 10 support, here are some of the other new features in this release.
+
+*Observability*
+
+* We've added a new tech preview link:https://issues.redhat.com/browse/WFLY-14947['Micrometer' subsystem] (WildFly Preview only)
+
+*Cloud*
+
+WildFly 27 brings with it significant changes to the WildFly images for OpenShift. Jean-Francois Denise explains what's new in his link:https://www.wildfly.org/news/2022/11/09/WildFly-s2i-wildfly-27-final/[What's new for WildFly 27 in the cloud] post.
+
+Additionally, for those of you who deploy WildFly on AWS, we've added support for the link:https://issues.redhat.com/browse/WFLY-8770[`aws.SE_PING` JGroups discovery prootocol].
+
+*EJB*
+
+* We've added a new link:https://issues.redhat.com/browse/WFLY-14953['distributable-ejb' subsystem].
+* Support for link:https://github.com/wildfly/wildfly-proposals/blob/8e352566f342e9e37fe819c42b22e48137f8c7e4/clustering/ejb/WFLY-7628_Distributed_EJB_Timers.adoc#distributed-ejb-timers[use of an Infinispan cache as an EJB timer store].
+* Support for link:https://issues.redhat.com/browse/JBMAR-241[marshalling] of link:https://openjdk.org/jeps/395[Java record classes].
+
+*Security*
+
+* link:https://github.com/wildfly/wildfly-proposals/blob/8e352566f342e9e37fe819c42b22e48137f8c7e4/elytron/ELY-2078-encryption-for-FilesystemSecurityRealm.adoc#ely-2078-add-encryption-and-integrity-support-to-filesystemsecurityrealm[Encryption support] in the FileSystemSecurityRealm
+* link:https://github.com/wildfly/wildfly-proposals/blob/7affa0f755ee7579793091215f5018cd2b3a57fc/elytron/ELY-2320-integrity-for-FilesystemSecurityRealm.adoc#ely-2320-add-integrity-support-to-filesystemsecurityrealm[Identity integrity support] in the FileSystemSecurityRealm 
+
+*Provisioning*
+
+We've added a number of new link:https://docs.wildfly.org/27/Galleon_Guide.html#wildfly_galleon_layers[Galleon layers]:
+
+* link:https://issues.redhat.com/browse/WFLY-13798['embedded-activemq'] for embedded broker messaging.
+* link:https://issues.redhat.com/browse/WFLY-17004['hibernate-search'] to support use of Hibernate Search with the `jpa` layer.
+* link:https://issues.redhat.com/browse/WFLY-16452['mod_cluster'] for mod_cluster subsystem provisioning.
+* link:https://issues.redhat.com/browse/WFLY-16453['singleton-local' and 'singleton-ha'] for different configuration flavors using the `singleton` subsytem.
+
+*Hibernate Search*
+
+We've updated the version of Hibernate Search we integrate up to the 6.1 series. We've also made a couple of other changes in our Hibernate Search support:
+
+* A number of modules formerly only intended for internal access by Hibernate Search have now been link:https://issues.redhat.com/browse/WFLY-16874[marked as public], allowing for direct application use of the APIs exposed by those modules.
+* In WildFly Preview we've link:https://issues.redhat.com/browse/WFLY-16861[added support] for Hibernate Search's experimental feature alllowing  link:https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/#architecture-examples-outbox-polling-elasticsearch[coordinated indexing of entities from multiple instances of the same application].
+
+*Major Component Upgrades vs WildFly 26.x*
+
+There have been numerous component upgrades related to WildFly's transition from EE 8 to EE 10; too many to list here. However, besides those EE 10 driven updates, there are a number of other major component updates in WildFly 27:
+
+* Hibernate 6.1 replaces Hibernate 5.3
+* Hibernate Search 6.1 replaces Hibernate Search 5.10
+* Infinispan 14 replaces Infinispan 13
+* JGroups 5.2 replaces JGroups 4.2
+* RESTEasy 6.2 replaces RESTEasy 4.7
+* Weld 5 replaces Weld 3.1
+
+== MicroProfile Support
+
+WildFly's MicroProfile support includes implementations of the following specifications in our "full" (e.g. `standalone-full.xml`) and "default" (e.g `standalone.xml`) configurations as well as our "microprofile" configurations (e.g. `standalone-microprofile.xml`):
+
+[cols=",,",options="header"]
+|=======================================================================
+|MicroProfile Technology |WildFly Full/Default Configurations |WildFly MicroProfile Configuration
+
+|MicroProfile Config 3.0 |X |X
+
+|MicroProfile Fault Tolerance 4.0 |-- |X
+
+|MicroProfile Health 4.0 |-- |X
+
+|MicroProfile JWT Authentication 2.0 |X |X
+
+|MicroProfile Metrics 4.0 (deprecated in WildFly; will be replaced by link:https://docs.wildfly.org/27/Admin_Guide.html#Micrometer_Metrics[Micrometer]) |-- |X
+
+|MicroProfile OpenAPI 3.0 |-- |X
+
+|MicroProfile OpenTracing 3.0 (deprecated; use link:https://docs.wildfly.org/27/Admin_Guide.html#Observability_Tracing[OpenTelemetry]) |X |X
+
+|MicroProfile Reactive Messaging 3.0 |-- |--
+
+|MicroProfile Streams Operators 3.0 |-- |--
+
+|MicroProfile Rest Client 3.0|X |X
+|=======================================================================
+
+NOTE: The MicroProfile APIs used in WildFly 27 build on a number of Jakarta EE 9.1 APIs, while WildFly provides the EE 10 versions of those APIs. For this reason, as of the time of writing the WildFly project has not sought certification of WildFly 27 compatibility with any MicroProfile specification. We do test our MicroProfile integration, including by running the MicroProfile TCKs.
+
+NOTE: In WildFly 28 it is likely that we will be removing support for MicroProfile Metrics and MicroProfile OpenTracing, as we shift our focus to support for OpenTelemetry, MicroProfile Telemetry, and Micrometer.
+
+== Java SE Support
+
+Our recommendation is that you run WildFly on the most recent long-term support SE release, i.e. on SE 17 for WildFly 27. While we do do some testing of WildFly on JDK 19, we do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 11 or 17.
+
+WildFly 27 also is heavily tested and runs well on Java 11. We plan to continue to support Java 11 at least through WildFly 28, and probably beyond.
+
+As I discussed in my link:https://www.wildfly.org/news/2022/01/21/WildFly-2022/[WildFly Release Plans for 2022] post, Java SE 8 is no longer supported beginning with the WildFly 27 series.
+
+While we recommend using an LTS JDK release, I do believe WildFly runs well on JDK 19. By runs well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform. 
+
+Please note that WildFly runs on Java 11 and later in classpath mode.
+
+== Weld Probe
+
+Please note that following the recommendation of the Weld maintainers, in WildFly 27 we have removed support for the link:https://weld.cdi-spec.org/news/2016/10/07/tip2-devmode/[Weld Probe development mode].
+
+== Release Notes
+
+The release notes for the release are available in the link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12396905[WFLY project in JIRA]. Issues fixed in the underlying WildFly Core 19.0 release are listed link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12397053[in the WildFly Core JIRA].
+
+Please try it out and give us your feedback, while we get to work on WildFly 28!
+
+Best regards,
+
+Brian
