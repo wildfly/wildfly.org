@@ -1,0 +1,71 @@
+---
+layout: post
+title: 'Updates on WildFly Docker Images'
+date: 2022-11-10
+tags: cloud container docker
+description: This article provides updates on the Docker images for WildFly and their new capabilities.
+author: jmesnil
+---
+
+In this article, we give an update on changes made to the https://github.com/jboss-dockerfiles/wildfly[WildFly Docker images] to enhance their capabilities.
+
+Thanks to contributions from https://github.com/Henri-Laiho[Henri-Laiho] and https://github.com/krisgerhard[Kris-Gerhard], we have updated the images to use the JDK images from https://adoptium.net/[Eclipe Temurin] as their base images.
+This provides the following highly requested capabilities:
+
+* Provides multiarch images. The WildFly images now support `linux/arm64` in addition to `linux/amd64`
+* Supports Long-Term Support (LTS) JDK 11 & 17
+* Supports the latest non-LTS JDK (`19` at the moment)
+* Base images that are frequently updated to fix OS and JDK vulnerabilities
+
+We are using the `centos7` variants of the Temurin images, so there are no Operating System changes compared to the existing images.
+
+## Docker Images for WildFly 27 and future releases
+
+Now that WildFly publishes images to run the application server with different JDK versions, we are updating our tag convention to reflect that change: _the tag of the image now identifies the version of WildFly as well as the JDK version_.
+
+For each release of WildFly (e.g. 27.0.0.Final), there are fixed tags for each provided JDK version:
+
+* `quay.io/wildfly/wildfly:27.0.0.Final-jdk11`
+* `quay.io/wildfly/wildfly:27.0.0.Final-jdk17`
+
+There are also floating tags available to pull the latest release of WildFly on the various JDK:
+
+* `quay.io/wildfly/wildfly:latest-jdk11`
+* `quay.io/wildfly/wildfly:latest-jdk17`
+
+Finally, there is the `latest` tag that corresponds to the __latest release of WildFly on the latest LTS JDK__ (`17` at the moment).
+
+* `quay.io/wildfly/wildfly:latest`
+
+[NOTE]
+====
+This floating tag may correspond to a different JDK version in future releases of WildFly images.
+
+Instead of using this `latest` tag, we recommend to use the floating tag with the JDK version mention to guarantee the use of the same JDK version across WildFly releases (e.g. `latest-jdk17`).
+====
+
+The https://quay.io/repository/wildfly/wildfly?tab=tags[tags] page shows a visual representation of the tags that clearly identifies tags corresponding to the same image.
+
+## Docker Images for WildFly 26 (and Jakarta EE 8)
+
+We are using these new tags starting with WildFly 27 releases which require applications to be built with Jakarta EE 10.
+
+However, there is also benefit to the new images for users that are staying on WildFly 26 (which is the last release of WildFly that supports Jakarta EE 8). We will also provide new images for WildFLy 26 that leverages these new capabilities. The tags for WildFly 26 will be:
+
+* `quay.io/wildfly/wildfly:26.1.2.Final-jdk11`
+* `quay.io/wildfly/wildfly:26.1.2.Final-jdk17`
+
+## Provide non-LTS JDK images
+
+With the move to the Temurin images, we are also able to provide images for non-LTS JDK versions.
+
+In order to help using the latest features of Java with WildFly, we will also provide images for the _latest non-LTS JDK version_ tested by WildFly. At the time of writing, this is `JDK 19`. The tags for these images will be:
+
+* `quay.io/wildfly/wildfly:27.0.0.Final-jdk19`
+* `quay.io/wildfly/wildfly:latest-jdk19`
+
+These non-LTS images will have a shorter life: as soons as WildFly supports a more recent non-LTS JDK version, we will provide images for this version and stop producing images for the previous version.
+
+## Summary
+
+WildFly now provides Docker images with highly requested features such as ARM architecture, multiple JDK versions and frequently updated base images that lets users pick and choose the best settings adapted to their Jakarta applications when they are deployed on the cloud.
