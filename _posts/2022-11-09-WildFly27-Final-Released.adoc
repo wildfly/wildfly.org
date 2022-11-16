@@ -201,7 +201,13 @@ While we recommend using an LTS JDK release, I do believe WildFly runs well on J
 
 Please note that WildFly runs on Java 11 and later in classpath mode.
 
-== Weld Probe
+== Other Incompatible Changes
+
+=== RESTEasy Spring
+
+For WildFly 27, RESTEasy Spring support has been removed from standard WildFly. RESTEasy Spring support only comes with WildFly Preview. Typically standard WildFly provides RESTEasy Spring support, but at the time of the WildFly 27 release the Spring libraries it integrates with had not yet produced final releases. So to avoid possible incompatible changes in a future standard WildFly release, support for RESTEasy Spring was moved to WildFly Preview only. We intend to re-introduce standard WildFly support for RESTEasy Spring in a future release.
+
+=== Weld Probe
 
 Please note that following the recommendation of the Weld maintainers, in WildFly 27 we have removed support for the link:https://weld.cdi-spec.org/news/2016/10/07/tip2-devmode/[Weld Probe development mode].
 
