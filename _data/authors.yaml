@@ -171,10 +171,16 @@ pferraro:
   occupation: "Principal Software Engineer"
   bio: "https://github.com/pferraro"
   avatar: pferraro.png
+scottmarlow:
+  name: "Scott Marlow"
+  location: "United States"
+  occupation: "Principal Software Engineer"
+  bio: "https://github.com/scottmarlow"
+  avatar: scottmarlow.jpg
+  twitter: "scottmarlow"
 liweinan:
   name: "阿男"
   location: "Beijing"
   occupation: "Software Engineer"
   bio: "https://weinan.io"
   avatar: liweinan.jpg
-
