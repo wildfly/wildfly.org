@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'New WildFly S2I and Runtime Multi-arch Images'
-date: 2022-12-08
+date: 2022-12-10
 tags: wildfly galleon cloud wildfly-s2i openshift
 description: This article provides details on the new S2I and runtime multi-arch images
 author: jfdenise
