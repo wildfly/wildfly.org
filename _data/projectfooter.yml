@@ -33,6 +33,8 @@ more_links:
         url: https://www.apiman.io/
       - page: Arquillian
         url: http://arquillian.org
+      - page: Ansible Collection for Wildfly
+        url: https://github.com/ansible-middleware/wildfly
       - page: Byteman
         url: http://byteman.jboss.org/
       - page: CapeDwarf
