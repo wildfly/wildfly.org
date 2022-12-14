@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Ask Me Anything with the WildFly Elytron Team'
+date: 2022-12-14
+tags: ama elytron opensource
+synopsis: The WildFly Elytron team will be having an Ask Me Anything session on Monday Dec. 19th on chat.
+author: fjuma
+link: https://wildfly-security.github.io/wildfly-elytron/blog/ask-me-anything/
+---
