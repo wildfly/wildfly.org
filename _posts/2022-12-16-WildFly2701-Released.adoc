@@ -13,6 +13,68 @@ WildFly 27.0.1.Final is now available link:https://wildfly.org/downloads[for dow
 
 It's been about five weeks since the WildFly 27 release, so we've done a small bug fix update, WildFly 27.0.1. This includes an update to WildFly Preview.
 
-The full list of issues resolved in WildFly 27.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12398551[in the WFLY JIRA project]. Issues resolved in the WildFly Core update included with WildFly 27.0.1 is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12398082[in the WFCORE JIRA project].
+The following issues were resolved in 27.0.1:
+
+===== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-17186[WFLY-17186]] - Wrong exception handling by ManagedScheduledExecutorService.schedule(...)
+* [https://issues.redhat.com/browse/WFLY-17287[WFLY-17287]] - Cannot
+persist ejb timers into database
+* [https://issues.redhat.com/browse/WFLY-17313[WFLY-17313]] -
+Distributed TimerService fails when cache is configured with jdbc-store
+* [https://issues.redhat.com/browse/WFLY-17350[WFLY-17350]] - Custom
+mail providers are not loaded
+* [https://issues.redhat.com/browse/WFLY-17352[WFLY-17352]] -
+NoSuchElementException during scale up under load
+* [https://issues.redhat.com/browse/WFLY-17362[WFLY-17362]] - Messaging - Transaction remained in prepared state after failover
+* [https://issues.redhat.com/browse/WFLY-17367[WFLY-17367]] - NPE throws
+from WSEndpointMetrics
+
+===== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-16807[WFLY-16807]] - Upgrade
+RESTEasy Spring to 3.0.0.Final
+* [https://issues.redhat.com/browse/WFLY-17285[WFLY-17285]] - Upgrade
+Bootable JAR to 8.1.0.Final
+* [https://issues.redhat.com/browse/WFLY-17341[WFLY-17341]] - Upgrade
+Woodstox from 6.2.8 to 6.4.0 (resolves CVE-2022-40152)
+* [https://issues.redhat.com/browse/WFLY-17359[WFLY-17359]] - Update
+protobuf to 3.19.6 (resolves CVE-2022-3171)
+* [https://issues.redhat.com/browse/WFLY-17363[WFLY-17363]] - Upgrade
+artemis-wildfly-integration to 1.0.7
+* [https://issues.redhat.com/browse/WFLY-17374[WFLY-17374]] - Upgrade to
+Xerces 2.12.0.SP05
+* [https://issues.redhat.com/browse/WFLY-17376[WFLY-17376]] - Upgrade
+HAL to 3.6.5.Final (WildFly 27.0.1.Final)
+* [https://issues.redhat.com/browse/WFLY-17406[WFLY-17406]] - Upgrade
+WildFly Core to 19.0.1.Final
+* [https://issues.redhat.com/browse/WFLY-17410[WFLY-17410]] - Upgrade
+CXF from 3.5.2-jbossorg-3 to 3.5.2-jbossorg-4 (resolves CVE-2022-46364)
+
+Issues resolved in the WildFly Core update included with WildFly 27.0.1 were:
+
+===== Bugs
+
+* [https://issues.redhat.com/browse/WFCORE-6145[WFCORE-6145]] - Unbound
+SocketChannels do not correctly register with SocketBindingManager
+* [https://issues.redhat.com/browse/WFCORE-6146[WFCORE-6146]] - Socket
+binding "bind-address" and "bind-port" runtime attributes throw NPE if
+network channel is unbound
+* [https://issues.redhat.com/browse/WFCORE-6168[WFCORE-6168]] - Wildfly
+does not start when non-ascii chars are used in configuration
+* [https://issues.redhat.com/browse/WFCORE-6169[WFCORE-6169]] - Disable
+YAML deserialization in the YAML Configuration Extension
+
+===== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFCORE-6099[WFCORE-6099]] - Upgrade
+byteman to 4.0.20
+* [https://issues.redhat.com/browse/WFCORE-6110[WFCORE-6110]] - Upgrade
+Jandex to 3.0.3
+* [https://issues.redhat.com/browse/WFCORE-6111[WFCORE-6111]] - Upgrade
+Bootable JAR to 8.1.0.Final
+* [https://issues.redhat.com/browse/WFCORE-6132[WFCORE-6132]] - Upgrade
+sshd-common from 2.8.0 to 2.9.2 to address CVE-2022-45047
+
 
 Enjoy!
