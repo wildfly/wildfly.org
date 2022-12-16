@@ -44,7 +44,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12398551
+          url: https://wildfly.org/news/2022/12/16/WildFly2701-Released/
 - version: 27.0.0.Final
   version_shortname: 27 Final
   date: 2022-11-09
