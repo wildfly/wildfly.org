@@ -184,3 +184,9 @@ liweinan:
   occupation: "Software Engineer"
   bio: "https://weinan.io"
   avatar: liweinan.jpg
+rpelisse:
+  name: "Romain Pelisse"
+  location: "Berlin"
+  occupation: "Senior Software Engineer"
+  bio: "github.com/ansible-middleware/"
+  avatar: rpelisse.jpg
