@@ -5,7 +5,7 @@ layout: base
 <div class="grid-wrapper">
   <div class="grid__item width-12-12 home-section">
 
-    {% assign latestRelease = site.data.releases[0] %}
+    {% assign latestRelease = site.data.releases[site.current_release_index] %}
     <h1>Wild<strong>Fly</strong> {{latestRelease.version_shortname}} is now available</h1>
     <div class="home-ctas">
       
