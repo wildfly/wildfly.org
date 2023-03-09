@@ -1,0 +1,9 @@
+---
+layout: post
+title: "Using MicroProfile OpenAPI with RESTEasy"
+date: 2023-02-23
+tags: resteasy openapi microprofile smallrye
+synopsis: An introduction to use OpenAPI with RESTEasy.
+author: liweinan
+link: https://resteasy.dev/2023/02/20/resteasy-microprofile-openapi/
+---
