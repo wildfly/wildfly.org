@@ -36,6 +36,7 @@ Besides the changes in the observability space noted above, there are a couple o
 
 *Other Treats*
 
+* The server kernel team has added support for link:https://issues.redhat.com/browse/WFCORE-5343[configuration customization using YAML]. To learn more, see the link:https://www.wildfly.org/news/2022/04/26/YAML-configuration-extension/[article] Emmanuel Hugonnet wrote last year about a preview version of this feature. (This feature is now available by default; there is no longer any need to perform the activation step described in the article.) YAML-based configuration customization is a nice alternative to using CLI scripts to tailor a stock configuration for a particular environment, as there is no need start a CLI process to apply the customization. This makes it well suited to workflows like link:https://www.wildfly.org/news/2023/01/10/ansible-wildfly/[deploying WildFly using Ansible].
 * The clustering team has added support for link:https://issues.redhat.com/browse/WFLY-13520[Infinispan query, counters, locks, and CDI].
 * The clustering and web teams have added support for link:https://issues.redhat.com/browse/WFLY-16043[configuration of an arbitrary cookie to use for web request affinity].
 * The RESTEasy team has added support for link:https://issues.redhat.com/browse/WFLY-16018[including request tracing information in HTTP response headers].
