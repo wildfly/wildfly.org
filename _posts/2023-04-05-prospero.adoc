@@ -1,0 +1,392 @@
+---
+layout: post
+title:  "An Introduction To The Prospero Usage"
+date:   2023-04-05
+tags:   prospero galleon wildfly
+author: liweinan
+description: An introduction to the Prospero usage.
+---
+
+= An Introduction To The Prospero Usage
+
+`Prospero` is a tool provided by the WildFly community:
+
+* https://github.com/wildfly-extras/prospero[GitHub - wildfly-extras/prospero: Prospero is a tool combining Galleon feature packs and wildfly-channels to provision and update Wildfly server.]
+
+The purpose of the project can be quoted from the README of the above project link:
+
+____
+Prospero is a tool combining Galleon feature packs and wildfly-channels to provision and update Wildfly server.
+____
+
+Briefly speaking, you can use the tool to do the version management of your WildFly installation.
+
+[NOTE]
+====
+The `wildfly-channels` projects defines the `Channel`, which allow separation of artifact versioning from the Galleon feature pack, allowing artifact versions to be managed independently. In the project, it contains a spec doc that describes the `Channel` model:
+
+* https://github.com/wildfly-extras/wildfly-channel/blob/main/doc/spec.adoc[wildfly-channel/spec.adoc at main · wildfly-extras/wildfly-channel · GitHub]
+====
+
+In the next section, let's see the basic usage of `prospero-cli`.
+
+== Basic Usage Of The Prospero CLI Tool
+
+To use the tool, firstly you can clone the project to your local environment:
+
+[,bash]
+----
+$ git clone https://github.com/wildfly-extras/prospero.git
+----
+
+Then you can enter the project directory, and build the project as mentioned in the project README:
+
+[,bash]
+----
+$ mvn clean install
+----
+
+After the project is built, then we can use the built tool to install a provisioned WildFly locally. The tool uses the `wildfly-channel` config files(which are called `Wildfly Channels` and `Wildfly Channel Manifests`) to manage the components versions. And the project provides some example configuration files already in its `examples` directory:
+
+[,bash]
+----
+➤ ls examples
+README.md                           wildfly-27.0.0.Alpha2-manifest.yaml
+wildfly-26.0.0.Final-channel.yaml   wildfly-core-channel.yaml
+wildfly-26.0.0.Final-manifest.yaml  wildfly-core-manifest.yaml
+wildfly-27.0.0.Alpha2-channel.yaml
+----
+
+To use one of the above manifest files, here is an example command:
+
+[,bash]
+----
+$ ./prospero install --fpl=org.wildfly:wildfly-galleon-pack --dir=wfly-26 --channel=examples/wildfly-26.0.0.Final-channel.yaml
+----
+
+The above command will use the channel defined in the `wildfly-26.0.0.Final-channel.yaml` to provision the components versions listed in `wildfly-26.0.0.Final-channel.yaml` and install a WildFly into the `wfly-26` directory. In addition, the `-fpl` option defines the Galleon Feature Pack to use.
+
+NOTE: The `channel` files contain repositories and reference to the manifest, while `manifest` only contains the versions of artifacts.
+
+Here is the running process of the above command:
+
+[,bash]
+----
+$ ./prospero install --fpl=org.wildfly:wildfly-galleon-pack --dir=wfly-26 --channel=examples/wildfly-26.0.0.Final-channel.yaml
+Installing feature pack: org.wildfly:wildfly-galleon-pack
+Using channels:
+# manifest: file:examples/wildfly-26.0.0.Final-manifest.yaml
+  repositories:
+    id: central
+    url: https://repo1.maven.org/maven2/
+    id: jboss-public
+    url: https://repository.jboss.org/nexus/content/groups/public/
+    id: mrrc
+    url: https://maven.repository.redhat.com/ga/
+
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+
+Server created in /Users/weli/works/prospero/wfly-26
+Operation completed in 29.46 seconds.
+----
+
+After the above process, a provisioned WildFly is installed at the `wfly-26` directory:
+
+[,bash]
+----
+➤ ls wfly-26/
+LICENSE.txt       bin               domain            standalone
+README.txt        copyright.txt     jboss-modules.jar welcome-content
+appclient         docs              modules
+----
+
+The above installation is provisioned by the `prospero` tool. Next we can check the content of the channel metadata files.
+
+== WildFly Channel Metadata
+
+Here is the content of the `examples/wildfly-26.0.0.Final-channel.yaml` file:
+
+[,yaml]
+----
+schemaVersion: "2.0.0"
+repositories:
+  - id: "central"
+    url: "https://repo1.maven.org/maven2/"
+  - id: "jboss-public"
+    url: "https://repository.jboss.org/nexus/content/groups/public/"
+  - id: "mrrc"
+    url: "https://maven.repository.redhat.com/ga/"
+manifest:
+  url: "file:examples/wildfly-26.0.0.Final-manifest.yaml"
+----
+
+The above channel file defines the repositories to be used for downloading components. In addition, it includes a manifest file:
+
+[,yaml]
+----
+manifest:
+  url: "file:examples/wildfly-26.0.0.Final-manifest.yaml"
+----
+
+Here is part of the contents of `examples/wildfly-26.0.0.Final-manifest.yaml`:
+
+[,yaml]
+----
+➤ head -n 20 examples/wildfly-26.0.0.Final-manifest.yaml
+---
+schemaVersion: "1.0.0"
+name: "Manifest for org.wildfly:wildfly-ee-galleon-pack:pom:26.0.0.Final feature pack."
+id: "org.wildfly:wildfly-ee-galleon-pack"
+description: "Generated by org.wildfly.galleon-plugins:wildfly-galleon-maven-plugin\
+  \ at 2023-03-21T13:03:11.512702Z"
+streams:
+  - groupId: "antlr"
+    artifactId: "antlr"
+    version: "2.7.7"
+  - groupId: "com.fasterxml"
+    artifactId: "classmate"
+    version: "1.5.1"
+  - groupId: "com.fasterxml.jackson.core"
+    artifactId: "jackson-annotations"
+    version: "2.12.3"
+  - groupId: "com.fasterxml.jackson.core"
+    artifactId: "jackson-core"
+    version: "2.12.3"
+  - groupId: "com.fasterxml.jackson.core"
+----
+
+As the command output shown above, the above manifest file defines the component versions. Combining the repositories and the component versions, the `prospero` tool knows how to provision a WildFly server, and the component versions in the WildFly installation is managed by the tool. Next we'll see how to use the `prospero` to update or rollback the provisioned WildFly distribution.
+
+== Other Usages Of The Tool
+
+The `prospero` tool itself contains help to its usage:
+
+[,bash]
+----
+➤ ./prospero
+Welcome to prospero CLI!
+
+This tool enables you to provision and manage instances of the Wildfly application server.
+
+Usage: prospero [-hv] [COMMAND]
+
+Options:
+  -h, --help      Displays the help information for the command.
+  -v, --version   Prints the version of prospero and exits.
+
+Commands:
+  install         Installs a new instance of the application server.
+  update          Updates a server instance with the latest patches.
+  print-licenses  Prints licenses and additional agreements required to install the server.
+  history         Lists all the previous installation states.
+  revert          Reverts the server to a previous installation state.
+  channel         Manages the channels used by the server to get the latest updates.
+  completion      Generates a bash completion script. To enable auto-completion use the command `source <(prospero completion)`.
+  clone           Exports installation details required to recreate a server.
+
+Exit codes:
+  0   Successful program execution.
+  1   Failed operation.
+  2   Invalid input arguments.
+
+Use `prospero <COMMAND> --help` to show help information for the command.
+----
+
+In the above command output, it has a list of the commands supported. Firstly we can try to use its `update` command. We can update one of the component versions defined in the manifest file `examples/wildfly-26.0.0.Final-manifest.yaml`:
+
+[,yaml]
+----
+   - groupId: "io.undertow"
+     artifactId: "undertow-core"
+     version: "2.2.14.Final"
+----
+
+We can update the above `undertow-core` version from `2.2.14.Final` to `2.2.18.Final`, and then run the following command to update the provisioned server:
+
+[,bash]
+----
+./prospero update perform --dir=wfly-26
+----
+
+And here is the running process of the above command:
+
+[,bash]
+----
+➤ ./prospero update perform --dir=wfly-26
+Updates found:
+  io.undertow:undertow-servlet                          2.2.14.Final         ==>  2.2.18.Final
+Continue with update [y/N]: y
+Applying updates
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+Build update complete!
+Update complete!
+Operation completed in 39.00 seconds.
+----
+
+From the above running process, we can see the `undertow-servlet` component inside the WildFly installation is updated, and `prospero` will help us to manage this version change.
+
+NOTE: Updating a component by manually editing the manifest is under user responsibility if the changes of this manifest don't come from an "official" manifest. For example, one manifest generated from a more recent version, you could break your server installation.
+
+We can use the `history`  command to see the change history of the provisioned server:
+
+[,bash]
+----
+➤ ./prospero history --dir=wfly-26
+[fc78b239] 2023-03-23T16:48:24Z - update [file:examples/wildfly-26.0.0.Final-manifest.yaml::27d5125a2220e0885b13f7f0b740bfb3bd06aac6]
+[84b35ad5] 2023-03-23T16:43:37Z - install [file:examples/wildfly-26.0.0.Final-manifest.yaml::aa9100d88292532da7fa8936611765c71a63af36]
+----
+
+From the above command output, we can see the initial installation and the update are all managed in the history. Now we can try to rollback the update with the following command:
+
+[,bash]
+----
+➤ ./prospero revert perform --dir=wfly-26 --revision=84b35ad5
+----
+
+With above command, we revert our WildFly server back to the revision `84b35ad5`, which is the initial installation of the server. Here is the command output:
+
+[,bash]
+----
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+Updates found:
+  [*]io.undertow:undertow-servlet                          2.2.18.Final         ==>  2.2.14.Final
+
+[*] The update list contain one or more artifacts with lower versions then currently installed. Proceed with caution.
+
+Continue with update [y/N]: y
+
+Operation completed in 27.16 seconds.
+----
+
+From the above command output we can see the `prospero` asked us if we want to downgrade the component versions. Because we revert our WildFly server back to the initial installation, so just write `y` and proceed the process, and the WildFly server is reverted back to the initial installation. Now we can check the provision history of the server again:
+
+[,bash]
+----
+➤ ./prospero history --dir=wfly-26
+[310f6f37] 2023-03-23T16:50:03Z - rollback [file:examples/wildfly-26.0.0.Final-manifest.yaml::aa9100d88292532da7fa8936611765c71a63af36]
+[fc78b239] 2023-03-23T16:48:24Z - update [file:examples/wildfly-26.0.0.Final-manifest.yaml::27d5125a2220e0885b13f7f0b740bfb3bd06aac6]
+[84b35ad5] 2023-03-23T16:43:37Z - install [file:examples/wildfly-26.0.0.Final-manifest.yaml::aa9100d88292532da7fa8936611765c71a63af36]
+----
+
+We can see there is a new `rollback` revision added instead of just reverting to the original revision. This design helps us to preserve all the change histories. To see the changes in the revision, we can use this command to do so:
+
+[,bash]
+----
+➤ ./prospero history --dir=wfly-26 --revision=310f6f37
+----
+
+And here is the output of the command:
+
+[,bash]
+----
+➤ ./prospero history --dir=wfly-26 --revision=310f6f37
+
+Updates:
+  [Updated artifact] io.undertow:undertow-servlet:		2.2.18.Final ==> 2.2.14.Final
+----
+
+From the above command output, we can see the changed components versions in the update.
+
+== The Usage Of The `-profile` Option
+
+In this article we have used the `-fpl` option to do the installation o the WildFly, and there is another `-profile` option that can be used for provision. The `-profile` option is actually a combination of Galleon Feature Pack and WildFly Channel, and it is defined by the YAML file too. The default `wildfly` profile is defined here:
+
+* https://github.com/wildfly-extras/prospero/blob/main/prospero-common/src/main/resources/prospero-known-combinations.yaml[prospero-known-combinations.yaml]
+
+The content of the above file is shown in below:
+
+[,yaml]
+----
+---
+- name: "wildfly"
+  galleonConfiguration: "classpath:wildfly-provisioning.xml"
+  channels:
+    - schemaVersion: "2.0.0"
+      name: "wildfly"
+      repositories:
+        - id: "central"
+          url: "https://repo1.maven.org/maven2/"
+        - id: "jboss-public"
+          url: "https://repository.jboss.org/nexus/content/groups/public/"
+        - id: "mrrc"
+          url: "https://maven.repository.redhat.com/ga/"
+      manifest: null
+----
+
+As the content shown above, the profile file defines the channel similar to a channel file. In addition, it contains a `galleonConfiguration` item that defines a Galleon config file location, which is https://github.com/wildfly-extras/prospero/blob/main/prospero-common/src/main/resources/wildfly-provisioning.xml[`wildfly-provisioning.xml`]. Here is the content of the `wildfly-provisioning.xml`:
+
+[,xml]
+----
+<?xml version="1.0" ?>
+...
+<installation xmlns="urn:jboss:galleon:provisioning:3.0">
+    <feature-pack location="org.wildfly:wildfly-galleon-pack::zip"/>
+</installation>
+----
+
+As the content shown above, it's a Galleon config file contains a `feature-pack` location. In conclusion, the `wildfly` profile combines the channel definition and the feature-pack definition. So we can use this profile file directly with the manifest file. Here is the command to do so:
+
+[,bash]
+----
+$ ./prospero install --profile=wildfly --dir=wfly-26 --manifest=examples/wildfly-26.0.0.Final-manifest.yaml
+----
+
+As the command shown above, we have used the `-profile` option instead of the `-fpl` option, so we don't need the channel file anymore. Here is the output of the above command:
+
+[,bash]
+----
+$ ./prospero install --profile=wildfly --dir=wfly-26 --manifest=examples/wildfly-26.0.0.Final-manifest.yaml
+Installing profile: wildfly
+Using channels:
+# manifest: file:/Users/weli/works/prospero/examples/wildfly-26.0.0.Final-manifest.yaml
+  repositories:
+    id: central
+    url: https://repo1.maven.org/maven2/
+    id: jboss-public
+    url: https://repository.jboss.org/nexus/content/groups/public/
+    id: mrrc
+    url: https://maven.repository.redhat.com/ga/
+
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+
+Server created in /Users/weli/works/prospero/wfly-26
+Operation completed in 16.44 seconds.
+----
+
+From the above command output, we can see the `channels` definition are loaded from the profile directly, and we used the `--manifest` option to define the manifest file directly, and we don't need to use the `--channnel` option to define the channel by ourselves.
+
+== Conclusion
+
+In this article, I introduced the basic usages of the Prospero, and if you want to know more of the project, please check the source code of the project, and also the links provided in the references.
+
+== References
+
+The `Prospero` uses the `WildFly Channel Manifests` defined in the `wildfly-channel` project as its configuration backend:
+
+* https://github.com/wildfly-extras/wildfly-channel[GitHub - wildfly-extras/wildfly-channel: Library for WildFly Channel]
+
+The `Prospero` uses the `Galleon` project to do the provision actions of the WildFly distribution:
+
+* https://github.com/wildfly/galleon[GitHub - wildfly/galleon]
+
+If you want to understand how to generate the manifest file for the WildFly releases, here are the discussions on the topic:
+
+* https://github.com/liweinan/prospero/pull/1[Add wildfly-ee-galleon-pack streams #1]
+* https://github.com/wildfly/wildfly.org/pull/401#issuecomment-1479898270[blog post: An Introduction To The Prospero Usage by liweinan · Pull Request #401 · wildfly/wildfly.org · GitHub] / https://github.com/wildfly/wildfly.org/pull/401#issuecomment-1474031721[Another discussion]
+
