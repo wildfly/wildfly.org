@@ -7,9 +7,6 @@ _site
 vendor/
 .bundle/
 
-# rbenv will use this file if "rbenv local" is used
-.ruby-version
-
 ## IDE
 .settings
 .project
