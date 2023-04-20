@@ -1,0 +1,126 @@
+---
+layout: post
+title:  "New WildFly 28 Final release"
+date:   2023-04-20
+tags:   announcement release 
+author: bstansberry
+description: WildFly 28 Final is now available for download.
+---
+
+= WildFly 28 is released!
+
+I'm pleased to announce that the new WildFly and WildFly Preview 28.0.0.Final releases are available for download at https://wildfly.org/downloads.
+
+== New and Notable
+
+*Observability*
+
+The biggest changes in WildFly 28 relate to the observability space.
+
+* The `micrometer` subsystem has been link:https://issues.redhat.com/browse/WFLY-17144[added to standard WildFly], bringing link:https://micrometer.io[Micrometer] support. As part of this work, we've added support for link:https://issues.redhat.com/browse/WFLY-17681[Micrometer integration with our MicroProfile Fault Tolerance implementation]. The `micrometer` subsystem was first introduced in WildFly Preview in WildFly 27. Note that the subsystem has been updated from what was in WildFly Preview 27 to switch to pushing metric data via OTLP to a remote collector, instead of supporting polling of data on the WildFly server's management interface. (Server and JVM metrics can still be pulled from the management endpoint if the link:https://docs.wildfly.org/28/Admin_Guide.html#MicroProfile_Metrics_SmallRye[base `metrics` subsystem] is configured.)
+* We've also added support for link:https://download.eclipse.org/microprofile/microprofile-telemetry-1.0/tracing/microprofile-telemetry-tracing-spec-1.0.html[MicroProfile Telemetry] via a link:https://issues.redhat.com/browse/WFLY-17156[new `microprofile-telemetry` subsystem].
+* We've removed support for MicroProfile Metrics, except for a link:https://issues.redhat.com/browse/WFLY-17138[stub system limited to 'admin-only' mode] that's been kept to facilitate configuration migration. MicroProfile Metrics users are encouraged to use the new `micrometer` subsystem.
+* We've removed support for MicroProfile OpenTracing, except for a link:https://issues.redhat.com/browse/WFLY-17510[stub system limited to 'admin-only' mode] that's been kept to facilitate configuration migration. MicroProfile OpenTracing users are encouraged to use the new `microprofile-telemetry` subsystem, or the `opentelemetry` subsystem upon which it is based.
+
+*MicroProfile*
+
+Besides the changes in the observability space noted above, there are a couple of important changes in WildFly 28's MicroProfile support:
+
+* We've link:https://issues.redhat.com/browse/WFLY-14869[added support] for link:https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html[MicroProfile LRA] via new `microprofile-lra-coordinator` and `microprofile-lra-participant` subsystems.
+* Except for MicroProfile Metrics and OpenTracing, which have been removed, we've updated our support for the other MicroProfile Platform specifications to the link:https://github.com/eclipse/microprofile/releases/tag/6.0[MicroProfile Platform 6] versions.
+
+Because we no longer support MicroProfile Metrics, WildFly 28 cannot claim to be a compatible implementation of the MicroProfile 6.0 specification. However, WildFly's MicroProfile support includes implementations of the following specifications in our "full" (e.g. `standalone-full.xml`) and "default" (e.g `standalone.xml`) configurations as well as our "microprofile" configurations (e.g. `standalone-microprofile.xml`):
+
+[cols=",,",options="header"]
+|=======================================================================
+|MicroProfile Technology |WildFly Full/Default Configurations |WildFly MicroProfile Configuration
+
+|MicroProfile Config 3.0 |X |X
+
+|MicroProfile Fault Tolerance 4.0 |-- |X
+
+|MicroProfile Health 4.0 |-- |X
+
+|MicroProfile JWT Authentication 2.1 |X |X
+
+|MicroProfile LRA 2.0 |-- |X
+
+|MicroProfile OpenAPI 3.1 |-- |X
+
+|MicroProfile Open Telemetry 1.0|-- |X
+
+|MicroProfile Reactive Messaging 3.0 |-- |--
+
+|MicroProfile Reactive Streams Operators 3.0 |-- |--
+
+|MicroProfile Rest Client 3.0|X |X
+|=======================================================================
+
+
+*Provisioning*
+
+* We've added a new link:https://issues.redhat.com/browse/WFLY-17648[`ee-core-profile-server` Galleon layer] to make it easy to provision a server based on the new link:https://jakarta.ee/specifications/coreprofile/10/[Jakarta EE Core Profile] introduced in EE 10.
+* Related to this we've introduced new link:https://issues.redhat.com/browse/WFLY-13355[`ee-concurrency` and `ee-integration`] and link:https://issues.redhat.com/browse/WFLY-17804[`servlet`] Galleon layers. These layers allow a more tailored configuration compared to the existing `ee` and `web-server` layers.
+
+Also, separate from WildFly itself, to help users in their migration from Jakarta EE 8 to EE 10 we've introduced a separate link:https://github.com/wildfly-extras/deployment-transformer-feature-pack[ WildFly Extras project] that provides a new Galleon feature pack. The `wildfly-deployment-transformer-feature-pack` allows you to integrate into a standard WildFly installation the EE 8 to EE 9 deployment transformation functionality that we've link:https://docs.wildfly.org/28/WildFly_and_WildFly_Preview.html#wildfly-preview-support-for-ee-8-deployments[provided in WildFly Preview] since its first release. See the link:https://github.com/wildfly-extras/deployment-transformer-feature-pack#readme[`wildfly-deployment-transformer-feature-pack` README] for documentation on how to use this new feature pack.
+
+*Quickstarts*
+
+* Eduardo Martins and the teams working on server provisioning and cloud have done a significant enhancement to the WildFly quickstarts to link:https://issues.redhat.com/browse/WFLY-17289[deliver a set of Quickstarts which showcase WildFly major enhancements with respect to provisioning, cloud and testing].
+* We've also added a link:https://github.com/wildfly/quickstart/tree/28.0.0.Final/remote-helloworld-mdb[new quickstart] that link:https://issues.redhat.com/browse/WFLY-17644[demonstrates connecting to a remote Artemis messaging broker].
+
+*Other Treats*
+
+* The server kernel team has added support for link:https://issues.redhat.com/browse/WFCORE-5343[configuration customization using YAML]. link:https://docs.wildfly.org/28/Admin_Guide.html#YAML_Configuration_file[YAML-based configuration customization] is a nice alternative to using CLI scripts to tailor a stock configuration for a particular environment, as there is no need start a CLI process to apply the customization. This makes it well suited to workflows like link:https://www.wildfly.org/news/2023/01/10/ansible-wildfly/[deploying WildFly using Ansible].
+* The clustering team has added support for link:https://issues.redhat.com/browse/WFLY-13520[Infinispan query, counters, locks, and CDI].
+* The clustering and web teams have added support for link:https://issues.redhat.com/browse/WFLY-16043[configuration of an arbitrary cookie to use for web request affinity].
+* The RESTEasy team has added support for link:https://issues.redhat.com/browse/WFLY-16018[including request tracing information in HTTP response headers].
+* The `messaging-activemq` subsystem now supports link:https://issues.redhat.com/browse/WFLY-7232[integrating an SSLContext provided by the `elytron` subsystem].
+* When you use OIDC, the security team has added support for link:https://issues.redhat.com/browse/WFLY-16793[identity propagation from a WAR to an EJB in an EAR].
+* The web team has added link:https://issues.redhat.com/browse/WFLY-14980[default values for the `read-timeout` and `write-timeout` settings] for Undertow listeners.
+* We've updated Hibernate ORM from the ORM 6.1 release to 6.2.1.
+
+== Jakarta EE 10 Support
+
+WildFly 28 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile] and the new link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile]. WildFly is EE 10 compatible when running on both Java SE 11 and Java SE 17.
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications] repository on GitHub:
+
+* Jakarta EE 10 Full Platform
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_28.0.0.Final/jakarta-full-platform-jdk11.adoc#tck-results[SE 11]
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_28.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17]
+* Jakarta EE 10 Web Profile
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_28.0.0.Final/jakarta-web-profile-jdk11.adoc#tck-results[SE 11]
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_28.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17]
+* Jakarta EE 10 Core Profile
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_28.0.0.Final/jakarta-core-jdk11.adoc#jakarta-core-profile-1001-tck-java-se-11-results[SE 11]
+** link:https://github.com/wildfly/certifications/blob/EE10/WildFly_28.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17]
+
+== Java SE Support
+
+Our recommendation is that you run WildFly on the most recent long-term support Java SE release, i.e. on SE 17 for WildFly 28. While we do do some testing of WildFly on JDK 20, we do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 11 or 17.
+
+WildFly 28 also is heavily tested and runs well on Java 11. We plan to continue to support Java 11 at least through WildFly 29, and likely beyond. We do, however, anticipate removing support for SE 17 sometime in the next 12 to 18 months.
+
+While we recommend using an LTS JDK release, I do believe WildFly runs well on JDK 20. By runs well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform. 
+
+Please note that WildFly runs on Java 11 and later in classpath mode.
+
+== Known Issues
+
+=== Spring and RESTEasy Spring
+
+In WildFly 27, pending the final release of Spring 6, RESTEasy Spring support was removed from standard WildFly, and was only provided with WildFly Preview. With WildFly 28 we have reintroduced RESTEasy Spring support to standard WildFly.
+
+However, we've learned of a link:https://issues.redhat.com/browse/WFLY-17921[bug] in WildFly 28 that will prevent Spring deployments, including those using RESTEasy Spring, from working. Until this is resolved in WildFly 28.0.1, users can work around this issue by link:https://docs.wildfly.org/28/Developer_Guide.html#jboss-deployment-structure-file[adding a `jboss-deployment-structure.xml` file] to their deployment that declares a dependency on the `org.jboss.vfs` module.
+
+
+== Release Notes
+
+The full release notes for the release are in the link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12405355[WildFly JIRA].  Issues fixed in the  underlying link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12402457[WildFly Core 20.0.0] and link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12406093[20.0.1] releases are listed in the WildFly Core JIRA.
+
+Please try it out and give us your feedback, while we get to work on WildFly 29!
+
+Best regards,
+
+Brian
