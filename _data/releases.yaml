@@ -40,7 +40,7 @@
       licence: AL
       items:
         - format: Source
-          url: https://github.com/wildfly/quickstart/tree/28.0.0.Final
+          url: https://github.com/wildfly/quickstart/tree/28.0.0.SP1
     - name: Release Notes
       items:
         - format: Notes
