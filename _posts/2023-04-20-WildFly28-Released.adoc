@@ -100,7 +100,7 @@ Evidence supporting our certification is available in the link:https://github.co
 
 Our recommendation is that you run WildFly on the most recent long-term support Java SE release, i.e. on SE 17 for WildFly 28. While we do do some testing of WildFly on JDK 20, we do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 11 or 17.
 
-WildFly 28 also is heavily tested and runs well on Java 11. We plan to continue to support Java 11 at least through WildFly 29, and likely beyond. We do, however, anticipate removing support for SE 17 sometime in the next 12 to 18 months.
+WildFly 28 also is heavily tested and runs well on Java 11. We plan to continue to support Java 11 at least through WildFly 29, and likely beyond. We do, however, anticipate removing support for SE 11 sometime in the next 12 to 18 months.
 
 While we recommend using an LTS JDK release, I do believe WildFly runs well on JDK 20. By runs well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform. 
 
