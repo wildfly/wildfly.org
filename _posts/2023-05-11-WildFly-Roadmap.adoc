@@ -61,7 +61,7 @@ When we release each major we also create a new branch specific to that major. T
 
 == Questions?
 
-If you have questions or want to provide feedback, I encourage you to post on the link:https://groups.google.com/g/wildfly[WildFly forum], on the link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/LCWZFP2L4EJAI4R52YKP4AQEZHCMW73M/[wildfly-dev mail list] or in link:https://wildfly.zulipchat.com/[Zulip chat]. I will be starting a thread on the forum about this topic.
+If you have questions or want to provide feedback, I encourage you to post on the link:https://groups.google.com/g/wildfly[WildFly forum], on the link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/[wildfly-dev mail list] or in link:https://wildfly.zulipchat.com/[Zulip chat]. I will be starting a thread on the forum about this topic.
 
 Best regards,
 
