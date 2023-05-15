@@ -50,7 +50,7 @@ The following is a rough schedule of when we intend to do feature releases over 
 
 |WildFly 35
 |December 12, 2024
-|January 9, 2024
+|January 9, 2025
 |===
 
 WildFly is only _roughly_ time boxed. We are certainly willing to delay a release to ensure adequate quality, and we would consider delaying a couple of weeks to include features of large enough significance. For example if a new MicroProfile release comes out in June and we need a bit more time to incorporate it in WildFly 29 we would consider delaying the WildFly 29 release somewhat. If we delayed a release we would not intend to then delay the next release; the next release would just have a shorter development window. The general idea though is to not block releasing waiting for features, as a quarterly cycle means a feature that misses a release can appear soon enough.
