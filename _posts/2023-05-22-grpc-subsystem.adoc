@@ -48,7 +48,7 @@ types and procedure calls. Consider, for example, the following, which
 comes from the _helloworld_ example in the wildfly-grpc-feature-pack
 project (https://github.com/wildfly-extras/wildfly-grpc-feature-pack):
 
-[source,bash]
+[source,protobuf]
 ----
     syntax = "proto3";
 
@@ -89,7 +89,7 @@ the client and server side infrastructure. For the client there is
 `GreeterBlockingStub`, which allows the client to make calls to the
 server, something like this:
 
-[source,bash]
+[source,java]
 ----
    ManagedChannelchannel = ManagedChannelBuilder
                                .forTarget("localhost:9555")
@@ -107,7 +107,7 @@ method that throws an exception. Implementing the service, then, is a
 matter of overriding each such method with real content, as in
 `GreeterServiceImpl`
 
-[source,bash]
+[source,java]
 ----
    @Override
    public void sayHello(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
@@ -121,7 +121,7 @@ matter of overriding each such method with real content, as in
 By virtue of implementing `io.grpc.BindableService`,
 `GreeterServiceImpl` is a gRPC service, and it is installed as follows:
 
-[source,bash]
+[source,java]
 ----
    io.grpc.Server server = ServerBuilder.forPort(9555)
                                .addService(new GreeterServiceImpl())
@@ -184,7 +184,7 @@ property should be set to null. Otherwise, consider the following
 fragment from a standalone.xml file, which is configured for identities
 to be verified on both the server and the client:
 
-[source,bash]
+[source,xml]
 ----
 <subsystem xmlns="urn:wildfly:elytron:17.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
     ...
@@ -235,7 +235,7 @@ So, there is a keystore and a truststore on the server, and there must
 be a matching truststore and keystore on the client. Those can be used
 as follows by the client:
 
-[source,bash]
+[source,java]
 ----
     ClassLoader classLoader = GreeterClient.class.getClassLoader();
     InputStream trustStore = classLoader.getResourceAsStream("client.truststore.pem");
