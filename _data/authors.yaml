@@ -190,3 +190,9 @@ rpelisse:
   occupation: "Senior Software Engineer"
   bio: "github.com/ansible-middleware/"
   avatar: rpelisse.jpg
+mstefank:
+  name: "Martin Stefanko"
+  location: "Brno"
+  occupation: "Principal Software Engineer"
+  bio: "github.com/xstefank"
+  avatar: mstefank.jpg
