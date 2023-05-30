@@ -189,11 +189,16 @@ rpelisse:
   location: "Berlin"
   occupation: "Senior Software Engineer"
   bio: "github.com/ansible-middleware/"
-#  avatar: rpelisse.jpg
+  avatar: rpelisse.jpg
+mstefank:
+  name: "Martin Stefanko"
+  location: "Brno"
+  occupation: "Principal Software Engineer"
+  bio: "github.com/xstefank"
+  avatar: mstefank.jpg
 rsigal:
   name: Ron Sigal
   location: New York
   occupation: Senior Software Engineer
   bio: https://github.com/ronsigal/
   avatar: rsigal.jpg
-  
