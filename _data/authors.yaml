@@ -196,3 +196,9 @@ mstefank:
   occupation: "Principal Software Engineer"
   bio: "github.com/xstefank"
   avatar: mstefank.jpg
+rsigal:
+  name: Ron Sigal
+  location: New York
+  occupation: Senior Software Engineer
+  bio: https://github.com/ronsigal/
+  avatar: rsigal.jpg
