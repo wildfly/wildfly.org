@@ -12,14 +12,17 @@ layout: base
   
 
   <div class="grid__item width-10-12 width-12-12-m">
-    {% for post in paginator.posts %}
-      {% assign author = site.data.authors[post.author] %}
+      {% for post in paginator.posts %}
+      {% assign author = "" | split: ',' %}
+      {% for a in post.author %}
+        {% assign author = author | push: site.data.authors[a].name %}
+      {% endfor %}
       <div class="news-list-item grid-wrapper">
         <div class="post-title grid__item width-12-12">
           <h2><a href="{% if post.link %}{{ post.link }}{% else %}{{site.baseurl}}{{ post.url }}{% endif %}" {% if post.link %}target="_blank"{% endif %}>{{ post.title }}</a></h2>
         </div>
         <div class="grid__item width-6-12 width-12-12-m">
-          <p class="byline">By {{ author.name }} | {{ post.date | date: '%B %d, %Y' }}</p>
+          <p class="byline">By {{ author | join: ', ' }} | {{ post.date | date: '%B %d, %Y' }}</p>
         </div>
         <div class="grid__item width-6-12 width-12-12-m">{% include share-page.html %}</div>
         <div class="grid__item width-12-12">
