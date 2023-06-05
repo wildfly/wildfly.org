@@ -3,7 +3,9 @@ layout: post
 title:  "grpc Subsystem in WildFly"
 date:   2023-05-22
 tags:   grpc
-author: rsigal, hpehl
+author:
+  - rsigal
+  - hpehl
 description: Introducing grpc subsystem in WildFly
 ---
 
