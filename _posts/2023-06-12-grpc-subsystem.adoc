@@ -3,7 +3,9 @@ layout: post
 title:  "grpc and WildFly - Part Ifootnote:[Part II: https://resteasy.dev/2023/06/11/grpc-in-wildfly-pt2/]"
 date:   2023-06-12
 tags:   grpc
-author: rsigal, hpehl
+author:
+  - rsigal
+  - hpehl
 description: Introducing grpc subsystem in WildFly
 ---
 

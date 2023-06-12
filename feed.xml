@@ -35,21 +35,34 @@ layout: null
         <content type="html" xml:base="{% if post.link %}{{ post.link }}{% else %}{{ post.url | absolute_url | xml_escape }}{% endif %}">{{ post.content | strip | xml_escape }}</content>
       {% endunless %}
 
-      {% assign post_author = post.author | default: post.authors[0] | default: site.author %}
-      {% assign post_author = site.data.authors[post_author] | default: post_author %}
-      {% assign post_author_email = post_author.email | default: nil %}
-      {% assign post_author_uri = post_author.uri | default: nil %}
-      {% assign post_author_name = post_author.name | default: post_author %}
+      {% assign post_authors = "" | split: ',' %}
+      {% assign post_authors_emails = "" | split: ',' %}
+      {% assign post_authors_uris = "" | split: ',' %}
+      {% assign post_authors_names = "" | split: ',' %}
+      {% for a in post.author %}
+        {% assign a_data = a | default: site.author %}
+        {% assign a_data = site.data.authors[a_data] | default: a_data %}
+        {% assign a_email = a_data.email | default: nil %}
+        {% assign a_uri = a_data.uri | default: nil %}
+        {% assign a_name = a_data.name | default: a_data %}
 
-      <author>
-        <name>{{ post_author_name | default: "" | xml_escape }}</name>
-        {% if post_author_email %}
-        <email>{{ post_author_email | xml_escape }}</email>
-        {% endif %}
-        {% if post_author_uri %}
-        <uri>{{ post_author_uri | xml_escape }}</uri>
-        {% endif %}
-      </author>
+        {% assign post_authors = post_authors | push: a_data %}
+        {% assign post_authors_emails = post_authors_emails | push: a_email %}
+        {% assign post_authors_uris = post_authors_uris | push: a_uri %}
+        {% assign post_authors_names = post_authors_names | push: a_name %}
+      {% endfor %}
+
+      {% for i in post_authors %}
+        <author>
+          <name>{{ post_authors_names[forloop.index0] | default: "" | xml_escape }}</name>
+          {% if post_authors_emails[forloop.index0] %}
+          <email>{{ post_authors_emails[forloop.index0] | xml_escape }}</email>
+          {% endif %}
+          {% if post_authors_uris[forloop.index0] %}
+          <uri>{{ post_authors_uris[forloop.index0] | xml_escape }}</uri>
+          {% endif %}
+        </author>
+      {% endfor %}
 
       {% if post.category %}
         <category term="{{ post.category | xml_escape }}" />
