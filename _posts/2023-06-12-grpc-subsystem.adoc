@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "grpc and WildFly - Part Ifootnote:[Part II: https://resteasy.dev/2023/06/11/grpc-in-wildfly-pt2/]"
+title:  "grpc and WildFly - Part I"
 date:   2023-06-12
 tags:   grpc
 author:
@@ -10,7 +10,9 @@ description: Introducing grpc subsystem in WildFly
 ---
 
 We are pleased to announce the first release of support for
-https://grpc.io/[*gRPC*] services in WildFly. gRPC, a Google project,
+https://grpc.io/[*gRPC*] services in 
+WildFlyfootnote:[Also, see Part II: https://resteasy.dev/2023/06/11/grpc-in-wildfly-pt2/].
+gRPC, a Google project,
 is, as its name suggests, a Remote Procedure Call framework. In some
 ways, it is a competitor to 
 https://jakarta.ee/specifications/restful-ws/[*Jakarta RESTFul Web
