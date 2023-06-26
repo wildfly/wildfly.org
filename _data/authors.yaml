@@ -202,3 +202,10 @@ rsigal:
   occupation: Senior Software Engineer
   bio: https://github.com/ronsigal/
   avatar: rsigal.jpg
+prarthonapaul:
+  name: "Prarthona Paul"
+  location: "Toronto, CA"
+  occupation: "Software engineering intern"
+  bio: "Prarthona is a Software Engineering Intern at Red Hat, working on the WildFly Elytron team."
+  emailhash: "6ed81e314d6074bbf734abe812f33b05"
+  twitter: "prarthonapaul"
