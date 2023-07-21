@@ -44,7 +44,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12410347
+          url: https://wildfly.org/news/2023/07/21/WildFly29-Released/
 - version: 29.0.0.Beta1
   version_shortname: 29 Beta1
   date: 2023-07-06
