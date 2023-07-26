@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Securing the WildFly Management Console with OpenID Connect'
+date: 2023-07-24
+tags: oidc management console keycloak
+synopsis: An overview of how to secure the WildFly management console with the Keycloak OpenID provider.
+author: fjuma
+link: https://wildfly-security.github.io/wildfly-elytron/blog/securing-management-console-oidc/
+---
