@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Using MicroProfile LRA in WildFly</title>
+  <meta name="description" content="An overview of MicroProfile LRA subsystems setup with WildFly.">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="Using MicroProfile LRA in WildFly">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Using MicroProfile LRA in WildFly</h1>
+    
+    
+    <p class="byline">By Martin Stefanko | May 24, 2023</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html">MicroProfile Long Running
+Actions (LRA)</a> is a specification that defines the protocol and an API for the distributed transactions based on the
+saga pattern and user-defined compensations. In WildFly 28.0.0.Final, we introduced the integration of
+<a href="https://narayana.io/">Narayana LRA</a> which implements this specification. In this guide, we look into how you can enable
+LRA in your WildFly distribution and how you can use LRA in your applications.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="overview-of-the-lra-protocol">Overview of the LRA protocol</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We provide only a high-level overview of the LRA protocol in this post. The full overview of the protocol is available
+at <a href="https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html" class="bare">https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html</a>.</p>
+</div>
+<div class="paragraph">
+<p>In LRA, the specification API utilizes annotations from the <code>org.eclipse.microprofile.lra.annotation</code> package. The main
+annotation is the <code>@LRA</code> which controls the life cycle of the LRA. It&#8217;s use might seem similar to the use of
+<code>@Transactional</code> annotation from JTA, however, the transaction characteristics differ greatly. If you are interested in
+the comparison of the saga pattern to the ACID transactions, you can find an explanation in this talk from DevoxxUK -
+<a href="https://www.youtube.com/watch?v=7DI4xXv1xGU" class="bare">https://www.youtube.com/watch?v=7DI4xXv1xGU</a>.</p>
+</div>
+<div class="paragraph">
+<p>The Narayana implementation utilizes the coordinator orchestration of the LRAs. The LRA coordinator is a standalone
+service that is responsible for the management operations of the LRAs started in the system. When any LRA participant
+(user service) wants to start a new LRA, it contacts the LRA coordinator that in turn returns the LRA ID of the newly
+started LRA that can be propagated by the LRA participant to any other services. When an LRA-aware service receives the
+LRA ID, it can optionally enlist within the same LRA which is again done by the enlistment call to the coordinator. When
+the LRA finishes (success or failure), the LRA coordinator is responsible for invocations of the completions or the
+compensations callbacks of all enlisted LRA participants.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="enabling-microprofile-lra-subsystems">Enabling MicroProfile LRA subsystems</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The integration of the LRA specification is included in two separate subsystems:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>microprofile-lra-coordinator</code> - The LRA coordinator responsible for starting, managing, and recovery of the LRAs.</p>
+</li>
+<li>
+<p><code>microprofile-lra-participant</code> - The client library utilized in user deployments to participate in the distributed LRAs and define compensation and completition callbacks.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="required-extensions-and-subsystems-configuration">Required extensions and subsystems configuration</h3>
+<div class="paragraph">
+<p>The LRA extensions are not included in the standard configurations included with WildFly application server. They need
+to be explitcly enabled either in the configuration XML or by using CLI operations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[standalone@localhost:9990 /] /extension=org.wildfly.extension.microprofile.lra-coordinator:add
+{"outcome" =&gt; "success"}
+
+[standalone@localhost:9990 /] /subsystem=microprofile-lra-coordinator:add
+{
+    "outcome" =&gt; "success",
+    "response-headers" =&gt; {
+        "operation-requires-reload" =&gt; true,
+        "process-state" =&gt; "reload-required"
+    }
+}
+
+[standalone@localhost:9990 /] /extension=org.wildfly.extension.microprofile.lra-participant:add
+{"outcome" =&gt; "success"}
+
+[standalone@localhost:9990 /] /subsystem=microprofile-lra-participant:add
+{
+    "outcome" =&gt; "success",
+    "response-headers" =&gt; {
+        "operation-requires-reload" =&gt; true,
+        "process-state" =&gt; "reload-required"
+    }
+}
+
+[standalone@localhost:9990 /] reload</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-lra-coordinator-in-a-docker-container">Running LRA coordinator in a Docker container</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The LRA coordinator is also provided as a standalone Docker image that you can simply run with the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ docker run -p 8080:8080 quay.io/jbosstm/lra-coordinator</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-lra-in-user-deployments">Using LRA in user deployments</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>@LRA</code> annotation can be placed on any JAX-RS method to declare that the LRA should be started before the method is
+entered and closed (finished successfully) when the method ends. By default, if the JAX-RS method returns any of the 4xx
+or 5xx error HTTP status codes the LRA will be cancelled instead.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@LRA
+@GET
+@Path("/doInLRA")
+public Response doInLRA(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
+    LOG.info("Work LRA ID = " + lraId);
+    ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When LRA closes successfully, the LRA coordinator calls the completion callback if the participant defined it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Complete
+@PUT
+@Path("/complete")
+public Response complete(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
+    LOG.info("Complete ID = " + lraId);
+    ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or, in the case of LRA cancel, the compensation callback will be invoked instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Compensate
+@PUT
+@Path("/compensate")
+public Response compensate(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
+    LOG.info("Compensate ID = " + lraId);
+    ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The full example is available at <a href="https://github.com/xstefank/lra-wildfly-example" class="bare">https://github.com/xstefank/lra-wildfly-example</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you deploy this application to WildFly (28.0.0+) with both microprofile-lra-coordinator and
+microprofile-lra-participant subsystems enabled, you can make the following HTTP invocation to see how the coordinator
+invokes the complete callbacks or the compensation callbacks of the two defined participants:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl localhost:8080/lra-participant/lra-participant-1/doInLRA
+
+# in WFLY console log
+15:14:50,128 INFO  [io.xstefank.LRAParticipant1] (default task-1) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+15:14:50,158 INFO  [io.xstefank.LRAParticipant2] (default task-2) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+15:14:50,183 INFO  [io.xstefank.LRAParticipant1] (default task-3) Complete ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+15:14:50,191 INFO  [io.xstefank.LRAParticipant2] (default task-3) Complete ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+
+
+$ curl "localhost:8080/lra-participant/lra-participant-1/doInLRA?fail=true"
+
+# in WFLY console log
+15:15:33,516 INFO  [io.xstefank.LRAParticipant1] (default task-1) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c
+15:15:33,531 INFO  [io.xstefank.LRAParticipant2] (default task-2) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c
+15:15:33,543 INFO  [io.xstefank.LRAParticipant1] (default task-3) Compensate ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c
+15:15:33,550 INFO  [io.xstefank.LRAParticipant2] (default task-3) Compensate ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also always check the currently active LRAs with a direct call to the coordinator API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl localhost:8080/lra-coordinator/lra-coordinator
+[]%</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this post, we showed you how to configure and use the MicroProfile LRA specification in your WildFly applications.
+LRA provides a very broad feature set which we can&#8217;t cover here. If you are interested in learning more, you can find
+the full specification at <a href="https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html" class="bare">https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html</a>.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

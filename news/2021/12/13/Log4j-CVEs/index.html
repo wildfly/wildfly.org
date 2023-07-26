@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly Impact of the Apache Log4j Security Vulnerabilities</title>
+  <meta name="description" content="WildFly Impact of the Apache Log4j Security Vulnerabilities">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="WildFly Impact of the Apache Log4j Security Vulnerabilities">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly Impact of the Apache Log4j Security Vulnerabilities</h1>
+    
+    
+    <p class="byline">By Brian Stansberry | December 13, 2021</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly users are of course interested in the impact of the recently disclosed security vulnerabilities related to Apache Log4j. On Friday the @WildFlyAS Twitter account <a href="https://twitter.com/WildFlyAS/status/1469362190536818688">tweeted a tl;dr; summary of how the critical impact CVE-2021-44228 vulnerability affects WildFly</a>. In this post I want to provide further details, information on how users who package the log4j-core artifact in their WildFly application deployments can mitigate the risk, and provide information on how the <a href="https://access.redhat.com/security/cve/CVE-2021-4104">recently disclosed moderate Log4j 1 vulnerability</a> affects WildFly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cve-2021-44228">CVE-2021-44228</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://nvd.nist.gov/vuln/detail/CVE-2021-44228">CVE-2021-44228</a> is a critical impact zero-day vulnerability in the Apache Log4j log4j-core library whereby a remote attacker who can control log messages or log message parameters can execute arbitrary code on a server via a JNDI lookup.</p>
+</div>
+<div class="paragraph">
+<p>I won&#8217;t get into the technical details of the exploit here; instead I refer you to <a href="https://www.lunasec.io/docs/blog/log4j-zero-day/">this nice writeup on it</a>.</p>
+</div>
+<div class="paragraph">
+<p>This vulnerability is in code in the Log4j 2 <code>org.apache.logging.log4j:log4j-core</code> artifact.  <strong>The WildFly application server project does not ship this artifact, and it never has.</strong> So, the only way an application running on WildFly would be vulnerable to the CVE-2021-44228 vulnerability is if the log4j-core artifact has been added to the server installation, either via a user-provided JBoss Modules module, or more likely by packaging log4j-core in an application deployment artifact.</p>
+</div>
+<div class="paragraph">
+<p>Note that since WildFly 22, WildFly does ship the Log4j 2 <code>org.apache.logging.log4j:log4j-api</code> artifact, and up to WildFly 26.0.0.Beta1 the version of that artifact matches the CVE-2021-44228 CPE. However, <em>the log4j-api artifact does not contain the vulnerable code.</em>. Note that even though the artifact on WildFly 26.0.0.Beta1 does not have the vulnerability, to help avoid confusion the upcoming 26.0.0.Final release will move to the 2.15.0 version of the artifact, which does not match the CVE-2021-44228 CPE.</p>
+</div>
+<div class="sect2">
+<h3 id="mitigation-strategies">Mitigation Strategies</h3>
+<div class="paragraph">
+<p>If your application does include the log4j-core artifact, the following are steps you can take to mitigate any vulnerability:</p>
+</div>
+<div class="sect3">
+<h4 id="set-formatmsgnolookupstrue">Set <code>formatMsgNoLookups=true</code></h4>
+<div class="paragraph">
+<p>Since its 2.10 release, Log4j provides a configuration option that lets you turn off the JNDI lookup behavior that results in the vulnerability.</p>
+</div>
+<div class="paragraph">
+<p>To use this, update the <code>$WILDFLY_HOME/bin/standalone.conf</code> or <code>$WILDFLY_HOME/bin/domain.conf</code> file (or, for Windows users, the <code>.bat</code> or <code>.ps1</code> variants of those) to add <code>-Dlog4j2.formatMsgNoLookups=true</code> to the value of the <code>JAVA_OPTS</code> environment variable. (Which file you update depends on whether you are running a standalone server or a domain mode host.)</p>
+</div>
+<div class="paragraph">
+<p>Note that if you are using a version of log4j-core prior to 2.10 this will have no effect.</p>
+</div>
+<div class="paragraph">
+<p>If you&#8217;re on a recent enough log4j-core version setting this is the quickest mitigation, but whether you can use it or not as soon as you can you should also&#8230;&#8203;</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="upgrade-log4j-core-to-the-2-15-0-or-later-release">Upgrade log4j-core to the 2.15.0 or later release</h4>
+<div class="paragraph">
+<p>The Apache Log4j project has <a href="https://logging.apache.org/log4j/2.x/download.html">released a 2.15.0 version</a> that fixes the flaw. If you are packaging log4j-core in your application we recommend updating your deployment artifact to 2.15.0 or later as soon as possible.</p>
+</div>
+<div class="paragraph">
+<p>Note that I&#8217;ve seen user reports that upgrading to 2.15.0 in a deployment is problematic when the container is providing an earlier release of the log4j-api artifact. This should not be a problem if you are following the <a href="https://docs.wildfly.org/25/Admin_Guide.html#how-do-i-log4j2">documentation for how to incorporate log4j-core in your application</a>. If you are packaging log4j-core, you should exclude any module dependency on the log4-api provided by WildFly and instead package log4j-api in your deployment.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cve-2021-4104">CVE-2021-4104</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently Red Hat <a href="https://access.redhat.com/security/cve/CVE-2021-4104">reported another security vulnerability affecting Apache Log4j</a>, in this case Log4j 1. They rated the impact of this vulnerability as "Moderate impact", unlike their <a href="https://access.redhat.com/security/cve/CVE-2021-44228">view of CVE-2021-44228</a> which was rated as "Critical impact". (For more on the difference between "Critical" and "Moderate", see <a href="https://access.redhat.com/security/updates/classification/">Red Hat&#8217;s severity ratings documentation</a>.)</p>
+</div>
+<div class="paragraph">
+<p>CVE-2021-4104 has some surface similarity to CVE-2021-44228, in that both relate to a logging library doing a JNDI lookup, with a risk that that library could be fooled into doing a lookup and deserialization of content from an untrustworthy source. In the CVE-2021-4104 case the lookups can be performed by the <code>org.apache.log4j.net.JMSAppender</code> class, a class that is used if an application configures a log appender meant to write to an external JMS topic. The <code>JMSAppender</code> lookup is quite different from the CVE-2021-44228 one though, in that the name being looked up is meant to be of a string provided as part of the appender&#8217;s configuration, not one that is incorporated in a log message. It is significantly easier to get a server to inject a malicious string into a log message than it is to inject one into the container configuration. The latter would typically require some sort of privileged access to the server. This increased difficulty of exploit is one of the <a href="https://access.redhat.com/security/updates/classification/">factors that Red Hat uses</a> when deciding the severity of a vulnerability.</p>
+</div>
+<div class="paragraph">
+<p>WildFly does not ship Apache Log4j 1 itself, but the <code>org.jboss.logmanager:log4j-jboss-logmanager</code> artifact we ship shades the Log4j 1 classes, including <code>JMSAppender</code>. <code>JMSAppender</code> has been present in WildFly or JBoss AS at least as far back as JBoss AS 7.1, and probably much farther.</p>
+</div>
+<div class="paragraph">
+<p>However, our attempts to configure WildFly to use the JMSAppender have been unsuccessful, failing before the JMSAppender code reaches a point where it does any JNDI lookup. This is because the JBoss Modules module that packages <code>org.jboss.logmanager:log4j-jboss-logmanager</code> does not include a dependency on the module that provides the <code>javax.naming</code> package, resulting in a ClassNotFoundException if the class is used. So at this point we don&#8217;t see an exploit involving normal modular use of the <code>org.jboss.logmanager:log4j-jboss-logmanager</code> artifact we ship. Exploits would likely require the use of reflection.</p>
+</div>
+<div class="paragraph">
+<p>If you package Apache Log4j 1 in your application, be careful not to expose to untrusted callers any mechanism that would allow them to access the <code>JMSAppender</code> class or configure instances of it. Which is the right thing to do in general! Running with the JVM security manager enabled is another way to defend against attacks based on getting your application to make unexpected calls to external systems.</p>
+</div>
+<div class="paragraph">
+<p>If you have any questions about any of the above, I encourage you to ask on the <a href="https://groups.google.com/g/wildfly">WildFly forums</a>.</p>
+</div>
+<div class="paragraph">
+<p>Best regards,</p>
+</div>
+<div class="paragraph">
+<p>Brian</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

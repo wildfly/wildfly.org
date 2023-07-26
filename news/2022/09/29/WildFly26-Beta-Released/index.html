@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly 27 Beta1 is released!</title>
+  <meta name="description" content="WildFly 27 Beta1 is now available for download.">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="WildFly 27 Beta1 is released!">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly 27 Beta1 is released!</h1>
+    
+    
+    <p class="byline">By Brian Stansberry | September 29, 2022</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I&#8217;m pleased to announce that the new WildFly and WildFly Preview 27.0.0.Beta1 releases are available for download at <a href="https://wildfly.org/downloads" class="bare">https://wildfly.org/downloads</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="new-and-notable">New and Notable</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As I noted in <a href="https://www.wildfly.org/news/2022/09/22/Jakarta-EE10-and-WildFly/">my last post</a>, the key new thing in WildFly 27 is compatibility with the <a href="https://jakarta.ee/news/jakarta-ee-10-released/">recently released Jakarta EE 10</a>. Thanks so much to all the great WildFly contributors who worked so hard on our EE 10 journey!</p>
+</div>
+<div class="paragraph">
+<p>Besides Jakarta EE 10 support, here are some of the other new features in this release.</p>
+</div>
+<div class="paragraph">
+<p><strong>Observability</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-14947">WFLY-14947</a> - A new tech preview 'Micrometer' subsystem (WildFly Preview only)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>EJB</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-14953">WFLY-14953</a> - A new 'distributable-ejb' subsystem</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-7628">WFLY-7628</a>&#8201;&#8212;&#8201;Support for use of an Infinispan cache as an EJB timer store</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Security</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-15075">WFLY-15075</a> - Encryption  support in the FileSystemSecurityRealm</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-16179">WFLY-16179</a> - Identity integrity support in the FileSystemSecurityRealm</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Provisioning</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-13798">WFLY-13798</a> - A new 'embedded-activemq' Galleon layer for embedded broker messaging</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-17004">WFLY-17004</a> - A new 'hibernate-search' Galleon layer</p>
+</li>
+<li>
+<p><a href="https://issues.redhat.com/browse/WFLY-16453">WFLY-16453</a>&#8201;&#8212;&#8201;New 'singleton-local' and 'singleton-ha' Galleon layers</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Major Component Upgrades vs WildFly 26.x</strong></p>
+</div>
+<div class="paragraph">
+<p>There have been numerous component upgrades related to WildFly&#8217;s transition from the javax namespace EE 8 to the jakarta namespace EE 10; too many to list here. However, besides those EE 10 driven updates, there are a number of other major component updates in WildFly 27 Beta1:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Hibernate 6.1 replaces Hibernate 5.3</p>
+</li>
+<li>
+<p>Hibernate Search 6.1 replaces Hibernate Search 5.10</p>
+</li>
+<li>
+<p>Infinispan 14 replaces Infinispan 13</p>
+</li>
+<li>
+<p>JGroups 5.2 replaces JGroups 4.2</p>
+</li>
+<li>
+<p>RESTEasy 6.2 replaces RESTEasy 4.7</p>
+</li>
+<li>
+<p>Weld 5 replaces Weld 3.1</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="removal-of-support-for-ee-8-and-se-8">Removal of Support for EE 8 and SE 8</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As I discussed in my <a href="https://www.wildfly.org/news/2022/01/21/WildFly-2022/">WildFly Release Plans for 2022</a> post, Jakarta EE 8 and Jakarta SE 8 are no longer supported beginning with the WildFly 27 series. Use of SE 11 or later is required, with SE 17 recommended. Testing on SE 19 is in progress.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="release-notes">Release Notes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The release notes for the release are <a href="https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12391241">here</a>. Note that this only covers the differences between 27 Beta1 and the recent 27 Alpha5; release notes for the 27 Alpha1 - 5 releases are available <a href="https://issues.redhat.com/projects/WFLY?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&amp;status=released">in the WildFly JIRA</a>. Issues fixed in the numerous underlying WildFly Core 19.0 beta releases are listed <a href="https://issues.redhat.com/projects/WFCORE?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&amp;status=released">in the WildFly Core JIRA</a>.</p>
+</div>
+<div class="paragraph">
+<p>Please try it out and give us your feedback, while we get to work on WildFly 27 Final!</p>
+</div>
+<div class="paragraph">
+<p>Best regards,</p>
+</div>
+<div class="paragraph">
+<p>Brian</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>An Introduction To Server Connector for IntelliJ</title>
+  <meta name="description" content="An introduction to Server Connector for IntelliJ">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="An Introduction To Server Connector for IntelliJ">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">An Introduction To Server Connector for IntelliJ</h1>
+    
+    
+    <p class="byline">By  | April 13, 2023</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>Server Connector for IntelliJ</code>, also known as <code>IntelliJ-rsp</code> is a tool for acquiring, locating, installing, starting, stopping, and deloying artifacts to Application Servers like WildFly and EAP. TheThe project&#8217;s source code can be found here: <a href="https://github.com/redhat-developer/intellij-rsp/">GitHub - IntelliJ-rsp / Server Connector for IntelliJ</a></p>
+</div>
+<div class="paragraph">
+<p>The project had it&#8217;s first public-ready release this week, at version 0.7.0. For people who have used <a href="https://tools.jboss.org/">JBossTools</a> or the <a href="https://marketplace.visualstudio.com/items?itemName=redhat.vscode-server-connector">VS Code Server Connector</a> Extensions, the UI and general workflows should be mostly familiar.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="installation">Installation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This long-awaited public release can be installed either by opening the Settings window in IntelliJ (Press Ctrl+Alt+S to open the IDE settings), selecting <code>Plugins</code>, and searching for <code>Server Connector</code>, or by going to the <a href="https://plugins.jetbrains.com/plugin/16072-server-connector-by-red-hat/versions">marketplace entry</a> for the project and downloading the selected version for a local installation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="demo-video">Demo Video</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A short demo can be found at the <a href="https://plugins.jetbrains.com/plugin/16072-server-connector-by-red-hat/">marketplace entry</a> for the extension or at <a href="https://www.youtube.com/watch?v=zmq-niuURM4">YouTube</a> directly, and we encourage you all to check it out!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="whats-an-rsp">What&#8217;s an RSP?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>Server Connector</code> extension for IntelliJ, much like the <code>Server Connector</code> extension for VS Code, works similar to a <code>Language Server Protocol</code> (or <code>LSP</code>) server. <code>LSP</code> Servers separate all of the logic for handling language-specific features like syntax coloring, code completion, and many other, away from the user&#8217;s IDE and into a background process. This background process can be re-used in multiple IDE&#8217;s, so long as each IDE has a thin integration layer that would allow the UI to integrate with the background server.</p>
+</div>
+<div class="paragraph">
+<p>Similar to an <code>LSP</code>, this <code>Server Connector</code> extension separates out all the common logic of dealing with, locating, starting, stopping, and deploying to Application Servers like WildFly and EAP into a background process that we call an <code>RSP</code>, or <code>Runtime Server Protocol</code>. With a thin UI layer customized for each IDE, this can extend support for these servers to other IDEs, like IntelliJ.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="whats-different-whats-the-same">What&#8217;s Different? What&#8217;s the Same?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For users of our VS Code extension, there are some small differences. The IntelliJ extension does not bundle the background RSP, but does provide an action to download the newest release of each. This <code>update</code> menu item will also investigate whether it should be enabled or not, or if there&#8217;s been a new release of the underlying <code>RSP</code>, on each restart of the IDE.</p>
+</div>
+<div class="paragraph">
+<p>Despite some other small UI differences, the VS Code tool and the IntelliJ tool look and behave almost identically.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ok-its-installed-now-what">Ok, it&#8217;s installed. Now what?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Once installed, you should notice a <code>RSP Servers</code> view on the left of your workspace. Once selected, you should see two different <code>RSP</code> types. One, <code>Community Server Connector by Red Hat</code>, and the other <code>Red Hat Server Connector</code>. The former exposes support for many community servers like Apache Felix, Karaf, Tomcat, Glassfish, Jetty and Websphere Liberty. The latter provides support for WildFly and EAP.</p>
+</div>
+<div class="paragraph">
+<p>If you right-click on the <code>Red Hat Server Connector</code>, you can execute the <code>Download / Update RSP</code> action item to install the background RSP. The RSP can then be started.</p>
+</div>
+<div class="paragraph">
+<p>Once started, you can right-click on the RSP and see two new action items: <code>Create Server</code> and <code>Download Server</code>. The former will begin a workflow that allows you to create a descriptor for a local server already on your disk, complete with optional and required attributes. The latter will first assist you in downloading and extracting the server before doing the same.</p>
+</div>
+<div class="paragraph">
+<p>With a server defined, you can see the following actions in its context menu:
+   * <code>Delete Server</code> - Delete the selected server adapter (but not its underlying files).</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Start Server (run)</code> - Start the given server in run mode</p>
+</li>
+<li>
+<p><code>Start Server (debug)</code> - Start the given server in debug mode and, if possible, connect a remote debugger.</p>
+</li>
+<li>
+<p><code>Restart Server (run)</code> - Restart the selected server in run mode</p>
+</li>
+<li>
+<p><code>Restart Server (debug)</code> - Restart the given server in debug mode and, if possible, connect a remote debugger.</p>
+</li>
+<li>
+<p><code>Stop Server</code> - Request the server stop.</p>
+</li>
+<li>
+<p><code>Terminate Server</code> - Request the server be terminated if possible.</p>
+</li>
+<li>
+<p><code>Add Deployment</code> - Add a deployable file or folder to the server to be published.</p>
+</li>
+<li>
+<p><code>Remove Deployment from Server</code> - Remove a selected deployment from the server.</p>
+</li>
+<li>
+<p><code>Publish Server (Full)</code> - Publish the server, synchronizing the content of deployments from your workspace to the server.</p>
+</li>
+<li>
+<p><code>Publish Server (Incremental)</code> - Publish the server with recent changes, synchronizing the content of deployments from your workspace to the server.</p>
+</li>
+<li>
+<p><code>Edit Server</code> - View a JSON representation of your server in an editor, and submit any changed properties back to the RSP.</p>
+</li>
+<li>
+<p><code>Server Actions</code> - Some server types may expose to the user arbitrary actions that the user may invoke, such as changing some configuration options, opening a web browser, or editing a configuration file. These server-contributed actions have few restrictions placed on them by the framework other than what may be done on the client-side.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="modifying-the-server-descriptor">Modifying the Server Descriptor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To get a look at what data the RSP is keeping to interact with your server, you can right-click the server object and select <code>Edit Server</code>. Here you&#8217;ll be able to see the JSON descriptor that is stored, and make any changes to properties that you might want to tweak. You can see more details about what properties are available for addition or modification over at the project&#8217;s <a href="https://github.com/redhat-developer/intellij-rsp/blob/master/README.md#server-parameters">documentation</a> page. Many of these properties relate to modifying the program arguments or vm arguments when launching the runtime, or ensuring a certain environment is passed through to the server when it starts.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Going through each of these features one-by-one would be a bit overkill for a blog post. However, if you&#8217;re a user of WildFly and EAP, and have been using Red Hat&#8217;s existing tools for interacting with these Application Servers in Eclipse or VS Code, but wished you could do so more effectively while using IntelliJ, we encourage you to watch the Demo listed above, try out the tools, and chat with us on Gitter about what you like and what you don&#8217;t like.</p>
+</div>
+<div class="paragraph">
+<p>[1] IntelliJ Marketplace page: <a href="https://plugins.jetbrains.com/plugin/16072-server-connector-by-red-hat" class="bare">https://plugins.jetbrains.com/plugin/16072-server-connector-by-red-hat</a></p>
+</div>
+<div class="paragraph">
+<p>[2] Source / Github: <a href="https://github.com/redhat-developer/intellij-rsp/" class="bare">https://github.com/redhat-developer/intellij-rsp/</a></p>
+</div>
+<div class="paragraph">
+<p>[3] Gitter: <a href="https://gitter.im/redhat-developer/server-connector" class="bare">https://gitter.im/redhat-developer/server-connector</a></p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

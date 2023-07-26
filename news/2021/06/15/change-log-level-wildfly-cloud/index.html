@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Change Logging Level for WildFly on the Cloud</title>
+  <meta name="description" content="">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="How to Change Logging Level for WildFly on the Cloud">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">How to Change Logging Level for WildFly on the Cloud</h1>
+    
+    
+    <p class="byline">By Jeff Mesnil | June 15, 2021</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div class="paragraph">
+<p>When your WildFly application is running on the Cloud (on Kubernetes, OpenShift or any other container platform) and starts to behave unexpectedly, it is useful to be able to change the logging of the server to display debug logs to get a better insight.</p>
+</div>
+<div class="paragraph">
+<p>In this article, I will walkthrough a very simple script that can be used to change the logging level of a WildFly server in an application image on the (wild) fly.</p>
+</div>
+<div class="sect1">
+<h2 id="wildfly-management-commands">WildFly Management Commands</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, the WildFly server is configured to display <code>INFO</code> logs on the console.
+These logs are the output displayed by the command <code>kubectl logs &lt;pod&gt;)</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-nowrap" data-lang="nowrap">$ kubectl logs wildfly-s2i-app-8f8b49957-b7xbk
+...
+08:10:40,347 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 23.0.2.Final (WildFly Core 15.0.1.Final) started in 15658ms - Started 288 of 383 services (156 services are lazy, passive or on-demand)
+08:10:40,348 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://0.0.0.0:9990/management
+08:10:40,348 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we need to change the logging level to display debug logs, we can use the <code>jboss-cli.sh</code> script located in the WildFly server directory to execute two management commands:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-nowrap" data-lang="nowrap">$ kubectl exec -it  wildfly-s2i-app-8f8b49957-b7xbk -- sh
+sh-4.2$ $JBOSS_HOME/bin/jboss-cli.sh -c
+[standalone@localhost:9990 /] /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)
+{"outcome" =&gt; "success"}
+[standalone@localhost:9990 /] /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)
+{"outcome" =&gt; "success"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With that change, we can no see <code>DEBUG</code> logs in the console output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-nowrap" data-lang="nowrap">$ kubectl logs wildfly-s2i-app-8f8b49957-b7xbk
+...
+08:26:35,002 DEBUG [io.undertow.request] (default I/O-2) Matched default handler path /config/value
+08:26:35,004 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) RESTEASY002315: PathInfo: /config/value
+08:26:35,005 DEBUG [org.jboss.resteasy.cdi.i18n] (default task-1) RESTEASY010520: Beans found for class org.wildfly.quickstarts.microprofile.config.ConfigResour
+ce : [Managed Bean [class org.wildfly.quickstarts.microprofile.config.ConfigResource] with qualifiers [@Any @Default]]
+08:26:35,006 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.spi.ResteasyProviderFactory$SortedKey
+08:26:35,006 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jboss_home-environment-variable">JBOSS_HOME environment variable</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>These commands work fine when the application image has been built with <a href="https://github.com/wildfly/wildfly-s2i">WildFly S2I</a> as the <code>JBOSS_HOME</code> environment variable is set and we can invoke <code>$JBOSS_HOME/bin/jboss-cli.sh</code> without any issue.</p>
+</div>
+<div class="paragraph">
+<p>However if the application image has been built with <a href="https://docs.wildfly.org/bootablejar/">Bootable Jar</a>, there is no <code>JBOSS_HOME</code> as the server will be unzipped when the container is started.</p>
+</div>
+<div class="paragraph">
+<p>How can we then determine the actual location of the server?</p>
+</div>
+<div class="paragraph">
+<p>When the container image is started, a special file is created at <code>/opt/jboss/container/wildfly-bootable-jar/install-dir</code> whose content is the actual location of the unzipped WildFly server for <em>this</em> specific pod:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-nowrap" data-lang="nowrap">$ kubectl exec -it wildfly-bootable-jar-app-7cf8bdc95c-j9mjk -- sh
+sh-4.4$ cat /opt/jboss/container/wildfly-bootable-jar/install-dir
+/tmp/wildfly-bootable-server15112249313411534387</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With that knowledge, we can update our script to set the value of the <code>JBOSS_HOME</code> environment with the content of that file if it exists:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-shell" data-lang="shell">sh-4.4$ [ -e /opt/jboss/container/wildfly-bootable-jar/install-dir ] &amp;&amp; JBOSS_HOME=$( cat /opt/jboss/container/wildfly-bootable-jar/install-dir )
+sh-4.4$ echo $JBOSS_HOME
+/tmp/wildfly-bootable-server15112249313411534387</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="change-log-level-script">change-log-level Script</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We can now write a very simple script that can be used to change the global logging level one any WildFly application image.</p>
+</div>
+<div class="paragraph">
+<p>The script is available at <a href="https://gist.github.com/jmesnil/78581f90c68f84ba9240ef48f627ff45" class="bare">https://gist.github.com/jmesnil/78581f90c68f84ba9240ef48f627ff45</a></p>
+</div>
+<div class="paragraph">
+<p>and is straigthforward to use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-nowrap" data-lang="nowrap">$ wget https://gist.githubusercontent.com/jmesnil/78581f90c68f84ba9240ef48f627ff45/raw/062b3f1a8f7cf6e85b233e69348c97d006003a92/change-log-level
+$ chmod u+x change-log-level
+
+$ ./change-log-level
+
+change-log-level is a script to change the logging level of the WildFly server inside an application image running on any Kubernetes cluster.
+Usage:
+  change-log-level &lt;pod&gt; &lt;logging-level&gt;
+Where the parameters are:
+  * &lt;pod&gt; - Name of the pod running the application image
+  * &lt;logging-level&gt; - The logging level to set (can be one of ALL, FINEST, FINER, TRACE, DEBUG, FINE, CONFIG, INFO
+    WARN, WARNING, ERROR, SEVERE, FATAL, OFF)
+
+$ ./change-log-level wildfly-bootable-jar-app-7cf8bdc95c-j9mjk DEBUG
+Change logging level to TRACE for WildFly server in wildfly-microprofile-config-app-7cf8bdc95c-j9mjk
+[standalone@localhost:9990 /] /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=DEBUG)
+{"outcome" =&gt; "success"}
+[standalone@localhost:9990 /] /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)
+{"outcome" =&gt; "success"}
+
+$ kubectl logs wildfly-bootable-jar-app-7cf8bdc95c-j9mjk
+10:14:10,380 DEBUG [io.undertow.request] (default I/O-1) Matched default handler path /
+10:14:10,381 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) RESTEASY002315: PathInfo: /
+10:14:10,382 DEBUG [org.jboss.resteasy.cdi.i18n] (default task-1) RESTEASY010520: Beans found for class org.wildfly.quickstarts.microprofile.config.RootResource
+ : [Managed Bean [class org.wildfly.quickstarts.microprofile.config.RootResource] with qualifiers [@Any @Default]]
+10:14:10,393 DEBUG [org.jboss.resteasy.plugins.validation.i18n] (default task-1) RESTEASY008510: ResteasyCdiExtension is on the classpath.
+10:14:10,394 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.spi.ResteasyProviderFactory$SortedKey
+10:14:10,394 DEBUG [org.jboss.resteasy.resteasy_jaxrs.i18n] (default task-1) MessageBodyWriter: org.jboss.resteasy.plugins.providers.StringTextStar</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This script is doing a brute-force switch of the root logger and will change the log level of <strong>all</strong> loggers in the WildFly server.</p>
+</div>
+<div class="paragraph">
+<p>In a more realistic case, you would have to adapt the management commands to change the log level on more specific loggers related to your application to reduce the noise from other loggers. This can easily be done by updating the script and changing the commands from the <code>WILDFLY_COMMANDS</code> property.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This simple script is useful to be able to change the logging of the server to display debug logs to get a better insight.
+It can be used as the basis to run any kind of management commands on WildFly in an application image.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

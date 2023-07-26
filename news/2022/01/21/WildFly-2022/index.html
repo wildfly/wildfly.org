@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly Release Plans for 2022</title>
+  <meta name="description" content="WildFly's release patterns will be changing in 2022">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="WildFly Release Plans for 2022">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly Release Plans for 2022</h1>
+    
+    
+    <p class="byline">By Brian Stansberry | January 21, 2022</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In my <a href="https://www.wildfly.org/news/2021/09/27/WildFly-Changes/">Changes are coming to WildFly</a> post last September, I tried to give a sense of how the transition to Jakarta EE 10 was likely to impact the next few WildFly releases. With <a href="https://www.wildfly.org/news/2021/12/16/WildFly26-Final-Released/">WildFly 26</a> out the door and our efforts for 2022 ramping up, I want to give our community on update on how we see things playing out over the course of the year.</p>
+</div>
+<div class="paragraph">
+<p>The tl;dr; of this is WildFly will be moving away from time-boxed major feature releases for 2022, and will instead produce feature-boxed majors when key feature sets like EE 10 are ready. We do, however, want to produce updates for our community, so in the March timeframe we&#8217;ll be doing a WildFly 26.1 release.</p>
+</div>
+<div class="paragraph">
+<p>Before I get into the details, first a bit of explanation of how the WildFly project operates.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="current-wildfly-development-and-release-practices">Current WildFly Development and Release Practices</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Since the WildFly 12 release, the WildFly project has followed a roughly time-boxed development model. Roughly every three months we endeavor to produce a new WildFly major release, with a large set of features, enhancements and bug fixes. We don&#8217;t operate on a strict time schedule, but we avoid significant schedule delays just to bring in particular feature or set of features. If a feature doesn&#8217;t make a particular release it can just go in the next one a few months later.</p>
+</div>
+<div class="paragraph">
+<p>The vast majority of the work on WildFly, both for features and bug fixing, is on our main branch, aimed at producing the next WildFly major.</p>
+</div>
+<div class="paragraph">
+<p>When we release each major we also create a new branch specific to that major. That branch is used to produce one micro (primarily bug fix) release for the major, with the micro usually released about a month after the major. This too is roughly time-boxed. We just <a href="https://www.wildfly.org/news/2022/01/21/WildFly-2601-Released/">released WildFly 26.0.1 today</a>. The number of changes in the micro is typically small compared to what&#8217;s gone into main in the same period, as we want to be particularly conservative about introducing bugs or behavior changes in the micro.  We&#8217;ve been consistently producing these micros since WildFly 17.0.1, and had done a few prior to that as well.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="moving-to-feature-boxed-development-for-2022">Moving to Feature-Boxed Development for 2022</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Time-boxed releases work well most of the time but they can be problematic when a large interrelated set of features need to come in as a block. Say, for example, Jakarta EE 10! Trying to fit all of our EE 10 work into a single quarterly release is not looking practical, and using time boxing for EE 10 isn&#8217;t conceptually valid, as Jakarta&#8217;s work on EE 10 itself isn&#8217;t time-boxed.</p>
+</div>
+<div class="paragraph">
+<p>So, we&#8217;ve decided to make WildFly 27 feature-boxed, with EE 10 as the primary feature set. We&#8217;ll produce WildFly 27.0.0.Final when we are satisfied that we&#8217;ve met our feature goals. When that will be done is uncertain, partly because it depends on when EE 10 itself goes GA. For sure we won&#8217;t be done in March, when our next major normally would be released.</p>
+</div>
+<div class="paragraph">
+<p>Typically for a WildFly major we produce a single feature-complete Beta release a couple weeks before the Final release. It&#8217;s likely that for 27 we&#8217;ll also produce at least one interim, not-feature-complete release, probably labeled as an Alpha.</p>
+</div>
+<div class="paragraph">
+<p>I expect WildFly 28 will be feature-boxed as well. My instinct is once the EE 10 work is complete we&#8217;ll have a big enough further set of work that is best done as a unit to justify doing another feature boxed release.</p>
+</div>
+<div class="paragraph">
+<p>Late in 2022 or early in 2023 I&#8217;d like for the project to move back to quarterly time boxing. I think most of the time that is the better way to deliver software.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="wildfly-26-1">WildFly 26.1</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We don&#8217;t want to entirely move away from our quarterly feature releases though. We want to make some features available to our users without waiting for WildFly 27, and we want to have a vehicle for releasing some bug fixes. So, in the roughly March timeframe when we would have done our next feature release, we plan to release a WildFly 26.1.  However, the feature and bug fix payload for this release will be significantly smaller than what would be included in a typical WildFly quarterly release. Our development efforts this quarter will largely be focused on WildFly 27.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll also do a 26.1.1 release roughly a month after 26.1.0.</p>
+</div>
+<div class="paragraph">
+<p>If it makes sense we may do a WildFly 27.1 as well, later this year.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="major-changes-coming-in-wildfly-27">Major Changes Coming in WildFly 27</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When WildFly 27 is released there will be large changes compared to WildFly 26:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We don&#8217;t plan to support Jakarta EE 8 in standard WildFly. The WildFly 26.1 releases will be the last that support EE 8.</p>
+</li>
+<li>
+<p>We don&#8217;t plan to support Java SE 8 in WildFly 27.  The WildFly 26.1 releases will be the last that support SE 8. WildFly 27 will require SE 11 or later.</p>
+</li>
+<li>
+<p>We don&#8217;t plan to support MicroProfile 4.1 in WildFly 27.  The WildFly 26.1 releases will be the last that support MicroProfile 4.1.</p>
+</li>
+<li>
+<p>We will likely <a href="https://issues.redhat.com/browse/WFCORE-5781">drop support for Log4j 1</a>. With all the other major changes coming in 27, it seems like the right time to stop providing Log4j 1, and just have users who need it package it in their deployments.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>So, the WildFly 26.1 release will be the last feature release that support EE 8 and SE 8. With WildFly 27 we&#8217;ll have moved on to EE 10, SE 11/17 and MicroProfile 5.</p>
+</div>
+<div class="paragraph">
+<p>We plan to continue to produce WildFly Preview. The primary use case for it at its inception was as a preview of our EE 9+ support, but from the start it was meant to be a general purpose way of providing a look at things not yet appropriate for standard WildFly, and there&#8217;s still a need for that. It wouldn&#8217;t surprise me though if the difference between WildFly 27 and WildFly Preview 27 is fairly small, while we focus our energies on completing EE 10.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;re also strongly considered no longer producing the "Servlet-only distribution" of WildFly that can be found on <a href="https://www.wildfly.org/downloads/">the download page</a> for each WildFly release. We don&#8217;t see much evidence of this distribution being used, Galleon can easily be used to provision an equivalent server, and producing that distribution requires a non-trivial amount of work that could that could be applied elsewhere. I&#8217;d like to hear from the WildFly community about this, so I started a <a href="https://groups.google.com/g/wildfly/c/ag8Ojx3zWqo">thread on the WildFly forum</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="questions">Questions?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you have questions or want to provide feedback, I encourage you to post on the <a href="https://groups.google.com/g/wildfly">WildFly forum</a>, on the <a href="https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/">wildfly-dev mail list</a> or in <a href="https://wildfly.zulipchat.com/">Zulip chat</a>. I will be starting threads on the forum and wildfly-dev list about this topic.</p>
+</div>
+<div class="paragraph">
+<p>Best regards,</p>
+</div>
+<div class="paragraph">
+<p>Brian</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

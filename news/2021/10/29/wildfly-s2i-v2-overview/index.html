@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly S2I v2 architecture overview</title>
+  <meta name="description" content="">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="WildFly S2I v2 architecture overview">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly S2I v2 architecture overview</h1>
+    
+    
+    <p class="byline">By Jean-François Denise | October 29, 2021</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div class="paragraph">
+<p>For upcoming <a href="http://docs.wildfly.org">WildFly</a> 26 release we are re-architecting <a href="https://github.com/wildfly/wildfly-s2i/">WildFly S2I (Source to Image)</a>
+images to offer more flexibility, better efficiency and a simpler user experience.</p>
+</div>
+<div class="paragraph">
+<p>Since WildFly 16, in which we introduced an evolution of the WildFly s2i images, we have identified a set of pain points
+that we want to see addressed in a new architecture:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Strong coupling of the WildFly S2I builder image with a WildFly release. This implies that new builder images have
+to be released and deployed for each new server version.</p>
+</li>
+<li>
+<p>Configuring the server during the S2I build is complex. Executing the simplest WildFly CLI script during build is far from trivial;
+it requires your application project to comply with a specific directory structure then you must define bash
+scripts (do you know Java developers who like to write bash scripts?) in order to call CLI command lines (and don&#8217;t forget to start the embedded server).
+The simplest copy of some extra server content (e.g. JBoss Module modules) is also not that trivial and again requires bash scripting.</p>
+</li>
+<li>
+<p>Executing your own CLI scripts during server startup implies having installed some extensions (again bash scripts) inside the server during the S2I build.</p>
+</li>
+<li>
+<p>Server startup is always composed of a sequence of 2 steps&#8201;&#8212;&#8201;server starts first in admin only mode and automatically applies
+generated CLI scripts, then reboots in normal mode. In cases your server configuration doesn&#8217;t require some adjustments
+and could have booted directly in normal mode.</p>
+</li>
+<li>
+<p>No simple way to provide server arguments (e.g. Java system properties) when starting the server.</p>
+</li>
+<li>
+<p>No way to tailor a server according to the application needs from the project <code>pom.xml</code> file. Server provisioning during the S2I build is configured
+by env variables provided at S2I build time.</p>
+</li>
+<li>
+<p>No way to build and run an application with a <a href="https://docs.wildfly.org/25/WildFly_and_WildFly_Preview.html">WildFly Preview</a> server.</p>
+</li>
+<li>
+<p>WildFly S2I images contain much more than what we actually need to build and run the server. We need a much lighter Operating System.</p>
+</li>
+</ul>
+</div>
+<div class="sect1">
+<h2 id="new-wildfly-s2i-architecture">New WildFly S2I architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The current architecture is composed of 2 main artifacts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>WildFly S2I builder image with JDK11 based on centos7. Image released for each new WildFly release (to contain the latest release of the WildFly server).</p>
+</li>
+<li>
+<p>WildFly S2I runtime image with JDK11 based on centos7. Image used to create docker chained builds to output smaller runtime application images.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We are keeping the separation between the S2I builder image and the runtime image. The 2 new images we are offering are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>WildFly S2I builder image with JDK11 based on
+<a href="https://catalog.redhat.com/software/containers/ubi8/ubi-minimal/5c359a62bed8bd75a2c3fba8">ubi8 minimal</a>.
+This image doesn&#8217;t contain a WildFly server. It expects a server containing the application deployment to be provisioned during the S2I build phase.</p>
+</li>
+<li>
+<p>WildFly runtime image with JDK11 based on
+<a href="https://catalog.redhat.com/software/containers/ubi8/ubi-minimal/5c359a62bed8bd75a2c3fba8">ubi8 minimal</a>.
+We are keeping the JDK (instead of a JRE) in order to make Java debugging tools available in the image.
+This image can be used to run any WildFly server (not only a server provisioned using the builder image in a chained build).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For now we will only be providing JDK 11 versions of these images.</p>
+</div>
+<div class="paragraph">
+<p>So the WildFly S2I builder image becomes a lightweight generic image allowing to build and execute applications deployed in any WildFly server.</p>
+</div>
+<div class="sect2">
+<h3 id="new-s2i-build-workflow">New s2i build workflow</h3>
+<div class="paragraph">
+<p>We are removing the complex server configuration points and rely on the use of the
+<a href="https://github.com/wildfly/wildfly-maven-plugin/">WildFly Maven plugin</a> that can now provision a fully configured server containing your deployment.
+The WildFly Maven plugin <code>3.0.0.Alpha1</code> has been evolved with some new goals to provision, configure, and package the server and the deployment in one step.
+When designing your application pom file, add the WildFly Maven plugin <code>package</code> goal, configure it with the <a href="https://docs.wildfly.org/25/Galleon_Guide.html#wildfly-galleon-feature-packs">WildFly Galleon feature-pack</a>
+and <a href="https://docs.wildfly.org/25/Galleon_Guide.html#wildfly_layers">Galleon layer(s)</a>, and optionally reference WildFly CLI scripts to be executed and
+content to be copied inside the server. At the end of the build you will get (by default in the <code>target/server</code> directory)
+a server with your app deployed, ready to be installed in the image.</p>
+</div>
+<div class="paragraph">
+<p>In order to allow for a smooth transition to the new images, we are still supporting (in a deprecated way) the legacy workflow.
+Your existing application would work, but you are now required to specify the Galleon feature-pack(s) and layer(s)
+(<code>GALLEON_PROVISION_FEATURE_PACKS</code> and <code>GALLEON_PROVISION_LAYERS</code> env variables)
+you want to see used during the S2I build to provision a WildFly server.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="new-image-runtime-api">New image runtime API</h3>
+<div class="paragraph">
+<p>An image built from the WildFly S2I builder or runtime images both expose
+the same API allowing you to fine tune the server execution.
+This API is exposed by means of environment variables to be set when configuring your deployment.</p>
+</div>
+<div class="sect3">
+<h4 id="jvm-configuration-api">JVM configuration API</h4>
+<div class="paragraph">
+<p>The JVM <a href="https://github.com/jboss-openshift/cct_module/tree/master/jboss/container/java/jvm/api/module.yaml">env variables</a>
+that are used today with WildFly s2i images are still supported. They are a nice way to tune the JVM.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="wildfly-server-startup-configuration-api">WildFly server startup configuration API</h4>
+<div class="paragraph">
+<p>The new server startup configuration API is described in this
+<a href="https://github.com/wildfly/wildfly-cekit-modules/blob/v2/jboss/container/wildfly/run/api/module.yaml">documentation</a>.
+This API comes with default values that should cover the main use-cases. 2 env variables open-up new possibilities:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>SERVER_ARGS</code> allows you to pass WildFly server arguments when starting the server.</p>
+</li>
+<li>
+<p><code>CLI_LAUNCH_SCRIPT</code> allows you to provide a path (relative to <code>JBOSS_HOME</code> or absolute) to a CLI script to be executed at startup time. Although CLI scripts
+should be executed at build time from the WildFly Maven plugin, in some cases it can be useful to adjust the configuration at execution time. You can package
+a set of CLI scripts inside your server at build time, then reference one of these CLI scripts to be executed at runtime.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="wildfly-server-subsystems-configuration-api">WildFly server subsystems configuration API</h4>
+<div class="paragraph">
+<p>If you are using WildFly s2i images you are perhaps asking yourself where are the env variables you have been using
+to configure the elytron subsystem, to add datasources, to configure logging or the microprofile-config subsystem,&#8230;&#8203;
+They are provided by means of a new <a href="https://github.com/wildfly-extras/wildfly-cloud-galleon-pack">WildFly cloud Galleon feature-pack</a>
+that you can combine with the WildFly Galleon feature-pack at build time to produce a server supporting these env variables.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you only provision <code>org.wildfly:wildfly-galleon-pack:25.0.0.Final</code> you will get a "vanilla" WildFly server that
+will get lightly adjusted by the image entry-point to properly execute on OpenShift.</p>
+</li>
+<li>
+<p>If you provision <code>org.wildfly:wildfly-galleon-pack:25.0.0.Final</code> and <code>org.wildfly.cloud:wildfly-cloud-galleon-pack:1.0.0.Alpha2</code>
+you will get a similar server to the one present in the current WildFly s2i image (with <code>JBOSS_HOME/bin/openshift-launch.sh</code> launcher).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="examples">Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can pull the new WildFly S2i images (Beta quality) from quay.io:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>docker pull quay.io/jfdenise/wildfly-s2i-jdk11</code></p>
+</li>
+<li>
+<p><code>docker pull quay.io/jfdenise/wildfly-runtime-jdk11</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>NB: The images will be made available from the <code>quay.io/wildfly</code> organisation when they reach a Final quality.</p>
+</div>
+<div class="sect2">
+<h3 id="s2i-examples">S2I examples</h3>
+<div class="paragraph">
+<p>We have defined a set of <a href="https://github.com/wildfly/wildfly-s2i/tree/v2/examples">examples</a> to help
+you get started. They cover different use-cases that highlight the new capabilities.</p>
+</div>
+<div class="paragraph">
+<p>The examples rely on <a href="https://www.wildfly.org/news/2021/05/05/helm-charts-for-wildfly/">WildFly Helm Charts</a>
+to automate the build and deployment on OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>In order to deploy the examples onto OpenShift, you can log in to the
+<a href="https://developers.redhat.com/developer-sandbox/">Developer Sandbox for Red Hat OpenShift</a>.</p>
+</div>
+<div class="paragraph">
+<p>The use cases covered are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly/wildfly-s2i/tree/v2/examples/jsf-ejb-jpa/README.md">Simple application</a>, no specific configuration. Just build and deploy on OpenShift.</p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly/wildfly-s2i/tree/v2/examples/elytron-oidc-client/README.md">Keycloak integration</a>. Use WildFly 25 <code>elytron-oidc-client</code>
+to interact with a Keycloak server. Also highlights the ability to provide server arguments at launch time.</p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly/wildfly-s2i/tree/v2/examples/logging/README.md">Logging</a>. We all need to enable logging at some point.
+With a simple CLI script executed at server boot time, enable logging and redirect all traces to the CONSOLE.</p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly/wildfly-s2i/tree/v2/examples/web-clustering/README.md">Clustering</a>. A cluster of PODS
+that share web sessions. This example benefits from the WildFly cloud feature-pack and WildFly Helm Charts capabilities
+to automatically enable the <code>dns.DNS_PING</code> JGroups protocol and generate the ping service.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dockerfile-example">Dockerfile example</h3>
+<div class="paragraph">
+<p>This chapter highlights the steps to build a docker image that contains the server and your application,
+publish it in a public docker registry in which you have an account (e.g. <a href="http://quay.io">quay.io</a>) and then deploy it on OpenShift.
+Here we are using the <a href="https://github.com/wildfly/wildfly-s2i/tree/v2/examples/jsf-ejb-jpa/README.md">Simple application</a> example.
+NB: Be sure to update the example steps with your own docker registry account.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Build the maven project:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>
+$ mvn clean package
+</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Write a Dockerfile with the following content:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>FROM quay.io/jfdenise/wildfly-runtime-jdk11:latest
+COPY --chown=jboss:root target/server $JBOSS_HOME
+RUN chmod -R ug+rwX $JBOSS_HOME</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Build the image</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>
+$ docker build -t quay.io/jfdenise/my-app:latest .
+</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can run the image locally and interact with the application (e.g. <a href="http://docker_container_IP:8080" class="bare">http://docker_container_IP:8080</a>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>
+$ docker run --rm quay.io/jfdenise/my-app:latest
+</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Publish the image</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>
+$ docker push quay.io/jfdenise/my-app:latest
+</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Write a WildFly Helm Charts <code>my-app.yaml</code> file with the following content:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>image:
+  name: quay.io/jfdenise/my-app
+build:
+  enabled: false</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Deploy on OpenShift</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>
+helm install my-app -f my-app.yaml wildfly_v2/wildfly
+</code></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Once deployed, access the application route URL (e.g. <a href="https://my-app-jdenise-stage.apps.sandbox.x8i5.p1.openshiftapps.com/" class="bare">https://my-app-jdenise-stage.apps.sandbox.x8i5.p1.openshiftapps.com/</a>)</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="to-conclude">To conclude</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We hope that, like us, you will see the benefits of this new approach (for which you can perhaps find similarities
+with the <a href="https://github.com/wildfly-extras/wildfly-jar-maven-plugin/">WildFly bootable JAR</a> S2I experience).
+This is going to allow us to offer more flexibility (provision the server of your choice), better efficiency (smaller images, faster server startup),
+simpler user experience (WildFly Maven plugin configuration is far simpler than the existing S2I configuration points).
+So in the end a much better overall experience.</p>
+</div>
+<div class="paragraph">
+<p>Keep us posted with your feedback. (You can log these as new
+<a href="https://github.com/wildfly/wildfly-s2i/issues">project issues</a>.) This will help us evolve the new WildFly S2I experience in the right direction.</p>
+</div>
+<div class="paragraph">
+<p>Thank-you!</p>
+</div>
+<div class="paragraph">
+<p>JF Denise</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

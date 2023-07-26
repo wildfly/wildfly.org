@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Using RHOSAK from WildFly</title>
+  <meta name="description" content="">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="Using RHOSAK from WildFly">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Using RHOSAK from WildFly</h1>
+    
+    
+    <p class="byline">By Kabir Khan | August 19, 2022</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div class="sect1">
+<h2 id="introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-streams-for-apache-kafka">RHOSAK</a> (full name: Red Hat OpenShift Streams for Apache Kafka) is a cloud service hosted by Red Hat which makes setting up, managing and scaling Apache Kafka instances very easy. Also, you get the peace of mind of knowing the instances are patched with the latest security fixes.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://kafka.apache.org">Apache Kafka</a> is an open source, distributed streaming platform that enables (among other things) the development of real-time, event-driven applications.</p>
+</div>
+<div class="paragraph">
+<p>WildFly integrates with Apache Kafka via the MicroProfile Reactive Messaging subsystem, which implements the <a href="https://github.com/eclipse/microprofile-reactive-messaging/releases/tag/2.0">MicroProfile Reactive Messaging specification</a>.</p>
+</div>
+<div class="paragraph">
+<p>In this blog we will see how to write a simple application which sends and receives messages to/from a Kafka instance.</p>
+</div>
+<div class="paragraph">
+<p>We will then point to how you would be able to run the application locally, using the configuration contained in the application.</p>
+</div>
+<div class="paragraph">
+<p>After that, we will set up a RHOSAK instance, create a topic and deploy our application into OpenShift. An interesting point here is that we will save the server url and the credentials needed to connect to it in an OpenShift secret. We then map the secret via the MicroProfile Config subsystem. The end result is that we override values hard coded in the application (i.e. the ones we used for the standalone case) from an external source.</p>
+</div>
+<div class="paragraph">
+<p>The source code for the example can found at <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak" class="bare">https://github.com/kabir/blog-mp-reactive-messaging-rhosak</a>. It contains a README for the RHOSAK steps covered here.</p>
+</div>
+<div class="paragraph">
+<p>Let’s get started!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-application">The Application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The core part of the application is pretty straightforward, it is an <code>@ApplicationScoped</code> CDI bean called <code>MessagingBean</code>. The full source code can be found <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak/blob/master/src/main/java/org/wildfly/examples/blog/mp/reactive_messaging/rhosak/MessagingBean.java">here</a>. We will just outline the most important points below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Inject
+@Channel("to-kafka")
+private Emitter&lt;String&gt; emitter;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This injects a MicroProfile Reactive Messaging <code>Emitter</code> into the bean. The <code>@Channel</code> annotation comes from MicroProfile Reactive Messaging, and allows us to send messages to the MicroProfile Reactive Messaging stream in its name (in this case the name is ‘to-kafka’). We send messages in the following method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Response send(String value) {
+    System.out.println("Sending " + value);
+    emitter.send(value);
+    return Response.accepted().build();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This method is called from a class called <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak/blob/master/src/main/java/org/wildfly/examples/blog/mp/reactive_messaging/rhosak/UserResource.java">UserResource</a> which handles POST requests to add data.</p>
+</div>
+<div class="paragraph">
+<p>Next we have a method using the <code>@Incoming</code> annotation, again from MicroProfile Reactive Messaging, which receives messages from the ‘from-kafka’ MicroProfile Reactive Messaging stream.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Incoming("from-kafka")
+public void receive(String value) {
+    System.out.println("Received: " + value);
+    synchronized (recentlyReceived) {
+        if (recentlyReceived.size() &gt; 3) {
+            recentlyReceived.removeFirst();
+        }
+        recentlyReceived.add(value);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It adds the messages to a list containing the three most recent entries. <code>UserResource</code> contains a method handling GET requests which returns the contents of this list.</p>
+</div>
+<div class="paragraph">
+<p>Then we have a <a href="https://github.com/eclipse/microprofile-config/releases">MicroProfile Config</a> properties file at <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak/blob/master/src/main/resources/META-INF/microprofile-config.properties">microprofile-config.properties</a> file which does the mapping to Kafka.</p>
+</div>
+<div class="paragraph">
+<p>The contents of the file are as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-properties" data-lang="properties"># This will be overwritten by the entries set up in the initialize-server.cli script
+mp.messaging.connector.smallrye-kafka.bootstrap.servers=localhost:9092
+
+# Configure the 'to-kafka' channel to write to. We write String entries to the Kafka topic 'testing'
+mp.messaging.outgoing.to-kafka.connector=smallrye-kafka
+mp.messaging.outgoing.to-kafka.topic=testing
+mp.messaging.outgoing.to-kafka.value.serializer=org.apache.kafka.common.serialization.StringSerializer
+
+# Configure the 'from-kafka' channel we receive messages from. We receive String entries from Kafka topic 'testing'
+mp.messaging.incoming.from-kafka.connector=smallrye-kafka
+mp.messaging.incoming.from-kafka.topic=testing
+mp.messaging.incoming.from-kafka.value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+
+# Configure Kafka group.id to prevent warn message - if not set, some default value is generated automatically.
+mp.messaging.connector.smallrye-kafka.group.id="microprofile-reactive-messaging-kafka-group-id"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The formats of the property keys can be found in the <a href="https://docs.wildfly.org/26.1/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye">WildFly</a> documentation which also goes into more depth about what each entry means.</p>
+</div>
+<div class="paragraph">
+<p>In short we’re pointing to a Kafka instance running on <code>localhost:9092</code>, which is the default port Kafka will run on. We’re pointing the <code>@Channel(“to-kafka”)</code> annotated <code>Emitter</code> we saw earlier to Kafka’s <code>testing</code> topic, and pointing the <code>@Incoming(“from-kafka”)</code> annotated <code>receive()</code> method to the same <code>testing</code> topic.</p>
+</div>
+<div class="paragraph">
+<p>Since both are using the same underlying Kafka topic, messages sent via the <code>Emitter</code> will be received in the <code>receive()</code> method. Finally, since we are sending Strings, we need to tell Kafka to use the String serializer/deserializer.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-the-application-locally">Running the Application Locally</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Since the intent of this article is to show integration with RHOSAK, we won&#8217;t go into too many details here, as it has been covered in this previous <a href="./2021-10-14-MicroProfile-Reactive-Messaging-2.0-in-WildFly-25.adoc">blog post</a>.</p>
+</div>
+<div class="paragraph">
+<p>The steps are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Make sure WildFly is running, e.g. by one of the following two approaches</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Download the latest WildFly zip. Note: it must be AT LEAST WildFly 27.0.0.Alpha4 since this project uses Jakarta EE dependencies, and prior to 27.0.0.Alpha4 WildFly was using the legacy Java EE dependencies. Enable the MicroProfile Reactive Messaging and Reactive Streams Operators extensions/subsystems by running the following operations in a CLI session:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>batch
+/extension=org.wildfly.extension.microprofile.reactive-messaging-smallrye:add
+/extension=org.wildfly.extension.microprofile.reactive-streams-operators-smallrye:add
+/subsystem=microprofile-reactive-streams-operators-smallrye:add
+/subsystem=microprofile-reactive-messaging-smallrye:add
+run-batch
+
+reload</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Make sure you have a Kafka server running, for example by following steps 1 and 2 of the Kafka <a href="https://kafka.apache.org/quickstart">Quickstart</a>.</p>
+</li>
+<li>
+<p>In a clone of <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak" class="bare">https://github.com/kabir/blog-mp-reactive-messaging-rhosak</a> run <code>mvn package wildfly:deploy</code> to build and deploy our application</p>
+</li>
+<li>
+<p>Finally post messages to the application, and read them again by running the following commands in a terminal</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">$ curl -X POST http://localhost:8080/wildfly-microprofile-reactive-messaging-rhosak-1.0.0-SNAPSHOT/one
+$ curl -X POST http://localhost:8080/wildfly-microprofile-reactive-messaging-rhosak-1.0.0-SNAPSHOT/two
+$ curl http://localhost:8080/wildfly-microprofile-reactive-messaging-rhosak-1.0.0-SNAPSHOT
+[one, two]</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You may now stop WildFly and Kafka.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-wildfly-in-openshift-with-kafka-provided-by-rhosak">Running WildFly in OpenShift with Kafka provided by RHOSAK</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="setting-up-a-kafka-instance-on-rhosak-and-creating-a-secret-with-connection-information">Setting up a Kafka instance on RHOSAK and creating a secret with connection information</h3>
+<div class="paragraph">
+<p>First you need to set up a Kafka instance on RHOSAK. Since the <code>rhoas</code> line client is still under active development, the exact instructions how to do so might change. So rather than summarising everything you need to do here, see the <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak#prequisites">prerequisites</a> section of the example application repository for how to install the <code>rhoas</code> client.</p>
+</div>
+<div class="paragraph">
+<p>Once you have the <code>rhoas</code> client installed, follow the following <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak#configuring-a-kafka-instance-in-rhosak">steps</a> (again from the example application repository) to perform the following steps.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Login to RHOSAK</p>
+</li>
+<li>
+<p>Create a Kafka instance, and set it as the active instance</p>
+</li>
+<li>
+<p>Create a Kafka topic</p>
+</li>
+<li>
+<p>Create a service account used to authenticate with the Kafka instance, and grant it access to produce/consume messages on the Kafka instance</p>
+</li>
+<li>
+<p>Create an OpenShift secret called rhoas containing</p>
+<div class="ulist">
+<ul>
+<li>
+<p>the address of the Kafka instance</p>
+</li>
+<li>
+<p>the service account details</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The secret will be called <code>rhoas</code> and contains the following entries:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>KAFKA_HOST</code> - the address and port of the Kafka instance running on RHOSAK</p>
+</li>
+<li>
+<p><code>RHOAS_SERVICE_ACCOUNT_CLIENT_ID</code> - the id of the service account used to authenticate with the Kafka instance</p>
+</li>
+<li>
+<p><code>RHOAS_SERVICE_ACCOUNT_CLIENT_SECRET</code> - the secret used to log in the client</p>
+</li>
+<li>
+<p><code>RHOAS_SERVICE_ACCOUNT_OAUTH_TOKEN_URL</code> - ignored in this example</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="additional-application-configuration-to-run-in-openshift-and-connect-to-rhosak">Additional application configuration to run in OpenShift and connect to RHOSAK</h3>
+<div class="paragraph">
+<p>Although we are not quite ready to deploy our application yet, it is worth knowing that we will be using <a href="https://helm.sh">Helm</a> to deploy our application to OpenShift.</p>
+</div>
+<div class="paragraph">
+<p>To deploy an application using Helm, you use <a href="https://helm.sh/docs/topics/charts/">Helm Charts</a>. The Helm chart for our application can be found at <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak/blob/master/helm.yml">helm.yml</a>, and has the following contents:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">build:
+  uri: https://github.com/kabir/vlog-mp-reactive-messaging-rhosak.git
+  mode: bootable-jar
+deploy:
+  replicas: 1
+  volumeMounts:
+    - name: rhoas
+      mountPath: /etc/config/rhoas
+      readOnly: true
+  volumes:
+    - name: rhoas
+      secret:
+        secretName: rhoas</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This tells it to build a <a href="https://docs.wildfly.org/bootablejar/">bootable jar</a> of WildFly, which is a single jar containing both the relevant parts of WildFly and our application.</p>
+</div>
+<div class="paragraph">
+<p>Further, it says to only create one pod running WildFly, and mounts the <code>rhoas</code> secret we created earlier under the directory <code>/etc/config/rhoas</code> on the pod running the server. This directory will contain a file for each entry in our secret. The file name will be the name of the entry, and the contents of the file will be the value of the entry.</p>
+</div>
+<div class="paragraph">
+<p>When deploying an application into OpenShift using Helm, it will look for a Maven profile called <code>openshift</code> in the application&#8217;s POM. The relevant part of our <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak/blob/master/pom.xml">pom.xml</a> is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;profile&gt;
+    &lt;id&gt;openshift&lt;/id&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.wildfly.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;wildfly-jar-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;${version.wildfly-jar.maven.plugin}&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;feature-pack-location&gt;wildfly@maven(org.jboss.universe:community-universe)#${version.server.bootable-jar}&lt;/feature-pack-location&gt;
+                    &lt;layers&gt;
+                        &lt;layer&gt;cloud-server&lt;/layer&gt;
+                        &lt;layer&gt;microprofile-reactive-messaging-kafka&lt;/layer&gt;
+                    &lt;/layers&gt;
+                    &lt;plugin-options&gt;
+                        &lt;jboss-fork-embedded&gt;true&lt;/jboss-fork-embedded&gt;
+                    &lt;/plugin-options&gt;
+                    &lt;cli-sessions&gt;
+                        &lt;cli-session&gt;
+                            &lt;!-- do not resolve expression as they reference env vars that --&gt;
+                            &lt;!-- can be set at runtime --&gt;
+                            &lt;resolve-expressions&gt;false&lt;/resolve-expressions&gt;
+                            &lt;script-files&gt;
+                                &lt;script&gt;src/main/scripts/initialize-server.cli&lt;/script&gt;
+                            &lt;/script-files&gt;
+                        &lt;/cli-session&gt;
+                    &lt;/cli-sessions&gt;
+                    &lt;cloud/&gt;
+                &lt;/configuration&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;package&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/profile&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>org.wildfly.plugins:wildfly-jar-maven-plugin</code> plugin is used to create a bootable jar containing the application. We tell it to use the following <a href="https://docs.wildfly.org/26/Galleon_Guide.html#wildfly_galleon_layers">Galleon layers</a> when provisioning the server jar:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>microprofile-reactive-messaging-kafka</code> - this provides the MicroProfile Reactive Messaging functionality and the Kafka connector, as well as other dependencies needed by the Reactive Messaging implementation such as CDI. We briefly mentioned this layer in the <a href="#_running_the_application_locally">Running the Application Locally</a> section.</p>
+</li>
+<li>
+<p><code>cloud-server</code> - this is a trimmed down base server, whose main aim is to offer Jakarta RESTful Web Services functionality along with server dependencies needed to support those.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The plugin will also run the <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak/blob/master/src/main/scripts/initialize-server.cli">src/main/scripts/initialize-server.cli</a> WildFLy CLI script when configuring the server. It&#8217;s contents are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">echo "Adding the 'rhoas' secret volume mount as a MicroProfile Config source..."
+
+/subsystem=microprofile-config-smallrye/config-source=rhosak-binding:add(dir={path=/etc/config/rhoas})
+
+echo "Adding the MicroProfile Config entries mapping the secret values..."
+
+/subsystem=microprofile-config-smallrye/\
+config-source=reactive-messaging-properties:add(properties={\
+mp.messaging.connector.smallrye-kafka.bootstrap.servers=${KAFKA_HOST},\
+mp.messaging.connector.smallrye-kafka.security.protocol=SASL_SSL,\
+mp.messaging.connector.smallrye-kafka.sasl.mechanism=PLAIN,\
+mp.messaging.connector.smallrye-kafka.sasl.jaas.config="\n\
+org.apache.kafka.common.security.plain.PlainLoginModule required\n\
+username=\"${RHOAS_SERVICE_ACCOUNT_CLIENT_ID}\"\n\
+password=\"${RHOAS_SERVICE_ACCOUNT_CLIENT_SECRET}\";"\
+}, ordinal=500)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First of all it is worth noting that we don&#8217;t need to enable the MicroProfile Reactive Messaging and Reactive Streams Operators extensions/subsystems in this case. This is unlike when we were using the downloaded WildFly zip archive earlier. This is because when a server is provisioned using Galleon, the <code>microprofile-reactive-messaging-kafka</code> layer takes care of that for us.</p>
+</div>
+<div class="paragraph">
+<p>The first thing the CLI script does is mount the path <code>/etc/config/rhoas</code> (i.e. where our Helm chart told OpenShift to mount our <code>rhoas</code> secret) as a <a href="https://download.eclipse.org/microprofile/microprofile-config-3.0.1/microprofile-config-spec-3.0.1.html#configsource">MicroProfile Config ConfigSource</a> (in this case as a <a href="https://smallrye.io/smallrye-config/2.11.1/config-sources/filesystem/#custom-configsource">FileSystem ConfigSource</a> supported by our underlying SmallRye implementation of MicroProfile Config).</p>
+</div>
+<div class="paragraph">
+<p>After this config source is mounted, we can reference values from it in other places that can use MicroProfile Config values. This is what we are doing in the next block, where we tell WildFly&#8217;s MicroProfile Config subsystem to add the following properties:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>mp.messaging.connector.smallrye-kafka.bootstrap.servers</code> uses <code>KAFKA_HOST</code> from our <code>rhoas</code>  secret. Adding this here overrides the value that we hardcoded in the <a href="https://github.com/kabir/blog-mp-reactive-messaging-rhosak/blob/master/src/main/resources/META-INF/microprofile-config.properties">microprofile-config.properties</a> earlier.</p>
+</li>
+<li>
+<p><code>mp.messaging.connector.smallrye-kafka.security.protocol</code> and <code>mp.messaging.connector.smallrye-kafka.sasl.mechanism</code> are used to secure the connection and enable authentication via SASL since RHOSAK is secured. The <a href="https://kafka.apache.org/documentation/#security">Security chapter</a> of the Kafka documentation explains these values in more detail.</p>
+</li>
+<li>
+<p><code>mp.messaging.connector.smallrye-kafka.sasl.jaas.config</code> sets up JAAS configuration to provide the <code>RHOAS_SERVICE_ACCOUNT_CLIENT_ID</code> and <code>RHOAS_SERVICE_ACCOUNT_CLIENT_SECRET</code> from our <code>rhoas</code> secret to autheniticate with RHOSAK.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>So in short the above configuration makes values from our secret available to WildFly, overrides the location of the Kafka server, and adds more MicroProfile Config properties to enable SSL and authentication.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deploying-our-application">Deploying our application</h3>
+<div class="paragraph">
+<p>Now that we have configured everything properly, it is time to test our application!</p>
+</div>
+<div class="paragraph">
+<p>First you will need to install <a href="https://helm.sh/docs/intro/install/">helm</a>, and use it to add the <code>wildfly</code> Helm repostory as outlined in <a href="https://docs.wildfly.org/wildfly-charts/" class="bare">https://docs.wildfly.org/wildfly-charts/</a></p>
+</div>
+<div class="paragraph">
+<p>Then from the root folder of your local copy of the example repository, run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ helm install rhosak-example -f ./helm.yml wildfly/wildfly</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will return quickly but that does not mean the application is up and running yet. Check the application in the OpenShift console or using <code>oc get deployment rhosak-example -w</code>. Essentially what happens is it starts two pods. One for you application, and another which is doing the build of the bootable jar. Once the build one is done and has published the resulting image, the pod running the application can start properly.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="accessing-our-application-running-on-openshift">Accessing our application running on OpenShift</h3>
+<div class="paragraph">
+<p>First we need the URL of our application on OpenShift:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ oc get route
+NAME             HOST/PORT                                                          PATH   SERVICES         PORT    TERMINATION     WILDCARD
+rhosak-example   rhosak-example-kkhan1-dev.apps.sandbox.x8i5.p1.openshiftapps.com          rhosak-example   &lt;all&gt;   edge/Redirect   None</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In my case the URL is rhosak-example-kkhan1-dev.apps.sandbox.x8i5.p1.openshiftapps.com. You should of course substitute that with the URL of your application in the following steps.</p>
+</div>
+<div class="paragraph">
+<p>Next, let&#8217;s add some entries using Curl:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl  -X POST https://rhosak-example-kkhan1-dev.apps.sandbox.x8i5.p1.openshiftapps.com/one
+$ curl  -X POST https://rhosak-example-kkhan1-dev.apps.sandbox.x8i5.p1.openshiftapps.com/two</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These will be sent to Kafka, and received again by the application which will keep a list of the most recently received values. Note that the <code>https://</code> is needed - if left out, the commands will appear to work, but no data will actually be posted.</p>
+</div>
+<div class="paragraph">
+<p>To read this list of recently received values, we can run Curl again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ curl  https://rhosak-example-kkhan1-dev.apps.sandbox.x8i5.p1.openshiftapps.com
+[one, two]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Compared to running locally the RHOSAK steps look a lot more involved. However, we have achieved a lot!</p>
+</div>
+<div class="paragraph">
+<p>If we break down what we have actually done, it looks simpler:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use <code>rhoas</code> to set up Kafka, a topic, and a service account authorised to publish/consume messages</p>
+</li>
+<li>
+<p>Create a secret called <code>rhoas</code> containing the location of the Kafka instance and credentials to access it</p>
+</li>
+<li>
+<p>Configure our application to use it by:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Mounting the secret under <code>/etc/config/rhoas</code> in the Helm Chart</p>
+</li>
+<li>
+<p>Use <code>org.wildfly.plugins:wildfly-jar-maven-plugin</code> to</p>
+<div class="ulist">
+<ul>
+<li>
+<p>provision a trimmed down server with the required functionality</p>
+</li>
+<li>
+<p>run a CLI script when building the server to mount the <code>/etc/config/rhoas</code> folder as a MicroProfile Config ConfigSource and use values from that to override the location of the server, and add properties to turn on SSL, SASL authentication, and provide the credentials from our secret to authenticate</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>I hope this guide will be helpful to people wanting to try RHOSAK from WildFly for the first time.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly 28 Beta1 is released!</title>
+  <meta name="description" content="WildFly 28 Beta1 is now available for download.">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="WildFly 28 Beta1 is released!">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly 28 Beta1 is released!</h1>
+    
+    
+    <p class="byline">By Brian Stansberry | March 30, 2023</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I&#8217;m pleased to announce that the new WildFly and WildFly Preview 28.0.0.Beta1 releases are available for download at <a href="https://wildfly.org/downloads" class="bare">https://wildfly.org/downloads</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="new-and-notable">New and Notable</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Observability</strong></p>
+</div>
+<div class="paragraph">
+<p>The biggest changes in WildFly 28 Beta1 relate to the observability space.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>micrometer</code> subsystem has been <a href="https://issues.redhat.com/browse/WFLY-17144">added to standard WildFly</a>, bringing <a href="https://micrometer.io">Micrometer</a> support. As part of this work, we&#8217;ve added support for <a href="https://issues.redhat.com/browse/WFLY-17681">Micrometer integration with our MicroProfile Fault Tolerance implementation</a>. The <code>micrometer</code> subsystem was first introduced in WildFly Preview in WildFly 27. Note that the subsystem has been updated from what was in WildFly Preview 27 to switch to pushing metric data via OTLP to a remote collector, instead of supporting polling of data on the WildFly server&#8217;s management interface. (Server and JVM metrics can still be pulled from the management endpoint if the <a href="https://docs.wildfly.org/27/Admin_Guide.html#MicroProfile_Metrics_SmallRye">base <code>metrics</code> subsystem</a> is configured.)</p>
+</li>
+<li>
+<p>We&#8217;ve also added support for <a href="https://download.eclipse.org/microprofile/microprofile-telemetry-1.0/tracing/microprofile-telemetry-tracing-spec-1.0.html">MicroProfile Telemetry</a> via a <a href="https://issues.redhat.com/browse/WFLY-17156">new <code>microprofile-telemetry-smallrye</code> subsystem</a>.</p>
+</li>
+<li>
+<p>We&#8217;ve removed support for MicroProfile Metrics, except for a <a href="https://issues.redhat.com/browse/WFLY-17138">stub system limited to 'admin-only' mode</a> that&#8217;s been kept to facilitate configuration migration. MicroProfile Metrics users are encouraged to use the new <code>micrometer</code> subsystem.</p>
+</li>
+<li>
+<p>We&#8217;ve removed support for MicroProfile OpenTracing, except for a <a href="https://issues.redhat.com/browse/WFLY-17510">stub system limited to 'admin-only' mode</a> that&#8217;s been kept to facilitate configuration migration. MicroProfile OpenTracing users are encouraged to use the new <code>microprofile-telemetry-smallrye</code> subsystem, or the <code>opentelemetry</code> subsystem upon which it is based.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>MicroProfile</strong></p>
+</div>
+<div class="paragraph">
+<p>Besides the changes in the observability space noted above, there are a couple of important changes in WildFly 28&#8217;s MicroProfile support:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We&#8217;ve <a href="https://issues.redhat.com/browse/WFLY-14869">added support</a> for <a href="https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html">MicroProfile LRA</a> via new <code>microprofile-lra-coordinator</code> and <code>microprofile-lra-participant</code> subsystems.</p>
+</li>
+<li>
+<p>Except for MicroProfile Metrics and OpenTracing, which have been removed, we&#8217;ve updated our support for the other MicroProfile Platform specifications to the <a href="https://github.com/eclipse/microprofile/releases/tag/6.0">MicroProfile Platform 6</a> versions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Provisioning</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We&#8217;ve added a new <a href="https://issues.redhat.com/browse/WFLY-17648"><code>ee-core-profile-server</code> Galleon layer</a> to make it easy to provision a server based on the new <a href="https://jakarta.ee/specifications/coreprofile/10/">Jakarta EE Core Profile</a> introduced in EE 10.</p>
+</li>
+<li>
+<p>Related to this we&#8217;ve introduced new <a href="https://issues.redhat.com/browse/WFLY-13355"><code>ee-concurrency</code> and <code>ee-integration</code></a> and <a href="https://issues.redhat.com/browse/WFLY-17804"><code>servlet</code></a> Galleon layers. These layers allow a more tailored configuration compared to the existing <code>ee</code> and <code>web-server</code> layers.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Other Treats</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The server kernel team has added support for <a href="https://issues.redhat.com/browse/WFCORE-5343">configuration customization using YAML</a>. To learn more, see the <a href="https://www.wildfly.org/news/2022/04/26/YAML-configuration-extension/">article</a> Emmanuel Hugonnet wrote last year about a preview version of this feature. (This feature is now available by default; there is no longer any need to perform the activation step described in the article.) YAML-based configuration customization is a nice alternative to using CLI scripts to tailor a stock configuration for a particular environment, as there is no need start a CLI process to apply the customization. This makes it well suited to workflows like <a href="https://www.wildfly.org/news/2023/01/10/ansible-wildfly/">deploying WildFly using Ansible</a>.</p>
+</li>
+<li>
+<p>The clustering team has added support for <a href="https://issues.redhat.com/browse/WFLY-13520">Infinispan query, counters, locks, and CDI</a>.</p>
+</li>
+<li>
+<p>The clustering and web teams have added support for <a href="https://issues.redhat.com/browse/WFLY-16043">configuration of an arbitrary cookie to use for web request affinity</a>.</p>
+</li>
+<li>
+<p>The RESTEasy team has added support for <a href="https://issues.redhat.com/browse/WFLY-16018">including request tracing information in HTTP response headers</a>.</p>
+</li>
+<li>
+<p>The <code>messaging-activemq</code> subsystem now supports <a href="https://issues.redhat.com/browse/WFLY-7232">integrating an SSLContext provided by the <code>elytron</code> subsystem</a>.</p>
+</li>
+<li>
+<p>When you use OIDC, the security team has added support for <a href="https://issues.redhat.com/browse/WFLY-16793">identity propagation from a WAR to an EJB in an EAR</a>.</p>
+</li>
+<li>
+<p>The web team has added <a href="https://issues.redhat.com/browse/WFLY-14980">default values for the <code>read-timeout</code> and <code>write-timeout</code> settings</a> for Undertow listeners.</p>
+</li>
+<li>
+<p>We&#8217;ve updated Hibernate ORM from the ORM 6.1 release to 6.2.0.CR4.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="release-notes">Release Notes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The full release notes for the release are in the <a href="https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12395993">WildFly JIRA</a>.  Issues fixed in the numerous underlying WildFly Core 20.0 beta releases are listed in the <a href="https://issues.redhat.com/projects/WFCORE?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&amp;status=released">WildFly Core JIRA</a>.</p>
+</div>
+<div class="paragraph">
+<p>Please try it out and give us your feedback, while we get to work on WildFly 28 Final! Our goal is for that to be available in mid April.</p>
+</div>
+<div class="paragraph">
+<p>Best regards,</p>
+</div>
+<div class="paragraph">
+<p>Brian</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

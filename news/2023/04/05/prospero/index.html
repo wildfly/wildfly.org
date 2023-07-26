@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>An Introduction To The Prospero Usage</title>
+  <meta name="description" content="An introduction to the Prospero usage.">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="An Introduction To The Prospero Usage">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">An Introduction To The Prospero Usage</h1>
+    
+    
+    <p class="byline">By 阿男 | April 05, 2023</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>Prospero</code> is a tool provided by the WildFly community:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly-extras/prospero">GitHub - wildfly-extras/prospero: Prospero is a tool combining Galleon feature packs and wildfly-channels to provision and update Wildfly server.</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The purpose of the project can be quoted from the README of the above project link:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Prospero is a tool combining Galleon feature packs and wildfly-channels to provision and update Wildfly server.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Briefly speaking, you can use the tool to do the version management of your WildFly installation.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <code>wildfly-channels</code> projects defines the <code>Channel</code>, which allow separation of artifact versioning from the Galleon feature pack, allowing artifact versions to be managed independently. In the project, it contains a spec doc that describes the <code>Channel</code> model:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly-extras/wildfly-channel/blob/main/doc/spec.adoc">wildfly-channel/spec.adoc at main · wildfly-extras/wildfly-channel · GitHub</a></p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the next section, let&#8217;s see the basic usage of <code>prospero-cli</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="basic-usage-of-the-prospero-cli-tool">Basic Usage Of The Prospero CLI Tool</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To use the tool, firstly you can clone the project to your local environment:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ git clone https://github.com/wildfly-extras/prospero.git</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then you can enter the project directory, and build the project as mentioned in the project README:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ mvn clean install</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After the project is built, then we can use the built tool to install a provisioned WildFly locally. The tool uses the <code>wildfly-channel</code> config files(which are called <code>Wildfly Channels</code> and <code>Wildfly Channel Manifests</code>) to manage the components versions. And the project provides some example configuration files already in its <code>examples</code> directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ls examples
+README.md                           wildfly-27.0.0.Alpha2-manifest.yaml
+wildfly-26.0.0.Final-channel.yaml   wildfly-core-channel.yaml
+wildfly-26.0.0.Final-manifest.yaml  wildfly-core-manifest.yaml
+wildfly-27.0.0.Alpha2-channel.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To use one of the above manifest files, here is an example command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ ./prospero install --fpl=org.wildfly:wildfly-galleon-pack --dir=wfly-26 --channel=examples/wildfly-26.0.0.Final-channel.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above command will use the channel defined in the <code>wildfly-26.0.0.Final-channel.yaml</code> to provision the components versions listed in <code>wildfly-26.0.0.Final-channel.yaml</code> and install a WildFly into the <code>wfly-26</code> directory. In addition, the <code>-fpl</code> option defines the Galleon Feature Pack to use.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+The <code>channel</code> files contain repositories and reference to the manifest, while <code>manifest</code> only contains the versions of artifacts.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here is the running process of the above command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ ./prospero install --fpl=org.wildfly:wildfly-galleon-pack --dir=wfly-26 --channel=examples/wildfly-26.0.0.Final-channel.yaml
+Installing feature pack: org.wildfly:wildfly-galleon-pack
+Using channels:
+# manifest: file:examples/wildfly-26.0.0.Final-manifest.yaml
+  repositories:
+    id: central
+    url: https://repo1.maven.org/maven2/
+    id: jboss-public
+    url: https://repository.jboss.org/nexus/content/groups/public/
+    id: mrrc
+    url: https://maven.repository.redhat.com/ga/
+
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+
+Server created in /Users/weli/works/prospero/wfly-26
+Operation completed in 29.46 seconds.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After the above process, a provisioned WildFly is installed at the <code>wfly-26</code> directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ls wfly-26/
+LICENSE.txt       bin               domain            standalone
+README.txt        copyright.txt     jboss-modules.jar welcome-content
+appclient         docs              modules</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above installation is provisioned by the <code>prospero</code> tool. Next we can check the content of the channel metadata files.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="wildfly-channel-metadata">WildFly Channel Metadata</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here is the content of the <code>examples/wildfly-26.0.0.Final-channel.yaml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">schemaVersion: "2.0.0"
+repositories:
+  - id: "central"
+    url: "https://repo1.maven.org/maven2/"
+  - id: "jboss-public"
+    url: "https://repository.jboss.org/nexus/content/groups/public/"
+  - id: "mrrc"
+    url: "https://maven.repository.redhat.com/ga/"
+manifest:
+  url: "file:examples/wildfly-26.0.0.Final-manifest.yaml"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above channel file defines the repositories to be used for downloading components. In addition, it includes a manifest file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">manifest:
+  url: "file:examples/wildfly-26.0.0.Final-manifest.yaml"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here is part of the contents of <code>examples/wildfly-26.0.0.Final-manifest.yaml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">➤ head -n 20 examples/wildfly-26.0.0.Final-manifest.yaml
+---
+schemaVersion: "1.0.0"
+name: "Manifest for org.wildfly:wildfly-ee-galleon-pack:pom:26.0.0.Final feature pack."
+id: "org.wildfly:wildfly-ee-galleon-pack"
+description: "Generated by org.wildfly.galleon-plugins:wildfly-galleon-maven-plugin\
+  \ at 2023-03-21T13:03:11.512702Z"
+streams:
+  - groupId: "antlr"
+    artifactId: "antlr"
+    version: "2.7.7"
+  - groupId: "com.fasterxml"
+    artifactId: "classmate"
+    version: "1.5.1"
+  - groupId: "com.fasterxml.jackson.core"
+    artifactId: "jackson-annotations"
+    version: "2.12.3"
+  - groupId: "com.fasterxml.jackson.core"
+    artifactId: "jackson-core"
+    version: "2.12.3"
+  - groupId: "com.fasterxml.jackson.core"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As the command output shown above, the above manifest file defines the component versions. Combining the repositories and the component versions, the <code>prospero</code> tool knows how to provision a WildFly server, and the component versions in the WildFly installation is managed by the tool. Next we&#8217;ll see how to use the <code>prospero</code> to update or rollback the provisioned WildFly distribution.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="other-usages-of-the-tool">Other Usages Of The Tool</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>prospero</code> tool itself contains help to its usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ./prospero
+Welcome to prospero CLI!
+
+This tool enables you to provision and manage instances of the Wildfly application server.
+
+Usage: prospero [-hv] [COMMAND]
+
+Options:
+  -h, --help      Displays the help information for the command.
+  -v, --version   Prints the version of prospero and exits.
+
+Commands:
+  install         Installs a new instance of the application server.
+  update          Updates a server instance with the latest patches.
+  print-licenses  Prints licenses and additional agreements required to install the server.
+  history         Lists all the previous installation states.
+  revert          Reverts the server to a previous installation state.
+  channel         Manages the channels used by the server to get the latest updates.
+  completion      Generates a bash completion script. To enable auto-completion use the command `source &lt;(prospero completion)`.
+  clone           Exports installation details required to recreate a server.
+
+Exit codes:
+  0   Successful program execution.
+  1   Failed operation.
+  2   Invalid input arguments.
+
+Use `prospero &lt;COMMAND&gt; --help` to show help information for the command.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above command output, it has a list of the commands supported. Firstly we can try to use its <code>update</code> command. We can update one of the component versions defined in the manifest file <code>examples/wildfly-26.0.0.Final-manifest.yaml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">   - groupId: "io.undertow"
+     artifactId: "undertow-core"
+     version: "2.2.14.Final"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can update the above <code>undertow-core</code> version from <code>2.2.14.Final</code> to <code>2.2.18.Final</code>, and then run the following command to update the provisioned server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">./prospero update perform --dir=wfly-26</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And here is the running process of the above command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ./prospero update perform --dir=wfly-26
+Updates found:
+  io.undertow:undertow-servlet                          2.2.14.Final         ==&gt;  2.2.18.Final
+Continue with update [y/N]: y
+Applying updates
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+Build update complete!
+Update complete!
+Operation completed in 39.00 seconds.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From the above running process, we can see the <code>undertow-servlet</code> component inside the WildFly installation is updated, and <code>prospero</code> will help us to manage this version change.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Updating a component by manually editing the manifest is under user responsibility if the changes of this manifest don&#8217;t come from an "official" manifest. For example, one manifest generated from a more recent version, you could break your server installation.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We can use the <code>history</code>  command to see the change history of the provisioned server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ./prospero history --dir=wfly-26
+[fc78b239] 2023-03-23T16:48:24Z - update [file:examples/wildfly-26.0.0.Final-manifest.yaml::27d5125a2220e0885b13f7f0b740bfb3bd06aac6]
+[84b35ad5] 2023-03-23T16:43:37Z - install [file:examples/wildfly-26.0.0.Final-manifest.yaml::aa9100d88292532da7fa8936611765c71a63af36]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From the above command output, we can see the initial installation and the update are all managed in the history. Now we can try to rollback the update with the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ./prospero revert perform --dir=wfly-26 --revision=84b35ad5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With above command, we revert our WildFly server back to the revision <code>84b35ad5</code>, which is the initial installation of the server. Here is the command output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+Updates found:
+  [*]io.undertow:undertow-servlet                          2.2.18.Final         ==&gt;  2.2.14.Final
+
+[*] The update list contain one or more artifacts with lower versions then currently installed. Proceed with caution.
+
+Continue with update [y/N]: y
+
+Operation completed in 27.16 seconds.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From the above command output we can see the <code>prospero</code> asked us if we want to downgrade the component versions. Because we revert our WildFly server back to the initial installation, so just write <code>y</code> and proceed the process, and the WildFly server is reverted back to the initial installation. Now we can check the provision history of the server again:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ./prospero history --dir=wfly-26
+[310f6f37] 2023-03-23T16:50:03Z - rollback [file:examples/wildfly-26.0.0.Final-manifest.yaml::aa9100d88292532da7fa8936611765c71a63af36]
+[fc78b239] 2023-03-23T16:48:24Z - update [file:examples/wildfly-26.0.0.Final-manifest.yaml::27d5125a2220e0885b13f7f0b740bfb3bd06aac6]
+[84b35ad5] 2023-03-23T16:43:37Z - install [file:examples/wildfly-26.0.0.Final-manifest.yaml::aa9100d88292532da7fa8936611765c71a63af36]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can see there is a new <code>rollback</code> revision added instead of just reverting to the original revision. This design helps us to preserve all the change histories. To see the changes in the revision, we can use this command to do so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ./prospero history --dir=wfly-26 --revision=310f6f37</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And here is the output of the command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➤ ./prospero history --dir=wfly-26 --revision=310f6f37
+
+Updates:
+  [Updated artifact] io.undertow:undertow-servlet:		2.2.18.Final ==&gt; 2.2.14.Final</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From the above command output, we can see the changed components versions in the update.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-usage-of-the-profile-option">The Usage Of The <code>-profile</code> Option</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this article we have used the <code>-fpl</code> option to do the installation o the WildFly, and there is another <code>-profile</code> option that can be used for provision. The <code>-profile</code> option is actually a combination of Galleon Feature Pack and WildFly Channel, and it is defined by the YAML file too. The default <code>wildfly</code> profile is defined here:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly-extras/prospero/blob/main/prospero-common/src/main/resources/prospero-known-combinations.yaml">prospero-known-combinations.yaml</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The content of the above file is shown in below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">---
+- name: "wildfly"
+  galleonConfiguration: "classpath:wildfly-provisioning.xml"
+  channels:
+    - schemaVersion: "2.0.0"
+      name: "wildfly"
+      repositories:
+        - id: "central"
+          url: "https://repo1.maven.org/maven2/"
+        - id: "jboss-public"
+          url: "https://repository.jboss.org/nexus/content/groups/public/"
+        - id: "mrrc"
+          url: "https://maven.repository.redhat.com/ga/"
+      manifest: null</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As the content shown above, the profile file defines the channel similar to a channel file. In addition, it contains a <code>galleonConfiguration</code> item that defines a Galleon config file location, which is <a href="https://github.com/wildfly-extras/prospero/blob/main/prospero-common/src/main/resources/wildfly-provisioning.xml"><code>wildfly-provisioning.xml</code></a>. Here is the content of the <code>wildfly-provisioning.xml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;?xml version="1.0" ?&gt;
+...
+&lt;installation xmlns="urn:jboss:galleon:provisioning:3.0"&gt;
+    &lt;feature-pack location="org.wildfly:wildfly-galleon-pack::zip"/&gt;
+&lt;/installation&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As the content shown above, it&#8217;s a Galleon config file contains a <code>feature-pack</code> location. In conclusion, the <code>wildfly</code> profile combines the channel definition and the feature-pack definition. So we can use this profile file directly with the manifest file. Here is the command to do so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ ./prospero install --profile=wildfly --dir=wfly-26 --manifest=examples/wildfly-26.0.0.Final-manifest.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As the command shown above, we have used the <code>-profile</code> option instead of the <code>-fpl</code> option, so we don&#8217;t need the channel file anymore. Here is the output of the above command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">$ ./prospero install --profile=wildfly --dir=wfly-26 --manifest=examples/wildfly-26.0.0.Final-manifest.yaml
+Installing profile: wildfly
+Using channels:
+# manifest: file:/Users/weli/works/prospero/examples/wildfly-26.0.0.Final-manifest.yaml
+  repositories:
+    id: central
+    url: https://repo1.maven.org/maven2/
+    id: jboss-public
+    url: https://repository.jboss.org/nexus/content/groups/public/
+    id: mrrc
+    url: https://maven.repository.redhat.com/ga/
+
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+
+Server created in /Users/weli/works/prospero/wfly-26
+Operation completed in 16.44 seconds.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From the above command output, we can see the <code>channels</code> definition are loaded from the profile directly, and we used the <code>--manifest</code> option to define the manifest file directly, and we don&#8217;t need to use the <code>--channnel</code> option to define the channel by ourselves.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this article, I introduced the basic usages of the Prospero, and if you want to know more of the project, please check the source code of the project, and also the links provided in the references.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>Prospero</code> uses the <code>WildFly Channel Manifests</code> defined in the <code>wildfly-channel</code> project as its configuration backend:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly-extras/wildfly-channel">GitHub - wildfly-extras/wildfly-channel: Library for WildFly Channel</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>Prospero</code> uses the <code>Galleon</code> project to do the provision actions of the WildFly distribution:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/wildfly/galleon">GitHub - wildfly/galleon</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you want to understand how to generate the manifest file for the WildFly releases, here are the discussions on the topic:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/liweinan/prospero/pull/1">Add wildfly-ee-galleon-pack streams #1</a></p>
+</li>
+<li>
+<p><a href="https://github.com/wildfly/wildfly.org/pull/401#issuecomment-1479898270">blog post: An Introduction To The Prospero Usage by liweinan · Pull Request #401 · wildfly/wildfly.org · GitHub</a> / <a href="https://github.com/wildfly/wildfly.org/pull/401#issuecomment-1474031721">Another discussion</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

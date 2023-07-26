@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MicroProfile Reactive Messaging 2.0 in WildFly 25</title>
+  <meta name="description" content="">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="MicroProfile Reactive Messaging 2.0 in WildFly 25">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">MicroProfile Reactive Messaging 2.0 in WildFly 25</h1>
+    
+    
+    <p class="byline">By Kabir Khan | October 14, 2021</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>For WildFly 25, we upgraded the <a href="https://github.com/eclipse/microprofile-reactive-messaging">MicroProfile Reactive Messaging</a> support from version 1 to 2. It contains a new <a href="https://github.com/eclipse/microprofile-reactive-messaging/blob/2.0/api/src/main/java/org/eclipse/microprofile/reactive/messaging/Channel.java"><code>@Channel</code></a> annotation, which in conjunction with the new <a href="https://github.com/eclipse/microprofile-reactive-messaging/blob/2.0/api/src/main/java/org/eclipse/microprofile/reactive/messaging/Emitter.java"><code>Emitter</code></a> interface, were introduced in order to make it possible to push data into the MicroProfile Reactive streams from code initiated by a user.</p>
+</div>
+<div class="paragraph">
+<p>The MicroProfile Reactive Messaing implementation in WildFly is based on the <a href="https://github.com/smallrye/smallrye-reactive-messaging">SmallRye Reactive Messaging</a> project. The version included in WildFly 25, introduces a new <a href="https://github.com/smallrye/smallrye-reactive-messaging/blob/3.10.0/smallrye-reactive-messaging-kafka-api">API</a> to have more control over how we interact with Kafka. We expose this API in WildFly 25.</p>
+</div>
+<div class="paragraph">
+<p>This post will:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Take a simple web application, consisting of a few html pages, and add a Servlet filter to push information about page visits into Reactive Messaging via an <code>Emitter</code>.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>These messages will be forwarded onto Kafka</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Show a standalone application to read the last visited page per user from Kafka via the Kafka Streams API</p>
+</li>
+<li>
+<p>Deploy the above application into WildFly, bundling the Kafka Streams API (which we don&#8217;t ship in WildFly) to read the last visited page per user.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The code for the application is on <a href="https://github.com/kabir/blog-reactive-messaging-2.0">GitHub</a>. Additionally, you can find more information about the MicroProfile Reactive Messaging functionality in WildFly in the <a href="https://docs.wildfly.org/25/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye">WildFly documentation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="running-the-application">Running the application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>See the GitHub repository <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/README.md">README</a> for instructions on how to build and run the different parts of the application. Here we will focus on explaining how it works.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="the-main-application">The main application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The main application is contained in the <a href="https://github.com/kabir/blog-reactive-messaging-2.0/tree/master/app"><code>app</code></a> folder.</p>
+</div>
+<div class="paragraph">
+<p>The core of the application is a <a href="https://github.com/kabir/blog-reactive-messaging-2.0/tree/master/app/src/main/webapp">few html pages</a> which link to each other. Now, we want to track which user visited which page. We do this by enhancing the application with a Servlet filter called <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/app/src/main/java/org/wildfly/blog/reactive/messaging/user/api/MessagingFilter.java">MessagingFilter</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class MessagingFilter extends HttpFilter {
+    @Inject
+    @Channel("from-filter")
+    Emitter&lt;PageVisit&gt; messagingEmitter;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>FIrst we have field injected via CDI of type <code>Emitter</code>, called <code>messagingEmitter</code>, which is annotated with <code>@Channel</code>. This <code>Emitter</code> instance makes it a breeze to push data to the MicroProfile Reactive Messaging stream indicated by the value of the <code>@Channel</code> annotation (i.e. <code>from-filter</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">    @Override
+    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        String user = getUsername(request);
+        String address = request.getRemoteAddr();
+        String page = Paths.get(request.getRequestURI()).getFileName().toString();
+
+
+        PageVisit pv = new PageVisit(user, address, page);
+        messagingEmitter.send(pv);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next we gather information about the request (user, address and page name), and bundle this information up in a <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/common/src/main/java/org/wildfly/blog/reactive/messaging/common/PageVisit.java"><code>PageVisit</code></a> bean.</p>
+</div>
+<div class="paragraph">
+<p>We then use the injected <code>Emitter</code> to send the <code>PageVisit</code> instance. The <code>Emitter</code> will then send the PageVisit to the <code>from-filter</code> stream.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">        // Disable caching for the html pages
+        ((HttpServletResponse)response).addHeader("Cache-control", "no-store");
+        ((HttpServletResponse)response).addHeader("Pragma", "no-cache");
+
+        filterChain.doFilter(request, response);
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Getting the user name is simulated in the following method which randomly chooses a user for the current request. For the purposes of this demo this is to get a few different users in the data recorded when we click on the links when running the application.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">    private String getUsername(HttpServletRequest servletRequest) {
+        // Pretend we're looking up the authenticated user
+        switch ((int)Math.round(Math.random() * 3)) {
+            case 0:
+                return "bob";
+            case 1:
+                return "emma";
+            case 2:
+                return "frank";
+            case 3:
+                return "linda";
+        }
+        return null;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, we have an <code>ApplicationScoped</code> CDI bean called <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/app/src/main/java/org/wildfly/blog/reactive/messaging/user/api/MessagingBean.java"><code>MessagingBean</code></a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@ApplicationScoped
+public class MessagingBean {
+    @Inject
+    @Channel("special")
+    Emitter&lt;PageVisit&gt; special;
+
+    @Incoming("from-filter")
+    @Outgoing("kafka-visits")
+    public Message&lt;PageVisit&gt; fromFilter(PageVisit pageVisit) {
+        if (pageVisit.getPage().equals("3.html")) {
+            special.send(pageVisit);
+        }
+        Message&lt;PageVisit&gt; msg = Message.of(pageVisit);
+        msg = KafkaMetadataUtil.writeOutgoingKafkaMetadata(
+                msg,
+                OutgoingKafkaRecordMetadata
+                        .&lt;String&gt;builder()
+                        .withKey(pageVisit.getUserName())
+                        .build());
+        return msg;
+    }
+
+    @Incoming("special")
+    public void special(PageVisit pageVisit) {
+        System.out.println("===&gt; " + pageVisit.getUserName() + " visited " + pageVisit.getPage());
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>fromFilter()</code> method is annotated with the <code>@Incoming("from-filter")</code> annotation (from version 1 of the specification) and will receive all messages that were sent on our previous <code>Emitter</code>.</p>
+</div>
+<div class="paragraph">
+<p>Since the both the  <code>@Incoming</code> and <code>@Channel</code> annotations use the value <code>from-filter</code> (i.e. they match), we end up with a simple in-memory stream. We could of course have routed this via Kafka, but for this example I wanted to keep the configuration needed to map to Kafka as simple as possible. The <a href="https://docs.wildfly.org/25/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye">WildFly documentation</a> goes into more details about how to configure MicroProfile Reactive Messaging streams to consume from Kafka topics.</p>
+</div>
+<div class="paragraph">
+<p>The <code>fromFilter()</code> method is also annotated with <code>@Outgoing("kafka-visits")</code>, and so it is expected that all incoming messages from the <code>from-filter</code> stream will be forwarded onto the <code>kafka-visits</code> stream.</p>
+</div>
+<div class="paragraph">
+<p>The <code>kafka-visits</code> stream is backed by Kafka (we will see how to map this stream onto a Kafka topic in a second). In this case we decide that we want messages sent on this topic to have a Kafka key, so we:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Wrap the incoming <code>PageVisit</code> object in a <code>Message</code> object, which comes from the MicroProfile Reactive Messaging specification.</p>
+</li>
+<li>
+<p>We then create an <a href="https://github.com/smallrye/smallrye-reactive-messaging/blob/3.10.0/smallrye-reactive-messaging-kafka-api/src/main/java/io/smallrye/reactive/messaging/kafka/api/OutgoingKafkaRecordMetadata.java"><code>OutgoingKafkaRecordMetadata</code></a> instance, where we set the key of the record to be the user. We add this metadata to the message by calling <a href="https://github.com/smallrye/smallrye-reactive-messaging/blob/3.10.0/smallrye-reactive-messaging-kafka-api/src/main/java/io/smallrye/reactive/messaging/kafka/api/KafkaMetadataUtil.java#L34"><code>KafkaMetadataUtil.writeOutgoingKafkaMetadata()</code></a>. The mentioned classes come from the new <a href="https://github.com/smallrye/smallrye-reactive-messaging/tree/main/smallrye-reactive-messaging-kafka-api">SmallRye Kafka API</a>.</p>
+</li>
+<li>
+<p>Finally we return the massaged <code>Message</code> containing our received <code>PageVisit</code> instance, which will forward it to the <code>kafka-visits</code> stream.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Another thing going on in this example, is that we&#8217;re using an injected <code>Emitter</code> to 'fork' the sending of the received data to an additional location. In <code>fromFilter()</code>, if the page <code>3.html</code> was visited, we will also send the received <code>PageVisit</code> via the injected <code>Emitter</code>. This in turn will send the <code>PageVisit</code> instance on the <code>special</code> stream indicated in its <code>@Channel</code> annotation.</p>
+</div>
+<div class="paragraph">
+<p>The <code>special()</code> method, annotated with <code>@Incoming(`special</code>) receives messages from the <code>special</code> stream (i.e. the ones sent via the <code>Emitter</code>).</p>
+</div>
+<div class="paragraph">
+<p>When running the application, and clicking on the <code>3</code> link, you should see output in the server logs. Additionally, every click on any link will show up in the Kafka consumer logs mentioned in the example <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/README.md">README</a>. So, in addition to being able to easily send data from user-initiated code, <code>Emitter</code> is useful for 'forking' streams, so you can send data to more than one location. This functionality was not present in version 1 of the specification.</p>
+</div>
+<div class="paragraph">
+<p>To map the <code>kafka-visits</code> stream to a Kafka topic we do the configuration in <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/app/src/main/webapp/META-INF/microprofile-config.properties">microprofile-config.properties</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-properties" data-lang="properties">mp.messaging.connector.smallrye-kafka.bootstrap.servers=localhost:9092
+
+mp.messaging.outgoing.kafka-visits.connector=smallrye-kafka
+mp.messaging.outgoing.kafka-visits.topic=page-visits
+mp.messaging.outgoing.kafka-visits.value.serializer=org.wildfly.blog.reactive.messaging.common.PageVisitsSerializer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This points the mapping towards <code>localhost:9092</code> to connect to Kafka, maps the <code>kafka-visits</code> stream to the  <code>page-visits</code> kafka topic, and specifies <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/common/src/main/java/org/wildfly/blog/reactive/messaging/common/PageVisitsSerializer.java">PageVisitsSerializer</a> to be used to serialize the <code>PageVisit</code> instances that we send to Kafka. The <a href="https://docs.wildfly.org/25/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye">WildFly documentation</a> contains more detailed information about this configuration.</p>
+</div>
+<div class="paragraph">
+<p>If you deploy the application into WildFly, as outlined in the example <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/README.md#deploy-the-microprofile-reactive-messaging-application">README</a>, and you performed the optional step of connecting a Kafka consumer, you should see the output similar to this in the Kafka consumer terminal as you click the links in the application hosted at <a href="http://localhost:8080/app/" class="bare">http://localhost:8080/app/</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>frank	127.0.0.1app
+emma	127.0.0.13.html
+frank	127.0.0.11.html
+linda	127.0.0.13.html
+frank	127.0.0.11.html
+emma	127.0.0.12.html
+frank	127.0.0.13.html</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you visit <code>3.html</code>, there will be additional output from the <code>special()</code> method in WildFly&#8217;s server.log</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>===&gt; emma visited 3.html
+===&gt; linda visited 3.html
+===&gt; frank visited 3.html</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reading-data-from-kafka-in-a-standalone-application">Reading data from Kafka in a standalone application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>While it is nice to be able to send (and receive, although not shown in this example) messages via Kafka, we may want to query the data in Kafka later.</p>
+</div>
+<div class="paragraph">
+<p>The code for the command line application to query data from Kafka is contained in the <a href="https://github.com/kabir/blog-reactive-messaging-2.0/tree/master/streams"><code>streams</code></a> folder. It contains a very simple (I am a beginner at this part) application to get the most recent page visits per user. It uses the <a href="https://kafka.apache.org/documentation/streams/">Kafka Streams</a> API to interact with Kafka.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src/main/java/org/wildfly/blog/kafka/streams/Main.java"><code>Main</code></a> class calls through to a more interesting <code>DataStoreWrapper</code> class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">    public static void main(String[] args) throws Exception {
+        try (DataStoreWrapper dsw = new DataStoreWrapper()) {
+            dsw.init();
+            Map&lt;String, String&gt; lastPagesByUser = Collections.emptyMap();
+            try {
+                dsw.readLastVisitedPageByUsers();
+            } catch (InvalidStateStoreException e) {
+            }
+            if (lastPagesByUser.size() == 0) {
+                // It seems that although the stream is reported as RUNNING
+                // in dsw.init() it still needs some time to settle. Until that
+                // happens there is no data or we get InvalidStateStoreException
+                Thread.sleep(4000);
+                lastPagesByUser = dsw.readLastVisitedPageByUsers();
+            }
+            System.out.println("Last pages visited:\n" + lastPagesByUser);
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+There is some error handling here. In case you get no entries, or if you get <code>InvalidStateStoreException</code>, try increasing the timeout in the sleep.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Looking at the <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src/main/java/org/wildfly/blog/kafka/streams/DataStoreWrapper.java">DataStoreWrapper</a> class, the first thing to note is that it is 'CDI ready'. Although this section will run it as a standalone application where CDI is not relevant, we will reuse this class later in an application deployed in WildFly.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@ApplicationScoped
+public class DataStoreWrapper implements Closeable {
+    private volatile KafkaStreams streams;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We will initialise this streams instance in the <code>init()</code> method below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">    @Inject
+    private ConfigSupplier configSupplier = new ConfigSupplier() {
+        @Override
+        public String getBootstrapServers() {
+            return "localhost:9092";
+        }
+
+        @Override
+        public String getTopicName() {
+            return "page-visits";
+        }
+    };</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>configSupplier</code> field is inititalised to an implementation of <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src/main/java/org/wildfly/blog/kafka/streams/ConfigSupplier.java"><code>ConfigSupplier</code></a> which hard codes the values of the Kafka bootstrap servers, and the topic name. When deploying this into WildFly later we will use MicroProfile Config to set these values to avoid hard coding them.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">    DataStoreWrapper() {
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next, we will take a look at the <code>init()</code> method where we set up the ability to query the stream.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">    @PostConstruct
+    void init() {
+        try {
+
+            Properties props = new Properties();
+            props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-pipe");
+            props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, configSupplier.getBootstrapServers());
+            props.putIfAbsent(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
+            props.putIfAbsent(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+            props.putIfAbsent(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, PageVisitSerde.class.getName());
+            // For this we want to read all the data
+            props.putIfAbsent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above sets configuration properties to connect to kafka, and sets <a href="https://kafka.apache.org/28/javadoc/org/apache/kafka/common/serialization/Serde.html"><code>Serde</code></a>s for (de)serializing the Kafka record keys and values. The class <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src/main/java/org/wildfly/blog/kafka/streams/PageVisitSerde.java"><code>PageVisitSerde</code></a> is used to (de)serialise our <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/common/src/main/java/org/wildfly/blog/reactive/messaging/common/PageVisit.java"><code>PageVisit</code></a> class from earlier.</p>
+</div>
+<div class="paragraph">
+<p>We also specify that we want all the data stored on this topic.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">            final StreamsBuilder builder = new StreamsBuilder();
+            KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore("test-store");
+            KTable&lt;String, PageVisit&gt; source = builder.table(
+                    configSupplier.getTopicName(),
+                    Materialized.&lt;String, PageVisit&gt;as(stateStore)
+                            .withKeySerde(Serdes.String())
+                            .withValueSerde(new PageVisitSerde()));
+            final Topology topology = builder.build();
+            this.streams = new KafkaStreams(topology, props);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we create a <a href="https://kafka.apache.org/28/javadoc/org/apache/kafka/streams/kstream/KTable.html"><code>KTable</code></a> associated with the Kafka topic, and create a <a href="https://kafka.apache.org/28/javadoc/org/apache/kafka/streams/processor/StateStore.html"><code>StateStore</code></a> from that. In this case since we are using the Kafka record key (above we used the user for this when sending to Kafka) as the <code>KTable</code> key, we will get one entry (the latest) for each user. Note this is a very simple example, and not an in-depth exploration of the Kafka Streams API, so of course more advanced views on the stored data are possible!</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">            final CountDownLatch startLatch = new CountDownLatch(1);
+            final AtomicReference&lt;KafkaStreams.State&gt; state = new AtomicReference&lt;&gt;();
+            streams.setStateListener((newState, oldState) -&gt; {
+                state.set(newState);
+                switch (newState) {
+                    case RUNNING:
+                    case ERROR:
+                    case PENDING_SHUTDOWN:
+                        startLatch.countDown();
+                }
+            });
+            this.streams.start();
+            startLatch.await(10, TimeUnit.SECONDS);
+            System.out.println("Stream started");
+
+            if (state.get() != KafkaStreams.State.RUNNING) {
+                throw new IllegalStateException();
+            }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, we start the stream and wait for it to start.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">        } catch (Exception e) {
+            if (this.streams != null) {
+                this.streams.close();
+            }
+            throw new RuntimeException(e);
+        }
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>readLastVisitedPageByUsers()</code> method uses the <code>StateStore</code> we set up earlier and returns all the found entries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">    public Map&lt;String, String&gt; readLastVisitedPageByUsers() {
+        StoreQueryParameters&lt;ReadOnlyKeyValueStore&lt;String, PageVisit&gt;&gt; sqp = StoreQueryParameters.fromNameAndType("test-store", QueryableStoreTypes.keyValueStore());
+        final ReadOnlyKeyValueStore&lt;String, PageVisit&gt; store = this.streams.store(sqp);
+
+        Map&lt;String, String&gt; lastPageByUser = new HashMap&lt;&gt;();
+        KeyValueIterator&lt;String, PageVisit&gt; it = store.all();
+        it.forEachRemaining(keyValue -&gt; lastPageByUser.put(keyValue.key, keyValue.value.getPage()));
+        return lastPageByUser;
+    }
+
+    @PreDestroy
+    public void close() {
+        this.streams.close();
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you run the application, following the instructions in the example <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/README.md#read-data-from-kafka-standalone">README</a>, you should see output like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Stream started
+Last pages visited:
+{frank=3.html, emma=2.html, linda=3.html}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As already mentioned, this will be the latest page visited for each user.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reading-data-from-kafka-in-a-wildfly-application">Reading data from Kafka in a WildFly application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly does not ship with the Kafka Streams API, but we can still deploy the application above into WildFly with some adjustments in how we package it. The example <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/README.md#read-data-from-kafka-in-wildfly">README</a> contains more details, but in a nutshell we:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Include the Kafka Streams API jar in our deployment</p>
+</li>
+<li>
+<p>Make sure we don&#8217;t include all the Kafka Streams API jar&#8217;s transitive dependencies in our deployment since they already exist in WildFly.</p>
+</li>
+<li>
+<p>Modify the deployment&#8217;s META-INF/MANIFEST.MF to set up a dependency on the <code>org.apache.kafka.client</code> JBoss Module. This module contains the Kafka client jar, which is needed by the Kafka Streams API.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In our standalone application, we hardcoded the bootstrap servers and the topic name. When deploying to WildFly we would like to avoid recompiling the application if, say, Kafka moves somewhere else, so we specify this information in <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams-app/src/main/webapp/META-INF/microprofile-config.properties">microprofile-config.properties</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-properties" data-lang="properties">kafka.bootstrap.servers=localhost:9092
+kafka.topic=page-visits</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We then create an implementation of the <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src/main/java/org/wildfly/blog/kafka/streams/ConfigSupplier.java"><code>ConfigSupplier</code></a> interface in <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams-app/src/main/java/org/wildfly/blog/kafka/streams/app/MpConfigConfigSupplier.java"><code>MpConfigConfigSupplier</code></a>. This is an <code>ApplicationScoped</code> CDI bean which gets injected with the MicroProfile Config containing the properties from the <code>microprofile-config.properties</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@ApplicationScoped
+public class MpConfigConfigSupplier implements ConfigSupplier {
+    @Inject
+    Config config;
+
+    @Override
+    public String getBootstrapServers() {
+        return config.getValue("kafka.bootstrap.servers", String.class);
+    }
+
+    @Override
+    public String getTopicName() {
+        return config.getValue("kafka.topic", String.class);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Our <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src/main/java/org/wildfly/blog/kafka/streams/DataStoreWrapper.java">DataStoreWrapper</a> class from earlier is a CDI bean, and so our <code>MpConfigConfigSupplier</code> will get injected into its <code>configSupplier</code> field, overwriting the default implementation that was used in the standalone application case:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@ApplicationScoped
+public class DataStoreWrapper implements Closeable {
+    private volatile KafkaStreams streams;
+
+    @Inject
+    private ConfigSupplier configSupplier = new ConfigSupplier() {
+        // -- SNIP --
+        // This implementation gets replaced by the injected MpConfigConfigSupplier</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to be able to call this from a client, we add a simple <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams-app/src/main/java/org/wildfly/blog/kafka/streams/app/StreamsEndpoint.java">REST endpoint</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Path("/")
+@Produces(MediaType.APPLICATION_JSON)
+public class StreamsEndpoint {
+    @Inject
+    DataStoreWrapper wrapper;
+
+    @GET
+    @Path("/last-visited")
+    public Map&lt;String, String&gt; getLastVisited() {
+        return wrapper.readLastVisitedPageByUsers();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This simply delegates to our <code>DataStoreWrapper</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you deploy the application as outlined in the example <a href="https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/README.md#read-data-from-kafka-in-wildfly">README</a>, and visit <a href="http://localhost:8080/streams/last-visited" class="bare">http://localhost:8080/streams/last-visited</a> you should see output like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{"frank":"3.html","emma":"2.html","linda":"3.html"}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We have seen how to leverage the new Emitter in MicroProfile Reactive Messaging 2 to push data to MicroProfile Reactive Messaging Streams, and how to send data to Kafka. We also used the new Kafka User API to set the Kafka record key in the data sent to Kafka.</p>
+</div>
+<div class="paragraph">
+<p>Although we did not receive data from Kafka in this example, we leveraged the Kafka Streams API to read the data we stored in Kafka in a standalone application as well as in an application deployed to WildFly.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="references">References</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="https://docs.wildfly.org/25/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye">WildFly documentation</a> contains more information on the various configuration options for using MicroProfile Reactive Messaging with Kafka in WildFly.</p>
+</div>
+<div class="paragraph">
+<p>Also, the <a href="https://smallrye.io/smallrye-reactive-messaging/smallrye-reactive-messaging/3.1/kafka/kafka.html">SmallRye Reactive Messaging Kafka Connector documentation</a> contains a fuller reference of configuration options for Kafka, as well as more information about MicroProfile Reactive Messaging in general.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the MicroProfile Reactive Messaging specification can be found in the <a href="https://github.com/eclipse/microprofile-reactive-messaging">eclipse/microprofile-reactive-messaging</a> GitHub project.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>

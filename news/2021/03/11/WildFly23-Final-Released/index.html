@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script id="adobe_dtm" src="//www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildFly 23 is released!</title>
+  <meta name="description" content="WildFly 23.0.0.Final is now available for download">
+  <link rel="me" href="https://fosstodon.org/@wildflyas" />
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-40221748-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-40221748-1');
+  </script>
+  <script src="assets/javascript/tracking.js"></script>
+  <script src="https://analytics.ossupstream.org/matomo.js" async defer></script>
+
+</head>
+
+<body class="WildFly 23 is released!">
+  <div class="content">
+    <div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="/" class="">Home</a>
+        </li>
+        <li>
+          <a href="/downloads/" class="">Downloads</a>
+        </li>
+        <li>
+          <a href="/news/" class="active">News</a>
+        </li>
+        <li>
+          <a href="/about/" class="">About</a>
+        </li>
+        <li>
+          <a href="/contribute/" class="">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="/security/" class="">CVE Reporting</a>
+        </li>
+        <li>
+          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+    <div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">WildFly 23 is released!</h1>
+    
+    
+    <p class="byline">By Brian Stansberry | March 11, 2021</p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>I&#8217;m pleased to announce that the WildFly 23 Final zip is now available <a href="https://wildfly.org/downloads">for download</a>.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s been a busy time since the January WildFly 22 release, with a bit shorter development cycle than normal. But a lot has been accomplished. Let&#8217;s have a look at what&#8217;s new.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="new-features">New Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="microprofile-4-0">MicroProfile 4.0</h3>
+<div class="paragraph">
+<p>In this release we have moved our MicroProfile platform implementations from the 3.3 platform specification versions to the 4.0 versions. WildFly 23 supports the following MicroProfile platform specifications:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Specification</th>
+<th class="tableblock halign-left valign-top">Version in WildFly 23</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile Config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-config/releases/tag/2.0">2.0</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile Fault Tolerance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-fault-tolerance/releases/tag/3.0">3.0</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile Health</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-health/releases/tag/3.0">3.0</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile JWT Authentication</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-jwt-auth/releases/tag/1.2">1.2</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile Metrics</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-metrics/releases/tag/3.0">3.0</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile OpenAPI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-open-api/releases/tag/2.0">2.0</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile OpenTracing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-opentracing/releases/tag/2.0">2.0</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile Rest Client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-rest-client/releases/tag/2.0">2.0</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>We also provide all of the MicroProfile specs that are also part of Jakarta EE 8.</p>
+</div>
+<div class="paragraph">
+<p>Please note that an <a href="https://download.eclipse.org/microprofile/microprofile-4.0/microprofile-spec-4.0.html#_compatibility_disclaimer">overarching goal of MicroProfile is to prioritize innovation over legacy compatibility</a>. This may result in incompatible changes between specification releases, which WildFly will necessarily reflect. With MicroProfile 4.0 the following specifications include API incompatible changes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://download.eclipse.org/microprofile/microprofile-config-2.0/microprofile-config-spec-2.0.html#_incompatible_changes">Config</a></p>
+</li>
+<li>
+<p><a href="https://download.eclipse.org/microprofile/microprofile-fault-tolerance-3.0/microprofile-fault-tolerance-spec-3.0.html#_backward_incompatible_changes">Fault Tolerance</a></p>
+</li>
+<li>
+<p><a href="https://download.eclipse.org/microprofile/microprofile-health-3.0/microprofile-health-spec-3.0.html#_incompatible_changes">Health</a></p>
+</li>
+<li>
+<p><a href="https://download.eclipse.org/microprofile/microprofile-metrics-3.0/microprofile-metrics-spec-3.0.html#_breaking_changes">Metrics</a></p>
+</li>
+<li>
+<p><a href="https://download.eclipse.org/microprofile/microprofile-open-api-2.0/microprofile-openapi-spec-2.0.html#_incompatible_changes">Open API</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="microprofile-reactive-messaging">MicroProfile Reactive Messaging</h3>
+<div class="paragraph">
+<p>WildFly 23 now provides <a href="https://github.com/wildfly/wildfly-proposals/blob/master/microprofile/WFLY-13640_MicroProfile_Reactive_Messaging.adoc">Tech Preview support for MicroProfile Reactive Messaging</a>. This includes providing a connector for interaction with Kafka streams.</p>
+</div>
+<div class="paragraph">
+<p>This capability adds support for two more MicroProfile specifications to WildFly, implemented via two new extensions and subsystems:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Specification</th>
+<th class="tableblock halign-left valign-top">Version in WildFly 23</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile Reactive Messaging</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-reactive-messaging/releases/tag/1.0">1.0</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MicroProfile Reactive Streams Operators</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://github.com/eclipse/microprofile-reactive-streams-operators/releases/tag/1.0.1">1.0.1</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Please note that these extensions and subsystems are not included by default in the standard standalone.xml files that WildFly provides. Users who want them can add them to their configuration by using Galleon to <a href="https://docs.wildfly.org/23/Galleon_Guide.html">provision a server</a> or <a href="https://docs.wildfly.org/23/Bootable_Guide.html">build a bootable jar</a> and telling Galleon to include the new Galleon layers we&#8217;ve added for these. Or, use our zip and use the CLI to add the new extensions and subsystems. Further details can be <a href="https://docs.wildfly.org/23/Admin_Guide.html#MicroProfile_Reactive_Streams_Operators_SmallRye">found in the WildFly Admin Guide</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="expression-resolution-from-a-credential-store">Expression Resolution from a Credential Store</h3>
+<div class="paragraph">
+<p>WildFly 23 adds support for expressions in the management model to be <a href="https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFCORE-4360-CredentialStore_Expression_Resolution.adoc">encrypted using AES encryption and dynamically decrypted at runtime using a <code>SecretKey</code> from a credential store</a>.</p>
+</div>
+<div class="paragraph">
+<p>This enhancement makes use of a new resource <code>expression-encryption</code> in the <code>elytron</code> subsystem to configure the expression resolution. This new resource also
+contains a management operation <code>create-expression</code> which allows users to create encrypted expressions using the usual management clients.</p>
+</div>
+<div class="paragraph">
+<p>In addition to the new resource for expression resolution a new <code>secret-key-credential-store</code> has been added for the purpose of providing an initial secret key to the application server process. In the past users needed to rely on masking a password but this was achieved using a well known public password and password based encryption.  Starting from a secret key allows administrators to manage their own initial secret.  Both this new credential store resource and the existing <code>credential-store</code> resource have been updated to support the generation of secret keys as well as the ability to export and import previously generated secret keys.</p>
+</div>
+<div class="paragraph">
+<p>Finally the <code>wildfly-elytron-tool</code> has also been updated to support both types of credential store and the <code>credential-store</code> command updated to support
+management of secret keys and the generation of encrypted tokens for use in expressions.</p>
+</div>
+<div class="paragraph">
+<p>Users of the deprecated Picketbox-vault-backed expression resolution mechanism are strongly encouraged to move to this new feature, as our intent is to remove support for Picketbox and the Picketbox-vault in an upcoming release.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="provisioning-and-managing-wildfly">Provisioning and Managing WildFly</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>For users who wish to deploy multiple applications on the same server instance where one application during startup needs to make an external (i.e. over the network) invocation on another, we have provided a mechanism <a href="https://github.com/wildfly/wildfly-proposals/blob/master/server/WFCORE-4291_restore_legacy_not_graceful_startup_mode.adoc">to turn off the default 'graceful startup' behavior</a> that prevents such requests being accepted. Not handling such requests can prevent startup of the deployment making them and prevent the server booting. A number of users have asked for this use case tp be supported, so we have done so, but this is not a recommended deployment architecture. A server that is not booting gracefully may receive incoming requests that it is not yet ready to handle, resulting in errors.</p>
+</li>
+<li>
+<p>There is now <a href="https://github.com/wildfly/wildfly-proposals/blob/master/scripts/WFCORE-5261-common-conf.adoc">support for common script configurations</a>. A common file can be used to set up the environment for all the shell scripts that WildFly provides. For example, you can set the JAVA_HOME in a common.conf script configuration file to ensure the same version of Java is used for all scripts.</p>
+</li>
+<li>
+<p>When launching a WildFly bootable jar, users can <a href="https://github.com/wildfly/wildfly-proposals/blob/master/bootable-jar/WFCORE_5324_CLI_script_exec_runtime.adoc">instruct the bootable jar to execute an external CLI script</a> as part of boot. This provides a mechanism for performing final configuration that cannot be accomplished via the preferred approach of configuring at build time or via typical runtime customization mechanisms like setting environment variables or system properties. This support is Tech Preview as the mechanism may change in later releases.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="messaging">Messaging</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The management API can now be used to <a href="https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-6660_artemis_data_tools.adoc">get a dump of the embedded Artemis broker&#8217;s journal</a> for investigative purposes.</p>
+</li>
+<li>
+<p>The behavior of the embedded Artemis broker&#8217;s critical-analyzer feature <a href="https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-13959_critical_analyzer.adoc">can now be configured</a>.</p>
+</li>
+<li>
+<p>The embedded Artemis broker can be configured to <a href="https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-13991_keep_corrupted_journal_files.adoc">retain a corrupted journal file</a> for subsequent investigation instead of immediately deleting it.</p>
+</li>
+<li>
+<p>A <code>call-timeout</code> attribute has been <a href="https://github.com/wildfly/wildfly-proposals/blob/master/messaging/WFLY-14133_configurable_bridge_call_timeout.adoc">added to the Jakarta Messaging core bridge configuration</a>. The attribute specifies the time out for blocking calls performed by a core bridge.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="other-areas">Other areas</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The Jakarta Concurrency managed executors provided by the <code>ee</code> subsystem can be <a href="https://github.com/wildfly/wildfly-proposals/blob/master/concurrency/WFLY-12896_EE_Concurrency_Hung_Tasks_Termination.adoc">configured to detect and automatically terminate tasks</a> that have been executing for an unexpectedly long time. Such tasks can also be manually terminated.</p>
+</li>
+<li>
+<p>The <code>transaction</code> subsystem now supports <a href="https://github.com/wildfly/wildfly-proposals/blob/master/transactions/WFLY-10009_EAP7-981_Introduce_Maximum_Timeout.adoc">configuring a maximum timeout</a> for transactions.</p>
+</li>
+<li>
+<p>The <code>undertow</code> subsystem can now be <a href="https://github.com/wildfly/wildfly-proposals/blob/master/undertow/WFLY-12473_obfuscate-session-route.adoc">configured to obfuscate the server instance-id data</a> included as part of the request and response <code>JSESSION_ID</code> cookie.</p>
+</li>
+<li>
+<p>Deployments can now depend on and use the APIs provided by the following Infinispan-related modules without getting a private API usage warning:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>org.infinispan</code> (embedded cache)</p>
+</li>
+<li>
+<p><code>org.infinispan.client.hotrod</code> (client for remote infinispan server)</p>
+</li>
+<li>
+<p><code>org.infinispan.commons</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Principal propagation of EJBs was different for legacy security and Elytron security in some cases. To provide a possibility to configure which behaviour should apply, we <a href="https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFLY-14074-normalization-of-principal-propagation.adoc">added a new attribute</a> <code>legacy-compliant-principal-propagation</code> to <code>application-security-domain</code> component in the <code>ejb3</code> subsystem. This attribute is optional and the principal propagation is legacy compliant by default.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="wildfly-preview">WildFly Preview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As I <a href="https://www.wildfly.org/news/2020/11/12/Jakarta-EE-9-with-WildFly-Preview/">announced in November</a> when we released WildFly 22 Alpha1, along with our traditional Jakarta EE 8 distribution we want to give our users a preview of what will be coming in WildFly as we move on to EE 9 and later. We call this distribution "WildFly Preview". The WildFly 23.0.0.Final release includes an update to WildFly Preview. <em>Even though this is coming from a .Final tag of the WildFly codebase, WildFly Preview should always be regarded as a tech-preview/beta distribution.</em></p>
+</div>
+<div class="paragraph">
+<p>EE 9 is primarily about implementing the necessary change in the Jakarta EE APIs from the javax.* package namespace to the jakarta.* namespace. This is a big change that is going to take a while to percolate through the EE ecosystem, e.g. for the many projects that compile against the EE APIs to provide versions that use jakarta.*. While this happens we want to continue to deliver new features and fixes to our community, so the primary WildFly distribution will continue to provide the EE 8 APIs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="feature-pack-changes">Feature Pack Changes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly users can use Galleon feature packs to <a href="https://docs.wildfly.org/23/Galleon_Guide.html">provision a server</a> or <a href="https://docs.wildfly.org/23/Bootable_Guide.html">build a bootable jar</a>. The WildFly project produces five different feature packs: <code>wildfly-core</code>, <code>wildfly-servlet</code>, <code>wildfly-ee</code>, <code>wildfly</code> and <code>wildfly-preview</code>. The composition of these feature packs has changed somewhat in WildFly 23, in that the <code>wildfly-ee</code> feature pack no longer <em>depends on</em> <code>wildfly-servlet</code> or (transitively) <code>wildfly-core</code>. Instead it directly incorporates the same content that was previously made available via a dependency relationship. For most users, this subtle difference should have no impact. However, there are some cases where it might:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If you are producing your own feature pack that depends on <code>wildfly</code> or <code>wildfly-ee</code> you may need to adjust your pom.xml and wildfly-feature-pack-build.xml to remove any dependency on wildfly-servlet and wildfly-core.</p>
+</li>
+<li>
+<p>If your build uses another feature pack that depends on the <code>wildfly</code> or <code>wildfly-ee</code> feature packs, you should wait to upgrade to WildFly 23 until a release of that feature pack that depends on the WildFly 23 packs is available. A commonly used example of this is the <a href="https://github.com/wildfly-extras/wildfly-datasources-galleon-pack"><code>org.wildfly:wildfly-datasources-galleon-pack</code></a> feature pack. Users of that feature pack should move to the 1.2.3.Final release that came out today.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The WildFly project still produces the <code>wildfly-core</code> and <code>wildfly-servlet</code> feature packs for those who wish to use them, although they may be discontinued at some point.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="standards-support">Standards Support</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WildFly 23.0.0 is a Jakarta EE 8 compatible implementation, with both the Full Platform and the Web Profile. Evidence supporting our certification is available <a href="https://github.com/wildfly/certifications/blob/EE8/WildFly_23.0.0.Final/jakarta-full-platform.adoc#tck-results">for the Full Platform</a> and <a href="https://github.com/wildfly/certifications/blob/EE8/WildFly_23.0.0.Final/jakarta-web-profile.adoc#tck-results">for the Web Profile</a>.</p>
+</div>
+<div class="paragraph">
+<p>Beginning with WildFly 23 we will be exclusively focusing on the Jakarta EE test suite for EE certification / compliance.</p>
+</div>
+<div class="paragraph">
+<p>WildFly 23 is also a compliant implementation of the MicroProfile 4.0 platform specification.</p>
+</div>
+<div class="paragraph">
+<p>The WildFly Preview distribution released today is not yet a compatible implementation of Jakarta EE 9 or MicroProfile 4.0. We&#8217;re continuing to make good progress toward being able to certify compatibility, but we&#8217;re not there yet. The main area where users may hit meaningful issues related to EE compliance is in webservices if deployment descriptors using the EE 9 xml schemas are used. This can be worked around by using EE 8 schemas, which are functionally equivalent.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jdk-support">JDK Support</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Our recommendation is that you run WildFly on the most recent long-term support JDK release, i.e. on JDK 11 for WildFly 23. While we do do some testing of WildFly on JDK 12 and 13, we do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 8 or 11.</p>
+</div>
+<div class="paragraph">
+<p>WildFly 23 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 24, and probably beyond.</p>
+</div>
+<div class="paragraph">
+<p>While we recommend using an LTS JDK release, I do believe WildFly runs well on JDK 13. By run well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform. We do see a couple of test failures with JDK 13 when using the deprecated Picketlink subsystem and WS Trust.</p>
+</div>
+<div class="paragraph">
+<p>Work to allow WildFly to run on JDK 15 and later is ongoing. We&#8217;re continuing our work to digest fully some of the package removals that came in JDK 14, particularly in the security area. The biggest barrier we face is the deprecated legacy security implementation based on Picketbox cannot support JDK 14. We intend to remove support for that security implementation quite soon and to only provide Elytron-based security.</p>
+</div>
+<div class="paragraph">
+<p>Please note that WildFly runs on Java 11 and later in classpath mode.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="documentation">Documentation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The WildFly 23 documentation is available at the <a href="https://docs.wildfly.org/23/">docs.wildfly.org site</a>. The WildFly 23 management API documentation is in the <a href="https://docs.wildfly.org/23/wildscribe">wildscribe section of the WildFly 23 docs</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="jira-release-notes">Jira Release Notes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The full list of issues resolved is available <a href="https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&amp;version=12354095">in the WFLY JIRA project</a>. Issues resolved in the WildFly Core 15 release included with WildFly 23 are available <a href="https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&amp;version=12354044">in the WFCORE JIRA project</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="enjoy">Enjoy!</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Thank you for your continued support of WildFly.  We&#8217;d love to hear your feedback at the <a href="https://groups.google.com/forum/#!forum/wildfly">WildFly forum</a>.</p>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img class="wf-logo" src="/assets/img/wildfly_icons_one-color-logo.png"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <strong>Navigation</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="/downloads">Downloads</a></li>
+          
+            <li><a href="https://docs.wildfly.org">Docs</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly">Github</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Contribute</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://issues.jboss.org/browse/WFLY">Submit a bug</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://github.com/wildfly/wildfly/fork">Fork WildFly</a></li>
+          
+            <li><a href="https://twitter.com/WildFlyAS">Follow us</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <strong>Get Help</strong>
+        <ul class="footer-links width-1-12">
+          
+            <li><a href="https://groups.google.com/forum/#!forum/wildfly">Join the forum</a></li>
+          
+            <li><a href="https://wildfly.zulipchat.com/">Join Zulip Chat</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-6-12 more-links">
+        <strong>Find more Red Hat Middleware Community Projects</strong>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.apiman.io/">APIMan</a></li>
+          
+            <li><a href="http://arquillian.org">Arquillian</a></li>
+          
+            <li><a href="https://github.com/ansible-middleware/wildfly">Ansible Collection for Wildfly</a></li>
+          
+            <li><a href="http://byteman.jboss.org/">Byteman</a></li>
+          
+            <li><a href="http://capedwarf.org/">CapeDwarf</a></li>
+          
+            <li><a href="https://github.com/alechenninger/chronicler">Chronicler</a></li>
+          
+            <li><a href="https://github.com/darcy-framework">Darcy</a></li>
+          
+            <li><a href="http://debezium.io/">Debezium</a></li>
+          
+            <li><a href="https://www.drools.org/">Drools</a></li>
+          
+            <li><a href="http://gatein.jboss.org/">GateIn</a></li>
+          
+            <li><a href="http://www.hawkular.org/">Hawkular</a></li>
+          
+            <li><a href="http://hawt.io/">Hawtio</a></li>
+          
+            <li><a href="http://hibernate.org/">Hibernate</a></li>
+          
+            <li><a href="http://www.infinispan.org/">Infinispan</a></li>
+          
+            <li><a href="https://developers.redhat.com/products/codeready-studio/overview">CodeReady Studio</a></li>
+          
+            <li><a href="http://forge.jboss.org/">JBoss Forge</a></li>
+          
+            <li><a href="https://github.com/jboss-logging">JBoss Logging</a></li>
+          
+            <li><a href="http://jbossremoting.jboss.org/">JBoss Remoting</a></li>
+          
+            <li><a href="https://www.jbpm.org/">jBPM</a></li>
+          
+            <li><a href="https://jsfunit.jboss.org/">JSFUnit</a></li>
+          
+            <li><a href="https://www.keycloak.org/">Keycloak</a></li>
+          
+            <li><a href="http://modcluster.io/">Mod Cluster</a></li>
+          
+            <li><a href="http://modeshape.jboss.org/">ModeShape</a></li>
+          
+            <li><a href="https://www.optaplanner.org/">OptaPlanner</a></li>
+          
+            <li><a href="https://quarkus.io/">Quarkus</a></li>
+          
+            <li><a href="http://resteasy.jboss.org/">RESTEasy</a></li>
+          
+            <li><a href="https://riftsaw.jboss.org/">Riftsaw</a></li>
+          
+            <li><a href="http://savara.jboss.org/">Savara</a></li>
+          
+            <li><a href="https://weld.cdi-spec.org/">Weld</a></li>
+          
+            <li><a href="http://arquillian.org/">Shrinkwrap</a></li>
+          
+            <li><a href="http://snowdrop.jboss.org/">Snowdrop</a></li>
+          
+            <li><a href="https://switchyard.jboss.org/">Switchyard</a></li>
+          
+            <li><a href="https://tattletale.jboss.org/">Tattletale</a></li>
+          
+            <li><a href="http://teiid.jboss.org/">Teiid</a></li>
+          
+            <li><a href="https://wildfly-security.github.io/wildfly-elytron/">WildFly Elytron</a></li>
+          
+            <li><a href="https://thorntail.io/">Thorntail</a></li>
+          
+            <li><a href="http://wise.jboss.org/">Wise</a></li>
+          
+            <li><a href="https://xnio.jboss.org/">XNIO</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+  <div class="content redhat-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> | <a href="https://www.redhat.com/en/about/privacy-policy">Privacy Policy</a>
+    </span>
+    <span class="redhat">
+      Sponsored by
+    </span>
+    <span class="redhat-logo">
+      <a href="https://www.redhat.com/" target="_blank"><img src="/assets/img/redhat_reversed.svg"></a>
+    </span>
+  </div>
+</div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/random-color-picker.js"></script>
+  <script type="text/javascript">
+    if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {
+        _satellite.pageBottom();
+    }
+  </script>
+</body>
+
+</html>
