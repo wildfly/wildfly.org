@@ -1,0 +1,47 @@
+---
+layout: post
+title:  "WildFly 29.0.1 is released!"
+date:   2023-08-23
+tags:   announcement release
+author: pferraro
+description: WildFly 29.0.1.Final is now available for download.
+---
+
+= WildFly 29.0.1 is released!
+
+WildFly 29.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+It's been about five weeks since the WildFly 29 release, so we've done a small bug fix update, WildFly 29.0.1. This includes an update to WildFly Preview.
+
+The following issues were resolved in 29.0.1:
+
+===== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-18296[WFLY-18296]] - Wildfly 29: does not start on JRE, works on JDK. Worked in WFLY28
+* [https://issues.redhat.com/browse/WFLY-18330[WFLY-18330]] - [29.x] Upgrade com.squareup.okio to 3.4.0 (resolves CVE-2023-3635)
+* [https://issues.redhat.com/browse/WFLY-18350[WFLY-18350]] - The testsuite/galleon tests are too unconstrained as to what channel is tested
+* [https://issues.redhat.com/browse/WFLY-18366[WFLY-18366]] - Problems with upgrade of resteasy-microprofile and CDI
+
+===== Enhancements
+
+* [https://issues.redhat.com/browse/WFLY-18388[WFLY-18388]] - Move 29.x Quickstarts to BOMs and Server 29.0.1.Final
+
+===== Tasks
+
+* [https://issues.redhat.com/browse/WFLY-18341[WFLY-18341]] - Restore incorrectly updated copyright dates in Jipijapa
+
+===== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-18294[WFLY-18294]] - [WildFly 29] Upgrade HAL to 3.6.12.Final
+* [https://issues.redhat.com/browse/WFLY-18376[WFLY-18376]] - Upgrade RESTEasy to 6.2.5.Final
+* [https://issues.redhat.com/browse/WFLY-18378[WFLY-18378]] - Upgrade resteasy-microprofile to 2.1.3.Final
+* [https://issues.redhat.com/browse/WFLY-18379[WFLY-18379]] - Upgrade WildFly Core to 21.1.1.Final
+
+Issues resolved in the WildFly Core update included with WildFly 29.0.1 were:
+
+===== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFCORE-6444[WFCORE-6444]] - Upgrade BouncyCastle to 1.76
+
+Enjoy!
+
