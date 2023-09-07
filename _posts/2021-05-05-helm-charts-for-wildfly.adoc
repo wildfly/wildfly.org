@@ -41,7 +41,7 @@ We will use https://developers.redhat.com/developer-sandbox[Developer Sandbox fo
 
 The `wildfly` Chart can be installed from the https://docs.wildfly.org/wildfly-charts/ repository
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ helm repo add wildfly https://docs.wildfly.org/wildfly-charts/
 "wildfly" has been added to your repositories
@@ -183,7 +183,7 @@ However as a last example, one of the interesting features of Helm is that the Y
 
 To highlight this, we will *upgrade* the application by changing the number of replicas of the applications so that we have `3` pods instead of `1` (by setting the `deploy.replicas` field to 3 with the `helm upgrade` command)
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ helm upgrade microprofile-config-app \
     wildfly/wildfly \

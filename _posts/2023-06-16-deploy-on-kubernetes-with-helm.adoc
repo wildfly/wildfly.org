@@ -44,7 +44,7 @@ We will use https://kind.sigs.k8s.io/[kind] as our Kubernetes cluster.
 
 The `wildfly` Chart can be installed from the https://docs.wildfly.org/wildfly-charts/ repository
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ helm repo add wildfly https://docs.wildfly.org/wildfly-charts/
 "wildfly" has been added to your repositories
@@ -59,7 +59,7 @@ wildfly/wildfly-common	2.1.0        	           	A library chart for WildFly-bas
 In our helloworld quickstart the wildfly-maven-plugin plugin is already present under the 'openshift' profile.
 Add it if you don't have it in your pom.xml.
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 <profiles>
 ...
@@ -104,7 +104,7 @@ Add it if you don't have it in your pom.xml.
 
 Note: In this example we use 'docker', but 'podman' works as well.
 
-[source,nowrap]
+[source,bash,options="nowrap"]
 ----
  $ mvn package wildfly:image -Popenshift
 [INFO] Scanning for projects...
@@ -217,8 +217,10 @@ INFO: WFLYSRV0050: WildFly Full 28.0.1.Final (WildFly Core 20.0.2.Final) stopped
 [INFO] ------------------------------------------------------------------------
 
 ----
+
 And then make sure you have it in your docker images
-[source,nowrap]
+
+[source,options="nowrap"]
 ----
  $ docker images
 REPOSITORY                        TAG                     IMAGE ID       CREATED          SIZE
@@ -241,7 +243,7 @@ If you use hub.docker.com you have to change 'quay.io/username/reponame' with `u
 
 
 
-[source]
+[source,bash]
 ----
 $ docker login quay.io
 $ docker tag helloworld quay.io/username/helloworld
@@ -258,7 +260,7 @@ quay.io/username/helloworld   latest                  6d404b584da2   56 minutes 
 ----
 Push the image in your registry:
 
-[source]
+[source,bash]
 ----
 $ docker push quay.io/username/helloworld
 Using default tag: latest
@@ -278,7 +280,7 @@ Note: make sure your registry is public in order to pull it from the cluster. Ot
 
 In our example the charts folder already exists under quickstart/helloworld/charts, so move to that directory and create a file named values.yaml
 
-[source]
+[source,bash]
 ----
 $ cd charts 
 $ touch values.yaml
@@ -286,7 +288,7 @@ $ touch values.yaml
 
 and paste the following inside the values.yaml
 
-[source]
+[source,bash]
 ----
 image:
   name: quay.io/rh_ee_msappegr/helloworld # change it with the image you have just pushed
@@ -302,7 +304,7 @@ deploy:
 
 Once the `wildfly` Chart is added, we can install a Helm *release* by using the `helm install` command with the name of the release as well as a YAML configuration file that contains all the settings to build and deploy the application:
 
-[source]
+[source,bash]
 ----
 $ helm install helloworld-app \
     wildfly/wildfly \
@@ -324,7 +326,7 @@ As you can read above, the output of the `helm install` command contains instruc
 
 We can watch its deployment by running:
 
-[source]
+[source,bash]
 ----
 $ kubectl get deployment helloworld-app -w
 NAME             READY   UP-TO-DATE   AVAILABLE   AGE
@@ -335,7 +337,7 @@ The application is now available and we can query it (you might need to wait som
 
 In order to reach your application from the browser you could port-forward port 8080 to your host:
 
-[source]
+[source,bash]
 ----
 $ kubectl port-forward $(oc get pod -l app.kubernetes.io/instance=helloworld-app -o name) 8080:8080
 Forwarding from 127.0.0.1:8080 -> 8080
@@ -354,7 +356,7 @@ Now open your browser and browse URL 'localhost:8080', your application will res
 
 Alternately you can curl it from your terminal:
 
-[source]
+[source,html]
 ----
 $ curl localhost:8080
 <!--
