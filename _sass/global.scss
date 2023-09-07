@@ -162,7 +162,8 @@ code, pre {
   color: $dark-blue;
   line-height: 1.2;
   overflow: scroll;
-  padding: 0 5px;
+  padding: 0 2px;
+  border-radius: 4px;
   max-width: $content-width;
 }
 
