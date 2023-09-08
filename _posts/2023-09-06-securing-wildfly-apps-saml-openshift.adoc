@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Securing WildFly Apps with SAML on OpenShift'
+date: 2023-09-06
+tags: saml openshift keycloak adapter galleon-pack
+synopsis: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
+author: fjuma
+link: https://wildfly-security.github.io/wildfly-elytron/blog/securing-wildfly-apps-saml-openshift/
+---
