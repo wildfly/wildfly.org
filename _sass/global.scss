@@ -263,6 +263,10 @@ table {
   }
 }
 
+.listingblock {
+    max-width: 1000px;
+}
+
 .paginator-btns a {
   margin: 1rem 0;
   &:first-of-type {
