@@ -16,7 +16,7 @@ In this article, I will walkthrough a very simple script that can be used to cha
 By default, the WildFly server is configured to display `INFO` logs on the console. 
 These logs are the output displayed by the command `kubectl logs <pod>)`:
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ kubectl logs wildfly-s2i-app-8f8b49957-b7xbk
 ...
@@ -27,7 +27,7 @@ $ kubectl logs wildfly-s2i-app-8f8b49957-b7xbk
 
 If we need to change the logging level to display debug logs, we can use the `jboss-cli.sh` script located in the WildFly server directory to execute two management commands:
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ kubectl exec -it  wildfly-s2i-app-8f8b49957-b7xbk -- sh
 sh-4.2$ $JBOSS_HOME/bin/jboss-cli.sh -c
@@ -39,7 +39,7 @@ sh-4.2$ $JBOSS_HOME/bin/jboss-cli.sh -c
 
 With that change, we can no see `DEBUG` logs in the console output:
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ kubectl logs wildfly-s2i-app-8f8b49957-b7xbk
 ...
@@ -61,7 +61,7 @@ How can we then determine the actual location of the server?
 
 When the container image is started, a special file is created at `/opt/jboss/container/wildfly-bootable-jar/install-dir` whose content is the actual location of the unzipped WildFly server for _this_ specific pod:
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ kubectl exec -it wildfly-bootable-jar-app-7cf8bdc95c-j9mjk -- sh
 sh-4.4$ cat /opt/jboss/container/wildfly-bootable-jar/install-dir
@@ -85,7 +85,7 @@ The script is available at https://gist.github.com/jmesnil/78581f90c68f84ba9240e
 
 and is straigthforward to use:
 
-[source,nowrap]
+[source,options="nowrap"]
 ----
 $ wget https://gist.githubusercontent.com/jmesnil/78581f90c68f84ba9240ef48f627ff45/raw/062b3f1a8f7cf6e85b233e69348c97d006003a92/change-log-level
 $ chmod u+x change-log-level
