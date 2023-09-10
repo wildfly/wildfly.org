@@ -12,6 +12,7 @@ vendor/
 .project
 .buildpath
 .idea
+*.iml
 
 ## OS related
 *.DS_Store
