@@ -41,6 +41,9 @@ This list contains some really interesting projects that are under the WildFly u
 . *Undertow:* Undertow is a versatile and high-performance web server that provides both blocking and non-blocking APIs based on NIO. Its modular architecture allows you to build a web server tailored to your needs, from a full Java EE servlet container to a low-level non-blocking handler.
 * Here are the https://github.com/undertow-io/undertow[GitHub repository], https://github.com/undertow-io/undertow/blob/master/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12422070[Hacktoberfest Issues link].
 
+. *WildFly Core:* WildFly Core provides the core runtime that is used by the Wildfly application server. This includes Modular class loading, Unified management including domain mode, Basic deployment architecture, and CLI for management.
+* Here are the https://github.com/wildfly/wildfly-core[GitHub repository], https://github.com/wildfly/wildfly-core/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421536[Hacktoberfest Issues link].
+
 . *Narayana:* Narayana is a transactions toolkit that provides support for applications using various standards-based transaction protocols. It's an essential component of the WildFly application server and continues to be developed as a standalone transaction manager.
 * Here are the https://github.com/jbosstm/narayana[GitHub repository], https://github.com/jbosstm/narayana/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421681[Hacktoberfest Issues link].
 
