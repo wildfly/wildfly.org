@@ -42,7 +42,7 @@ This list contains some really interesting projects that are under the WildFly u
 * Here are the https://github.com/undertow-io/undertow[GitHub repository], https://github.com/undertow-io/undertow/blob/master/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12422070[Hacktoberfest Issues link].
 
 . *Narayana:* Narayana is a transactions toolkit that provides support for applications using various standards-based transaction protocols. It's an essential component of the WildFly application server and continues to be developed as a standalone transaction manager.
-* Here are the https://github.com/jbosstm/narayana[GitHub repository], https://github.com/jbosstm/narayana/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues?filter=12421681[Hacktoberfest Issues link].
+* Here are the https://github.com/jbosstm/narayana[GitHub repository], https://github.com/jbosstm/narayana/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421681[Hacktoberfest Issues link].
 
 == How to reach out to us for Hacktoberfest related queries?
 
