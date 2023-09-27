@@ -1,0 +1,51 @@
+---
+layout: post
+title:  "Hacktoberfest 2023"
+date:   2023-09-27
+tags:   Hacktoberfest
+author: rchakrab
+description: Article about Hacktoberfest participation and small descriptions about the participating projects and how to contribute in it.
+---
+
+= Hacktoberfest 2023
+
+image::hacktoberfest/hacktoberfest2023.png[Content Browser]
+
+https://hacktoberfest.com/[Hacktoberfest] is back, and it's time to channel your inner Open Source superhero! This annual event unites developers of all levels, from seasoned pros to enthusiastic beginners, in a shared mission to contribute to Open Source projects and celebrate the spirit of collaboration in software development. Join us for this month-long celebration of contributions as we work together, one pull request at a time.
+
+== What is Hacktoberfest?
+
+Hacktoberfest is a month-long event in October that encourages Open Source contributors and developers worldwide to give back to the global tech community. It's a fantastic opportunity for the contributors to showcase their skills and get to know about other Open Source communities.
+
+To participate you simply need to:
+
+
+* *Register:* https://hacktoberfest.com/auth/[Sign up] on the official Hacktoberfest website to get started.
+* *Discover Projects:* Explore the Hacktoberfest website to find a project that sparks your interest. You can also check out the curated list of projects we've prepared for you.
+* *Follow the Project guidelines:* Read the respective Contributing Guide, Code of Conduct, and follow best practices like forking the repository, creating a new branch, and making a meaningful contribution.
+* *Contribute:* Select an issue that matches your interest and start working on it. You'll have the option to have a tree planted in your name and a unique digital reward as a token of appreciation.
+
+== Get started with our projects
+
+This list contains some really interesting projects that are under the WildFly umbrella, waiting for your magic touch. There’s something for everyone from Java to Ansible.
+
+. *WildFly:* WildFly is a powerful, modular, and lightweight application server that empowers you to build amazing applications.
+* Here are the https://github.com/wildfly/wildfly[GitHub repository], https://github.com/wildfly/wildfly/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421535[Hacktoberfest Issues link].
+
+. *WildFly Elytron:* WildFly Elytron is a set of APIs and SPIs for application server security and client side security. Within the WildFly server, WildFly Elytron is used to secure applications deployed to the server as well as management access to the server. It is a standalone library that can also be used in other Java server environments.
+* Here are the https://github.com/wildfly-security/wildfly-elytron[GitHub repository], https://github.com/wildfly-security/wildfly-elytron/blob/2.x/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12383825[Hacktoberfest Issues link].
+
+. *Ansible Middleware:* Ansible Middleware is a suite of supported content that combines the power of Ansible automation with Red Hat's Middleware portfolio. It allows organizations to meet their business demands and automate the installation, configuration, and management of Enterprise Middleware.
+* Here are the https://github.com/ansible-middleware[GitHub repositories], https://github.com/ansible-middleware/keycloak/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/search?q=org%3Aansible-middleware+state%3Aopen+label%3Ahacktoberfest&type=issues[Hacktoberfest Issues link].
+
+. *Undertow:* Undertow is a versatile and high-performance web server that provides both blocking and non-blocking APIs based on NIO. Its modular architecture allows you to build a web server tailored to your needs, from a full Java EE servlet container to a low-level non-blocking handler.
+* Here are the https://github.com/undertow-io/undertow[GitHub repository], https://github.com/undertow-io/undertow/blob/master/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12422070[Hacktoberfest Issues link].
+
+. *Narayana:* Narayana is a transactions toolkit that provides support for applications using various standards-based transaction protocols. It's an essential component of the WildFly application server and continues to be developed as a standalone transaction manager.
+* Here are the https://github.com/jbosstm/narayana[GitHub repository], https://github.com/jbosstm/narayana/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues?filter=12421681[Hacktoberfest Issues link].
+
+== How to reach out to us for Hacktoberfest related queries?
+
+Please join our https://wildfly.zulipchat.com/#narrow/stream/Hacktoberfest[Hacktoberfest Zulip chatroom] and reach out to us if you have any queries or need assistance. We’re here to ensure a smooth journey for you.
+
+Let's make Hacktoberfest 2023 the most exciting and impactful one yet! Your contributions matter, and together, we can make a difference.
