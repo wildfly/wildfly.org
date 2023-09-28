@@ -1,3 +1,50 @@
+- version: 30.0.0.Beta1
+  version_shortname: 30 Beta1
+  date: 2023-09-28
+  qualifier: Beta
+  link:
+    - name: WildFly Distribution
+      licence: AL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1.tar.gz.sha1
+    - name: WildFly Preview Distribution
+      licence: AL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-preview-30.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-preview-30.0.0.Beta1.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-preview-30.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-preview-30.0.0.Beta1.tar.gz.sha1
+    - name: Application Server Source Code
+      licence: AL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1-src.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1-src.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1-src.tar.gz.sha1
+    - name: Quick Start Source Code
+      licence: AL
+      items:
+        - format: Source
+          url: https://github.com/wildfly/quickstart/tree/30.0.0.Beta1
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12410348
 - version: 29.0.1.Final
   version_shortname: 29.0.1 Final
   date: 2023-08-26
@@ -92,53 +139,6 @@
       items:
         - format: Notes
           url: https://wildfly.org/news/2023/07/21/WildFly29-Released/
-- version: 29.0.0.Beta1
-  version_shortname: 29 Beta1
-  date: 2023-07-06
-  qualifier: Beta
-  link:
-    - name: WildFly Distribution
-      licence: LGPL
-      items:
-        - format: zip
-          url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1.zip.sha1
-        - format: tgz
-          url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1.tar.gz.sha1
-    - name: WildFly Preview Distribution
-      licence: LGPL
-      items:
-        - format: zip
-          url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-preview-29.0.0.Beta1.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-preview-29.0.0.Beta1.zip.sha1
-        - format: tgz
-          url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-preview-29.0.0.Beta1.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-preview-29.0.0.Beta1.tar.gz.sha1
-    - name: Application Server Source Code
-      licence: LGPL
-      items:
-        - format: zip
-          url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1-src.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1-src.zip.sha1
-        - format: tgz
-          url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1-src.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/29.0.0.Beta1/wildfly-29.0.0.Beta1-src.tar.gz.sha1
-    - name: Quick Start Source Code
-      licence: AL
-      items:
-        - format: Source
-          url: https://github.com/wildfly/quickstart/tree/29.0.0.Beta1
-    - name: Release Notes
-      items:
-        - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12406375
 - version: 28.0.1.Final
   version_shortname: 28.0.1
   date: 2023-05-18
