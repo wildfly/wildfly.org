@@ -4,7 +4,6 @@
   qualifier: Beta
   link:
     - name: WildFly Distribution
-      licence: AL
       items:
         - format: zip
           url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1.zip
@@ -15,7 +14,6 @@
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-30.0.0.Beta1.tar.gz.sha1
     - name: WildFly Preview Distribution
-      licence: AL
       items:
         - format: zip
           url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Beta1/wildfly-preview-30.0.0.Beta1.zip
