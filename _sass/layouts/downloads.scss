@@ -127,6 +127,7 @@
     width: 25%;
     padding: 5px 0 7px 0;
     text-align: right;
+    white-space: nowrap;
   }
   td, a { font-size: .875rem; }
   @media screen and (max-width: 1024px) {
