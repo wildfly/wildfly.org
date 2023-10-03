@@ -34,6 +34,7 @@ This list contains some really interesting projects that are under the WildFly u
 
 . *WildFly Elytron:* WildFly Elytron is a set of APIs and SPIs for application server security and client side security. Within the WildFly server, WildFly Elytron is used to secure applications deployed to the server as well as management access to the server. It is a standalone library that can also be used in other Java server environments.
 * Here are the https://github.com/wildfly-security/wildfly-elytron[GitHub repository], https://github.com/wildfly-security/wildfly-elytron/blob/2.x/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12383825[Hacktoberfest Issues link].
+* For more details, check out WildFly Elytron's Hacktoberfest https://wildfly-security.github.io/wildfly-elytron/hacktoberfest/[page].
 
 . *Ansible Middleware:* Ansible Middleware is a suite of supported content that combines the power of Ansible automation with Red Hat's Middleware portfolio. It allows organizations to meet their business demands and automate the installation, configuration, and management of Enterprise Middleware.
 * Here are the https://github.com/ansible-middleware[GitHub repositories], https://github.com/ansible-middleware/keycloak/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/search?q=org%3Aansible-middleware+state%3Aopen+label%3Ahacktoberfest&type=issues[Hacktoberfest Issues link].
