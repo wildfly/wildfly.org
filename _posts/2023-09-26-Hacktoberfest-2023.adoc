@@ -48,6 +48,9 @@ This list contains some really interesting projects that are under the WildFly u
 . *Narayana:* Narayana is a transactions toolkit that provides support for applications using various standards-based transaction protocols. It's an essential component of the WildFly application server and continues to be developed as a standalone transaction manager.
 * Here are the https://github.com/jbosstm/narayana[GitHub repository], https://github.com/jbosstm/narayana/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421681[Hacktoberfest Issues link].
 
+. *WildFly GitHub Bot:* WildFly GitHub Bot is a small easy-to-start application that we utilize to manage the workflow of WildFly's Pull Requests. It, for instance, requires reviews from relevant reviewers or sets labels based on the PR's state. We have a lot of ideas that you can start implementing.
+* Here are the https://github.com/wildfly/wildfly-github-bot[GitHub repository], https://github.com/wildfly/wildfly-github-bot/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/wildfly/wildfly-github-bot/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22[Hacktoberfest Issues link].
+
 == How to reach out to us for Hacktoberfest related queries?
 
 Please join our https://wildfly.zulipchat.com/#narrow/stream/Hacktoberfest[Hacktoberfest Zulip chatroom] and reach out to us if you have any queries or need assistance. We’re here to ensure a smooth journey for you.
