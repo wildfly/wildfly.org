@@ -42,7 +42,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12413594
+          url: https://wildfly.org/news/2023/10/18/WildFly30-Released/
 - version: 30.0.0.Beta1
   version_shortname: 30 Beta1
   date: 2023-09-28
