@@ -30,7 +30,7 @@ layout: base
                 {% for releaseItem in versionId.link %}
                 <tr>
                   <td class="description">{{releaseItem.name}}</td>
-                  <td class="licence">{{releaseItem.licence}}</td>
+                  <!--<td class="licence">{{releaseItem.licence}}</td>-->
                   <td class="links">
                     {% for releaseFormat in releaseItem.items %}
                     <a href="{{releaseFormat.url}}">{{releaseFormat.format}}</a>{% if releaseFormat.checksum %} | <a href="{{releaseFormat.checksum_url}}">{{releaseFormat.checksum}}</a>{% endif %}<br/>
