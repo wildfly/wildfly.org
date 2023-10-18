@@ -1,4 +1,4 @@
-footer_text: "WildFly is open. All dependencies of this project are available under the <a href='https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html' target='_blank'>LGPL 2.1</a> or compatible license.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got."
+footer_text: "WildFly is fully open. All components are open source and follow a community-focused development process.<br/><br/>This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a> is hosted on <a href='https://pages.github.com/' target='_blank'>Github Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/wildfly/wildfly.org/fork' target='_blank'>fork it</a> and show us what you’ve got."
 
 links:
   - title: Navigation
