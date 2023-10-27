@@ -134,4 +134,7 @@ pagination:
   # Without file extension
   # indexpage: 'index'
 
+  data:
+    cve_data: _data/cve_data.yml
+
 ############################################################
