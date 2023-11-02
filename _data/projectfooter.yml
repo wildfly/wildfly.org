@@ -7,6 +7,8 @@ links:
         url: /downloads
       - page: Docs
         url: https://docs.wildfly.org
+      - page: Get Started
+        url: /getstarted
       - page: Github
         url: https://github.com/wildfly/wildfly
   - title: Contribute

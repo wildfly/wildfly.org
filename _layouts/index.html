@@ -6,12 +6,13 @@ layout: base
   <div class="grid__item width-12-12 home-section">
 
     {% assign latestRelease = site.data.releases[site.current_release_index] %}
-    <h1>Wild<strong>Fly</strong> {{latestRelease.version_shortname}} is now available</h1>
+    <h1>Wild<strong>Fly</strong></h1>
+    <h2>A powerful, modular, & lightweight application server that helps you build amazing applications.</h2>
+    <h3>Now available: <span style="font-weight: 100;">Wild</span><strong>Fly</strong> {{latestRelease.version_shortname}}</h3>
     <div class="home-ctas">
-      
+      <a href="{{site.baseurl}}/getstarted/" class="button-cta">Get Started</a>
       <a href="https://github.com/wildfly/wildfly/releases/download/{{latestRelease.version}}/wildfly-preview-{{latestRelease.version}}.zip" class="button-cta secondary">Try WildFly Preview</a>
-      <a href="https://github.com/wildfly/wildfly/releases/download/{{latestRelease.version}}/wildfly-{{latestRelease.version}}.zip" class="button-cta">Download the zip</a>
-      <a href="{{site.baseurl}}/downloads/" class="button-cta secondary">Other Versions</a>
+      <a href="{{site.baseurl}}/downloads/" class="button-cta secondary">Download Wild<strong>Fly</strong></a>
     </div>
 
   </div>
@@ -26,8 +27,6 @@ layout: base
 
   <div class="grid__item width-12-12 home-section">
     <img class="home-img" src="{{site.baseurl}}/assets/img/homepage/homepage-screenshot.png">
-    <h2>Wild<strong>Fly</strong> is a powerful, modular, & lightweight application server that helps you
-build amazing applications.</h2>
   </div>
 
   <div class="grid__item width-12-12 home-section">
