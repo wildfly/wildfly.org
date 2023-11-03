@@ -6,10 +6,37 @@ layout: base
   <div class="grid__item width-10-12">
     <h1 class="title">{{page.title}}</h1>
     {% assign author = "" | split: ',' %}
+    {% assign has_avatar = "false" %}
     {% for a in page.author %}
       {% assign author = author | push: site.data.authors[a].name %}
+      {% if site.data.authors[a].avatar != nil %}
+        {% assign has_avatar = "true" %}
+      {% endif %}
     {% endfor %}
-    <p class="byline">By {{ author | join: ', ' }} | {{ page.date | date: '%B %d, %Y' }}</p>
+
+    <p>
+      {% if has_avatar == "true" %}
+        {% for a in page.author %}
+          {% assign author_data = site.data.authors[a] %}
+          <p class="byline">
+            {% if author_data.avatar != %}
+              <img class="avatar" height="60px" width="60px" src="/assets/img/authors/{{author_data.avatar}}"/>
+            {% else %}
+              <img class="avatar" height="60px" width="60px" src="/assets/img/contribute/wildfly_icons_contribute-blog.png"/>
+            {% endif %}
+
+            {% if a == page.author.first or page.author.first == nil %}By {% endif %}{{author_data.name}}
+            {% if a != page.author[-1] and page.author.first != nil %}
+              ,
+            {% else %}
+              | {{ page.date | date: '%B %d, %Y' }}
+            {% endif %}
+          </p>
+        {% endfor %}
+      {% else %}
+        <p class="byline">By {{ author | join: ', ' }} | {{ page.date | date: '%B %d, %Y' }}</p>
+      {% endif %}
+    </p>
   </div>
   <div class="grid__item width-10-12 doc-content">
     {{ content }}
