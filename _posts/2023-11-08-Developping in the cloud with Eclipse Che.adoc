@@ -15,7 +15,7 @@ For the video and demo purpose we used Eclipse Che installation on https://kuber
 
 In order to setup our project environment we will use a simple *getting-started* project which contains only a single REST endpoint and an integration test. In this project we provide also:
 
-* a `https://devfile.io[devfile.yaml] to setup and configure the Che workspace
+* a `devfile.yaml` to setup and configure the Che workspace. You may learn more about it on https://devfile.io .
 * a `ContainerFile` to describe how to build our runtime image to be deployed on Kubernetes.
 * a `ingress.yaml` file that can server as an example to expose our running service.
 
@@ -24,7 +24,7 @@ In order to setup our project environment we will use a simple *getting-started*
 === Creating our workspace ===
 
 The first step is of course to create our workspace, for this you have to paste the following URL https://github.com/wildfly/wildfly-devfile-examples/tree/simple-cloud .
-As you can see this repository is quite simple and provides at its root `the devfile.yaml` that will configure our workspace.
+As you can see this repository is quite simple and provides at its root the `devfile.yaml` that will configure our workspace.
 Let's do a quick analysis of this file content:
 
  * it has a single component using a Universal Developer Image to bring in all the tools that a cloud developer might need.
@@ -69,7 +69,7 @@ If you take a look at the Apache Maven `pom.xml` you can see that it uses the ht
 </plugin>
 ----
 
- We use this plugin to provision a server and deploy our application to it. As you can see, we are installing the `cloud-server` layer from the `wildfly-cloud-galleon-pack` as it makes WildFly behave better in the cloud.
+We use this plugin to provision a server and deploy our application to it. As you can see, we are installing the `cloud-server` layer from the `wildfly-cloud-galleon-pack` as it makes WildFly behave better in the cloud.
 
 === Building and debugging ===
 
@@ -96,8 +96,15 @@ Because we need to make our image available to be deployed on Kubernetes we have
 [source,bash,options="nowrap"]
 ----
 kubectl delete secret quay-secret --namespace admin-che
-kubectl create secret generic quay-secret --namespace admin-che --from-literal=IMAGE_REGISTRY_PASSWORD=**** --from-literal=IMAGE_REGISTRY_LOGIN=mylogin@quay.io --from-literal=IMAGE_REGISTRY_NAMESPACE=mylogin
-kubectl label secret quay-secret --namespace admin-che controller.devfile.io/mount-to-devworkspace=true controller.devfile.io/watch-secret=true
+kubectl create secret generic quay-secret \
+  --namespace admin-che \
+  --from-literal=IMAGE_REGISTRY_PASSWORD=**** \
+  --from-literal=IMAGE_REGISTRY_LOGIN=mylogin@quay.io \
+  --from-literal=IMAGE_REGISTRY_NAMESPACE=mylogin
+kubectl label secret quay-secret \
+  --namespace admin-che \
+  controller.devfile.io/mount-to-devworkspace=true \
+  controller.devfile.io/watch-secret=true
 kubectl annotate secret quay-secret --namespace admin-che controller.devfile.io/mount-as='env'
 ----
 
@@ -106,7 +113,7 @@ The label and the annotation are here so that the secret will be automounted by 
 
 === Building the image ===
 
-For this task we are going to use https://podman.io/[Podman] and a very simple `ContainerFile`that will take the output of the provisionning task a copy it to a `wildfly-runtime` image:
+For this task we are going to use https://podman.io/[Podman] and a very simple `ContainerFile` that will take the output of the provisionning task a copy it to a `wildfly-runtime` image:
 
 [source,bash]
 ----
@@ -127,7 +134,7 @@ Now we are going to deploy the image we have built and pushed on Kubernetes. In 
 The first step is to register the WildFly helm charts then execute `helm install` with a few values to customize our deployment:
 
  * `--set build.enabled=false` : this indicates that we are using an image that has already been built (in Openshift you can use s2i to automate what we just did before).
- * in the .charts/helm.yaml file you will notice that there is a `deploy.route.enabled` set to false this is again to override an Openshift feature where the `route`` to the service is automatically added. In Kubernetes you will have to create the Ingress resource manually (until now at least).
+ * in the .charts/helm.yaml file you will notice that there is a `deploy.route.enabled` set to false this is again to override an Openshift feature where the `route` to the service is automatically added. In Kubernetes you will have to create the Ingress resource manually (until now at least).
 
 Now that the image has been deployed and the service created, you need to expose it by creating the *ingress* resource.
 
