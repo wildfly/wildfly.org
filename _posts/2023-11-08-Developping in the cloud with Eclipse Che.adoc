@@ -23,7 +23,7 @@ In order to setup our project environment we will use a simple *getting-started*
 
 === Creating our workspace ===
 
-The first step is of course to create our workspace, for this you have to paste the following URL https://github.com/wildfly/wildfly-devfile-examples/tree/simple-cloud .
+The first step is of course to create our workspace, for this you have to paste the following URL https://github.com/wildfly-extras/wildfly-devfile-examples/tree/simple-cloud .
 As you can see this repository is quite simple and provides at its root the `devfile.yaml` that will configure our workspace.
 Let's do a quick analysis of this file content:
 
