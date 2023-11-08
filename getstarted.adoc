@@ -1,7 +1,7 @@
 ---
 layout: getstarted
 title: Get Started with WildFly
-permalink: /getstarted/
+permalink: /get-started/
 ---
 :page-liquid:
 
@@ -47,7 +47,7 @@ mvn package verify
 ----
 
 This Maven command compiles the Jakarta EE application, provisions WildFly, deploys the application in WildFly and
-run integration tests against it.
+runs integration tests against it.
 When this command is finished, you have a fully functional, tested application running on  WildFly.
 
 === Step 3. Run the Application
