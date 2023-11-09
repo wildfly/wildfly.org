@@ -8,7 +8,7 @@ author: ehsavoie
 
 = Developing in the cloud with Eclipse Che
 
-https://eclipse.dev/che/[Eclipse Che] is a could IDE that promises to get rid of the cumbersome setup of your local environment by providing automated setup in the cloud. It can be run easily on Kubernetes or its derivative like OpenShift. The purpose of this blog entry is not to setup Eclipse Che.
+https://eclipse.dev/che/[Eclipse Che] is a cloud IDE that promises to get rid of the cumbersome setup of your local environment by providing automated setup in the cloud. It can be run easily on Kubernetes or its derivative like OpenShift. The purpose of this blog entry is not to setup Eclipse Che.
 In this blog entry we will show you in a first step how you can use Eclipse Che for regular development. On a second step we will resuse the same application and deploy it on Kubernetes.
 
 For the video and demo purpose we used Eclipse Che installation on https://kubernetes.io/docs/tasks/tools/install-minikube/[Minikube] following the https://eclipse.dev/che/docs/stable/administration-guide/installing-che-on-minikube/[instructions] with the https://eclipse.dev/che/docs/stable/administration-guide/installing-the-chectl-management-tool/[chectl management tool].
