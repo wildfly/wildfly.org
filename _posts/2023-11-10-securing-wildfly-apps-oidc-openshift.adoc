@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Securing WildFly Apps with OIDC on OpenShift'
+date: 2023-11-10
+tags: oidc openshift keycloak adapter galleon-pack
+synopsis: Learn how to secure applications deployed to WildFly on OpenShift with OIDC.
+author: theashiot
+link: https://wildfly-security.github.io/wildfly-elytron/blog/securing-wildfly-apps-oidc-openshift/
+---
