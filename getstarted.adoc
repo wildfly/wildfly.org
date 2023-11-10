@@ -9,7 +9,7 @@ permalink: /get-started/
 
 === Step 0. Install Java & Maven
 
-You need Java (at least version `11`, and preferably the latest LTS version) and Maven installed on your machine to create a Maven project that contains the source code of the Jakarta EE application.
+You need Java (at least version `11`, and preferably `17`) and Maven installed on your machine to create a Maven project that contains the source code of the Jakarta EE application.
 
 You can verify they are installed by executing the commands:
 
@@ -34,11 +34,11 @@ The `getting-started` project that is generated contains a simple "Hello World" 
 exposes a HTTP endpoint with the Jakarta-RS API.
 
 The Maven project is configured to "provision" (install and configure)
-WildFly that hosts your application.
+the WildFly that hosts your application.
 
 === Step 2. Build the Application
 
-You can build the application by executing the command:
+You can build the application by executing the commands:
 
 [source,bash]
 ----
@@ -46,7 +46,7 @@ cd getting-started
 mvn package verify
 ----
 
-This Maven command compiles the Jakarta EE application, provisions WildFly, deploys the application in WildFly and
+This Maven command compiles the Jakarta EE application, provisions WildFly, deploys the application into WildFly and
 runs integration tests against it.
 When this command is finished, you have a fully functional, tested application running on  WildFly.
 
@@ -61,11 +61,11 @@ The `target/server` contains a fully functional WildFly server with your applica
 
 The application is accessible at http://localhost:8080/.
 
-To stop the application, type `Ctrl + C` in the terminal where your started  WildFly.
+To stop the application, type `Ctrl + C` in the terminal where you started  WildFly.
 
 === Step 4. Continuous Development
 
-You can develop your application and see the updates in the running application immediately by using the `wildfly:dev` from the root
+You can develop your application and see the updates in the running application immediately by using the `wildfly:dev` goal from the root
 of your project:
 
 [source,bash]
