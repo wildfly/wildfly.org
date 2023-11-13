@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Manual GitHub Actions Workflow in WildFly
-date: 2023-10-04
+date: 2023-11-13
 tags: wildfly github continuous-integration
 synopsis: How to manually run GitHub actions workflow to build and test WildFly
 author: chengfang
