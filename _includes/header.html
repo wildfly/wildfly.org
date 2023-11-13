@@ -7,12 +7,6 @@
       <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
       <ul class="nav-list">
         <li>
-          <a href="{{site.baseurl}}/" class="{% if page.url == '/' %}active{% endif %}">Home</a>
-        </li>
-        <li>
-          <a href="{{site.baseurl}}/downloads/" class="{% if page.url contains '/downloads/' %}active{% endif %}">Downloads</a>
-        </li>
-        <li>
           <a href="{{site.baseurl}}/news/" class="{% if page.url contains '/news/' %}active{% endif %}">News</a>
         </li>
         <li>
@@ -25,10 +19,16 @@
             <a target="_blank" href="https://docs.wildfly.org">Docs</a>
         </li>
         <li>
+          <a href="{{site.baseurl}}/downloads/" class="{% if page.url contains '/downloads/' %}active{% endif %}">Downloads</a>
+        </li>
+        <li>
           <a href="{{site.baseurl}}/security/" class="{% if page.url contains '/security/' %}active{% endif %}">CVE Reporting</a>
         </li>
         <li>
-          <a class="button-cta secondary" href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+          <a href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+        <li>
+          <a class="button-cta secondary {% if page.url contains '/get-started/' %}active{% endif %}" href="{{site.baseurl}}/get-started/">Get Started</a>
         </li>
       </ul>
     </nav>
