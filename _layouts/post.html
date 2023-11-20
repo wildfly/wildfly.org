@@ -19,7 +19,7 @@ layout: base
         {% for a in page.author %}
           {% assign author_data = site.data.authors[a] %}
           <p class="byline">
-            {% if author_data.avatar != %}
+            {% if author_data.avatar != nil %}
               <img class="avatar" height="60px" width="60px" src="/assets/img/authors/{{author_data.avatar}}"/>
             {% else %}
               <img class="avatar" height="60px" width="60px" src="/assets/img/contribute/wildfly_icons_contribute-blog.png"/>
