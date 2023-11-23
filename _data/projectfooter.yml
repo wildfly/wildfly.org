@@ -11,6 +11,8 @@ links:
         url: /get-started
       - page: Github
         url: https://github.com/wildfly/wildfly
+      - page: Guides
+        url: /guides
   - title: Contribute
     subfolderitems:
       - page: Submit a bug

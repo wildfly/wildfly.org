@@ -1,0 +1,159 @@
+= Configure Logging for your Application
+:summary: Learn how to use logging in your application and configure WildFly to display them
+:includedir: _includes
+include::{includedir}/_attributes.adoc[]
+// you can override any attributes eg to lengthen the 
+// time to complete the guide
+:prerequisites-time: 10
+
+TODO: Add a summary of what you achieve in this guide.
+Something like:
+
+In this guide, you will learn how to use logging in your application and configure WildFly to
+display the logs at the level you want.
+
+include::{includedir}/_prerequisites.adoc[]
+
+To use logging in our application, we will add a dependency to `org.jboss.logging:jboss-logging` in the Maven `pom.xml` file.
+Then, we will add a few logs in our code at different levels.
+Finally we will configure WildFly to change the log level of our application logs independently of WildFly own logs.
+
+== Add Dependency to JBoss Logging
+
+In order to use JBoss Logging in our application, we need to add a dependency to it in the `pom.xml`.
+
+The dependency is defined as:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.jboss.logging</groupId>
+    <artifactId>jboss-logging</artifactId>
+    <scope>provided</scope>
+</dependency>
+----
+
+You need to add it to the `<dependencies>` section of the `pom.xml`:
+
+[source,xml]
+----
+<dependencies>
+    ...
+    <!-- copy the dependency here -->
+</dependencies>
+----
+
+== Add Logging to the Application
+
+As an example, you can update the `GettingStartedService.java` file to add logging to the application at different levels:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import org.jboss.logging.Logger;
+
+@ApplicationScoped
+public class GettingStartedService {
+
+    private static Logger log = Logger.getLogger(GettingStartedService.class.getName());
+
+    public String hello(String name) {
+        if (log.isEnabled(Logger.Level.TRACE)) {
+            log.trace("called method with: " + name);
+        }
+
+        String out = String.format("Hello '%s'.", name);
+        log.info("returning: " + out);
+        return out;
+    }
+}
+----
+
+You added a `log` Logger that can log message with the category correspondig to the class package `org.wildfly.examples`.
+You also added two logging calls, one at the `TRACE` level and the other one at the `INFO` level.
+
+If you run the integration tests with `mvn clean verify`, you will only see the logs at the `INFO` level in the standard output:
+
+[source,bash]
+----
+$ mvn clean verify
+...
+15:18:08,482 INFO  [org.wildfly.examples.GettingStartedService] (default task-1) returning: Hello 'World'.
+...
+----
+
+By default, WildFly only displays `INFO` logs on the console.
+Let's now configure WildFly to display our application logs at the `TRACE` level.
+
+== Configure Logging in WildFly Subsystem
+
+The configuration of logging is done by WildFly in its `logging` subsystem.
+There are different ways to modify WildFly configuration but as we used the `wildfly-maven-plugin` to provision WildFly,
+we can pass a CLI script so that WildFly configuration will be modified whenever we invoke `mvn package`.
+
+First, we add a `configuration.cli` in the `src/main/scripts` directory:
+
+[source]
+----
+# let the console display TRACE logs
+/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=TRACE)
+# create the logger for our code (with the category org.wildfly.examples corresponding to our package)
+/subsystem=logging/logger=org.wildfly.examples:add(level=TRACE)
+----
+
+This script contains the management operations to change WildFly configuration. We could invoke any management operations but in this case,
+we only modify the `/subsystem=logging` resources that control the logging aspects.
+
+You then need to modify the `wildfly-maven-plugin` configuration in `pom.xml` to execute this:
+
+Copy the XML snippet:
+
+[source,xml]
+----
+<packaging-scripts>
+    <packaging-script>
+        <scripts>
+            <script>${project.build.scriptSourceDirectory}/configuration.cli</script>
+        </scripts>
+    </packaging-script>
+</packaging-scripts>
+----
+
+And add it to the `<configuration>` section of the `wildfly-maven-plugin`:
+
+[source]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        ...
+        <!-- copy the XML snippet here -->
+    </configuration>
+</plugin>
+----
+
+With that change in place, if you provision WildFly and run the integration tests again, both log calls are now displayed:
+
+[source]
+----
+$ mvn clean verify
+
+...
+16:04:22,260 TRACE [org.wildfly.examples.GettingStartedService] (default task-2) called method with: World
+16:04:22,260 INFO  [org.wildfly.examples.GettingStartedService] (default task-2) returning: Hello 'World'.
+...
+----
+
+== Next Steps
+
+WildFly provides extensive logging configuration. You can learn more by reading WildFly's https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Logging[Logging Subsystem Configuration Guide] and its https://docs.wildfly.org/{wildfly-version}/wildscribe/subsystem/logging/[model reference].
+
+[[references]]
+== References
+
+* https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Logging[Logging Subsystem Configuration Guide]
+* https://docs.wildfly.org/{wildfly-version}/wildscribe/subsystem/logging/[Logging Subsystem Model Reference]

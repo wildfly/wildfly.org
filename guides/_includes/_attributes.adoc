@@ -1,0 +1,10 @@
+// WildFly Major version to link to its documentation
+:wildfly-version: 29
+// Minimal version of Maven
+:maven-version: 3.9+
+// Minimal Version of JDK
+:jdk-minimal-version: 11+
+// .
+:toc: right
+// Default time to display in the prerequisites section
+:prerequisites-time: 15
