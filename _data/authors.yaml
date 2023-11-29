@@ -237,3 +237,10 @@ spyrkob:
   name: "Bartosz Spyrko-Smietanko"
   location: "Swansea, UK"
   occupation: "Senior Software Engineer"
+lvydra:
+  name: "Lukas Vydra"
+  location: "Brno"
+  occupation: "Software Engineer"
+  bio: "https://github.com/lvydra"
+  emailhash: "963ac51a738ab1ff63a5bbdf6b206417"
+
