@@ -1,0 +1,439 @@
+---
+layout: post
+title: "Introduction to the various Java based Kubernetes/OpenShift tools and their usages in WildFly related projects"
+date:   2023-11-30
+tags:   wildfly dekorate jkube fabric8 kubernetes openshift maven
+author: liweinan
+description: "An introduction to the various Java based Kubernetes/OpenShift tools and their usages in WildFly related projects"
+---
+
+There are various Java based Kubernetes/OpenShift related tools that  have different functions, and some of their functions are overlapping. Here is the (partial) list of these tools:
+
+* https://dekorate.io/[Dekorate]
+* https://github.com/eclipse/jkube[eclipse/jkube: Build and Deploy java applications on Kubernetes]
+* https://github.com/fabric8io/kubernetes-client[fabric8io/kubernetes-client: Java client for Kubernetes & OpenShift]
+* https://github.com/fabric8io/docker-maven-plugin[fabric8io/docker-maven-plugin]
+* https://github.com/GoogleContainerTools/jib[GoogleContainerTools/jib]
+* https://github.com/wildfly/wildfly-maven-plugin[wildfly-maven-plugin: WildFly Application Server Maven Plugin]
+
+All the above tools can be used as Maven plugin, and they can be used together if necessary(Which is determined by the requirements). In this article I’d like to give a brief introduction to these tools and see their usages in some WildFly related projects as examples. Firstly we can go through these projects.
+
+== Dekorate
+
+From its https://dekorate.io/[website] the project introduction is written as:
+
+____
+Dekorate is a one-stop jar to Kubernetes manifest generation that works for all jvm languages regardless of your build tool. It makes generating Kubernetes manifests as easy as adding a dependency to the classpath. Stop wasting time editing xml, json and yml and customize the kubernetes manifests as you configure your java application.
+____
+
+In general, the `dekorate` allows users to generate k8s manifest file according to the annotations it provided. For example, it provides the annotation `@KubernetesApplication` that can trigger the manifest file generation. In addition, it also provides annotation `@DockerBuild` that can trigger the docker build. Please note that Dekorate does not generate `Dockerfile`. It expects to find one in the root of the module, and it will call the `docker` command to build the image by using the installed local docker daemon. There is an article that introduces its usagefootnote:[https://developers.redhat.com/blog/2021/03/17/using-dekorate-to-generate-kubernetes-manifests-for-java-applications[Using Dekorate to generate Kubernetes manifests for Java applications / Red Hat Developer]].
+
+
+== Eclipse JKube
+
+The Eclipse JKube can generate `Dockerfile` and do the docker image build, and it can generate Kubernetes/OpenShift manifests, and do the k8s/openshift deployment. There is an article from `developers.redhat.com` footnote:[https://developers.redhat.com/blog/2020/01/28/introduction-to-eclipse-jkube-java-tooling-for-kubernetes-and-red-hat-openshift[Introduction to Eclipse JKube: Java tooling for Kubernetes and Red Hat OpenShift | Red Hat Developer]] that describes the history of the project, and here is part of the text quoted from the article:
+
+____
+This project was not built from scratch. It’s just a refactored and rebranded version of the https://github.com/fabric8io/fabric8-maven-plugin[Fabric8 Maven plugin], which was a Maven plugin used in the http://fabric8.io/[Fabric8] ecosystem. Although the Fabric8 project was liked and appreciated by many people in the open source community, due to unfortunate reasons it could not become successful, and the idea of Fabric8 as an integrated development platform on top of Kubernetes died.
+
+Although the main project is archived, there are still active repositories used by the community, such as the https://github.com/fabric8io/docker-maven-plugin[Fabric8 Docker Maven plugin], the https://github.com/fabric8io/kubernetes-client[Fabric8 Kubernetes client], and of course the Fabric8 Maven plugin.
+
+As maintainers of the Fabric8 Maven plugin, we started decoupling the Fabric8 ecosystem related pieces from the plugin to make a general-purpose Kubernetes/OpenShift plugin.
+
+We also felt there was a need for rebranding because most people were confused about whether this plugin had something to do with Fabric8. Hence, we decided to rebrand it, and fortunately, someone from the Eclipse foundation approached us to take in our project.
+
+Now, the project is being renamed to Eclipse JKube and can be https://github.com/eclipse/jkube[found in the Eclipse Foundation repos on GitHub].
+____
+
+
+And here is its design:
+
+____
+Eclipse JKube can be seen as a reincarnation of the Fabric8 Maven plugin. It contains the good parts of this plugin and offers a clean and smooth workflow with the tooling it provides. We refactored this plugin into three components:
+
+* https://github.com/eclipse/jkube/tree/master/jkube-kit[The JKube Kit]
+* https://github.com/eclipse/jkube/tree/master/kubernetes-maven-plugin[The
+Kubernetes Maven plugin]
+* https://github.com/eclipse/jkube/tree/master/openshift-maven-plugin[The
+OpenShift Maven plugin]
+____
+
+Unlike the Dekorate project, which focus on k8s manifest file generation, and provide fine-grained annotations to control the generation process, JKube run as a maven plugin can help to generate a simple `Dockerfile` based on the project used frameworksfootnote:[https://github.com/eclipse/jkube/tree/master/jkube-kit[jkube/jkube-kit at master · eclipse/jkube]]. In addition, the JKube can generate k8s manifest files and do the k8s/openshift deployments. I have written a blog post showing its usagefootnote:[https://weinan.io/2023/06/23/jkube.html[Using JKube To Do Kubernetes Deployment]].
+
+Comparing with other tools, the JKube can do various tasks, which is very convenient. Nevertheless, other tools may focus on more specific task and provide some more fine grain controls to the task it takes.
+
+== Fabric8 Docker Maven plugin
+
+As already introduced in above Eclipse JKube section, the https://github.com/fabric8io/docker-maven-plugin[Fabric8 Docker Maven plugin] is part of the Fabric8 ecosystem. This project is focusing on the Docker image related tasks. It can define a docker image in its maven plugin configuration without having a `Dockerfile`, and it can do the container deployment/undeployment during the Maven integration test phase. We will see this plugin usage later.
+
+== Fabric8 Kubernetes Client
+
+As the name suggests, this project provides Java based client to interact with the Kubernetes and OpenShift services. The functions of this Java based client is similar to the `kubectl` and `oc` commands. So this tool is convenient to use for writing k8s and OpenShift related tests.
+
+== jib
+
+`jib` is a tool provided by Google, and it can be used to build images without Docker daemon installed, so it can produce a docker image standalone.
+
+After introducing the above tools, I’ll give an introduction to see their usages in some WildFly related projects as examples.
+
+== wildfly-maven-plugin
+
+The `wildfly-maven-plugin` integrates the Galleon features which can build a provisioned WildFly server on-the-fly during the Maven package or testing phases, and it can control the start/stop of the provisioned server and the deployment of the host project. In addition, the plugin can be used to build a docker image that includes the provisioned WildFly server and the deployed project.
+
+To see more of the details on the usages of the plugin, you can check these related articles:
+
+- https://docs.wildfly.org/wildfly-maven-plugin/releases/4.2/package-example.html[WildFly Maven Plugin – Package your application]
+- https://docs.wildfly.org/wildfly-maven-plugin/releases/4.2/image-example.html[WildFly Maven Plugin – Build and push your application in a container image]
+- https://www.wildfly.org/news/2022/08/04/wildfly-maven-docker/[Use the wildfly-maven-plugin to create a Docker image of your application]
+
+
+== Usage of the above tools in WildFly related projects
+
+Next we can see the `wildfly-cloud-tests` footnote:[https://github.com/wildfly-extras/wildfly-cloud-tests[WildFly Cloud Testsuite]] project(Currently it has an Alpha release: https://github.com/wildfly-extras/wildfly-cloud-tests/releases/tag/1.0.0.Alpha2[wildfly-cloud-tests / 1.0.0.Alpha2]). It is a good material to learn how to test WildFly under cloud based environment, and what tools it used. I have written a personal blog postfootnote:[https://weinan.io/2023/06/07/wildfly-k8s.html[Using the wildfly-cloud-tests project as an example to see how to deploy WildFly based project in cloud based environment]] describing its usage.
+
+Firstly, this project uses the https://github.com/fabric8io/docker-maven-plugin[`docker-maven-plugin`] to do the test images buildfootnote:[https://github.com/wildfly-extras/wildfly-cloud-tests/blob/main/images/pom.xml#L105]:
+
+[source,xml]
+----
+<plugin>
+    <groupId>io.fabric8</groupId>
+    <artifactId>docker-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>build-server</id>
+            <phase>process-test-classes</phase>
+            <goals>
+                <goal>build</goal>
+            </goals>
+            <configuration>
+                <skip>${wildfly.cloud.test.skip.image}</skip>
+                <images>
+                    <image>
+                        <name>wildfly-cloud-test-image/${project.name}:latest</name>
+                        <alias>server</alias>
+                        <build>
+                            <from>${image.name.wildfly.runtime}</from>
+                            <assembly>
+                                <mode>dir</mode>
+                                <user>jboss:root</user>
+                                <targetDir>/opt/server</targetDir>
+                                <inline>
+                                    <formats>
+                                        <format>dir</format>
+                                    </formats>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>target/server</directory>
+                                            <outputDirectory>/</outputDirectory>
+                                            <includes>
+                                                <include>**</include>
+                                            </includes>
+                                        </fileSet>
+                                    </fileSets>
+                                </inline>
+                            </assembly>
+                        </build>
+                    </image>
+                </images>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+----
+
+Secondly, this project uses Dekorate to generate the k8s manifestfootnote:[https://github.com/wildfly-extras/wildfly-cloud-tests/blob/main/common/bom/pom.xml#L65[wildfly-cloud-tests/common/bom/pom.xml at main · wildfly-extras/wildfly-cloud-tests]]:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.dekorate</groupId>
+    <artifactId>dekorate-bom</artifactId>
+    <version>${version.io.decorate.dekorate}</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+----
+
+Thirdly, the project uses the `io.fabric8:kubernetes-client` to interact with k8s/OpenShift in its test casesfootnote:[https://github.com/wildfly-extras/wildfly-cloud-tests/blob/main/common/bom/pom.xml#L116]:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.fabric8</groupId>
+    <artifactId>kubernetes-client</artifactId>
+    <version>${version.io.fabric8.kubernetes-client}</version>
+</dependency>
+----
+
+I won’t go into details of these component usages here, if you are interested how these components are used in the project, you can check the next section of this article.
+
+The last project to learn about is https://github.com/jbossws/jbossws-cxf[`jbossws-cxf`]. Currently, the project is using `docker-maven-plugin` to generate the Docker imagefootnote:[https://github.com/jbossws/jbossws-cxf/blob/main/modules/testsuite/cloud-tests/k8s/images/pom.xml#L78-L98]:
+
+[source,xml]
+----
+<plugin>
+      <groupId>io.fabric8</groupId>
+      <artifactId>docker-maven-plugin</artifactId>
+      <executions>
+          <execution>
+              <id>build-wildfly-images</id>
+              <phase>pre-integration-test</phase>
+              <goals>
+                  <goal>build</goal>
+                  <goal>push</goal>
+              </goals>
+              <configuration>
+                  <images>
+                      <image>
+                          <name>localhost:5000/wildfly-webservice:latest</name>
+                          <build>
+                              <from>quay.io/wildfly/wildfly-runtime:latest</from>
+                              <assembly>
+                                  <mode>dir</mode>
+                                  <user>jboss:root</user>
+                                  <targetDir>/opt/server</targetDir>
+                                  <inline>
+                                      <formats>
+                                          <format>dir</format>
+                                      </formats>
+                                      <fileSets>
+                                          <fileSet>
+                                              <directory>target/server</directory>
+                                              <outputDirectory>/</outputDirectory>
+                                              <includes>
+                                                  <include>**</include>
+                                              </includes>
+                                          </fileSet>
+                                      </fileSets>
+                                  </inline>
+                              </assembly>
+                          </build>
+                      </image>
+                  </images>
+              </configuration>
+          </execution>
+      </executions>
+  </plugin>
+----
+
+In addition, it uses the `kubernetes-client` to deploy the image to the k8s/openshift platform. In the project team blog there is an article describes its cloud based testfootnote:[https://jbossws.github.io/2023/09/08/jbossws-cloud-test-common-utilties/[The New JBossWS Kubernetes/OpenShift Test Common Utilities]]. In addition, you can check the project CIfootnote:[https://github.com/jbossws/jbossws-cxf/blob/main/.github/workflows/cloud-build.yml / Relative build process: https://github.com/jbossws/jbossws-cxf/actions/runs/6140452372/job/16659439365[JBWS-4383 Improve the common utility to check the WFLY readiness in… jbossws/jbossws-cxf@9334492]] to see how the cloud based tests are running in GitHub CI environment. At last the project also contains profile that is using the `jib` to build the docker imagefootnote:[https://github.com/jbossws/jbossws-cxf/blob/main/modules/testsuite/cloud-tests/container/pom.xml#L114-L150[jbossws-cxf/modules/testsuite/cloud-tests/container/pom.xml at main · jbossws/jbossws-cxf]]:
+
+[source,xml]
+----
+<profile>
+    <id>jib</id>
+    <activation>
+        <property>
+            <name>image.builder</name>
+            <value>jib</value>
+        </property>
+    </activation>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <configuration>
+                    <feature-packs>
+                        <feature-pack>
+                            <location>org.jboss.ws.cxf:jbossws-cxf-feature-pack:${project.version}</location>
+                        </feature-pack>
+                        <feature-pack>
+                            <location>org.wildfly:wildfly-galleon-pack:${jboss.version}</location>
+                        </feature-pack>
+                    </feature-packs>
+                    <layers>
+                        <layer>cloud-server</layer>
+                        <layer>webservices</layer>
+                    </layers>
+                    <filename>${warName}.war</filename>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <from>
+                        <image>quay.io/wildfly/wildfly-runtime:latest</image>
+                    </from>
+                    <to>
+                        <image>${imageName}:${imageTag}</image>
+                    </to>
+                    <extraDirectories>
+                        <paths>
+                            <path>
+                                <from>target/server</from>
+                                <into>/opt/server</into>
+                            </path>
+                        </paths>
+                        <permissions>
+                            <permission>
+                                <file>/opt/server/**/*</file>
+                                <mode>770</mode>
+                            </permission>
+                        </permissions>
+                    </extraDirectories>
+                    <container>
+                        <user>root</user>
+                    </container>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>dockerBuild</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+----
+
+Until now, we have checked the usages of these tools in several projects.
+
+== Some notes on the implementation of the wildfly-cloud-tests project
+
+The `wildfly-cloud-tests` uses these tools to do complex WildFly based tests, so it’s a good material to learn about how to use these tools in depth. One internal class that may worth checking is the `WildFlyCommonExtension` footnote:[https://github.com/wildfly-extras/wildfly-cloud-tests/blob/main/common/junit-extension/src/main/java/org/wildfly/test/cloud/common/WildFlyCommonExtension.java]. Here is its class diagram:
+
+image:2023-09-20-k8s/WildFlyCommonExtension.jpg[image]
+
+It works as a JUnit extension that take cares of the image deployment to k8s/openshift. For example, it provides methods to deploy/undeploy the k8s resources(please note these internal implementations may change in the future, and it's shown here just for expressing the idea):
+
+[source,java]
+----
+private void startResourcesInList(ExtensionContext context, KubernetesResource kubernetesResource, KubernetesList resourceList) {
+        KubernetesClient client = getKubernetesClient(context);
+        resourceList.getItems().stream()
+                .forEach(i -> {
+                    client.resourceList(i).createOrReplace();
+                    System.out.println("Created: " + i.getKind() + " name:" + i.getMetadata().getName() + ".");
+                });
+
+        List<HasMetadata> waitables = resourceList.getItems().stream().filter(i -> i instanceof Deployment ||
+                i instanceof Pod ||
+                i instanceof ReplicaSet ||
+                i instanceof ReplicationController).collect(Collectors.toList());
+        long started = System.currentTimeMillis();
+        System.out.println("Waiting until ready (" + kubernetesResource.readinessTimeout() + " ms)...");
+        try {
+            waitUntilCondition(context, waitables, i -> Readiness.getInstance().isReady(i), kubernetesResource.readinessTimeout(),
+                    TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException("Gave up waiting after " + kubernetesResource.readinessTimeout());
+        }
+        long ended = System.currentTimeMillis();
+        System.out.println("Waited: " + (ended - started) + " ms.");
+        //Display the item status
+        waitables.stream().map(r -> client.resource(r).fromServer().get())
+                .forEach(i -> {
+                    if (!Readiness.getInstance().isReady(i)) {
+                        readinessFailed(context);
+                        System.out.println(i.getKind() + ":" + i.getMetadata().getName() + " not ready!");
+                    }
+                });
+
+
+        if (hasReadinessFailed(context)) {
+            throw new IllegalStateException("Readiness Failed");
+        } else if (kubernetesResource.additionalResourcesCreated().length > 0) {
+            long end = started + kubernetesResource.readinessTimeout();
+            Map<String, ResourceGetter> resourceGetters = new HashMap<>();
+            for (org.wildfly.test.cloud.common.Resource resource : kubernetesResource.additionalResourcesCreated()) {
+                if (resourceGetters.put(resource.name(), ResourceGetter.create(client, resource)) != null) {
+                    throw new IllegalStateException(resource.name() + " appears more than once in additionalResourcesCreated()");
+                }
+            }
+
+            Map<String, HasMetadata> additionalWaitables = new HashMap<>();
+            while (System.currentTimeMillis() < end) {
+                for (Map.Entry<String, ResourceGetter> entry : resourceGetters.entrySet()) {
+                    if (!additionalWaitables.containsKey(entry.getKey())) {
+                        ResourceGetter getter = entry.getValue();
+                        HasMetadata hasMetadata = getter.getResource();
+                        if (hasMetadata != null) {
+                            additionalWaitables.put(entry.getKey(), hasMetadata);
+                        }
+                    }
+                }
+                if (additionalWaitables.size() == resourceGetters.size()) {
+                    break;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.interrupted();
+                    throw new IllegalStateException(e);
+                }
+            }
+
+            if (additionalWaitables.size() != resourceGetters.size()) {
+                throw new IllegalStateException("Could not start all items in " + kubernetesResource.readinessTimeout());
+            }
+
+
+            try {
+                waitUntilCondition(context, additionalWaitables.values(), i -> Readiness.getInstance().isReady(i), end - System.currentTimeMillis(),
+                        TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("Gave up waiting after " + (System.currentTimeMillis() - started));
+            }
+
+            waitables.stream().map(r -> client.resource(r).fromServer().get())
+                    .forEach(i -> {
+                        if (!Readiness.getInstance().isReady(i)) {
+                            readinessFailed(context);
+                            System.out.println(i.getKind() + ":" + i.getMetadata().getName() + " not ready!");
+                        }
+                    });
+
+            if (hasReadinessFailed(context)) {
+                throw new IllegalStateException("Readiness Failed");
+            }
+        }
+    }
+----
+
+Here is the method that will be called after the test running:
+
+[source,java]
+----
+private void cleanupKubernetesResources(ExtensionContext context, WildFlyIntegrationTestConfig config, WildFlyTestContext testContext) {
+        if (config.getKubernetesResources().isEmpty()) {
+            return;
+        }
+
+        List<KubernetesResource> kubernetesResources = config.getKubernetesResources();
+        for (int i = kubernetesResources.size() - 1 ; i >= 0 ; i--) {
+            KubernetesResource kubernetesResource = kubernetesResources.get(i);
+            KubernetesList resourceList = null;
+            try {
+                try (InputStream in = getLocalOrRemoteKubernetesResourceInputStream(kubernetesResource.definitionLocation())) {
+                    resourceList = Serialization.unmarshalAsList(in);
+                }
+            } catch (Exception e) {
+                throw toRuntimeException(e);
+            }
+
+            List<HasMetadata> list = resourceList.getItems();
+            Collections.reverse(list);
+            list.stream().forEach(r -> {
+                System.out.println("Deleting: " + r.getKind() + " name:" + r.getMetadata().getName() + ". Deleted:"
+                        + getKubernetesClient(context).resource(r).cascading(true).delete());
+            });
+        }
+
+    }
+----
+
+Though these are the internal implementations and the code may change in the future, it’s a good material to understand how these tools are worked together.
+
+== References
