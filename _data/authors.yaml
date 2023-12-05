@@ -100,7 +100,7 @@ kkhan:
   location: "United Kingdom"
   occupation: "Software Engineer"
   bio: "Kabir started using JBoss back in 2000, and joined the team in 2004. Since then he has worked on JBoss AS/WildFly as a core developer."
-  avatar: kkhan.jpg
+  #avatar: kkhan.jpg
 yborgess:
   name: "Yeray Borges"
   location: "Spain"
