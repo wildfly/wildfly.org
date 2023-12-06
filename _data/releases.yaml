@@ -38,7 +38,7 @@
       licence: AL
       items:
         - format: Source
-          url: https://github.com/wildfly/quickstart/tree/30.0.1.Final
+          url: https://github.com/wildfly/quickstart/releases/download/30.0.1.Final/wildfly-30.0.1.Final-quickstarts.zip
     - name: Release Notes
       items:
         - format: Notes
