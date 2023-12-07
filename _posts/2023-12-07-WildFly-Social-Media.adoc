@@ -1,0 +1,28 @@
+---
+layout: post
+title:  "WildFly Social Media"
+date:   2023-12-07
+tags:   Social Media
+author: rchakrab
+description: Article about Community engagement for Preferred Social Media Platforms for WildFly Community.
+---
+
+= Shaping the Future of WildFly Community Social Media!
+
+Greetings, WildFly Community Members! We trust this message finds you in the best of health and spirits as we embark on an exciting journey to enhance your experience within our vibrant WildFly community. Your engagement and feedback are invaluable to us, and to better understand your preferences, we've created a comprehensive poll covering both social media platforms and content types. Your choices will guide us in creating a more tailored and engaging experience for all members.
+
+== Exploring New Horizons:
+
+Currently, we have established our presence on https://twitter.com/WildFlyAS[X], https://www.youtube.com/@WildFlyAS[YouTube], and https://fosstodon.org/@wildflyas[Mastodon], but we're keen on expanding and refining our strategy. To better understand your preferences, we invite you to participate in a brief poll that aims to identify the social media platforms that resonate most with you. Your choices will guide our efforts to create a more tailored and engaging experience.
+
+Check this *https://forms.gle/pNZb1MdxUbF62di6A[Link]* to fill out the survey.
+
+== Understanding Your Preferences:
+
+In addition to selecting the social media platforms that resonate with you, we're keen to learn about the types of content that capture your interest. The poll includes a variety of content categories, ranging from tutorials and updates to deep dives into WildFly technologies. Your choices will help us curate content that adds value to your experience within the WildFly Community.
+
+== Why Now?
+
+The landscape of social media and online interactions is dynamic, with new platforms emerging and existing ones evolving. The WildFly Community has always thrived on staying ahead of the curve, and this poll comes at a pivotal moment in our growth. In the ever-evolving landscape of social media and content creation, your preferences are at the forefront of our considerations.
+
+Thank you for being a vital part of our Community. By taking a few minutes to share your insights in the poll, you're playing a pivotal role in defining the WildFly Community's presence. We look forward to creating an even more enriching experience for everyone.
