@@ -8,3 +8,5 @@
 :toc: right
 // Default time to display in the prerequisites section
 :prerequisites-time: 15
+// OpenShift Container Platform version
+:ocp-version: 4.14

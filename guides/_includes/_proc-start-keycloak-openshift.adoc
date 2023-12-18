@@ -1,0 +1,71 @@
+== Start Keycloak
+
+ifndef::saml-auth-method[]
+We will be using Keycloak as our OpenID provider.
+endif::[]
+ifdef::saml-auth-method[]
+We will be using Keycloak as our SAML identity provider.
+endif::[]
+
+To start a Keycloak server in your project on OpenShift, use the following command:
+
+[source,bash]
+----
+oc process -f https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/latest/openshift/keycloak.yaml \
+    -p KEYCLOAK_ADMIN=admin                    \// <1>
+    -p KEYCLOAK_ADMIN_PASSWORD=admin           \// <2>
+    -p NAMESPACE=<PROJECT_NAME>                \// <3>
+| oc create -f -
+----
+<1> Replace `admin` with the user name you would like to use when accessing the Keycloak Administration Console.
+<2> Replace `admin` with the password you would like to use when accessing the Keycloak Administration Console.
+<3> Replace `<PROJECT_NAME>` with your project name.
+
+After running the above command, you should see the following output:
+
+[source,bash]
+----
+service/keycloak created
+route.route.openshift.io/keycloak created
+Warning: apps.openshift.io/v1 DeploymentConfig is deprecated in v4.14+, unavailable in v4.10000+
+deploymentconfig.apps.openshift.io/keycloak created.
+----
+
+It will take a few minutes for OpenShift to provision the Keycloak pod and its related resources.
+
+You can use the OpenShift CLI or the OpenShift web console, depending on your preference, to check if your Keycloak server has been provisioned.
+
+=== OpenShift CLI
+
+To make sure your Keycloak server has been provisioned using the OpenShift CLI, run:
+
+[source,bash]
+----
+oc get pods
+----
+
+After a little while, check for a message similar to the following message that indicates the pod is ready:
+
+[source,bash]
+----
+NAME                READY     STATUS      RESTARTS   AGE
+keycloak-1-deploy   0/1       Completed   0          1h
+keycloak-1-l9kdx    1/1       Running     0          1h
+----
+
+Once the Keycloak server has been provisioned, use the following command to find the URL for your Keycloak instance's
+Admin Console:
+
+[source,bash]
+----
+KEYCLOAK_URL=https://$(oc get route keycloak --template='{{ .spec.host }}') &&
+echo "" &&
+echo "Keycloak Admin Console:   $KEYCLOAK_URL/admin" &&
+echo ""
+----
+
+=== OpenShift Web Console
+
+To make sure your Keycloak server has been provisioned using the OpenShift web console,
+navigate to the `Topology` view in the `Developer` perspective. You can click on your `keycloak` app
+to check its status. Once it is running, you can click on `Open URL` and then access Keycloak's `Administration Console`.
