@@ -1,0 +1,523 @@
+---
+layout: post
+title:  "WildFly Glow, an evolution of WildFly provisioning"
+date:   2024-01-29
+tags: galleon provisioning wildfly-glow
+author: jdenise
+description: WildFly Glow, an evolution of WildFly provisioning.
+---
+
+We are introducing an evolution of WildFly provisioning by means of the https://github.com/wildfly/wildfly-glow[WildFly Glow] project.
+
+== What is WildFly provisioning?
+
+Even though WildFly provisioning has been available for some time now, a quick summary seems useful to put WildFly Glow in context.
+
+WildFly provisioning is:
+
+* The ability to create a WildFly server installation on the fly.
+* The ability to choose the set of features you want to see in the created server.
+* The ability to extend the capabilities of the WildFly server (e.g.: datasources, Keycloak SAML).
+
+The produced server has a smaller size than a full installation and the server process has a smaller memory footprint. Trimming comes with some benefits:
+
+* Reduced resource consumption.
+* Smaller attack surface.
+* Simpler server configuration.
+
+https://docs.wildfly.org/galleon/[Galleon] is the technology used by WildFly provisioning.
+
+=== How is provisioning performed?
+
+WildFly provisioning uses two kinds of tooling:
+
+* Command Line tools: 
+** https://docs.wildfly.org/galleon/[Galleon CLI]
+
+* Maven Plugins: 
+** https://docs.wildfly.org/galleon/[Galleon Maven Plugin]
+** https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin]
+** https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly Bootable JAR Maven Plugin]
+
+=== What are the main concepts of WildFly provisioning?
+
+* Galleon feature-packs: contains metadata on how to build a WildFly server.
+* Galleon layers: contains metadata of a server feature (eg: jaxrs, ejb, jsf, ...).
+
+If you want to deep dive into Galleon concepts, you can have a look at its https://docs.wildfly.org/galleon/[documentation]. In the context of WildFly Glow, feature-packs and layers are really 
+all you need to know about.
+
+Provisioning a WildFly server is mainly selecting Galleon feature-packs and Galleon layers.
+
+=== WildFly provisioning diagram
+
+image::wildfly-glow1.jpg[WildFly provisioning diagram]
+
+The above shows a simplified representation of what provisioning is. Let's look at the complexity that comes with such flexibility.
+
+== Current WildFly provisioning has a complex configuration
+
+The issues we are currently facing are mainly located at the user configuration level. 
+It is not that trivial to build up a proper WildFly server to run your applications.
+
+Known issues:
+
+* How to know about available Galleon feature-packs?
+* How to discover the Galleon layers that my application requires to properly work?
+
+Current solutions:
+
+* Use https://docs.wildfly.org/30/[WildFly documentation], look at https://github.com/wildfly/quickstart[WildFly quickstarts], 
+search for blogs and/or github projects to discover extra feature-packs.
+
+* Use WildFly base layers (aggregators for the main application use cases) such as `cloud-server` or `jaxrs-server` layers. 
+Something to note is that when using these aggregators the set of features that you are provisioning may not be optimal. 
+More content is usually provisioned than what your application requires. Furthermore these layers don't contain everything, 
+and, to meet your application's requirements, you may need to add some more layers (e.g.: `microprofile-config`, `ejb`, `jsf`, ...).
+
+To summarize we need a way to discover all the extra Galleon feature-packs that would provide interesting features and a way to link 
+the deployed application(s) to the set of required Galleon layers.
+
+This is what https://github.com/wildfly/wildfly-glow[WildFly Glow] is all about, a provisioning time bridge between the deployment and the WildFly server.
+
+== WildFly Glow
+
+Glow stands for “Galleon Layers Output from War”. By inspecting your deployments(s), WildFly Glow 
+can determine the set of Galleon feature-packs and layers that your application requires.
+
+[NOTE]
+====
+Despite the "War" used in the acronym that led to WildFly Glow's name, it can analyze all Jakarta EE deployment types, not just .war files.
+====
+
+WildFly Glow knows the set of feature-packs compatible with a given WildFly version. 
+It understands the connection that exists between Galleon layers and your application:
+
+* Java types and annotations in use
+* XML descriptors,
+* Properties files, …
+
+WildFly Glow can suggest interesting features not directly required by your application but meaningful. For example: SSL when Undertow is in use, 
+Microprofile OpenAPI when Jakarta REST is in use, WildFly CLI tools (all CLI launch scripts located in the WILDFLY_HOME/bin directory), ...
+
+WildFly Glow goes one step further than pure provisioning by identifying potential errors. And, when errors are identified, 
+it can suggest ways to fix them (eg: add a missing datasource, add a missing access to a JMS broker).
+
+To summarize, WildFly Glow can build the server from your deployments and helps you discover additional 
+WildFly server features that you are perhaps not aware of.
+
+The WildFly documentation site includes http://docs.wildfly.org/wildfly-glow[detailed documentation] of WildFly Glow.
+
+=== WildFly Glow Features
+
+==== A set of Tooling
+
+* WildFly Glow CLI, a standalone tool to scan your deployment to produce a WildFly server, a WildFly Bootable JAR or a docker image.
+* Integration into the WildFly Maven plugin 5.x -- no more explicit feature-packs and layers in the plugin configuration.
+* WildFly Glow Arquillian Maven plugin to scan your tests to produce a WildFly server required to execute your tests.
+
+==== Handling of High Availability
+
+* WildFly Glow allows you to enable a “ha” profile to produce an High Available WildFly server.
+
+==== Handling of 2 execution contexts
+
+* bare-metal (the default).
+* cloud, to execute on Openshift and/or Kubernetes. In addition to fine tuning the server configuration for cloud execution, 
+WildFly Glow discovers and advertises the WildFly env variables usable to configure the server at startup.
+
+==== Handling of datasources
+
+* Identify missing datasources and suggest datasources that you can use to connect to databases.
+
+==== Knowledge of extra Feature-packs
+
+A centralized knowledge (located in the https://github.com/wildfly/wildfly-galleon-feature-packs[wildfly-galleon-feature-packs] github project) 
+of extra Galleon feature-packs compatible with WildFly. The WildFly features defined in these extra feature-packs 
+are included in the provisioned server when WildFly Glow detects a need for them. 
+
+The set of extra features supported are:
+
+* https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[Cloud features]
+* Support for the major https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[datasources] (PostgreSQL, MySQL, MariaDB, MSSQLServer, Oracle)
+* https://github.com/keycloak/keycloak[Keycloak] SAML
+* https://github.com/wildfly-extras/wildfly-grpc-feature-pack[GRPc]
+* https://github.com/wildfly-extras/wildfly-myfaces-feature-pack[MyFaces]
+* https://github.com/wildfly-extras/wildfly-graphql-feature-pack[Microprofile-GraphQL]
+
+==== Support for WildFly Preview
+
+WildFly Glow allows you to choose to provision a WildFly Preview server instead of a WildFly server.
+
+[NOTE]
+====
+Don't know about WildFly Preview? To learn more, see the https://docs.wildfly.org/30/WildFly_and_WildFly_Preview.html[WildFly documentation].
+====
+
+=== How WildFly Glow operates
+
+WildFly Glow is used from provisioning tooling: WildFly Glow command line tool or WildFly Maven Plugin (starting with version 5.0.0 Beta).
+
+Java classes and file descriptors located in your deployments are scanned to identify the required set of galleon layers. 
+
+* It leverages Galleon provisioning artifacts (Feature-packs and Layers).
+* It relies on rules included in each Galleon Layer.
+** Rules capture the content expected inside the deployment for the layer to be required.
+** Rules express the High Availability capability of a layer.
+** Rules classify some layers as `add-on` that can be explicitly included. add-ons are advertised according to the set of layers discovered in the deployments.
+e.g.: SSL, embedded/remote JMS brokers, datasources, WildFly CLI (jboss-cli, add-users, elytron tooling, .,..).
+* It knows about High Availability profile, and will automatically include HA Galleon layers.
+
+==== WildFly Glow rules
+
+You can find documentation on the rules contained in WildFly Galleon layers in 
+this http://docs.wildfly.org/wildfly-galleon-feature-packs/[documentation].
+
+==== WildFly Glow Provisioning diagram
+
+image::wildfly-glow2.jpg[WildFly Glow provisioning diagram]
+
+== Provisioning tooling usage comparison
+
+=== WildFly Maven plugin
+
+==== Simple server
+
+===== Configuration without WildFly Glow support
+
+[source,xml]
+----
+...
+
+<feature-packs>
+  <feature-pack>    
+    <location>org.wildfly:wildfly-galleon-pack:${version.server}</location>
+  </feature-pack>
+</feature-packs>
+<layers>
+    <layer>cloud-server</layer>
+    <layer>ejb</layer>
+</layers>
+...
+----
+
+===== Configuration with support for WildFly Glow
+
+The XML element `<discover-provisioning-info>` enables the support for WildFly Glow (starting with WildFly Maven Plugin version 5 Beta).
+[source,xml]
+----
+...
+<discover-provisioning-info/>
+...
+----
+
+The provisioning configuration is fully delegated to WildFly Glow. It will include and exclude Galleon layers according to what has been discovered 
+(exclusion of layers can be required when provisioning an HA server).
+
+==== HA server for cloud execution with support for a PostgreSQL datasource
+
+===== Configuration without WildFly Glow support
+
+[source,xml]
+----
+...
+
+<feature-packs>
+  <feature-pack>    
+    <location>org.wildfly:wildfly-galleon-pack:${version.server}</location>
+  </feature-pack>
+  <feature-pack>    
+    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:${version.cloud}</location>
+  </feature-pack>
+  <feature-pack>
+    <location>org.wildfly:wildfly-datasources-galleon-pack:${version.ds}</location>
+  </feature-pack>
+</feature-packs>
+<layers>
+    <layer>cloud-server</layer>
+    <layer>ejb</layer>
+    <layer>ejb-dist-cache</layer>
+    <layer>jpa-distributed</layer>
+    <layer>postgresql-driver</layer>
+</layers>
+<excludedLayers>
+    <layer>ejb-local-cache</layer>
+    <layer>jpa</layer>
+</excludedLayers>
+...
+----
+
+You can notice that some Galleon layers have been excluded and their HA counter parts have been included.
+
+==== Configuration with support for WildFly Glow
+
+The XML element `<discover-provisioning-info>` is evolved with the `ha` profile, `cloud` context and the `postgresql` add-on.
+
+[source,xml]
+----
+...
+<discover-provisioning-info>
+  <profile>ha</profile>
+  <context>cloud</context>
+  <add-ons>
+    <add-on>postgresql</add-on>
+  </add-ons>
+</discover-provisioning-info>
+...
+----
+
+=== And What about WildFly Bootable JAR?
+
+The https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly Bootable JAR Maven Plugin] has not been evolved to support Glow, 
+we have evolved the WildFly Maven Plugin to also produce a WildFly Bootable JAR.
+
+So you can benefit from WildFly Glow and build WildFly executable JARs by using the same Maven plugin.
+
+To enable Bootable JAR packaging, set the `<bootable-jar>true</bootable-jar>` plugin option.
+
+Details on how to produce WildFly Bootable JAR from the WildFly Maven Plugin will come in a following blog post.
+
+=== Galleon CLI vs WildFly Glow CLI
+
+==== Server with support for postgresql datasource
+
+===== Galleon CLI
+
+[source,bash]
+----
+galleon.sh install wildfly --layers=cloud-server,ejb,jsf --dir=server
+galleon.sh install org.wildfly:wildfly-datasources-galleon-pack:6.0.0.Final --layers=postgresql-datasource --dir=server
+----
+
+You will then have to deploy your application into the provisioned server.
+
+===== WildFly Glow CLI
+
+[source,bash]
+----
+wildfly-glow.sh scan myapp.war --add-ons=postgresql --provision=SERVER
+----
+
+[NOTE]
+====
+* The provisioned server contains the deployment that has been scanned.
+
+* By specifying `--provision=BOOTABLE_JAR` you can produce a WildFly bootable JAR. By specifying `--provision=DOCKER_IMAGE` you can produce a Docker image.
+
+* If you don't use the `--provision` parameter at all, WildFly Glow will simply output a report of what it has discovered.
+====
+
+Here's an example of producing a Docker image for cloud execution:
+
+[source,bash]
+----
+wildfly-glow.sh scan myapp.war --add-ons=postgresql --provision=DOCKER_IMAGE --cloud
+----
+
+===== Output example
+
+WildFly Glow CLI output what it has discovered, for example:
+
+[source,bash]
+----
+
+wildfly-glow.sh scan myapp.war 
+
+Wildfly Glow is scanning...
+context: bare-metal
+enabled profile: none
+galleon discovery
+- feature-packs
+   org.wildfly:wildfly-galleon-pack:30.0.1.Final
+- layers
+   ee-core-profile-server
+   jpa
+   ejb-lite
+   jaxrs
+   jsf
+   h2-driver
+
+Some suggestions have been found. You could enable suggestions with --suggest option (if using the WildFly Glow CLI) or <suggest>true</suggest> (if using the WildFly Maven Plugin).
+If you had included a --provision option to the scan command, after outputting this report, WildFly Glow will continue on to provisioning your WildFly server, bootable jar or Docker image.
+----
+
+== Understanding why a Galleon layer has been selected
+
+WildFly Glow is based on rules contained in the Wildfy Galleon layers. If a rule matches, the layer is included. The set of rules 
+contained in WildFly layers is documented in this http://docs.wildfly.org/wildfly-galleon-feature-packs/[documentation].
+
+If verbose mode is enabled (`--verbose` option with the WildFly Glow CLI, `<verbose>true</verbose>` option for the maven plugin), 
+WildFly Glow will output for each layer the rules that matched.
+
+An example of output:
+
+----
+...
+layers inclusion rules
+* ee-core-profile-server
+  - BASE_LAYER
+* ee-concurrency
+  - JAVA_TYPE: [jakarta.enterprise.concurrent.*]
+* undertow-https
+  - ADD_ON
+...
+----
+
+This output means:
+
+* `ee-core-profile-server` is a base layer (always included).
+* `ee-concurrency` layer is included because a Java class located in the java package `jakarta.enterprise.concurrent` has been found.
+* `undertow-https` is included because it is bound to an included add-on (in this case `ssl`).
+
+== Trimming numbers with WildFly Glow
+
+We have measured the Disk usage and Memory consumption of some WildFly quickstarts 
+(using https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[WildFly Glow branch] vs https://github.com/wildfly/quickstart/tree/main[main branch]). We have observed a reduction of 5% to 55% for disk usage 
+and 5% to 32% for memory consumption. Variation bound to the complexity of the quickstart. If the quickstart requires all the Galleon layers 
+present in an aggregator layer (eg: `cloud-server` or `jaxrs-server`) then the gain is lower.
+
+My colleague Kabir Khan has written an interesting https://github.com/kabir/vlog-glow/blob/main/README.md[project] 
+and is going to publish a Vlog on the https://www.youtube.com/@WildFlyAS[WildFly Channel] that will showcase the gain you can expect with WildFly Glow. Stay tuned!
+
+== Datasources support, missing datasource detection
+
+If WildFly Glow detects that your deployment uses datasources, it will abort asking you to take an action to fix the problem.
+It will suggest the set of known add-ons allowing WildFly to connect to a database.
+
+You will have to choose one of the proposed add-ons. 
+
+An example of a reported error when using the WildFly Glow CLI:
+
+[source,bash]
+----
+wildfly-glow scan todo-backend.war
+
+Wildfly Glow is scanning...
+context: bare-metal
+enabled profile: none
+galleon discovery
+- feature-packs
+   org.wildfly:wildfly-galleon-pack:30.0.1.Final
+- layers
+   ee-core-profile-server
+   ejb-lite
+   jpa
+   jaxrs
+
+identified errors
+* unbound datasources error: java:jboss/datasources/ToDos
+  To correct this error, enable one of the following add-ons:
+  - mariadb
+  - mssqlserver
+  - mysql
+  - oracle
+  - postgresql
+
+Some suggestions have been found. You could enable suggestions with --suggest option (if using the WildFly Glow CLI) or <suggest>true</suggest> (if using the WildFly Maven Plugin).
+To enable add-ons, add the --add-ons=<list of add-ons> option to the scan command
+Some errors have been reported. You should fix them prior provisioning a server with the --provision option of the scan command
+----
+
+== Datasources support, setting a datasource add-on
+
+We will use the `postgresql` add-on to fix the reported error.
+
+[source,bash]
+----
+wildfly-glow scan todo-backend.war --add-ons=postgresql
+
+Wildfly Glow is scanning...
+context: bare-metal
+enabled profile: none
+galleon discovery
+- feature-packs
+   org.wildfly:wildfly-galleon-pack:30.0.1.Final
+   org.wildfly:wildfly-datasources-galleon-pack:6.0.0.Final
+- layers
+   ee-core-profile-server
+   ejb-lite
+   jpa
+   jaxrs
+   postgresql-datasource
+
+enabled add-ons
+- postgresql : Documentation in https://github.com/wildfly-extras/wildfly-datasources-galleon-pack
+
+strongly suggested configuration
+
+postgresql-datasource environment variables:
+ - POSTGRESQL_DATABASE=Defines the database name to be used in the datasource’s `connection-url` property.
+ - POSTGRESQL_JNDI=java:jboss/datasources/ToDos
+ - POSTGRESQL_PASSWORD=Defines the password for the datasource.
+ - POSTGRESQL_USER=Defines the username for the datasource.
+
+----
+
+WildFly Glow detects that the postgresql datasource has to be configured with environment variables and advertise the set of environment variables to be used when starting the server.
+
+Example of a server started with environment variables set:
+
+[source,bash]
+----
+POSTGRESQL_DATABASE=test \
+POSTGRESQL_JNDI=java:jboss/datasources/ToDos \
+POSTGRESQL_PASSWORD=test \
+POSTGRESQL_USER=test \
+sh ./bin/target/server/bin/standalone.sh 
+----
+
+== Experimenting with WildFly Glow
+
+=== Using the WildFly Glow CLI
+
+To get started with the WildFly Glow CLI, you can download the https://github.com/wildfly/wildfly-glow/releases[latest WildFly Glow CLI]. 
+
+To scan a deployment you plan to deploy to WildFly, call:
+
+[source,bash]
+----
+wildfly-glow.sh scan <your deployment>
+----
+
+You can report issues/suggestions as https://github.com/wildfly/wildfly-glow/issues[Issues] in the WildFly Glow project.
+
+=== Using the WildFly Maven Plugin
+
+The WildFly quickstarts have been ported to rely on WildFly Glow. You can clone the following quickstart https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[branch] and play with the quickstarts of your choice.
+For example:
+
+[source,bash]
+----
+cd helloworld
+mvn clean package -Pprovisioned-server
+----
+
+To produce a WildFly Bootable JAR call:
+
+[source,bash]
+----
+cd microprofile-config
+mvn clean package -Pbootable-jar
+----
+
+== Status
+
+For WildFly 31, WildFly Glow is at a Beta level of quality. Some facts:
+
+** https://github.com/wildfly/wildfly-glow/releases[Latest WildFly Glow] version is currently 1.0.0.Beta7.
+** https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin] 5.0.0.Beta2 supports WildFly Glow and the ability to produce a WildFly Bootable JAR.
+** All WildFly quickstarts have been ported to use WildFly Glow in this preview https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[branch].
+** The WildFly 31 testsuite has been enhanced to use WildFly Glow everywhere where it is practical.
+** WildFly Galleon feature-packs https://github.com/wildfly/wildfly-galleon-feature-packs[registry] is open to contribute more extra feature-packs compatible with WildFly.
+
+Final level of quality is expected for WildFly 32
+
+** WildFly Glow Final.
+** WildFly Quickstarts main branch migrated to WildFly Glow.
+
+We hope that you will find interest in this simplified approach to provisioning WildFly servers. Your feedback would be very valuable to evolve WildFly Glow in the right direction.
+Feel free to log issues in the https://github.com/wildfly/wildfly-glow/issues[project].
+
+Thank-you!
+
+Jean-Francois Denise
