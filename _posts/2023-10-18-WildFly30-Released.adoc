@@ -109,7 +109,7 @@ Please note that when you run WildFly you are running software provided by a lar
 
 == Release Notes
 
-The full release notes for the release are in the link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12413594[WildFly JIRA].  Issues fixed in the  underlying link:https://issues.redhat.com/browse/WFCORE-4296?filter=12423012[WildFly Core 22] releases are listed in the WildFly Core JIRA.
+The full release notes for the release are in the link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12413594[WildFly JIRA].  Issues fixed in the  underlying link:https://issues.redhat.com/issues/?filter=12423012#[WildFly Core 22] releases are listed in the WildFly Core JIRA.
 
 Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA].
 
