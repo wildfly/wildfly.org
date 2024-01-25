@@ -1,0 +1,17 @@
+The application will now begin to build. This will take a couple of minutes.
+
+The build can be observed using:
+
+[source,bash]
+----
+oc get build -w
+----
+
+Once complete, you can follow the deployment of the application using:
+
+[source,bash]
+----
+oc get deployment oidc-app -w
+----
+
+Alternatively, you can check status directly from the OpenShift web console.

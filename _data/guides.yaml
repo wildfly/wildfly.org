@@ -13,6 +13,24 @@ categories:
       - title: Configure Application Logging
         url: /guides/application-logging
         description: Learn how to setup and configure logging in WildFly.
+  - category: Security
+    cat-id: security
+    guides:
+      - title: Securing WildFly Apps with OpenID Connect on OpenShift
+        url: /guides/security-oidc-openshift
+        description: Learn how to secure applications deployed to WildFly on OpenShift with OpenID Connect.
+      - title: Identity Propagation with OpenID Connect
+        url: /guides/security-oidc-identity-propagation
+        description: Learn how to propagate identities within a deployment and across deployments when securing WildFly apps with OpenID Connect.
+      - title: Securing WildFly Apps with Auth0 on OpenShift
+        url: /guides/security-oidc-auth0-openshift
+        description: Learn how to secure applications deployed to WildFly on OpenShift with the Auth0 OpenID provider.
+      - title: Securing the WildFly Management Console with OpenID Connect
+        url: /guides/security-oidc-management-console
+        description: Learn how to secure the WildFly management console with the Keycloak OpenID provider.
+      - title: Securing WildFly Apps with SAML on OpenShift
+        url: /guides/security-saml-openshift
+        description: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
   - category: Eclipse MicroProfile
     cat-id: microprofile
     guides:
