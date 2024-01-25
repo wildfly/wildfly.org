@@ -1,12 +1,12 @@
-= Deploy WildFly using Ansible
+= Deploying WildFly using Ansible
 :summary: Learn how to automate WildFly deployments with Ansible
 :includedir: _includes
 include::{includedir}/_attributes.adoc[]
-// you can override any attributes eg to lengthen the 
+// you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 20
 
-In this brief demonstration, we’ll set up and run three instances of WildFly on the same machine (localhost). Together they will form a cluster. It’s a rather classic setup, where the appservers needs to synchronize the content of their application’s session to ensure fail over if one of the instances fails. This configuration guarantees that, if one instance fails while processing a request, another one can pick up the work without any data loss. Note that we’ll use a multicast to discover the members of the cluster and ensure that the cluster’s formation is fully automated and dynamic.
+In this brief demonstration, we’ll set up and run three instances of WildFly on the same machine (localhost). Together they will form a cluster. It’s a rather classic setup, where the appservers need to synchronize the content of their application’s sessions to ensure fail over if one of the instances fails. This configuration guarantees that, if one instance fails while processing a request, another one can pick up the work without any data loss. Note that we’ll use a multicast to discover the members of the cluster and ensure that the cluster’s formation is fully automated and dynamic.
 
 include::{includedir}/_prerequisites.adoc[]
 
@@ -58,12 +58,12 @@ community.general:6.1.0 was installed successfully
 
 == Set up the WildFly cluster
 
-For simplicity’s sake and to allow you to reproduce this demonstration on a single machine (physical or virtual) or even a container, we opted to deploy our three instances on one target. We chose localhost as a target, so that the demonstration can even be performed without a remote host.
+For simplicity’s sake and to allow you to reproduce this demonstration on a single machine (physical or virtual) or even a container, we opted to deploy our three instances on one target. We chose localhost as a target, so the demonstration can even be performed without a remote host.
 
 There are essentially two steps to set up the WildFly cluster:
 
 . Install WildFly on the targeted hosts (here just localhost). This means downloading the archive from this website and decompressing the archive in the appropriate directory (JBOSS_HOME). These tasks are handled by the wildfly_install role supplied by Ansible collection for WildFly.
-. Create the configuration files to run several instances of WildFly. Because we’re running multiple instances on a single host, you also need to ensure that each instance has its own subdirectories and set of ports, so that the instances can coexist and communicate. Fortunately, this functionality is provided by a role within the Ansible collection called wildfly_systemd.
+. Create the configuration files to run several instances of WildFly. Because we’re running multiple instances on a single host, you also need to ensure that each instance has its own subdirectories and set of ports, so the instances can coexist and communicate. Fortunately, this functionality is provided by a role within the Ansible collection called wildfly_systemd.
 
 === Ansible playbook to install WildFly
 
@@ -121,7 +121,7 @@ Here is the playbook we'll use to deploy our clusters. Its content is relatively
         loop_var: port
 ----
 
-In short, this playbook uses the Ansible collection for WildFly to, first, install the appserver by using the wildfly_install role. This will download all the artifacts, create the required system groups and users, install dependency (unzip) and so on. At the end of its execution, all the tidbits required to run WildFly on the target host are installed, but the server is not yet running. That’s what happening in the next step.
+In short, this playbook uses the Ansible collection for WildFly to, first, install the appserver by using the wildfly_install role. This will download all the artifacts, create the required system groups and users, install dependency (unzip) and so on. At the end of its execution, all the tidbits required to run WildFly on the target host are installed, but the server is not yet running. That is what's happening in the next step.
 
 In the tasks section of the playbook, we then call on another role provided by the collection: wildfly_systemd. This role will take care of integrating WildFly, as a regular system service, into the service manager. Here, we use a loop to ensure that we create not one, but three different services. Each one will have the same configuration (standalone-ha.xml) but runs on different ports, using a different set of directories to store its data.
 
@@ -404,7 +404,7 @@ localhost                  : ok=70   changed=16   unreachable=0    failed=0    s
 
 Note that the playbook is not that long, but it does a lot for us. It performs almost 100 different tasks! Starting by automatically installing the dependencies, including the JVM required by WildFly, along with downloading its binaries. And the wildfly_systemd role does even more, effortlessly setting up three distinct services, each with its own set of ports and directory layout to store instance-specific data.
 
-Even better, the WildFly installation is NOT duplicated. All of the binaries live under the /opt/wildfly-27.0.1 directory, but all the data files of each instance are stored in separate folders. This means that we just need to update the binaries, once, and then restart the instances, to deploy a patch or upgrade to a new version of WildFly.
+Even better, the WildFly installation is NOT duplicated. All the binaries live under the /opt/wildfly-27.0.1 directory, but all the data files of each instance are stored in separate folders. This means that we just need to update the binaries, once, and then restart the instances, to deploy a patch or upgrade to a new version of WildFly.
 
 On top of everything, we configured the instances to use the standalone-ha.xml configuration as the baseline, so they are already set up for clustering.
 
@@ -435,11 +435,11 @@ Jan 10 09:24:25 94aa1904876e standalone.sh[1001]: 09:24:25,914 INFO  [org.jboss.
 
 ----
 
-=== Deploy an application to the Wildlfy cluster
+=== Deploy an application to the WildFly cluster
 
-Now, our three WildFly are running, but the cluster has yet to form. Indeed, with no apps there is no reason for the cluster to exist. Let's modify our Ansible playbook to deploy a simple application to all instances; this will allow us to check that the cluster is working as expected. To achieve this, we'll leverage another role provided by the WildFly collection: wildfly_utils.
+Now, our three WildFly servers are running, but the cluster has yet to form. Indeed, with no apps there is no reason for the cluster to exist. Let's modify our Ansible playbook to deploy a simple application to all instances; this will allow us to check that the cluster is working as expected. To achieve this, we'll leverage another role provided by the WildFly collection: wildfly_utils.
 
-In our case, we will use the jboss_cli.yml task file, which encapsulates the running of JBoss command-line interface (CLI) queries:
+In our case, we will use the jboss_cli.yml task file, which encapsulates the running of JBoss command-line interface (CLI) commands:
 
 [source, yaml]
 ----
@@ -465,7 +465,7 @@ In our case, we will use the jboss_cli.yml task file, which encapsulates the run
 ----
 
 
-Now, we will once again execute our playbook so that the web application is deployed on all instances. Once the automation completes successfully, the deployment will trigger the formation of the cluster.
+Now, we will once again execute our playbook so the web application is deployed on all instances. Once the automation completes successfully, the deployment will trigger the formation of the cluster.
 
 === Verify that the WildFly cluster is running  and the app is deployed
 
@@ -479,9 +479,9 @@ You can verify the cluster formation by looking at the log files of any of the t
 …
 ----
 
-=== Using the Ansible collection as an installer for Wildfly
+=== Using the Ansible collection as an installer for WildFly
 
-Last remark: while the collection is designed to be used inside a playbook, you can also use the provided playbook to directly install Wildfly:
+Last remark: while the collection is designed to be used inside a playbook, you can also use the provided playbook to directly install WildFly:
 
 [source, bash]
 ----

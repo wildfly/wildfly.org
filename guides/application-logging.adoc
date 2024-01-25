@@ -1,26 +1,23 @@
-= Configure Logging for your Application
+= Configuring Logging for your Application
 :summary: Learn how to use logging in your application and configure WildFly to display them
 :includedir: _includes
 include::{includedir}/_attributes.adoc[]
-// you can override any attributes eg to lengthen the 
+// you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 10
-
-TODO: Add a summary of what you achieve in this guide.
-Something like:
 
 In this guide, you will learn how to use logging in your application and configure WildFly to
 display the logs at the level you want.
 
 include::{includedir}/_prerequisites.adoc[]
 
-To use logging in our application, we will add a dependency to `org.jboss.logging:jboss-logging` in the Maven `pom.xml` file.
+To use logging in our application, we will add a dependency on `org.jboss.logging:jboss-logging` in the Maven `pom.xml` file.
 Then, we will add a few logs in our code at different levels.
-Finally we will configure WildFly to change the log level of our application logs independently of WildFly own logs.
+Finally, we will configure WildFly to change the log level of our application logs independently of WildFly own logs.
 
-== Add Dependency to JBoss Logging
+== Add Dependency on JBoss Logging
 
-In order to use JBoss Logging in our application, we need to add a dependency to it in the `pom.xml`.
+In order to use JBoss Logging in our application, we need to add a dependency on it in the `pom.xml`.
 
 The dependency is defined as:
 
@@ -71,7 +68,7 @@ public class GettingStartedService {
 }
 ----
 
-You added a `log` Logger that can log message with the category correspondig to the class package `org.wildfly.examples`.
+You added a `log` Logger that can log message with the category corresponding to the class package `org.wildfly.examples`.
 You also added two logging calls, one at the `TRACE` level and the other one at the `INFO` level.
 
 If you run the integration tests with `mvn clean verify`, you will only see the logs at the `INFO` level in the standard output:
@@ -87,11 +84,11 @@ $ mvn clean verify
 By default, WildFly only displays `INFO` logs on the console.
 Let's now configure WildFly to display our application logs at the `TRACE` level.
 
-== Configure Logging in WildFly Subsystem
+== Configure Logging in the WildFly Subsystem
 
 The configuration of logging is done by WildFly in its `logging` subsystem.
-There are different ways to modify WildFly configuration but as we used the `wildfly-maven-plugin` to provision WildFly,
-we can pass a CLI script so that WildFly configuration will be modified whenever we invoke `mvn package`.
+There are different ways to modify the WildFly configuration but as we used the `wildfly-maven-plugin` to provision WildFly,
+we can pass a CLI script so the WildFly configuration will be modified whenever we invoke `mvn package`.
 
 First, we add a `configuration.cli` in the `src/main/scripts` directory:
 
@@ -103,8 +100,7 @@ First, we add a `configuration.cli` in the `src/main/scripts` directory:
 /subsystem=logging/logger=org.wildfly.examples:add(level=TRACE)
 ----
 
-This script contains the management operations to change WildFly configuration. We could invoke any management operations but in this case,
-we only modify the `/subsystem=logging` resources that control the logging aspects.
+This script contains the management operations to change the WildFly configuration. We could invoke any management operations but, in this case, we only modify the `/subsystem=logging` resources that control the logging aspects.
 
 You then need to modify the `wildfly-maven-plugin` configuration in `pom.xml` to execute this:
 
@@ -148,7 +144,7 @@ $ mvn clean verify
 ...
 ----
 
-== Next Steps
+== What's next?
 
 WildFly provides extensive logging configuration. You can learn more by reading WildFly's https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Logging[Logging Subsystem Configuration Guide] and its https://docs.wildfly.org/{wildfly-version}/wildscribe/subsystem/logging/[model reference].
 

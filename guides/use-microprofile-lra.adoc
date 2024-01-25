@@ -1,4 +1,4 @@
-= Use MicroProfile LRA in WildFly
+= Using MicroProfile LRA
 :summary: Learn how to use MicroProfile LRA With WildFly.
 :includedir: _includes
 include::{includedir}/_attributes.adoc[]
@@ -7,12 +7,13 @@ In this guide, you will learn how to setup and use Eclipse MicroProfile LRA in y
 
 include::{includedir}/_prerequisites.adoc[]
 
+== Introduction
 
 https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html[MicroProfile Long Running
-Actions (LRA)] is a specification that defines the protocol and an API for the distributed transactions based on the
+Actions (LRA)] is a specification that defines the protocol and an API for distributed transactions based on the
 saga pattern and user-defined compensations. In WildFly 28.0.0.Final, we introduced the integration of
 https://narayana.io/[Narayana LRA] which implements this specification. In this guide, we look into how you can enable
-LRA in your WildFly distribution and how you can use LRA in your applications.
+LRA in your WildFly installation and how you can use LRA in your applications.
 
 == Overview of the LRA protocol
 
@@ -20,7 +21,7 @@ We provide only a high-level overview of the LRA protocol in this post. The full
 at https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html.
 
 In LRA, the specification API utilizes annotations from the `org.eclipse.microprofile.lra.annotation` package. The main
-annotation is the `@LRA` which controls the life cycle of the LRA. It's use might seem similar to the use of
+annotation is `@LRA` which controls the life cycle of the long running action. It's use might seem similar to the use of
 `@Transactional` annotation from JTA, however, the transaction characteristics differ greatly. If you are interested in
 the comparison of the saga pattern to the ACID transactions, you can find an explanation in this talk from DevoxxUK -
 https://www.youtube.com/watch?v=7DI4xXv1xGU.
@@ -29,22 +30,22 @@ The Narayana implementation utilizes the coordinator orchestration of the LRAs. 
 service that is responsible for the management operations of the LRAs started in the system. When any LRA participant
 (user service) wants to start a new LRA, it contacts the LRA coordinator that in turn returns the LRA ID of the newly
 started LRA that can be propagated by the LRA participant to any other services. When an LRA-aware service receives the
-LRA ID, it can optionally enlist within the same LRA which is again done by the enlistment call to the coordinator. When
+LRA ID, it can optionally enlist within the same LRA, which is again done by the enlistment call to the coordinator. When
 the LRA finishes (success or failure), the LRA coordinator is responsible for invocations of the completions or the
 compensations callbacks of all enlisted LRA participants.
 
-== Enabling MicroProfile LRA subsystems
+== Enabling the MicroProfile LRA subsystems
 
 The integration of the LRA specification is included in two separate subsystems:
 
 - `microprofile-lra-coordinator` - The LRA coordinator responsible for starting, managing, and recovery of the LRAs.
 
-- `microprofile-lra-participant` - The client library utilized in user deployments to participate in the distributed LRAs and define compensation and completition callbacks.
+- `microprofile-lra-participant` - The client library utilized in user deployments to participate in distributed LRAs and define compensation and completition callbacks.
 
 === Required extensions and subsystems configuration
 
-The LRA extensions are not included in the standard configurations included with WildFly application server. They need
-to be explitcly enabled either in the configuration XML or by using CLI operations:
+The LRA extensions are not included in the standard configurations included with the WildFly application server. They need
+to be explicitly enabled either in the configuration XML or by using CLI operations:
 
 [source,bash]
 ----
@@ -75,7 +76,7 @@ to be explitcly enabled either in the configuration XML or by using CLI operatio
 [standalone@localhost:9990 /] reload
 ----
 
-== Running LRA coordinator in a Docker container
+== Running the LRA coordinator in a Docker container
 
 The LRA coordinator is also provided as a standalone Docker image that you can simply run with the following command:
 
@@ -158,8 +159,8 @@ $ curl localhost:8080/lra-coordinator/lra-coordinator
 []%
 ----
 
-== Conclusion
+== What's next?
 
-In this post, we showed you how to configure and use the MicroProfile LRA specification in your WildFly applications.
+In this guide, we showed you how to configure and use the MicroProfile LRA specification in your WildFly applications.
 LRA provides a very broad feature set which we can't cover here. If you are interested in learning more, you can find
 the full specification at https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html.

@@ -2,7 +2,7 @@
 :summary: ONELINE EXPLANATION OF THE GUIDE
 :includedir: _includes
 include::{includedir}/_attributes.adoc[]
-// you can override any attributes eg to lengthen the 
+// you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 10
 
@@ -14,11 +14,6 @@ In this guide, you will learn how to setup and use Eclipse MicroProfile Config i
 include::{includedir}/_prerequisites.adoc[]
 * Any additional prerequisites specific to this guide (eg you have completed a previous guide)
 
-[[requirements]]
-== Requirements
-
-Lorem ipsum
-
 == A section
 
 Lorem ipsum
@@ -26,8 +21,8 @@ Lorem ipsum
 == Another section
 
 
-// Always keep a next steps to let the user know what could be achieve next
-== Next Steps
+// Always keep a what's next? section to let the user know what could be achieved next
+== What's next?
 
 Something like:
 

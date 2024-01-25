@@ -260,7 +260,7 @@ Current Principal 'alice@example.org'
 
 This indicates that we have successfully logged into our application!
 
-== Next Steps
+== What's next?
 
 This guide has shown how to secure an application deployed to WildFly on OpenShift with SAML. For additional
 information, feel free to check out the resources linked below.

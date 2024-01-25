@@ -1,6 +1,6 @@
 ---
 layout: getstarted
-title: Get Started with WildFly
+title: Getting Started with WildFly
 permalink: /get-started/
 ---
 :page-liquid:

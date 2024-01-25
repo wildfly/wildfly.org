@@ -1,4 +1,4 @@
-= Use Eclipse MicroProfile Config
+= Using MicroProfile Config
 :summary: Learn how to use MicroProfile Config With WildFly.
 :includedir: _includes
 include::{includedir}/_attributes.adoc[]
@@ -9,18 +9,18 @@ In this guide, you will learn how to setup and use Eclipse MicroProfile Config i
 include::{includedir}/_prerequisites.adoc[]
 
 [[requirements]]
-== Requirements
+== Configure Your App to make use of MicroProfile Config
 
 In order to use MicroProfile Config in your application, you need to update the Maven `pom.xml` at different places:
 
-1. Add a dependency to WildFly BOM for MicroProfile in the `<dependencyManagement>` section
-2. Add a dependency to the MicroProfile Config API in the `<dependencies>` section
+1. Add a dependency on WildFly BOM for MicroProfile in the `<dependencyManagement>` section
+2. Add a dependency on the MicroProfile Config API in the `<dependencies>` section
 
-Once these 2 steps will be achieved, you will be able to use MicroProfile Config in your application.
+Once these 2 steps have been completed, you will be able to use MicroProfile Config in your application.
 
-=== Add Dependency to WildFly MicroProfile BOM
+=== Add Dependency on the WildFly MicroProfile BOM
 
-You need to add a dependency to the WildFly MicroProfile BOM `org.wildfly.bom:wildfly-microprofile` in the `<dependencyManagement>` section so that your application will use the correct version of the MicroProfile Config provided by WildFly.
+You need to add a dependency on the WildFly MicroProfile BOM `org.wildfly.bom:wildfly-microprofile` in the `<dependencyManagement>` section so your application will use the correct version of the MicroProfile Config provided by WildFly.
 
 The dependency is defined as:
 
@@ -35,7 +35,7 @@ The dependency is defined as:
 </dependency>
 ----
 
-It must be added to the `<dependencyManagement>` of your pom.xml: 
+It must be added to the `<dependencyManagement>` of your pom.xml:
 
 [source,xml]
 ----
@@ -54,7 +54,7 @@ WildFly BOMS are the only dependencies that must be added to the `<dependencyMan
 
 === Add Dependency to MicroProfile Config API
 
-Then, you need to add a dependency to the MicroProfile Config API `org.eclipse.microprofile.config:microprofile-config-api`.
+Next, you need to add a dependency on the MicroProfile Config API `org.eclipse.microprofile.config:microprofile-config-api`.
 
 The dependency is defined as:
 
@@ -120,12 +120,12 @@ HELLO_TEXT="Bonjour" ./target/server/bin/standalone.sh
 
 If you now access the application at http://localhost:8080 and type `World` in the text field, it now returns `Bonjour, World.`
 
-=== Next Steps
+== What's next?
 
 MicroProfile Config provides multiple options to read the configuration from various sources (System properties, environment variables, ConfigMaps and Secrets from Kubernetes), you can learn more by reading WildFly's https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration Guide] or reading the specification at https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config website].
 
 [[references]]
-=== References
+== References
 
 * https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config]
 * https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration]

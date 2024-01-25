@@ -210,7 +210,7 @@ Current Principal 'alice'
 
 This indicates that we have successfully logged into our application!
 
-== Next Steps
+== What's next?
 
 This guide has shown how to secure an application deployed to WildFly on OpenShift with OIDC. To learn
 more about OIDC configuration, check out the https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Elytron_OIDC_Client[Elytron OIDC Client]

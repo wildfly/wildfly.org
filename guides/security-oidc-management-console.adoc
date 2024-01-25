@@ -113,7 +113,7 @@ With the above configuration now in place, let's access http://localhost:10000/c
 the Keycloak login page. We can log in using the `alice` user that we created earlier. Upon successful authentication,
 we will be redirected back to the WildFly Management Console.
 
-== Next Steps
+== What's next?
 
 This guide has shown how to secure the WildFly Management Console with OIDC. To learn
 more about OIDC configuration, check out the https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Elytron_OIDC_Client[Elytron OIDC Client]

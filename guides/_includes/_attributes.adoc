@@ -1,5 +1,5 @@
 // WildFly Major version to link to its documentation
-:wildfly-version: 29
+:wildfly-version: 31
 // Minimal version of Maven
 :maven-version: 3.9+
 // Minimal Version of JDK

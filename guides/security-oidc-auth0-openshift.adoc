@@ -234,7 +234,7 @@ Current Principal 'auth0|6544f9aa427fb9f276240d55'
 
 Notice the `user_id` for our `user@example.com` user is displayed. This indicates that we have successfully logged into our application!
 
-== Next Steps
+== What's next?
 
 This guide has shown how to secure an application deployed to WildFly on OpenShift using the Auth0 OpenID provider. For additional
 information, feel free to check out the resources linked below. To learn

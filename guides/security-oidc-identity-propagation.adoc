@@ -384,7 +384,7 @@ shows that the identity from the virtual security domain was successfully propag
 * The identity as visible to the EJB within `ejb-same-domain.ear` is `alice` with `User` role. This shows that the identity
 from the virtual security domain was successfully propagated to the EJB in a separate deployment.
 
-== Next Steps
+== What's next?
 
 This guide shown how to propagate security identities established by a virtual security domain within a deployment
 and across deployments when securing a web application with OIDC. To learn

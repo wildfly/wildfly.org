@@ -4,13 +4,13 @@ categories:
   - category: Get Started
     cat-id: get-started
     guides:
-      - title: Get Started With WildFly
+      - title: Getting Started with WildFly
         url: /get-started
         description: Build and run a Jakarta EE application with WildFly in a few minutes
   - category: Observability
     cat-id: observability
     guides:
-      - title: Configure Application Logging
+      - title: Configuring Logging for your Application
         url: /guides/application-logging
         description: Learn how to setup and configure logging in WildFly.
   - category: Security
@@ -34,16 +34,16 @@ categories:
   - category: Eclipse MicroProfile
     cat-id: microprofile
     guides:
-      - title: Use MicroProfile Config With WildFly
+      - title: Using MicroProfile Config
         url: /guides/use-microprofile-config
         description: Discover how to use MicroProfile Config With WildFly.
-      - title: Use MicroProfile LRA With WildFly
-        url: /guides/use-microprofile-lra
-        description: Discover how to use MicroProfile LRA With WildFly.
+#      - title: Using MicroProfile LRA
+#        url: /guides/use-microprofile-lra
+#        description: Discover how to use MicroProfile LRA With WildFly.
   - category: Automation
     cat-id: automation
     guides:
-      - title: Deploy WildFly With Ansible
+      - title: Deploying WildFly using Ansible
         url: /guides/automate-with-ansible
         description: Learn how to automate WildFly deployments with Ansible.
 
