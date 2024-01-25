@@ -10,9 +10,8 @@
           <div class="grid__item width-3-12 news-block-item">
             <div class="post-title">
               <h4><a href="{{site.baseurl}}{{ guide.url }}">{{ guide.title}}</a></h4>
+              <div class="description">{{ guide.description | markdownify }}</div>
             </div>
-            <div class="description">{{ guide.description | markdownify }}</div>
-            <div><a href="{{site.baseurl}}{{ guide.url }}">Read More >></a></div>
           </div>
         {% endfor %}
     {% endfor %}
