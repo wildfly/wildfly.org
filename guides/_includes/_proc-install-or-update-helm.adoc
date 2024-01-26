@@ -1,0 +1,14 @@
+If you haven't already installed the WildFly Helm chart, install it:
+
+[source,bash]
+----
+helm repo add wildfly https://docs.wildfly.org/wildfly-charts/
+----
+
+If you've already installed the WildFly Helm Chart, be sure to update it to ensure you have the latest one:
+
+[source,bash]
+----
+helm repo update
+----
+

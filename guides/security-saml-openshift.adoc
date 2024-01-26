@@ -1,0 +1,276 @@
+= Securing WildFly Apps with SAML on OpenShift
+:summary: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
+:includedir: _includes
+include::{includedir}/_attributes.adoc[]
+:prerequisites-time: 15
+
+You can secure your WildFly applications deployed on OpenShift with Security Assertion Markup Language (SAML).
+By using SAML to secure applications, you delegate authentication to SAML identity providers (IdPs). This guide shows
+how to secure an example application deployed to WildFly on OpenShift with SAML using Keycloak as the SAML IdP.
+
+include::{includedir}/_prerequisites.adoc[]
+* Access to an OpenShift cluster (try the https://developers.redhat.com/developer-sandbox[Red Hat Developer Sandbox] for free)
+* https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
+* https://helm.sh/docs/intro/install/[Helm Chart]
+
+== Example Application
+
+We will use a simple web application in this guide that consists of a single https://github.com/wildfly-security-incubator/elytron-examples/blob/main/simple-webapp-saml/src/main/java/org/wildfly/security/examples/SecuredServlet.java[servlet]. We will secure this servlet using SAML.
+
+We will use the example in the https://github.com/wildfly-security-incubator/elytron-examples/tree/main/simple-webapp-saml[simple-webapp-saml] directory in the `elytron-examples` repo.
+
+To obtain this example, clone the `elytron-examples` repository to your local machine:
+
+[source,bash]
+----
+git clone git@github.com:wildfly-security-incubator/elytron-examples.git
+----
+
+include::{includedir}/_proc-log-into-openshift-cluster.adoc[]
+
+:saml-auth-method:
+include::{includedir}/_proc-start-keycloak-openshift.adoc[]
+
+== Configure Keycloak
+
+. Log into the `Keycloak Admin Console`.
+
+. Create a new realm called `myrealm`. For more information, see the Keycloak documentation on how to https://www.keycloak.org/getting-started/getting-started-openshift#_create_a_realm[create a realm].
+
+. Add a role called `user`. This role will be required to access our simple web application. For more information, see the Keycloak documentation on how to https://www.keycloak.org/docs/latest/server_admin/index.html#assigning-permissions-using-roles-and-groups[create a role].
+
+. Add a new user named `alice`. Set an `email` address for this new user, we'll use `alice@example.org`. For more information, see the Keycloak documentation on how to https://www.keycloak.org/getting-started/getting-started-openshift#_create_a_user[create a user].
+
+. Once the new user has been created, set a password for this new user from the `Credentials` tab.
+
+. From the `Role Mapping` tab, assign `alice` the `user` role. For more information, see the Keycloak documentation on how to https://www.keycloak.org/docs/latest/server_admin/index.html#proc-assigning-role-mappings_server_administration_guide[assign a role] to a user.
+
+. Create a new client as follows:
+* `General Settings`:
+** *Client type* (or *Client Protocol*, depending on your Keycloak version): `SAML`
+** *Client ID*: `simple-webapp-saml`
+* `Login settings`: Leave the fields blank for now.
+
++
+For more information, see the Keycloak documentation on how to https://www.keycloak.org/docs/latest/server_admin/index.html#_client-saml-configuration[Create SAML clients].
+
+. Click `Save` to save the client.
+
+. Once the new client has been created, in the `Settings` tab, scroll down to the `SAML capabilities` section and
+set the `Name ID format` to `email`. When accessing
+our servlet later on, we will see that this results in `HttpServletRequest.getUserPrincipal().getName()` returning
+the logged in user's email address.
+
+. Then set `Force name ID format` to `On`. Then click on `Save`.
+
+== Download the SAML Keys
+
+. From your `simple-webapp-saml` client in the Keycloak Admin Console, click on the `Keys` tab.
+
+. Click on the `Export` button in the `Signing keys config` to export the SAML keys to a keystore.
+
+. Set the *Key alias* to `simple-webapp-saml`, the *Key password* to `password`,
+the *Realm certificate alias* to `myrealm`, and the *Store password* to `password`.
++
+Take note of the aliases and passwords that you specify here since these will be used
+when updating the `keycloak-saml.xml` file.
+
+. Click on `Export` to download the corresponding `keystore.jks` file.
+
+. Create an OpenShift secret using this keystore by running the following command:
++
+[source,bash]
+----
+oc create secret generic simple-webapp-saml-secret --from-file=/PATH/TO/keystore.jks
+----
+
+== Download and Edit the Keycloak Adapter Configuration File
+
+. From your `simple-webapp-saml` client in the *Keycloak Admin Console*, click on the `Action` dropdown in the top right corner
+and select `Download Adapter Config`.
+
+. For the `Format option`, select the `Keycloak SAML Adapter keycloak-saml.xml`, and download the file and place it in the example
+application's `WEB-INF` directory, i.e., place the `keycloak-saml.xml` file in
+`/PATH/TO/ELYTRON/EXAMPLES/simple-webapp-saml/src/main/webapp/WEB-INF`.
+
+. Update the `keycloak-saml.xml` file as follows:
+
+* Set the *SP* *entityID* to `"simple-webapp-saml"`
+* Set the *SP* *logoutPage* to `"/simple-webapp-saml"`
+* Replace the *SP* *Keys* configuration with the following configuration, being sure to use the aliases
+and passwords you specified when exporting the SAML keys to the `keystore.jks` file:
++
+[source,xml]
+----
+<Keys>
+    <Key signing="true">
+        <KeyStore password="password" file="/etc/keycloak-saml-secret-volume/keystore.jks">
+            <PrivateKey alias="simple-webapp-saml" password="password"/>
+            <Certificate alias="myrealm"/>
+        </KeyStore>
+    </Key>
+</Keys>
+----
++
+* Push this new file to the `simple-webapp-saml` directory in your `elytron-examples` fork, making
+sure to push the changes to your fork's default branch.
++
+[source,bash]
+----
+cd /PATH/TO/ELYTRON/EXAMPLES/simple-webapp-saml
+git add src/main/webapp/WEB-INF/keycloak-saml.xml
+git commit -m "Added Keycloak adapter deployment descriptor file"
+git push origin main
+----
+
+== Add Helm Configuration
+
+Let's switch to the `charts` directory in our `simple-webapp-saml` example:
+
+[source,bash]
+----
+cd /PATH/TO/ELYTRON/EXAMPLES/simple-webapp-saml/charts
+----
+
+Notice there's a `helm.yaml` file in this directory with the following content:
+
+[source,yaml]
+----
+build:
+  uri: https://github.com/YOUR_GITHUB_USERNAME/elytron-examples       <1>
+  contextDir: simple-webapp-saml
+deploy:
+  volumes:
+    - name: saml-keystore-volume
+      secret:
+        secretName: simple-webapp-saml-secret
+  volumeMounts:
+    - name: saml-keystore-volume
+      mountPath: /etc/keycloak-saml-secret-volume
+      readOnly: true
+----
+<1> Replace `YOUR_GITHUB_USERNAME` in the *build* *uri* with your own GitHub username.
+
+The `helm.yaml` file specifies the Git repository that contains our application's source code.
+
+Because we have modified the application's source code by adding a `keycloak-saml.xml` file, you need
+to set the *build* *uri* in the `helm.yaml` file to point to your own fork.
+
+Notice that our `helm.yaml` file also refers to the OpenShift secret, `simple-webapp-saml-secret` we
+created earlier. This will be used to mount the `keystore.jks` file on our WildFly server pod.
+
+== Deploy the Example Application to WildFly on OpenShift
+
+We can deploy our example application to WildFly on OpenShift using the WildFly Helm Chart:
+
+[source,bash]
+----
+helm install saml-app -f /PATH/TO/ELYTRON/EXAMPLES/simple-webapp-saml/charts/helm.yaml wildfly/wildfly
+----
+
+Notice that this command specifies the file we updated, `helm.yaml`, that contains the values
+needed to build and deploy our application.
+
+include::{includedir}/_proc-follow-build-and-deployment-openshift.adoc[]
+
+=== Behind the Scenes
+
+While our application is building, let's take a closer look at our application's https://github.com/wildfly-security/elytron-examples/blob/main/simple-webapp-saml/pom.xml[pom.xml] file.
+Notice that it contains the following `wildfly-maven-plugin` configuration:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.plugin}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:${version.wildfly}</location>
+            </feature-pack>
+            <feature-pack>
+                <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:${version.wildfly.cloud.galleon.pack}</location>
+            </feature-pack>
+            <feature-pack>
+                <location>org.keycloak:keycloak-saml-adapter-galleon-pack:${version.keycloak}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>cloud-server</layer>
+            <layer>keycloak-client-saml</layer>
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+ </plugin>
+----
+
+This configuration is used to provision a WildFly server with the specified layers and with our application deployed.
+
+The `keycloak-client-saml` layer automatically adds the Keycloak SAML adapter to our WildFly installation.
+
+== Get the Application URL
+
+Once the WildFly server has been provisioned, use the following command to find the URL for your example
+application:
+
+[source,bash]
+----
+SIMPLE_WEBAPP_SAML_URL=https://$(oc get route saml-app --template='{{ .spec.host }}') &&
+echo "" &&
+echo "Application URL:              $SIMPLE_WEBAPP_SAML_URL/simple-webapp-saml" &&
+echo "Master SAML Processing URL:   $SIMPLE_WEBAPP_SAML_URL/simple-webapp-saml/saml" &&
+echo ""
+----
+
+We'll make use of these URLs in the next two sections.
+
+== Finish Configuring Keycloak
+
+From your `simple-webapp-saml` client in the *Keycloak Administration Console*,
+In the client settings, set `Master SAML Processing URL` to the `Master SAML Processing URL` that was output
+in the previous section and then click `Save`.
+
+== Access the Application
+
+From your browser, navigate to the `Application URL`.
+
+Click on `Access Secured Servlet`.
+
+You will be redirected to Keycloak to log in.
+
+Log in using the `alice` user we created earlier.
+
+Upon successful authentication, you will be redirected back to the example application.
+
+The example application simply outputs the email address associated with our logged in user.
+
+You should see the following output:
+
+[source,text]
+----
+Current Principal 'alice@example.org'
+----
+
+This indicates that we have successfully logged into our application!
+
+== What's next?
+
+This guide has shown how to secure an application deployed to WildFly on OpenShift with SAML. For additional
+information, feel free to check out the resources linked below.
+
+[[references]]
+== References
+
+* https://docs.wildfly.org/{wildfly-version}/Getting_Started_on_OpenShift.html[Getting Started with WildFly on OpenShift]
+* https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
+* https://docs.wildfly.org/{wildfly-version}/Getting_Started_on_OpenShift.html#helm-charts[WildFly Helm Chart]
+* https://www.keycloak.org/getting-started/getting-started-openshift[Getting started with Keycloak on OpenShift]
+* https://www.keycloak.org/docs/latest/server_admin/index.html[Keycloak Server Administration Guide]
+* https://www.keycloak.org/docs/latest/securing_apps/#using-saml-to-secure-applications-and-services[Using SAML to secure applications and services]

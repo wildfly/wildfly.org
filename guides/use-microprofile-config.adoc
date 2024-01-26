@@ -1,0 +1,131 @@
+= Using MicroProfile Config
+:summary: Learn how to use MicroProfile Config With WildFly.
+:includedir: _includes
+include::{includedir}/_attributes.adoc[]
+:prerequisites-time: 10
+
+In this guide, you will learn how to setup and use Eclipse MicroProfile Config in your application.
+
+include::{includedir}/_prerequisites.adoc[]
+
+[[requirements]]
+== Configure Your App to make use of MicroProfile Config
+
+In order to use MicroProfile Config in your application, you need to update the Maven `pom.xml` at different places:
+
+1. Add a dependency on WildFly BOM for MicroProfile in the `<dependencyManagement>` section
+2. Add a dependency on the MicroProfile Config API in the `<dependencies>` section
+
+Once these 2 steps have been completed, you will be able to use MicroProfile Config in your application.
+
+=== Add Dependency on the WildFly MicroProfile BOM
+
+You need to add a dependency on the WildFly MicroProfile BOM `org.wildfly.bom:wildfly-microprofile` in the `<dependencyManagement>` section so your application will use the correct version of the MicroProfile Config provided by WildFly.
+
+The dependency is defined as:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.wildfly.bom</groupId>
+    <artifactId>wildfly-microprofile</artifactId>
+    <version>${version.wildfly}</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+----
+
+It must be added to the `<dependencyManagement>` of your pom.xml:
+
+[source,xml]
+----
+<dependencyManagement>
+    <dependencies>
+    ...
+    <!-- copy the dependency here -->
+    </dependencies>
+</dependencyManagement>
+----
+
+[NOTE]
+--
+WildFly BOMS are the only dependencies that must be added to the `<dependencyManagement><dependencies>` section. Other dependencies are added directly to the `<dependencies>` section of the Maven `pom`.xml.
+--
+
+=== Add Dependency to MicroProfile Config API
+
+Next, you need to add a dependency on the MicroProfile Config API `org.eclipse.microprofile.config:microprofile-config-api`.
+
+The dependency is defined as:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.eclipse.microprofile.config</groupId>
+    <artifactId>microprofile-config-api</artifactId>
+    <scope>provided</scope>
+</dependency>
+----
+
+It must be added to the `<dependencies>` of your pom.xml:
+
+[source,xml]
+----
+<dependencies>
+    ...
+    <!-- copy the dependency here -->
+</dependencies>
+----
+
+[[microprofile-config-api]]
+== Use the MicroProfile Config API
+
+You can now use Eclipe MicroProfile Config in your application.
+
+As an example, you can update the `GettingStartedService.java` file to configure the text that displays "Hello":
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+@ApplicationScoped
+public class GettingStartedService {
+
+    @Inject
+    @ConfigProperty(name = "hello.text", defaultValue = "Hello")
+    String helloText;
+
+    public String hello(String name) {
+        return String.format(helloText + " '%s'.", name);
+    }
+}
+----
+
+In this example, you have annotated a `helloText` String with a `ConfigProperty` annotation.
+
+You can now use the `hello.text` system property or the `HELLO_TEXT` environment variable to change the output of the `hello` method.
+The default value of the `helloText` is configured in the `ConfigProperty` annotation with the `defaultValue` attribute.
+
+Once the `GettingStartedService.java` file is modified, you can repackage your application and restart it with the `HELLO_TEXT` environment variable set to `Bonjour`:
+
+[source,bash]
+----
+mvn clean package
+HELLO_TEXT="Bonjour" ./target/server/bin/standalone.sh
+----
+
+If you now access the application at http://localhost:8080 and type `World` in the text field, it now returns `Bonjour, World.`
+
+== What's next?
+
+MicroProfile Config provides multiple options to read the configuration from various sources (System properties, environment variables, ConfigMaps and Secrets from Kubernetes), you can learn more by reading WildFly's https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration Guide] or reading the specification at https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config website].
+
+[[references]]
+== References
+
+* https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config]
+* https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration]

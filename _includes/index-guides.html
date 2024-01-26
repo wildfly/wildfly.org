@@ -1,0 +1,19 @@
+<div>
+  <h1 class="title">{{ page.title }}</h1>
+</div>
+
+<div class="guides">
+  <div class="grid-wrapper news-list-blocks">
+    {% for item in site.data["guides"].categories %}
+        <h2 class="grid__item width-12-12" id="{{ item.cat-id }}">{{ item.category }}</h3>
+        {% for guide in item.guides %}
+          <div class="grid__item width-3-12 news-block-item">
+            <div class="post-title">
+              <h4><a href="{{site.baseurl}}{{ guide.url }}">{{ guide.title}}</a></h4>
+              <div class="description">{{ guide.description | markdownify }}</div>
+            </div>
+          </div>
+        {% endfor %}
+    {% endfor %}
+  </div>
+</div>

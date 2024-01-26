@@ -1,0 +1,30 @@
+== Configure Keycloak
+
+. Log into the `Keycloak Admin Console`.
+
+. Create a new realm called `myrealm`. For more information, see the Keycloak documentation on how to https://www.keycloak.org/getting-started/getting-started-openshift#_create_a_realm[create a realm].
+
+ifdef::add-role[]
+. Add a role called `User`. This role will be required to access our simple web application. For more information, see the Keycloak documentation on how to https://www.keycloak.org/docs/latest/server_admin/index.html#assigning-permissions-using-roles-and-groups[create a role].
+endif::[]
+
+. Add a new user named `alice`. For more information, see the Keycloak documentation on how to https://www.keycloak.org/getting-started/getting-started-openshift#_create_a_user[create a user].
+
+. Once the new user has been created, set a password for this new user from the `Credentials` tab.
+
+ifdef::add-role[]
+. From the `Role Mapping` tab, assign `alice` the `User` role. For more information, see the Keycloak documentation on how to https://www.keycloak.org/docs/latest/server_admin/index.html#proc-assigning-role-mappings_server_administration_guide[assign a role] to a user.
+endif::[]
+
+. Create a new client as follows:
+* `General Settings`:
+** *Client type* (or *Client Protocol*, depending on your Keycloak version): `OpenID Connect`
+** *Client ID*: `myclient`
+* `Capability config`:
+** *Authentication flow*: `Standard flow`, `Direct access grants`
+* `Login settings`: Leave the fields blank for now.
+
++
+For more information, see the Keycloak documentation on how to https://www.keycloak.org/docs/latest/server_admin/index.html#_oidc_clients[Manage OpenID Connect clients].
+
+. Click `Save` to save the client.

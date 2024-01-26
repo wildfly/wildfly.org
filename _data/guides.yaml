@@ -1,0 +1,49 @@
+
+---
+categories:
+  - category: Get Started
+    cat-id: get-started
+    guides:
+      - title: Getting Started with WildFly
+        url: /get-started
+        description: Build and run a Jakarta EE application with WildFly in a few minutes
+  - category: Observability
+    cat-id: observability
+    guides:
+      - title: Configuring Logging for your Application
+        url: /guides/application-logging
+        description: Learn how to setup and configure logging in WildFly.
+  - category: Security
+    cat-id: security
+    guides:
+      - title: Securing WildFly Apps with OpenID Connect on OpenShift
+        url: /guides/security-oidc-openshift
+        description: Learn how to secure applications deployed to WildFly on OpenShift with OpenID Connect.
+      - title: Identity Propagation with OpenID Connect
+        url: /guides/security-oidc-identity-propagation
+        description: Learn how to propagate identities within a deployment and across deployments when securing apps with OpenID Connect.
+      - title: Securing WildFly Apps with Auth0 on OpenShift
+        url: /guides/security-oidc-auth0-openshift
+        description: Learn how to secure applications deployed to WildFly on OpenShift with the Auth0 OpenID provider.
+      - title: Securing the WildFly Management Console with OpenID Connect
+        url: /guides/security-oidc-management-console
+        description: Learn how to secure the WildFly management console with the Keycloak OpenID provider.
+      - title: Securing WildFly Apps with SAML on OpenShift
+        url: /guides/security-saml-openshift
+        description: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
+  - category: MicroProfile
+    cat-id: microprofile
+    guides:
+      - title: Using MicroProfile Config
+        url: /guides/use-microprofile-config
+        description: Discover how to use MicroProfile Config With WildFly.
+#      - title: Using MicroProfile LRA
+#        url: /guides/use-microprofile-lra
+#        description: Discover how to use MicroProfile LRA With WildFly.
+  - category: Automation
+    cat-id: automation
+    guides:
+      - title: Deploying WildFly using Ansible
+        url: /guides/automate-with-ansible
+        description: Learn how to automate WildFly deployments with Ansible.
+
