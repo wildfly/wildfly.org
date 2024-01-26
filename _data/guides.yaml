@@ -31,7 +31,7 @@ categories:
       - title: Securing WildFly Apps with SAML on OpenShift
         url: /guides/security-saml-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
-  - category: Eclipse MicroProfile
+  - category: MicroProfile
     cat-id: microprofile
     guides:
       - title: Using MicroProfile Config

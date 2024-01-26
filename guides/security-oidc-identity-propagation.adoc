@@ -1,5 +1,5 @@
 = Identity Propagation with OpenID Connect
-:summary: Learn how to propagate identities within a deployment and across deployments when securing WildFly apps with OpenID Connect.
+:summary: Learn how to propagate identities within a deployment and across deployments when securing apps with OpenID Connect.
 :includedir: _includes
 include::{includedir}/_attributes.adoc[]
 :prerequisites-time: 15

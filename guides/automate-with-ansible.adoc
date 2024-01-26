@@ -6,7 +6,7 @@ include::{includedir}/_attributes.adoc[]
 // time to complete the guide
 :prerequisites-time: 20
 
-In this brief demonstration, we’ll set up and run three instances of WildFly on the same machine (localhost). Together they will form a cluster. It’s a rather classic setup, where the appservers need to synchronize the content of their application’s sessions to ensure fail over if one of the instances fails. This configuration guarantees that, if one instance fails while processing a request, another one can pick up the work without any data loss. Note that we’ll use a multicast to discover the members of the cluster and ensure that the cluster’s formation is fully automated and dynamic.
+In this brief guide, we’ll set up and run three instances of WildFly on the same machine (localhost). Together they will form a cluster. It’s a rather classic setup, where the appservers need to synchronize the content of their application’s sessions to ensure fail over if one of the instances fails. This configuration guarantees that, if one instance fails while processing a request, another one can pick up the work without any data loss. Note that we’ll use a multicast to discover the members of the cluster and ensure that the cluster’s formation is fully automated and dynamic.
 
 include::{includedir}/_prerequisites.adoc[]
 
@@ -19,7 +19,7 @@ On a Linux system using a package manager, installing Ansible is pretty straight
 $ sudo dnf install ansible-core
 ----
 
-Please refer to the documentation available online for installation on other operating system. Note that this demonstration assumes you are running both the Ansible controller and the target (same machine in our case) on a Linux system. However, it should work on any other operating system with a few adjustements.
+Please refer to the documentation available online for installation on other operating systems. Note that this guide assumes you are running both the Ansible controller and the target (same machine in our case) on a Linux system. However, it should work on any other operating system with a few adjustments.
 
 Before going further, double check that you are running a recent enough version of Ansible (2.12 or above will do, but 2.9 is the bare minimum):
 
