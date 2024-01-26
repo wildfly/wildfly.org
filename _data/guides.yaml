@@ -21,7 +21,7 @@ categories:
         description: Learn how to secure applications deployed to WildFly on OpenShift with OpenID Connect.
       - title: Identity Propagation with OpenID Connect
         url: /guides/security-oidc-identity-propagation
-        description: Learn how to propagate identities within a deployment and across deployments when securing WildFly apps with OpenID Connect.
+        description: Learn how to propagate identities within a deployment and across deployments when securing apps with OpenID Connect.
       - title: Securing WildFly Apps with Auth0 on OpenShift
         url: /guides/security-oidc-auth0-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with the Auth0 OpenID provider.
