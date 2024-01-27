@@ -4,7 +4,7 @@
   </div>
   {% for post in site.posts %}
     {% assign author = "" | split: ',' %}
-    {% for a in page.author %}
+    {% for a in post.author %}
       {% assign author = author | push: site.data.authors[a].name %}
     {% endfor %}
     {% if forloop.index <= 8 %}
