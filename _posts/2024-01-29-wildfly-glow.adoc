@@ -3,7 +3,7 @@ layout: post
 title:  "WildFly Glow, an evolution of WildFly provisioning"
 date:   2024-01-29
 tags: galleon provisioning wildfly-glow
-author: jdenise
+author: jfdenise
 description: WildFly Glow, an evolution of WildFly provisioning.
 ---
 
