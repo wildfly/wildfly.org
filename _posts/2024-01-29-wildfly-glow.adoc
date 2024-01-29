@@ -32,17 +32,17 @@ https://docs.wildfly.org/galleon/[Galleon] is the technology used by WildFly pro
 WildFly provisioning uses two kinds of tooling:
 
 * Command Line tools: 
-** https://docs.wildfly.org/galleon/[Galleon CLI]
+** https://docs.wildfly.org/galleon/#_galleon_cli_tool[Galleon CLI]
 
 * Maven Plugins: 
-** https://docs.wildfly.org/galleon/[Galleon Maven Plugin]
+** https://docs.wildfly.org/galleon/#_maven_plugin[Galleon Maven Plugin]
 ** https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin]
 ** https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly Bootable JAR Maven Plugin]
 
 === What are the main concepts of WildFly provisioning?
 
-* Galleon feature-packs: contains metadata on how to build a WildFly server.
-* Galleon layers: contains metadata of a server feature (eg: jaxrs, ejb, jsf, ...).
+* Galleon feature-packs: contain metadata on how to build a WildFly server.
+* Galleon layers: contain metadata of a high level server feature (eg: jaxrs, ejb, jsf, ...).
 
 If you want to deep dive into Galleon concepts, you can have a look at its https://docs.wildfly.org/galleon/[documentation]. In the context of WildFly Glow, feature-packs and layers are really 
 all you need to know about.
@@ -67,7 +67,7 @@ Known issues:
 
 Current solutions:
 
-* Use https://docs.wildfly.org/30/[WildFly documentation], look at https://github.com/wildfly/quickstart[WildFly quickstarts], 
+* Use https://docs.wildfly.org/31/[WildFly documentation], look at https://github.com/wildfly/quickstart[WildFly quickstarts],
 search for blogs and/or github projects to discover extra feature-packs.
 
 * Use WildFly base layers (aggregators for the main application use cases) such as `cloud-server` or `jaxrs-server` layers. 
@@ -113,12 +113,12 @@ The WildFly documentation site includes http://docs.wildfly.org/wildfly-glow[det
 ==== A set of Tooling
 
 * WildFly Glow CLI, a standalone tool to scan your deployment to produce a WildFly server, a WildFly Bootable JAR or a docker image.
-* Integration into the WildFly Maven plugin 5.x -- no more explicit feature-packs and layers in the plugin configuration.
+* Integration into the WildFly Maven Plugin 5.x -- no more need for explicit feature-packs and layers in the plugin configuration.
 * WildFly Glow Arquillian Maven plugin to scan your tests to produce a WildFly server required to execute your tests.
 
 ==== Handling of High Availability
 
-* WildFly Glow allows you to enable a “ha” profile to produce an High Available WildFly server.
+* WildFly Glow allows you to enable an “ha” profile to produce a High Availablity WildFly server.
 
 ==== Handling of 2 execution contexts
 
@@ -156,7 +156,7 @@ Don't know about WildFly Preview? To learn more, see the https://docs.wildfly.or
 
 === How WildFly Glow operates
 
-WildFly Glow is used from provisioning tooling: WildFly Glow command line tool or WildFly Maven Plugin (starting with version 5.0.0 Beta).
+WildFly Glow is used from provisioning tooling: the WildFly Glow command line tool or the WildFly Maven Plugin (starting with version 5.0.0 Beta).
 
 Java classes and file descriptors located in your deployments are scanned to identify the required set of galleon layers. 
 
@@ -268,8 +268,8 @@ The XML element `<discover-provisioning-info>` is evolved with the `ha` profile,
 
 === And What about WildFly Bootable JAR?
 
-The https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly Bootable JAR Maven Plugin] has not been evolved to support Glow, 
-we have evolved the WildFly Maven Plugin to also produce a WildFly Bootable JAR.
+The https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly Bootable JAR Maven Plugin] has not been evolved to support WildFly Glow.
+Instead, we have evolved the WildFly Maven Plugin to also produce a WildFly Bootable JAR.
 
 So you can benefit from WildFly Glow and build WildFly executable JARs by using the same Maven plugin.
 
@@ -316,7 +316,7 @@ wildfly-glow.sh scan myapp.war --add-ons=postgresql --provision=DOCKER_IMAGE --c
 
 ===== Output example
 
-WildFly Glow CLI output what it has discovered, for example:
+WildFly Glow CLI output shows what it has discovered, for example:
 
 [source,bash]
 ----
@@ -343,7 +343,7 @@ If you had included a --provision option to the scan command, after outputting t
 
 == Understanding why a Galleon layer has been selected
 
-WildFly Glow is based on rules contained in the Wildfy Galleon layers. If a rule matches, the layer is included. The set of rules 
+WildFly Glow is based on rules contained in the WildFly Galleon layers. If a rule matches, the layer is included. The set of rules
 contained in WildFly layers is documented in this http://docs.wildfly.org/wildfly-galleon-feature-packs/[documentation].
 
 If verbose mode is enabled (`--verbose` option with the WildFly Glow CLI, `<verbose>true</verbose>` option for the maven plugin), 
@@ -372,8 +372,8 @@ This output means:
 == Trimming numbers with WildFly Glow
 
 We have measured the Disk usage and Memory consumption of some WildFly quickstarts 
-(using https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[WildFly Glow branch] vs https://github.com/wildfly/quickstart/tree/main[main branch]). We have observed a reduction of 5% to 55% for disk usage 
-and 5% to 32% for memory consumption. Variation bound to the complexity of the quickstart. If the quickstart requires all the Galleon layers 
+(using the https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[WildFly Glow branch] vs the https://github.com/wildfly/quickstart/tree/main[main branch]). We have observed a reduction of 5% to 55% for disk usage
+and 5% to 32% for memory consumption. Variation is bound to the complexity of the quickstart. If the quickstart requires all the Galleon layers
 present in an aggregator layer (eg: `cloud-server` or `jaxrs-server`) then the gain is lower.
 
 My colleague Kabir Khan has written an interesting https://github.com/kabir/vlog-glow/blob/main/README.md[project] 
@@ -453,7 +453,7 @@ postgresql-datasource environment variables:
 
 ----
 
-WildFly Glow detects that the postgresql datasource has to be configured with environment variables and advertise the set of environment variables to be used when starting the server.
+WildFly Glow detects that the postgresql datasource has to be configured with environment variables and advertises the set of environment variables to be used when starting the server.
 
 Example of a server started with environment variables set:
 
@@ -470,7 +470,7 @@ sh ./bin/target/server/bin/standalone.sh
 
 === Using the WildFly Glow CLI
 
-To get started with the WildFly Glow CLI, you can download the https://github.com/wildfly/wildfly-glow/releases[latest WildFly Glow CLI]. 
+To get started with the WildFly Glow CLI, you can download the https://github.com/wildfly/wildfly-glow/releases[latest release].
 
 To scan a deployment you plan to deploy to WildFly, call:
 
@@ -483,7 +483,7 @@ You can report issues/suggestions as https://github.com/wildfly/wildfly-glow/iss
 
 === Using the WildFly Maven Plugin
 
-The WildFly quickstarts have been ported to rely on WildFly Glow. You can clone the following quickstart https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[branch] and play with the quickstarts of your choice.
+The WildFly quickstarts have been ported to rely on WildFly Glow. You can clone the quickstart https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[glow-preview branch] and play with the quickstarts of your choice.
 For example:
 
 [source,bash]
@@ -507,7 +507,7 @@ For WildFly 31, WildFly Glow is at a Beta level of quality. Some facts:
 ** https://github.com/wildfly/wildfly-glow/releases[Latest WildFly Glow] version is currently 1.0.0.Beta7.
 ** https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin] 5.0.0.Beta2 supports WildFly Glow and the ability to produce a WildFly Bootable JAR.
 ** All WildFly quickstarts have been ported to use WildFly Glow in this preview https://github.com/wildfly/quickstart/tree/31.0.0.Final-glow-preview[branch].
-** The WildFly 31 testsuite has been enhanced to use WildFly Glow everywhere where it is practical.
+** The WildFly 31 testsuite has been enhanced to use WildFly Glow everywhere it is practical.
 ** WildFly Galleon feature-packs https://github.com/wildfly/wildfly-galleon-feature-packs[registry] is open to contribute more extra feature-packs compatible with WildFly.
 
 Final level of quality is expected for WildFly 32
