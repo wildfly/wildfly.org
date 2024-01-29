@@ -1,0 +1,63 @@
+---
+layout: base
+---
+
+<div class="about-page grid-wrapper">
+  <div class="grid__item width-12-12">
+    <h1>Wild<strong>Fly</strong> Mini Conference</h1>
+    <h2 class="page-subtitle">A dedicated conference for the community with topics around Wild<strong>Fly</strong>.</h2>
+  </div>
+
+  <div class="grid__item width-12-12 sec-title-red">
+    <h2>What you need to kow</h2>
+    <p style="padding-bottom: 0">The Wild<strong>Fly</strong> mini conference takes place on <strong>Wednesday, March 6</strong> at <strong>14:00 UTC</strong>. It's an online conference streamed live at YouTube. Registration is not required, but you can let us know that you are
+      <a href="{{site.baseurl}}/conference">planing to attend</a>.</p>
+  </div>
+
+  <div class="grid__item width-12-12 sec-title-yellow conference">
+    <h2>What you can expect</h2>
+    <p>The conference includes four sessions with topics for both beginners and advanced WildFly users. There will be an opening and closing ceremony and a 15-minute break between the second and third session. We want all sessions to be interactive, and you can ask questions at any time. Remember this is a conference for you - the WildFly community!</p>
+    <p>All times are in UTC.</p>
+
+    {% for session in site.data.conference %}
+      {%- capture session_classes -%}
+        {%- if session.abstract -%}c-session{%- else -%}c-session c-session-gray{%- endif -%}
+      {%- endcapture -%}
+    <div class="{{ session_classes }}">
+      <div class="c-time"><span class="c-from">{{ session.from }}</span><span class="c-to">{{ session.to }}</span></div>
+      <div class="c-session-content">
+        <div class="c-title">{{ session.title}}</div>
+          {% if session.abstract %}
+        <div class="c-abstract"><p>{{ session.abstract | join: "<br/>" }}</p></div>
+          {% endif %}
+          {% if session.speaker %}
+        <div class="c-speaker">
+          <div class="c-speaker-name">
+            By {% for speaker_id in session.speaker -%}
+              {% assign speaker = site.data.authors[speaker_id] -%}
+              {% if speaker -%}{{ speaker.name }}{% unless forloop.last -%}<br/>{% endunless -%}{% endif -%}
+            {% endfor -%}
+          </div>
+          <div class="c-speaker-avatar">
+            {% for speaker in session.speaker -%}
+            <img class="avatar" height="60px" width="60px" src="{{site.baseurl}}/assets/img/authors/{{ speaker }}.jpg" alt="Speaker"/>
+            {% endfor -%}
+          </div>
+        </div>
+          {% endif %}
+      </div>
+    </div>
+      {% endfor %}
+  </div>
+
+  <div class="grid__item width-12-12 sec-title-teal">
+    <h2>How to join</h2>
+    <h3 style="text-align: center">To join follow this link<br/><a href="{{site.baseurl}}/conference" target="_blank">https://link-to-you-tube</a></h3>
+  </div>
+
+  <div class="grid__item width-12-12 sec-title-red">
+    <h2>After the conference</h2>
+    <p>Please take some time to answer a few questions about the conference. What did you like, what can we do better? It won't take long, and will help us make the next WildFly conference even better: <a href="{{site.baseurl}}/conference" target="_blank">https://link-to-the-feedback-form</a></p>
+
+  </div>
+</div>

@@ -1,0 +1,39 @@
+- title: Welcome and opening ceremony
+  from: "14:00"
+  to: "14:15"
+- title: Introduction to WildFly and how to get started fast
+  from: "14:15"
+  to: "15:00"
+  abstract:
+    - "In this session the WildFly project itself will be introduced. You will get to kow the different components that make up WildFly. We will take a closer look at the architecture and internal functionality of WildFly."
+    - "The session will also include a demo how to get started fast and how to deploy and evolve a very basic application."
+  speaker: hpehl
+- title: Deploying WildFly applications to bare-metal and the cloud
+  from: "15:00"
+  to: "15:45"
+  abstract:
+    - "Dolor ex aute excepteur minim esse aliquip quis officia mollit sit veniam aliquip duis enim proident. Quis labore ullamco minim labore anim non ea id eu dolore fugiat adipiscing irure deserunt. Pariatur adipiscing eu amet cupidatat laborum officia et commodo voluptate irure est occaecat. Labore est nulla enim non deserunt do dolore ad officia dolore non commodo ad consectetur qui consectetur dolore non. Anim et proident occaecat nisi in dolore velit mollit velit aute esse deserunt nulla pariatur magna veniam do."
+    - "Labore amet ullamco veniam elit reprehenderit esse et sit ea occaecat esse incididunt ad. Id consectetur mollit elit sint velit consequat consectetur cillum nostrud sit do quis elit exercitation labore et officia velit. Laborum lorem laborum velit magna sunt in esse veniam nostrud qui nisi."
+  speaker: [jmesnil, rpelisse]
+- title: Break
+  from: "15:45"
+  to: "16:00"
+- title: What is new in WildFly 31 and roadmap for future releases
+  from: "16:00"
+  to: "16:45"
+  abstract:
+    - "Nostrud eu amet ullamco exercitation mollit voluptate voluptate magna et culpa tempor voluptate nulla nostrud cillum. Amet ea aute elit exercitation labore non duis exercitation in sint consectetur deserunt laboris aliquip veniam sunt nulla."
+    - "Quis consectetur sit anim in quis ex eiusmod tempor consequat do ea exercitation nisi anim. Duis dolor sint veniam deserunt dolor aliquip laboris consequat esse deserunt esse eiusmod commodo."
+    - "Dolor excepteur pariatur cillum elit ad mollit ad est esse ea cillum eiusmod cupidatat proident in esse."
+  speaker: bstansberry
+- title: WildFly Glow
+  from: "16:45"
+  to: "17:30"
+  abstract:
+    - "In this session you will be introduced with WildFly Glow, a new approach to the WildFly provisioning."
+    - "We will cover WildFly provisioning in general, discuss potential issues, and we will see how WildFly Glow simplify the WildFly provisioning experience."
+    - "During the presentation WildFly Glow tooling will be demonstrated."
+  speaker: jfdenise
+- title: Closing ceremony
+  from: "17:30"
+  to: "17:45"
