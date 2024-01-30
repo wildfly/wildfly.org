@@ -9,23 +9,6 @@ layout: base
     <div class="grid__item width-12-12 width-12-12-mobile">
         <div>
             {{ content }}
-            {% comment %}
-            {% This should be part of the content in geststarted.adoc %}
-            {% But since we want to use the variable for the latest WildFly version %}
-            {% to render the link to the OS guide, this is part of the layout %}
-            {% endcomment %}
-            {% assign latestRelease = site.data.releases[site.current_release_index] %}
-            <div class="sect1">
-                <h2 id="next-steps">Next Steps</h2>
-                <div class="sectionbody">
-                    <div class="paragraph">
-                        <p>
-                            To learn more about WildFly, you can read its <a href="https://docs.wildfly.org" target="_blank" rel="noopener">documentation</a>.<br>
-                            If you want to learn how to use WildFly on OpenShift, read the <a href="https://docs.wildfly.org/{{latestRelease.version}}/Getting_Started_on_OpenShift.html" target="_blank" rel="noopener">Getting Started with WildFly on OpenShift Guide</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     <div class="grid__item width-12-12 width-12-12-mobile">
