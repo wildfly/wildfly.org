@@ -5,7 +5,7 @@
   from: "14:15"
   to: "15:00"
   abstract:
-    - "In this session the WildFly project itself will be introduced. You will get to kow the different components that make up WildFly. We will take a closer look at the architecture and internal functionality of WildFly."
+    - "In this session the WildFly project itself will be introduced. You will get to know the different components that make up WildFly. We will take a closer look at the architecture and internal functionality of WildFly."
     - "The session will also include a demo how to get started fast and how to deploy and evolve a very basic application."
   speaker: hpehl
 - title: Deploying WildFly applications to bare-metal and the cloud
