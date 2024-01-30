@@ -1,4 +1,21 @@
 .conference {
+  .c-when-and-where {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 1.5rem;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+
+    dt {
+      font-weight: 600;
+      text-align: right;
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+
   .c-session {
     background-color: $blue;
     border-bottom: 1px solid white;
