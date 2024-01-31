@@ -1,0 +1,97 @@
+---
+layout: post
+title:  "What's new in WildFly provisioning"
+date:   2024-01-31
+tags: galleon provisioning wildfly-glow wildfly-maven-plugin
+author: jdenise
+description: What's new in WildFly provisioning.
+---
+
+This blog post provides information on recent evolutions that have occurred at the WildFly provisioning level.
+
+== WildFly Glow tooling
+
+This new approach to WildFly provisioning has been covered in details in this https://www.wildfly.org/news/2024/01/29/wildfly-glow/[blog post] and in 
+this https://www.youtube.com/watch?v=kt8pTDmTitw[video] published on the https://www.youtube.com/@WildFlyAS[WildFly Youtube Channel].
+
+We are expecting more content to be published on this topic; stay tuned!
+
+== WildFly Bootable JAR support in the WildFly Maven Plugin
+
+From version 5.0.0.Beta2, the https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin] allows you to provision a WildFly server as a Wildfly Bootable JAR.
+The `package` goal configuration has been evolved with the following options:
+
+* `<bootable-jar>true|false</bootable-jar>`: to enable generation of a Bootable JAR.
+* `<bootable-jar-name>name of the jar<bootable-jar-name>`: to set a specific JAR name. By default it is named `server-bootable.jar`
+
+In addition, a new goal `start-jar` has been introduced to start the generated JAR. The `shutdown` goal can be used to shutdown a bootable JAR. 
+
+The https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly JAR Maven plugin] will stay, 
+but the WildFly Maven Plugin becomes the preferred way to build a WildFly Bootable JAR and provision a WildFly server for the cloud.
+
+=== WildFly Bootable JAR and cloud execution limitations
+
+When using the WildFly JAR Maven Plugin, you have the ability to set the `<cloud/>` option. 
+This option has not been migrated to the WildFly Maven Plugin. The reasons are:
+
+* Part of the content (the set of bash scripts that are run at server startup) packaged 
+in the `org.wildfly.cloud:wildfly-cloud-galleon-pack` that is used for the cloud context is not usable when the server is packaged as a Bootable JAR.
+
+* In a cloud context, the kind of packaging is not really relevant. WildFly servers are not directly started. 
+Containers are started whatever the kind of installed WildFly server.
+
+So the JAR produced by the WildFly Maven Plugin is not expected to be used in a cloud context.
+
+For cloud we advise provisioning a WildFly server. To do so:
+
+* Use http://docs.wildfly.org/wildfly-glow/[WildFly Glow] support (`<context>cloud</context>`) that will automatically retrieve the required Galleon feature-packs or 
+* If not using WildFly Glow, add the `org.wildfly.cloud:wildfly-cloud-galleon-pack` feature-pack to the `feature-packs` list.
+
+== Galleon Upward compatibility
+
+WildFly provisioning tooling heavily relies on https://docs.wildfly.org/galleon/[Galleon] technology.
+
+Galleon uses the WildFly feature-packs to provision a WildFly server.
+
+One issue that we have been facing in the past is that, when the structural content of a feature-pack changes 
+(due to an evolution of Galleon core library or new XML schema), the provisioning tooling must be upgraded to be able to handle the new format. 
+The failure occurs during provisioning, printing an hard to understand error message.
+
+The root cause of this problem is that a WildFly feature-pack can require a specific version of the Galleon core library to be properly provisioned, 
+and this version can differ from the version that the provisioning tooling (https://docs.wildfly.org/galleon/[Galleon CLI or Maven Plugin], https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin], https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly Bootable JAR Maven Plugin], https://github.com/wildfly/wildfly-glow[WildFly Glow]) 
+directly depends on.
+
+To solve this problem we have evolved Galleon.
+
+=== WildFly Galleon feature-pack build time
+
+When using https://docs.wildfly.org/galleon-plugins/[WildFly Galleon Maven Plugin] 7.0.0.Beta1, the Galleon version used to build the feature-pack is included in the feature-pack. 
+A check is done at build time to validate that the content of the feature-pack is valid with respect to the Galleon version in use.
+If some content is not supported, the build fails, and an upgrade of the WildFly Galleon Maven Plugin is required.
+ 
+=== WildFly provisioning time
+
+We have been introducing a new https://github.com/wildfly/galleon/tree/main/api[Galleon tooling API] that isolates the provisioning tooling 
+from the Galleon Core version. The API implementation detects the core version required by the feature-packs and uses it.
+
+So we should now be protected at provisioning time from incompatible changes. 
+This API is backward compatible with older WildFly feature-packs.
+
+The following provisioning tools have been ported to the new API:
+
+* https://docs.wildfly.org/galleon/[Galleon CLI and Maven Plugin] 6.0.0.Beta1
+* https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin] 5.0.0.Beta2
+* https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly Bootable JAR Maven Plugin] 11.0.0.Beta1
+* https://github.com/wildfly/wildfly-glow[WildFly Glow] 1.0.0.Beta7
+
+In addition, the Galleon CLI now checks for the latest version of Galleon at startup and advises you if a new version is available.
+
+This Galleon evolution is currently present in Galleon 6.0.0.Beta1. 
+
+WildFly 31 has not yet switched to use it, but upgrading your provisioning tooling today would prepare you for the next major WildFly release.
+
+We plan to have Final releases prior to the WildFly 32 release.
+
+Thank-you!
+
+Jean-Francois Denise
