@@ -30,8 +30,8 @@
   from: "16:45"
   to: "17:30"
   abstract:
-    - "In this session you will be introduced with WildFly Glow, a new approach to the WildFly provisioning."
-    - "We will cover WildFly provisioning in general, discuss potential issues, and we will see how WildFly Glow simplify the WildFly provisioning experience."
+    - "In this session you will be introduced to WildFly Glow, a new approach to the WildFly provisioning."
+    - "We will cover WildFly provisioning in general, discuss potential issues, and we will see how WildFly Glow simplifies the WildFly provisioning experience."
     - "During the presentation WildFly Glow tooling will be demonstrated."
   speaker: jfdenise
 - title: Feedback and closing ceremony
