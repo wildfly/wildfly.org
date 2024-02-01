@@ -19,8 +19,14 @@
   }
 
   .c-session {
-    background-color: $blue;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "time title"
+      "time abstract"
+      "avatar bio";
+    grid-column-gap: 3rem;
     padding: 2rem 1rem;
 
     &:not(:last-of-type){
@@ -32,10 +38,14 @@
     background-color: $gray-2;
   }
 
+  .c-session-blue {
+    background-color: $blue;
+  }
+
   .c-time {
     display: flex;
     flex-direction: row;
-    margin-right: 3rem;
+    grid-area: time;
 
     @media (max-width: $breakpoint-m) {
       flex-direction: column;
@@ -84,15 +94,10 @@
     }
   }
 
-  .c-session-content {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-
   .c-title {
     font-size: 2rem;
     font-weight: 100;
+    grid-area: title;
     line-height: 2rem;
 
     @media (max-width: $breakpoint-m) {
@@ -101,37 +106,26 @@
   }
 
   .c-abstract {
+    grid-area: abstract;
     line-height: 1.2rem;
   }
 
-  .c-speaker {
-    align-items: center;
-    align-self: end;
-    display: flex;
-
-    @media (max-width: $breakpoint-m) {
-      flex-direction: column;
-    }
-  }
-
-  .c-speaker-name {
-    font-size: smaller;
-    font-weight: 100;
-    margin-right: 0.5rem;
-    opacity: .5;
-    text-align: right;
-
-    @media (max-width: $breakpoint-m) {
-      margin-right: 0;
-      margin-top: 0.2rem;
-      order: 2;
-      text-align: center;
-    }
-  }
-
   .c-speaker-avatar {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    grid-area: avatar;
+
     @media (max-width: $breakpoint-m) {
       order: 1;
     }
+  }
+
+  .c-speaker-bio {
+    align-self: center;
+    font-size: 0.9rem;
+    font-weight: 100;
+    opacity: 0.6;
+    grid-area: bio;
   }
 }

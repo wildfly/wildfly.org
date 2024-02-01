@@ -49,35 +49,25 @@ layout: base
     </div>
 
     {% for session in site.data.conference %}
-    {%- capture session_classes -%}
-    {%- if session.abstract -%}c-session{%- else -%}c-session c-session-gray{%- endif -%}
+    {%- capture session_bg -%}
+    {%- if session.abstract -%}c-session-blue{%- else -%}c-session-gray{%- endif -%}
     {%- endcapture -%}
-    <div class="{{ session_classes }}">
+    <div class="c-session {{ session_bg }}">
       <div class="c-time">
         <span class="c-from">{{ session.from }}</span><span class="c-to">{{ session.to }}</span>
       </div>
-      <div class="c-session-content">
-        <div class="c-title">{{ session.title}}</div>
-        {% if session.abstract %}
-        <div class="c-abstract"><p>{{ session.abstract | join: "<br/>" }}</p></div>
-        {% endif %}
-        {% if session.speaker %}
-        <div class="c-speaker">
-          <div class="c-speaker-name">
-            By {% for speaker_id in session.speaker -%}
-            {% assign speaker = site.data.authors[speaker_id] -%}
-            {% if speaker -%}{{ speaker.name }}{% unless forloop.last -%}<br/>{% endunless -%}{% endif -%}
-            {% endfor -%}
-          </div>
-          <div class="c-speaker-avatar">
-            {% for speaker in session.speaker -%}
-            <img class="avatar" height="60px" width="60px"
-                 src="{{site.baseurl}}/assets/img/authors/{{ speaker }}.jpg" alt="Speaker"/>
-            {% endfor -%}
-          </div>
-        </div>
-        {% endif %}
+      <div class="c-title">{{ session.title}}</div>
+      {% if session.abstract %}
+      <div class="c-abstract"><p>{{ session.abstract | join: "<br/>" }}</p></div>
+      {% endif %}
+      {% if session.speaker %}
+      {% assign speaker = site.data.authors[session.speaker] -%}
+      <div class="c-speaker-avatar">
+        <img class="avatar" height="60px" width="60px" src="{{site.baseurl}}/assets/img/authors/{{ session.speaker }}.jpg"
+             alt="{{ speaker.name }}" title="{{ speaker.name }}"/>
       </div>
+      <div class="c-speaker-bio">{{ session.bio }}</div>
+      {% endif %}
     </div>
     {% endfor %}
   </div>

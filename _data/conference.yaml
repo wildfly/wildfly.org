@@ -8,14 +8,14 @@
     - "In this session the WildFly project itself will be introduced. You will get to know the different components that make up WildFly. We will take a closer look at the architecture and internal functionality of WildFly."
     - "The session will also include a demo how to get started fast and how to deploy and evolve a very basic application."
   speaker: hpehl
-  bio: "Harald is a principal software engineer at Red Hat working on the management capabilities of WildFly. He is currently leading the management console (HAL)."
+  bio: "Harald Pehl is a principal software engineer at Red Hat. He works on the management capabilities of WildFly and leads the management console (HAL)."
 - title: Deploying WildFly applications to bare-metal and the cloud
   from: "15:00"
   to: "15:45"
   abstract:
     - "In this session, we'll see how Ansible can help deploy, configure, managed and maintened up to date Wildfly on any platform, from bare metal to VM and even clouds. We'll deal with Day 1 tasks in fully automated fashion, but also cover how to keep the system running after the initial deployment (Day 2)."
   speaker: rpelisse
-  bio: "Romain works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (Wildfly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+  bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (Wildfly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
 - title: Break
   from: "15:45"
   to: "16:00"
@@ -34,7 +34,7 @@
     - "We will cover WildFly provisioning in general, discuss potential issues, and we will see how WildFly Glow simplifies the WildFly provisioning experience."
     - "During the presentation WildFly Glow tooling will be demonstrated."
   speaker: jfdenise
-  bio: "Jean-François is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
+  bio: "Jean-François Denise is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
 - title: Feedback and closing ceremony
   from: "17:30"
   to: "18:00"
