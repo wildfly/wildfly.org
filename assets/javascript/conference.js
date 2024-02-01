@@ -30,8 +30,8 @@
             const date = document.querySelector("#c-date").dataset["date"];
             const timeElements = document.querySelectorAll(".c-time");
             timeElements.forEach(timeElement => {
-                const from = new Date(date + "T" + timeElement.querySelector(".c-from").textContent);
-                const to = new Date(date + "T" + timeElement.querySelector(".c-to").textContent);
+                const from = new Date(date + "T" + timeElement.querySelector(".c-from").textContent + "Z");
+                const to = new Date(date + "T" + timeElement.querySelector(".c-to").textContent + "Z");
                 const localTime = timeFormat.format(from) + " - " + timeFormat.format(to);
                 const popover = document.createElement("div");
                 popover.classList.add("c-local-time")
