@@ -3,7 +3,7 @@ layout: post
 title:  "What's new in WildFly provisioning"
 date:   2024-01-31
 tags: galleon provisioning wildfly-glow wildfly-maven-plugin
-author: jdenise
+author: jfdenise
 description: What's new in WildFly provisioning.
 ---
 
