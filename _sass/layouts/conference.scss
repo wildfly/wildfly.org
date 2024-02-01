@@ -20,12 +20,11 @@
 
   .c-session {
     background-color: $blue;
-    border-bottom: 1px solid white;
     display: flex;
     padding: 2rem 1rem;
 
-    &:last-child {
-      border-bottom: none;
+    &:not(:last-of-type){
+      border-bottom: 1px solid white;
     }
   }
 
@@ -35,11 +34,12 @@
 
   .c-time {
     display: flex;
-    flex-direction: column;
-    padding-right: 4rem;
+    flex-direction: row;
+    margin-right: 3rem;
 
     @media (max-width: $breakpoint-m) {
-      padding-right: 2rem;
+      flex-direction: column;
+      margin-right: 2rem;
     }
   }
 
@@ -52,6 +52,35 @@
     @media (max-width: $breakpoint-m) {
       font-size: 1.2rem;
       line-height: 1.5rem;
+    }
+  }
+
+  .c-from {
+    white-space: nowrap;
+    &:after {
+      content: " - ";
+    }
+
+    @media (max-width: $breakpoint-m) {
+      &:after {
+        content: none;
+        white-space: normal;
+      }
+    }
+  }
+
+  .c-local-time:popover-open {
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.5rem;
+    margin: 0 !important;
+    padding: 0.25rem;
+    text-wrap: balance;
+
+    @media (max-width: $breakpoint-m) {
+      font-size: 1rem;
+      line-height: 1.2rem;
     }
   }
 

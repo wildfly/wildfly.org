@@ -18,13 +18,11 @@
 - title: Break
   from: "15:45"
   to: "16:00"
-- title: What is new in WildFly 31 and roadmap for future releases
+- title: What is new in WildFly and roadmap for future releases
   from: "16:00"
   to: "16:45"
   abstract:
-    - "Nostrud eu amet ullamco exercitation mollit voluptate voluptate magna et culpa tempor voluptate nulla nostrud cillum. Amet ea aute elit exercitation labore non duis exercitation in sint consectetur deserunt laboris aliquip veniam sunt nulla."
-    - "Quis consectetur sit anim in quis ex eiusmod tempor consequat do ea exercitation nisi anim. Duis dolor sint veniam deserunt dolor aliquip laboris consequat esse deserunt esse eiusmod commodo."
-    - "Dolor excepteur pariatur cillum elit ad mollit ad est esse ea cillum eiusmod cupidatat proident in esse."
+    - "In this session we'll provide an overview of what's new in the WildFly project in the last several months, particularly in the WildFly 31 release. Then we'll describe where we see things going in WildFly over the remainder of 2024 -- release plans, a possible roadmap for Jakarta EE 11 support, plans around Java SE support and ideas around significant new features and initiatives."
   speaker: bstansberry
 - title: WildFly Glow
   from: "16:45"
