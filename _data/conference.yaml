@@ -12,8 +12,7 @@
   from: "15:00"
   to: "15:45"
   abstract:
-    - "Dolor ex aute excepteur minim esse aliquip quis officia mollit sit veniam aliquip duis enim proident. Quis labore ullamco minim labore anim non ea id eu dolore fugiat adipiscing irure deserunt. Pariatur adipiscing eu amet cupidatat laborum officia et commodo voluptate irure est occaecat. Labore est nulla enim non deserunt do dolore ad officia dolore non commodo ad consectetur qui consectetur dolore non. Anim et proident occaecat nisi in dolore velit mollit velit aute esse deserunt nulla pariatur magna veniam do."
-    - "Labore amet ullamco veniam elit reprehenderit esse et sit ea occaecat esse incididunt ad. Id consectetur mollit elit sint velit consequat consectetur cillum nostrud sit do quis elit exercitation labore et officia velit. Laborum lorem laborum velit magna sunt in esse veniam nostrud qui nisi."
+    - "In this session, we'll see how Ansible can help deploy, configure, managed and maintened up to date Wildfly on any platform, from bare metal to VM and even clouds. We'll deal with Day 1 tasks in fully automated fashion, but also cover how to keep the system running after the initial deployment (Day 2)."
   speaker: [jmesnil, rpelisse]
 - title: Break
   from: "15:45"
