@@ -13,7 +13,7 @@
   to: "15:45"
   abstract:
     - "In this session, we'll see how Ansible can help deploy, configure, managed and maintened up to date Wildfly on any platform, from bare metal to VM and even clouds. We'll deal with Day 1 tasks in fully automated fashion, but also cover how to keep the system running after the initial deployment (Day 2)."
-  speaker: [jmesnil, rpelisse]
+  speaker: rpelisse
 - title: Break
   from: "15:45"
   to: "16:00"
