@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Vlog: Introduction to WildFly Glow'
+date: 2024-02-05
+tags: wildfly glow galleon openshift provisioning
+synopsis: Learn how to slim your WildFly installations by inspecting your application archives with WildFly Glow.
+author: kkhan
+link: https://www.youtube.com/watch?v=kt8pTDmTitw
+---
+
