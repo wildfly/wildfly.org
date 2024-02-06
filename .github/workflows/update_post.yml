@@ -33,7 +33,6 @@ jobs:
           readonly COMMIT_EMAIL="wildfly-dev@lists.jboss.org"
 
           FIX_BRANCH_NAME=''
-          PR_TITLE=""
           SOURCE_LINK=""
           if [ "${ORIGINAL_PR}" != '' ]; then
             echo "Checking out PR${ORIGINAL_PR}"
@@ -41,13 +40,11 @@ jobs:
             FIX_BRANCH_NAME="fix_pr_${ORIGINAL_PR}"
 
             SOURCE_LINK="[PR${ORIGINAL_PR}]($(gh browse ${ORIGINAL_PR} --repo "${REPO_ID}" -n))"
-            PR_TITLE="Update date of PR: $(gh pr view 1 --repo "${REPO_ID}" --json title --jq '.title')"
           else
             echo "Using branch main"
             FIX_BRANCH_NAME="fix_pr_main"
 
             SOURCE_LINK="[main]($(gh browse -b main -n --repo "${REPO_ID}"))"
-            PR_TITLE="Update date of post: ${OLD_POST}"
           fi
 
           if [ ! -f "_posts/${OLD_POST}" ]; then
@@ -72,9 +69,10 @@ jobs:
           git config --global user.name "${COMMIT_USERNAME}"
           git config --global user.email "${COMMIT_EMAIL}"
 
-          git commit -am "Update ${OLD_POST} blog date"
+          readonly COMMIT_MESSAGE="Update ${OLD_POST} blog date"
+          git commit -am "${COMMIT_MESSAGE}"
           git push --set-upstream origin "${FIX_BRANCH_NAME}"
 
-          gh pr create --title "${PR_TITLE}"\
+          gh pr create --title "${COMMIT_MESSAGE}"\
            --body "Date update for ${OLD_POST} from ${SOURCE_LINK}"\
            --repo "${REPO_ID}"
