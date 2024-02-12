@@ -1,0 +1,40 @@
+- title: Welcome and opening ceremony
+  from: "14:00"
+  to: "14:15"
+- title: Introduction to WildFly and how to get started fast
+  from: "14:15"
+  to: "15:00"
+  abstract:
+    - "In this session the WildFly project itself will be introduced. You will get to know the different components that make up WildFly. We will take a closer look at the architecture and internal functionality of WildFly."
+    - "The session will also include a demo how to get started fast and how to deploy and evolve a very basic application."
+  speaker: hpehl
+  bio: "Harald Pehl is a principal software engineer at Red Hat. He works on the management capabilities of WildFly and leads the management console (HAL)."
+- title: Deploying WildFly applications to bare-metal and the cloud
+  from: "15:00"
+  to: "15:45"
+  abstract:
+    - "In this session, we'll see how Ansible can help deploy, configure, managed and maintened up to date Wildfly on any platform, from bare metal to VM and even clouds. We'll deal with Day 1 tasks in fully automated fashion, but also cover how to keep the system running after the initial deployment (Day 2)."
+  speaker: rpelisse
+  bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (Wildfly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+- title: Break
+  from: "15:45"
+  to: "16:00"
+- title: What is new in WildFly and roadmap for future releases
+  from: "16:00"
+  to: "16:45"
+  abstract:
+    - "In this session we'll provide an overview of what's new in the WildFly project in the last several months, particularly in the WildFly 31 release. Then we'll describe where we see things going in WildFly over the remainder of 2024 -- release plans, a possible roadmap for Jakarta EE 11 support, plans around Java SE support and ideas around significant new features and initiatives."
+  speaker: bstansberry
+  bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
+- title: WildFly Glow
+  from: "16:45"
+  to: "17:30"
+  abstract:
+    - "In this session you will be introduced to WildFly Glow, a new approach to the WildFly provisioning."
+    - "We will cover WildFly provisioning in general, discuss potential issues, and we will see how WildFly Glow simplifies the WildFly provisioning experience."
+    - "During the presentation WildFly Glow tooling will be demonstrated."
+  speaker: jfdenise
+  bio: "Jean-François Denise is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
+- title: Feedback and closing ceremony
+  from: "17:30"
+  to: "18:00"
