@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "WildFly Mini Conference"
-date:   2024-01-31
+date:   2024-02-12
 tags:   announcement conference
 author: hpehl
 description: The WildFly team is hosting a conference.
