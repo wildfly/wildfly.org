@@ -57,10 +57,7 @@ public class GettingStartedService {
     private static Logger log = Logger.getLogger(GettingStartedService.class.getName());
 
     public String hello(String name) {
-        if (log.isEnabled(Logger.Level.TRACE)) {
-            log.trace("called method with: " + name);
-        }
-
+        log.trace("called method with: {}", name);
         String out = String.format("Hello '%s'.", name);
         log.info("returning: " + out);
         return out;
