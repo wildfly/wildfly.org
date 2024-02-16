@@ -11,11 +11,21 @@ display the logs at the level you want.
 
 include::{includedir}/_prerequisites.adoc[]
 
-To use logging in our application, we will add a dependency on `org.jboss.logging:jboss-logging` in the Maven `pom.xml` file.
-Then, we will add a few logs in our code at different levels.
-Finally, we will configure WildFly to change the log level of our application logs independently of WildFly own logs.
+WildFly supports all major logging facades. These include:
 
-== Add Dependency on JBoss Logging
+* https://github.com/jboss-logging/jboss-logging[JBoss Logging]
+* https://sl4fj.org[SLF4J]
+* https://logging.apache.org/log4j/2.x/[Apache Log4j] (2.x+)
+* https://commons.apache.org/proper/commons-logging/[Apache Commons Logging]
+* Java Util Logging
+
+Choose the logging facade you'd like to use and ensure it's added in your Maven `pom.xml` file with a scope of `provided`.
+Then, we will add a few logs in our code at different levels. Finally, we will configure WildFly to change the log level
+of our application logs independently of WildFly own logs.
+
+In our example we will be using JBoss Logging.
+
+== Add a Dependency on JBoss Logging
 
 In order to use JBoss Logging in our application, we need to add a dependency on it in the `pom.xml`.
 
@@ -26,6 +36,7 @@ The dependency is defined as:
 <dependency>
     <groupId>org.jboss.logging</groupId>
     <artifactId>jboss-logging</artifactId>
+    <!-- Provided by WildFly -->
     <scope>provided</scope>
 </dependency>
 ----
@@ -54,21 +65,19 @@ import org.jboss.logging.Logger;
 @ApplicationScoped
 public class GettingStartedService {
 
-    private static Logger log = Logger.getLogger(GettingStartedService.class.getName());
+    private static Logger log = Logger.getLogger(GettingStartedService.class);
 
     public String hello(String name) {
-        if (log.isEnabled(Logger.Level.TRACE)) {
-            log.trace("called method with: " + name);
-        }
+        log.tracef("called method with: %s", name);
 
         String out = String.format("Hello '%s'.", name);
-        log.info("returning: " + out);
+        log.infof("returning: %s", out);
         return out;
     }
 }
 ----
 
-You added a `log` Logger that can log message with the category corresponding to the class package `org.wildfly.examples`.
+You added a `log` Logger that can log messages with a name corresponding to the class `org.wildfly.examples.GettingStartedService`.
 You also added two logging calls, one at the `TRACE` level and the other one at the `INFO` level.
 
 If you run the integration tests with `mvn clean verify`, you will only see the logs at the `INFO` level in the standard output:
@@ -94,13 +103,20 @@ First, we add a `configuration.cli` in the `src/main/scripts` directory:
 
 [source]
 ----
+# Start the embedded server
+embed-server
 # let the console display TRACE logs
 /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=TRACE)
-# create the logger for our code (with the category org.wildfly.examples corresponding to our package)
+# create the logger for our code (with the name org.wildfly.examples corresponding to our package)
 /subsystem=logging/logger=org.wildfly.examples:add(level=TRACE)
+stop-embedded-server
 ----
 
-This script contains the management operations to change the WildFly configuration. We could invoke any management operations but, in this case, we only modify the `/subsystem=logging` resources that control the logging aspects.
+NOTE: We use the logger name `org.wildfly.examples` instead of the full logger name. This will allow trace logs from
+      all loggers which have this same base name.
+
+This script contains the management operations to change the WildFly configuration. We could invoke any management operations but,
+in this case, we only modify the `/subsystem=logging` resources that control the logging aspects.
 
 You then need to modify the `wildfly-maven-plugin` configuration in `pom.xml` to execute this:
 
@@ -108,27 +124,34 @@ Copy the XML snippet:
 
 [source,xml]
 ----
-<packaging-scripts>
-    <packaging-script>
-        <scripts>
-            <script>${project.build.scriptSourceDirectory}/configuration.cli</script>
-        </scripts>
-    </packaging-script>
-</packaging-scripts>
+<!-- Execute the script in offline mode -->
+<offline>true</offline>
+<scripts>
+    <script>${project.build.scriptSourceDirectory}/configuration.cli</script>
+</scripts>
 ----
 
 And add it to the `<configuration>` section of the `wildfly-maven-plugin`:
 
-[source]
+[source,xml]
 ----
 <plugin>
     <groupId>org.wildfly.plugins</groupId>
     <artifactId>wildfly-maven-plugin</artifactId>
     <version>${version.wildfly.maven.plugin}</version>
     <configuration>
-        ...
         <!-- copy the XML snippet here -->
     </configuration>
+    <executions>
+        <execution>
+            <id>provision-server</id>
+            <phase>package</phase>
+            <goals>
+                <goal>provision</goal>
+                <goal>execution-commands</goal>
+            </goals>
+        </execution>
+    </executions>
 </plugin>
 ----
 
