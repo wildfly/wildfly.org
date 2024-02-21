@@ -31,6 +31,9 @@ categories:
       - title: Securing WildFly Apps with SAML on OpenShift
         url: /guides/security-saml-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
+      - title: Securing WildFly Apps with Okta on OpenShift
+        url: /guides/security-oidc-okta-openshift
+        description: Learn how to secure applications deployed to WildFly on OpenShift with the Okta OpenID provider.
   - category: MicroProfile
     cat-id: microprofile
     guides:
