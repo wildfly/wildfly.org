@@ -55,6 +55,9 @@ jobs:
           echo "Creating a new branch: "
           git checkout -b "${FIX_BRANCH_NAME}"
           
+          git config --global user.name "${COMMIT_USERNAME}"
+          git config --global user.email "${COMMIT_EMAIL}"
+          
           if [ "${ORIGINAL_PR}" != '' ]; then
             # Issue_549 Merge main into FIX_BRANCH_NAME to avoid permission issues if main
             # includes .github/workflows changes that are not in the PR branch
@@ -74,8 +77,6 @@ jobs:
           git mv _posts/${OLD_POST} _posts/${NEW_POST}
 
           echo "Committing changes and creating update PR"
-          git config --global user.name "${COMMIT_USERNAME}"
-          git config --global user.email "${COMMIT_EMAIL}"
 
           readonly COMMIT_MESSAGE="Update ${OLD_POST} blog date"
           git commit -am "${COMMIT_MESSAGE}"
