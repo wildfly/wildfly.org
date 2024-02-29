@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Vlog: Securing WildFly Apps with Okta on OpenShift'
-date: 2024-02-27
+date: 2024-02-29
 tags: oidc openshift okta
 synopsis: Learn how to secure applications deployed to WildFly on OpenShift with the Okta OpenID provider.
 author: prarthonapaul
