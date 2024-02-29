@@ -1,4 +1,4 @@
-name: "Update a blog post's date (with merge)"
+name: "Update the blog post's date"
 
 on:
   workflow_dispatch:
@@ -38,11 +38,6 @@ jobs:
             echo "Checking out PR${ORIGINAL_PR}"
             gh pr checkout "${ORIGINAL_PR}" --repo "${REPO_ID}"
             FIX_BRANCH_NAME="fix_pr_${ORIGINAL_PR}"
-          
-            // Issue_549 Merge main into the PR branch to avoid permission issues if main
-            // includes .github/workflows changes that are not in the PR branch
-            MERGE_TARGET="$(git branch --show-current 2>/dev/null)"
-            git merge main -m "Merge 'main' into '${MERGE_TARGET}'"
 
             SOURCE_LINK="[PR${ORIGINAL_PR}]($(gh browse ${ORIGINAL_PR} --repo "${REPO_ID}" -n))"
           else
@@ -57,10 +52,6 @@ jobs:
             exit 1
           fi
 
-          echo "Creating a new branch: "
-          git checkout -b "${FIX_BRANCH_NAME}"
-          
-          
           readonly OLD_DATE=$(echo ${OLD_POST} | sed -E "s/([0-9]{4}\-[0-9]{2}\-[0-9]{2}).*/\1/")
 
           echo "Replacing ${OLD_DATE} in the blog post"
@@ -71,7 +62,8 @@ jobs:
 
           git mv _posts/${OLD_POST} _posts/${NEW_POST}
 
-          
+          echo "Creating a new branch: "
+          git checkout -b "${FIX_BRANCH_NAME}"
 
           echo "Committing changes and creating update PR"
           git config --global user.name "${COMMIT_USERNAME}"
