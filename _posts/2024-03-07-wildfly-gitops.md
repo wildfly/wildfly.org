@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "WildFly - The GitOps Way"
-date: 2024-03-05
+date: 2024-03-07
 tags: 
 - wildfly
 - gitops
