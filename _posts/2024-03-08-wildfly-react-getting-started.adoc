@@ -1,0 +1,14 @@
+---
+layout: post
+title: 'Hosting a React Application on WildFly'
+date: 2024-03-08
+tags: react wildfly
+synopsis: Creation of a new project bundling a new React application and hosting it on WildFly.
+author: darranl
+link: http://lofthouse.dev/2024/03/07/hosting-a-react-application-on-wildfly/
+---
+
+As part of an upcoming development item I am going to be working with a React application deployed to the WildFly application server and invoking Jakarta RESTful Web Service endpoints to interact with the server side of the application.
+
+I thought others might find it useful to see the steps I have taken. This blog post describes my steps up until the point I have the default React application deployed to WildFly, I may then follow up with some blogs of my subsequent steps.
+

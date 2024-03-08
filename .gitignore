@@ -13,6 +13,7 @@ vendor/
 .buildpath
 .idea
 *.iml
+.vscode
 
 ## OS related
 *.DS_Store
