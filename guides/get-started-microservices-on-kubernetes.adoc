@@ -1,0 +1,41 @@
+---
+layout: getstarted
+title: WildFly Java Microservices on Kubernetes
+---
+:page-liquid:
+
+== In these guides, you will learn how to create simple WildFly Java Microservices and run them on Kubernetes.
+
+=== Intro
+
+In this mini-serie, we will focus on getting started with WildFly Java Microservices on link:https://kubernetes.io/[Kubernetes];
+
+We will start showing how-to create a link:https://docs.docker.com/[Docker Image] containing our WildFly Java Microservice;
+
+Then, we will show how-to run the link:https://docs.docker.com/[Docker Image] on link:https://kubernetes.io/[Kubernetes];
+
+After that, we will show how-to create WildFly Java Microservices on link:https://kubernetes.io/[Kubernetes] that are capable of doing common things like connecting to a Database or interacting with a remote JMS Broker; 
+
+=== Topics
+
+* link:simple-bootable-jar-part1[Simple WildFly Java Microservice - PART 1: Docker Image]
+* link:simple-bootable-jar-part2[Simple WildFly Java Microservice - PART 2: Kubernetes]
+* link:simple-bootable-jar-database-part1[Connecting to a *DB* - PART 1: Docker Image]
+* link:simple-bootable-jar-database-part2[Connecting to a *DB* - PART 2: Kubernetes]
+* link:simple-bootable-jar-jms-part1[Using a *JMS Broker* - PART 1: Docker Image]
+* link:simple-bootable-jar-jms-part2[Using a *JMS Broker* - PART 2: Kubernetes]
+* link:simple-bootable-jar-infinispan-part1[Using *Infinispan* remote cache - PART 1: Docker Image]
+* link:simple-bootable-jar-infinispan-part2[Using *Infinispan* remote cache - PART 2: Kubernetes]
+* link:get-enterprise-ready[Get “Enterprise” ready]
+
+
+=== What's next?
+
+TODO
+
+// Always add this section last to link to any relevant content
+[[references]]
+== References
+
+* https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config]
+

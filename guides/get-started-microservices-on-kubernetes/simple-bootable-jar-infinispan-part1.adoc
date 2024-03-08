@@ -1,0 +1,7 @@
+= Use an Infinispan remote cache - part one: bare metal
+
+
+
+Back to Guides
+
+< link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
