@@ -14,7 +14,7 @@ We will start showing how-to create a link:https://docs.docker.com/[Docker Image
 
 Then, we will show how-to run the link:https://docs.docker.com/[Docker Image] on link:https://kubernetes.io/[Kubernetes];
 
-After that, we will show how-to create WildFly Java Microservices on link:https://kubernetes.io/[Kubernetes] that are capable of doing common things like connecting to a Database or interacting with a remote JMS Broker; 
+After that, we will show how-to create WildFly Java Microservices on link:https://kubernetes.io/[Kubernetes] that are capable of doing common things like connecting to a Database or interacting with a remote JMS Broker;
 
 === Topics
 
