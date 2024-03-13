@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Trying Out An Upcoming Security Feature for WildFly on OpenShift'
-date: 2024-03-12
+date: 2024-03-13
 tags: oidc openshift authentication scopes
 synopsis: How to deploy a WildFly app on OpenShift using an upcoming feature that introduces the ability to add additional scope values when securing applications using OpenID Connect.
 author: prarthonapaul
