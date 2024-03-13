@@ -1,7 +1,192 @@
 = Create a JAX-RS application using Bootable Jar - part one: bare metal
+:summary: ONELINE EXPLANATION OF THE GUIDE
+:includedir: ../_includes
+include::{includedir}/_attributes.adoc[]
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 10
+
+In this guide, you will learn how to run a simple JAX-RS application using Bootable Jar.
+
+include::{includedir}/_prerequisites.adoc[]
+* Any additional prerequisites specific to this guide (eg you have completed a previous guide)
+
+== Maven Project
+
+We will use link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/main/examples/jaxrs[JAX-RS WildFly bootable jar example] from the official link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin[wildfly-jar-maven-plugin] and make a few adjustments to make it a standalone project;
+
+=== Pom File
+
+Create an empty directory which will be the root of your maven project;
+
+Add pom.xml file with the following content to this directory:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>jaxrs</artifactId>
+    <version>11.0.0.Final-SNAPSHOT</version>
+
+    <packaging>war</packaging>
+
+    <name>WildFly Bootable JAR - JAX-RS Example</name>
+    <description>An example of how to use JAX-RS resources</description>
+
+    <properties>
+        <version.bootable.jar>11.0.0.Beta1</version.bootable.jar>
+        <version.wildfly>31.0.1.Final</version.wildfly>
+        <plugin.fork.embedded>true</plugin.fork.embedded>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>10.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-jar-maven-plugin</artifactId>
+                <version>${version.bootable.jar}</version>
+                <configuration>
+                    <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)</feature-pack-location>
+                    <layers>
+                        <layer>jaxrs</layer>
+                        <layer>management</layer>
+                    </layers>
+                    <excluded-layers>
+                        <layer>deployment-scanner</layer>
+                    </excluded-layers>
+                    <plugin-options>
+                        <jboss-fork-embedded>${plugin.fork.embedded}</jboss-fork-embedded>
+                    </plugin-options>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+----
+
+=== JAX-RS Service
+
+In the same directory as the `pom.xml` file, create the following directory tree `src/main/java/org/wildfly/plugins/demo/jaxrs`, like e.g.:
+
+[source,bash]
+----
+mkdir -p src/main/java/org/wildfly/plugins/demo/jaxrs
+----
+
+Then create the two following files:
+
+`src/main/java/org/wildfly/plugins/demo/jaxrs/RestApplication.java`:
+
+[source,java]
+----
+package org.wildfly.plugins.demo.jaxrs;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+
+@ApplicationPath("/")
+public class RestApplication extends Application {
+}
+----
+
+`src/main/java/org/wildfly/plugins/demo/jaxrs/HelloWorldEndpoint.java`:
+
+[source,java]
+----
+package org.wildfly.plugins.demo.jaxrs;
 
 
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Produces;
 
-Back to Guides
+
+@Path("/hello")
+public class HelloWorldEndpoint {
+    @GET
+    @Produces("text/plain")
+    public Response doGet() {
+        return Response.ok("Hello from WildFly bootable jar!").build();
+    }
+}
+----
+
+== Build the application
+
+[source,bash]
+----
+mvn clean package
+----
+
+== Run the application
+
+[source,bash]
+----
+java -jar target/jaxrs-bootable.jar
+...
+18:07:54,229 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0006: Undertow HTTP listener default listening on 127.0.0.1:8080
+18:07:54,666 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 15) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.wildfly.plugins.demo.jaxrs.RestApplication
+18:07:54,682 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 15) WFLYUT0021: Registered web context: '/' for server 'default-server'
+18:07:54,684 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0010: Deployed "jaxrs.war" (runtime-name : "ROOT.war")
+18:07:54,696 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
+18:07:54,698 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+18:07:54,698 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
+18:07:54,698 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.1.Final (WildFly Core 23.0.3.Final) started in 944ms - Started 159 of 163 services (30 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+
+As you can see the applications starts in less than a second!
+
+== Check the application
+
+You can hit this url link:http://127.0.0.1:8080/hello[http://127.0.0.1:8080/hello] in your browser or you can use an utility like `curl`:
+
+[source,bash]
+----
+curl http://127.0.0.1:8080/hello
+
+Hello from WildFly bootable jar!
+----
+
+
+== What's next?
+
+Next we are going to deploy the same service on Kubernetes: link:simple-bootable-jar-part2[Create a JAX-RS application using Bootable Jar - part two: Kubernetes]
+
+[[references]]
+== References
+
+* https://docs.wildfly.org/bootablejar/[WildFly Bootable JAR Documentation]
 
 < link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
