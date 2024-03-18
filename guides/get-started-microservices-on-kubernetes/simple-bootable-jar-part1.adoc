@@ -2,191 +2,243 @@
 :summary: ONELINE EXPLANATION OF THE GUIDE
 :includedir: ../_includes
 include::{includedir}/_attributes.adoc[]
-// you can override any attributes eg to lengthen the
-// time to complete the guide
 :prerequisites-time: 10
 
 In this guide, you will learn how to run a simple JAX-RS application using Bootable Jar.
 
 include::{includedir}/_prerequisites.adoc[]
-* Any additional prerequisites specific to this guide (eg you have completed a previous guide)
+
+* link:/get-started[Getting Started with WildFly]
+
+include::_includes/_dependencies.adoc[]
 
 == Maven Project
 
-We will use link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/main/examples/jaxrs[JAX-RS WildFly bootable jar example] from the official link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin[wildfly-jar-maven-plugin] and make a few adjustments to make it a standalone project;
+In link:/get-started[Getting Started with WildFly], we created a simple Jakarta EE application Maven project;
+
+We'll pick up from there;
+
+We will get inspired by link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/main/examples/jaxrs[JAX-RS WildFly bootable jar example] in the official link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin[wildfly-jar-maven-plugin] and make a few adjustments to make it a standalone project;
 
 === Pom File
 
-Create an empty directory which will be the root of your maven project;
+Since we are going to deploy on link:https://kubernetes.io/[Kubernetes], we need to add some more features, like
+link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Liveness, Readiness and Startup Probes];
 
-Add pom.xml file with the following content to this directory:
+We can add these features by adding the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] to our application;
 
-[source,xml]
+To achieve this, add the following to your *wildfly-jar-maven-plugin* configuration:
+
+[source,xml,subs="normal"]
 ----
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.wildfly.plugins</groupId>
-    <artifactId>jaxrs</artifactId>
-    <version>11.0.0.Final-SNAPSHOT</version>
-
-    <packaging>war</packaging>
-
-    <name>WildFly Bootable JAR - JAX-RS Example</name>
-    <description>An example of how to use JAX-RS resources</description>
-
-    <properties>
-        <version.bootable.jar>11.0.0.Beta1</version.bootable.jar>
-        <version.wildfly>31.0.1.Final</version.wildfly>
-        <plugin.fork.embedded>true</plugin.fork.embedded>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>jakarta.platform</groupId>
-                <artifactId>jakarta.jakartaee-api</artifactId>
-                <version>10.0.0</version>
-                <scope>provided</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <finalName>${project.artifactId}</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-jar-maven-plugin</artifactId>
-                <version>${version.bootable.jar}</version>
-                <configuration>
-                    <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)</feature-pack-location>
-                    <layers>
-                        <layer>jaxrs</layer>
-                        <layer>management</layer>
-                    </layers>
-                    <excluded-layers>
-                        <layer>deployment-scanner</layer>
-                    </excluded-layers>
-                    <plugin-options>
-                        <jboss-fork-embedded>${plugin.fork.embedded}</jboss-fork-embedded>
-                    </plugin-options>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-</project>
+    <feature-pack>
+        <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
+    </feature-pack>
 ----
 
-=== JAX-RS Service
+You should end up with a configuration like the following:
 
-In the same directory as the `pom.xml` file, create the following directory tree `src/main/java/org/wildfly/plugins/demo/jaxrs`, like e.g.:
-
-[source,bash]
+[source,xml,subs="normal"]
 ----
-mkdir -p src/main/java/org/wildfly/plugins/demo/jaxrs
-----
-
-Then create the two following files:
-
-`src/main/java/org/wildfly/plugins/demo/jaxrs/RestApplication.java`:
-
-[source,java]
-----
-package org.wildfly.plugins.demo.jaxrs;
-
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
-
-@ApplicationPath("/")
-public class RestApplication extends Application {
-}
-----
-
-`src/main/java/org/wildfly/plugins/demo/jaxrs/HelloWorldEndpoint.java`:
-
-[source,java]
-----
-package org.wildfly.plugins.demo.jaxrs;
-
-
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Produces;
-
-
-@Path("/hello")
-public class HelloWorldEndpoint {
-    @GET
-    @Produces("text/plain")
-    public Response doGet() {
-        return Response.ok("Hello from WildFly bootable jar!").build();
-    }
-}
+    <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>${version.wildfly.maven.plugin}</version>
+        <configuration>
+            <feature-packs>
+                <feature-pack>
+                    <location>org.wildfly:wildfly-galleon-pack:{version-wildfly-galleon-pack}</location>
+                </feature-pack>
+                <feature-pack>
+                    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
+                </feature-pack>
+            </feature-packs>
+            <layers>
+                <layer>cloud-server</layer>
+            </layers>
+        </configuration>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>package</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
 ----
 
-== Build the application
+=== Build the application
 
 [source,bash]
 ----
 mvn clean package
 ----
 
-== Run the application
+=== Run the application
 
 [source,bash]
 ----
-java -jar target/jaxrs-bootable.jar
+$ ./target/server/bin/standalone.sh
 ...
-18:07:54,229 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0006: Undertow HTTP listener default listening on 127.0.0.1:8080
-18:07:54,666 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 15) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.wildfly.plugins.demo.jaxrs.RestApplication
-18:07:54,682 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 15) WFLYUT0021: Registered web context: '/' for server 'default-server'
-18:07:54,684 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0010: Deployed "jaxrs.war" (runtime-name : "ROOT.war")
-18:07:54,696 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
-18:07:54,698 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
-18:07:54,698 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
-18:07:54,698 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.1.Final (WildFly Core 23.0.3.Final) started in 944ms - Started 159 of 163 services (30 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+16:49:27,551 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 1960ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-As you can see the applications starts in less than a second!
+As you can, see the applications started in less than 2 seconds!
 
-== Check the application
+=== Check Liveness, Readiness and Startup Probes
 
-You can hit this url link:http://127.0.0.1:8080/hello[http://127.0.0.1:8080/hello] in your browser or you can use an utility like `curl`:
+You can hit this urls
+* link:http://127.0.0.1:9990/health/live[http://127.0.0.1:9990/health/live]
+* link:http://127.0.0.1:9990/health/ready[http://127.0.0.1:9990/health/ready]
+* link:http://127.0.0.1:9990/health/started[http://127.0.0.1:9990/health/started]
+
+in your browser, or you can use a utility like `curl`:
 
 [source,bash]
 ----
-curl http://127.0.0.1:8080/hello
-
-Hello from WildFly bootable jar!
+$ curl http://127.0.0.1:9990/health/live
+{"status":"UP","checks":[{"name":"empty-liveness-checks","status":"UP"}]}
+$ curl http://127.0.0.1:9990/health/ready
+{"status":"UP","checks":[{"name":"suspend-state","status":"UP","data":{"value":"RUNNING"}},{"name":"server-state","status":"UP","data":{"value":"running"}},{"name":"deployments-status","status":"UP","data":{"ROOT.war":"OK"}},{"name":"boot-errors","status":"UP"},{"name":"ready-deployment.ROOT.war","status":"UP"}]}
+$ curl http://127.0.0.1:9990/health/started
+{"status":"UP","checks":[{"name":"started-deployment.ROOT.war","status":"UP"}]}
 ----
 
+== Dockerfile
+
+To create a Docker Image containing the application we just built, we need a *Dockerfile* (see e.g. link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile]);
+
+Create a file named *Dockerfile* in the same directory as the *pom.xml* file, with the following content:
+
+[source,dockerfile]
+----
+ARG runtime_image=quay.io/wildfly/wildfly-runtime:latest
+FROM ${runtime_image}
+COPY --chown=jboss:root target/server $JBOSS_HOME
+RUN chmod -R ug+rwX $JBOSS_HOME
+----
+
+Build the Docker Image with the following command:
+
+[source,bash]
+----
+podman build -t myapp:latest .
+----
+
+== Image Registry
+
+We need an Image registry where to push the Docker Image we just built; this way we can make the image available to Kubernetes;
+
+We are going to use link:quay.io[quay.io];
+
+Create an account and a repository on link:quay.io[quay.io]; in the following example, we're going to use one we already created;
+
+Tag the Docker Image:
+
+[source,bash]
+----
+podman tag myapp quay.io/tborgato/myapp
+----
+
+Push the Docker Image to the Image Registry:
+
+[source,bash]
+----
+podman push quay.io/tborgato/myapp
+----
+
+== Kubernetes
+
+We are going to use link:https://minikube.sigs.k8s.io/docs/[minikube];
+
+link:https://minikube.sigs.k8s.io/docs/[minikube] creates a one node Kubernetes cluster locally;
+
+follow the instructions in link:https://minikube.sigs.k8s.io/docs/start/[minikube start];
+
+Any other Kubernetes cluster is fine, in case you have one already running;
+
+To deploy our Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-myapp.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+
+[source,yaml]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: quay.io/tborgato/myapp
+        ports:
+        - containerPort: 8080
+        - containerPort: 9990
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 9990
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 9990
+        startupProbe:
+          httpGet:
+            path: /health/started
+            port: 9990
+----
+
+Deploy to link:https://minikube.sigs.k8s.io/docs/[minikube]:
+
+[source,bash]
+----
+$ kubectl apply -f deployment-myapp.yaml
+deployment.apps/myapp-deployment configured
+----
+
+Expose your deployment:
+
+[source,bash]
+----
+$ kubectl expose deployment.apps/myapp-deployment --type=NodePort --port=8080
+service/myapp-deployment exposed
+----
+
+== Check your application
+
+Find out how  is exposing your service:
+
+[source,bash]
+----
+$ minikube service myapp-deployment --url
+http://192.168.39.12:31601
+----
+
+Verify it's working as expected:
+
+[source,bash]
+----
+$ curl http://192.168.39.12:31601/hello/pippo
+Hello 'pippo'.
+----
 
 == What's next?
 
-Next we are going to deploy the same service on Kubernetes: link:simple-bootable-jar-part2[Create a JAX-RS application using Bootable Jar - part two: Kubernetes]
+Next, we are going to deploy the same service on Kubernetes: link:simple-bootable-jar-part2[Create a JAX-RS application using Bootable Jar - part two: Kubernetes]
 
 [[references]]
 == References
 
 * https://docs.wildfly.org/bootablejar/[WildFly Bootable JAR Documentation]
+* https://www.wildfly.org/news/2020/10/19/bootable-jar-2.0-released/[WildFly Bootable JAR is final!]
 
 < link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]

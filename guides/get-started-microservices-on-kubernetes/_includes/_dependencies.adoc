@@ -1,0 +1,12 @@
+// mini series
+:jaxrs-example-project-groupId: org.wildfly.examples
+:jaxrs-example-project-artifactId: jaxrs
+:jaxrs-example-project-version: 11.0.0.Final-SNAPSHOT
+:version-bootable-jar: 11.0.0.Beta1
+:version-wildfly-galleon-pack: 31.0.1.Final
+:jakarta-jakartaee-api-version: 10.0.0
+:version-junit-jupiter-api: 5.10.2
+:version-arquillian-junit5-container: 1.8.0.Final
+:version-org-wildfly-arquillian-wildfly-arquillian: 5.1.0.Beta1
+:version-resteasy-client: 6.2.7.Final
+:version-wildfly-cloud-galleon-pack: 6.0.0.Final
