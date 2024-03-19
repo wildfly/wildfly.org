@@ -9,7 +9,7 @@ layout: base
   <div class="grid__item width-2-12 rss-btn">
     <a href="{{site.baseurl}}/feed.xml"><i class="fas fa-rss-square"></i></a>
   </div>
-  
+
 
   <div class="grid__item width-10-12 width-12-12-m">
       {% for post in paginator.posts %}
@@ -37,9 +37,10 @@ layout: base
     {% endfor %}
     {% if paginator.total_pages > 1 %}
       <div class="paginator-btns">
-        {% if paginator.previous_page %}
-          <a href="{{ paginator.previous_page_path | prepend: site.baseurl }}" class="button-cta secondary">Newer Posts</a>
-        {% endif %}
+        {%- capture visibility -%}
+        {%- if paginator.previous_page -%}visible{%- else -%}hidden{%- endif -%}
+        {%- endcapture -%}
+        <a href="{{ paginator.previous_page_path | prepend: site.baseurl }}" class="button-cta secondary" style="visibility: {{visibility}}">Newer Posts</a>
         {% if paginator.next_page %}
           <a href="{{ paginator.next_page_path | prepend: site.baseurl }}" class="button-cta secondary">Older Posts</a>
         {% endif %}
