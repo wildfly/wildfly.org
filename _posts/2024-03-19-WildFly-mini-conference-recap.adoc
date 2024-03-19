@@ -22,4 +22,4 @@ For those who want to take a look at the slides, here are the links.
 * https://www.wildfly.org/assets/data/wmc_whats_new_and_roadmap.pdf[What is new in WildFly and roadmap for future releases]
 * https://www.wildfly.org/assets/data/wmc_glow.pdf[WildFly Glow]
 
-You'll find the links also on the link:/conference/[conference page] and in the description of the https://www.youtube.com/watch?v=_8g1rZ80u2A[YouTube video].
+You'll find the links also on the https://www.wildfly.org/conference/[conference page] and in the description of the https://www.youtube.com/watch?v=_8g1rZ80u2A[YouTube video].
