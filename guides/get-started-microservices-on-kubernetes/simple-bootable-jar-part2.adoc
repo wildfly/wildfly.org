@@ -1,6 +1,186 @@
 = Create a JAX-RS application using Bootable Jar - part two: Kubernetes
+:summary: ONELINE EXPLANATION OF THE GUIDE
+:includedir: ../_includes
+include::{includedir}/_attributes.adoc[]
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 10
 
+In this guide, you will learn how to run a simple JAX-RS application using Bootable Jar on Kubernetes.
 
+include::{includedir}/_prerequisites.adoc[]
+* You have completed link:simple-bootable-jar-part1.adoc[Create a JAX-RS application using Bootable Jar - part one: bare metal]
+
+include::_includes/_dependencies.adoc[]
+
+== Re-build your Bootable Jar for Kubernetes
+
+At the end of link:simple-bootable-jar-part1.adoc[Create a JAX-RS application using Bootable Jar - part one: bare metal] we obtained a jar file we could run like:
+
+[source,bash]
+----
+java -jar target/jaxrs-bootable.jar
+----
+
+Bootable Jar and WildFly offer a series of features that make you java application "cloud ready";
+for example, it can automatically add health checks: Kubernetes uses health checks to verify your application is healthy;
+
+=== Pom file
+
+To enable these features, add the `cloud` configuration tag to your `wildfly-jar-maven-plugin` plugin configuration;
+let's do this by adding the following profile to the `pom.xml` file of your application:
+
+[source,xml]
+----
+<profile>
+    <id>kubernetes</id>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-jar-maven-plugin</artifactId>
+                <version>${version.bootable.jar}</version>
+                <configuration>
+                    <cloud>
+                        <type>kubernetes</type>
+                    </cloud>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</profile>
+----
+
+=== Build the application
+
+Now rebuild the application activating this profile:
+
+[source,bash]
+----
+mvn clean package -P kubernetes
+----
+
+== Containerize your Bootable Jar application
+
+Now we'll create a Docker image which contains the `jaxrs-bootable.jar` Bootable Jar JAX-RS application;
+
+=== Docker file
+
+Create a simple `Dockerfile` file in the root directory of the project:
+[source,dockerfile]
+----
+FROM docker.io/library/openjdk:11
+USER root
+COPY target/jaxrs-bootable.jar /opt/
+RUN chown -R 185:0 /opt/jaxrs-bootable.jar
+USER 185
+CMD java -jar /opt/jaxrs-bootable.jar
+----
+
+=== Build the Docker image
+
+Build the Docker image using link:https://www.docker.com/[docker] or link:https://podman.io/[podman]:
+
+NOTE: in this guide we will use link:https://podman.io/[podman] but you can switch to link:https://www.docker.com/[docker] by replacing `podman` with `docker` in all the following commands;
+
+[source,bash]
+----
+podman build --tag jaxrs -f ./Dockerfile
+----
+
+After you run the command, in the command output, you will see the `jaxrs` Docker image has been built and stored locally:
+
+[source,bash]
+----
+STEP 1/6: FROM docker.io/library/openjdk:11
+STEP 2/6: USER root
+--> Using cache 6dcd67549f833c7be17f1800b8649b22a5978e3c3abcfff44555c35dc289ec8b
+--> 6dcd67549f83
+STEP 3/6: COPY target/jaxrs-bootable.jar /opt/
+--> 2e31406fc5db
+STEP 4/6: RUN chown -R 185:0 /opt/jaxrs-bootable.jar
+--> eb62f26e81cc
+STEP 5/6: USER 185
+--> 64b110b61373
+STEP 6/6: CMD java -jar /opt/jaxrs-bootable.jar
+COMMIT jaxrs
+--> 9f63417042b9
+Successfully tagged localhost/jaxrs:latest
+9f63417042b93d4cbb5785199e63547fceebe0442571e7b6b15a41991df1cafa
+----
+
+=== Run the Containerized Bootable Jar application locally
+
+Let's check our brand-new image works as expected;
+
+Run the following command:
+
+[source,bash]
+----
+podman run --rm -p 8080:8080 -p 9990:9990 --name=jaxrs jaxrs
+----
+
+After you run the command, in the command output, you will see the `jaxrs` Docker image is started:
+
+[source,bash]
+----
+17:27:35,411 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-6) WFLYSRV0027: Starting deployment of "jaxrs.war" (runtime-name: "ROOT.war")
+17:27:35,412 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-2) WFLYUT0006: Undertow HTTP listener default listening on [0:0:0:0:0:0:0:0]:8080
+17:27:35,716 WARN  [org.jboss.as.jaxrs] (MSC service thread 1-1) WFLYRS0031: Failed to load RESTEasy MicroProfile Configuration: org.jboss.resteasy.microprofile.config.ConfigConfigurationFactory from [Module "deployment.ROOT.war" from Service Module Loader]
+17:27:35,999 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 25) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.wildfly.plugins.demo.jaxrs.RestApplication
+17:27:36,028 INFO  [org.hibernate.validator.internal.util.Version] (ServerService Thread Pool -- 25) HV000001: Hibernate Validator 8.0.1.Final
+17:27:36,045 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 25) WFLYUT0021: Registered web context: '/' for server 'default-server'
+17:27:36,047 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0010: Deployed "jaxrs.war" (runtime-name : "ROOT.war")
+17:27:36,062 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
+17:27:36,064 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://0.0.0.0:9990/management
+17:27:36,064 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
+17:27:36,064 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.1.Final (WildFly Core 23.0.3.Final) started in 1243ms - Started 167 of 172 services (32 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+
+Verify the applications is up and running by hitting this url link:http://127.0.0.1:8080/hello[http://127.0.0.1:8080/hello] in your browser;
+alternatively, or you can use a utility like `curl`:
+
+[source,bash]
+----
+curl http://127.0.0.1:8080/hello
+Hello from WildFly bootable jar!
+----
+
+Also verify that the health endpoint is working;
+
+[source,bash]
+----
+curl http://0.0.0.0:9990/health
+{"status":"UP","checks":[{"name":"boot-errors","status":"UP"},{"name":"empty-startup-checks","status":"UP"},{"name":"suspend-state","status":"UP","data":{"value":"RUNNING"}},{"name":"empty-readiness-checks","status":"UP"},{"name":"server-state","status":"UP","data":{"value":"running"}},{"name":"deployments-status","status":"UP","data":{"jaxrs.war":"OK"}},{"name":"empty-liveness-checks","status":"UP"}]}
+----
+
+== Run the Containerized Bootable Jar application on Kubernetes
+
+=== Push the Docker image to an image registry
+
+First we need to tag our Docker image:
+
+[source,bash]
+----
+podman image ls
+REPOSITORY                                                                             TAG             IMAGE ID      CREATED         SIZE
+localhost/jaxrs
+----
+
+[source,bash]
+----
+podman tag localhost/jaxrs quay.io/tborgato/jaxrs
+----
+
+Then push it to your repository;
+
+[source,bash]
+----
+podman pull quay.io/tborgato/jaxrs
+----
+
+=== Create a Kubernetes deployment
 
 Back to Guides
 
