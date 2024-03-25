@@ -43,6 +43,9 @@ categories:
       - title: Using MicroProfile Config
         url: /guides/use-microprofile-config
         description: Discover how to use MicroProfile Config With WildFly.
+      - title: Using MicroProfile Reactive Messaging with Secured AMQP Connector to connect to AMQ 7 on OpenShift
+        url: /guides/use-microprofile-amqp-connector-with-ssl-openshift
+        description: Discover how to securely connect to AMQ 7 deployed on OpenShift using MicroProfile Reactive Messaging application & AMQP connector.
 #      - title: Using MicroProfile LRA
 #        url: /guides/use-microprofile-lra
 #        description: Discover how to use MicroProfile LRA With WildFly.
