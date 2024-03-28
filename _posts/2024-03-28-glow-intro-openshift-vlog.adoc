@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Vlog: WildFly Glow, direct deployment to OpenShift'
+date: 2024-03-28
+tags: wildfly glow galleon openshift provisioning
+synopsis: In this video we are covering the pre-requisites required to interact with your OpenShift cluster from WildFly Glow CLI. Once the environment is setup, we are building and deploying an application to OpenShift cluster.
+author: jfdenise
+link: https://youtu.be/GkfSHiqyBDU
+---
+
