@@ -34,15 +34,6 @@
           url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-src.tar.gz
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-src.tar.gz.sha1
-    - name: Quick Start Source Code
-      licence: AL
-      items:
-        - format: Git Tag
-          url: https://github.com/wildfly/quickstart/tree/32.0.0.Beta1
-        - format: zip
-          url: https://github.com/wildfly/quickstart/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-quickstarts.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/quickstart/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-quickstarts.zip.sha1
     - name: Release Notes
       items:
         - format: Notes
