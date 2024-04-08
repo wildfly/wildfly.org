@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "New WildFly 32 Beta release"
-date:   2024-04-07
+date:   2024-04-08
 tags:   announcement release
 author: bstansberry
 description: WildFly 32 Beta is now available for download.
@@ -55,9 +55,9 @@ To allow Galleon to include lower stability features in your installation's gene
 [NOTE]
 ====
 If one wants to have different values for configuration files and packages (i.e. filesystem resources like JBoss Modules modules), then the `<config-stability-level>` and `<package-stability-level>` options are to be used instead of `<stability-level>`.
-The use case for using `config-stability-level` and `package-stability-level` as an alternative to `stability-level` 
-is when the user wishes to generates configurations with features at a given stability level 
-while allowing provisioning of packages at a lower level. 
+The use case for using `config-stability-level` and `package-stability-level` as an alternative to `stability-level`
+is when the user wishes to generates configurations with features at a given stability level
+while allowing provisioning of packages at a lower level.
 The presence of the lower stability level packages allows subsequent update of the configuration, e.g. with the WildFly CLI, to enable lower stability features.
 ====
 
@@ -98,7 +98,7 @@ The following table lists the various Jakarta EE technologies offered by WildFly
 
 |Jakarta Concurrency| 3.1.0-M1 |11
 
-|Jakarta Connectors| 2.1 |10 & 11 
+|Jakarta Connectors| 2.1 |10 & 11
 
 |Jakarta Contexts and Dependency Injection| 4.1.0.RC1 |11
 
