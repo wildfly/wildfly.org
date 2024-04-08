@@ -1,0 +1,164 @@
+---
+layout: post
+title:  "New WildFly 32 Beta release"
+date:   2024-04-08
+tags:   announcement release
+author: bstansberry
+description: WildFly 32 Beta is now available for download.
+---
+
+= WildFly 32 Beta is released!
+
+I'm pleased to announce that the new WildFly and WildFly Preview 32.0.0.Beta1 releases are available for download at https://wildfly.org/downloads.
+
+This is our usual single beta that we release a couple weeks before the 32 Final release. We typically don't do much of a release announcement post for the beta release, but there are a number of things happening with WildFly 32 that users of our betas should know about and that we encourage people who usually don't look at our betas to try out.
+
+== Feature Stability Levels
+
+There a number of new features in WildFly 32 Beta1. I'll wait for the Final release announcement to describe them all; for now I'll just direct you to the link:https://github.com/wildfly/wildfly/releases/tag/32.0.0.Beta1[release notes].
+
+Something that's pretty new in 32 Beta though is that we've started to take advantage of the capabilities introduced in WildFly 31 to introduce link:https://docs.wildfly.org/31/Admin_Guide.html#Feature_stability_levels[features at different stability levels]. The goal here is to allow users who want to look at features in earlier stages of the development lifecycle to easily do so, without leaving users who are not interested in that in a situation where they may inadvertently use those features.
+
+As noted in link:https://docs.wildfly.org/31/Admin_Guide.html#Feature_stability_levels[the documentation], new features are offered at one of four stability levels: `experimental`, `preview`, `commmunity` and 'default`. Most features in both standard WildFly and WildFly Preview are at `default` stability, but increasing numbers of new features will be introduced at the other levels, and hopefully will be promoted in later releases up to `community` or `default`.
+
+Out of the box, standard WildFly allows use of features at `community` or `default` stability, while WildFly Preview allows `preview`, `community` or `default`. If you wish to allow lower stability level features than the out of the box setting, this can be done using the `stability` command line parameter:
+
+```
+bin/standalone.sh --stability=experimental
+```
+
+In WildFly 32 Beta we've introduced features at all four stability levels. You can identify the stability level of new features by looking at the title of the JIRA ssue in the link:https://github.com/wildfly/wildfly/releases/tag/32.0.0.Beta1[release notes]. For features at anything other than `default` stability, the issue title will be prefaced by one of [Experimental], [Preview] or [Community].
+
+=== Tooling Support for Feature Stability Levels
+
+Our Galleon-based provisioning tooling has also had updates related to feature stability levels: we've added configuration options to allow you to control the stability level of features in your installation. This can be used to do things like:
+
+* Prevent the provisioning of lower stability features, so they are not available for use even when the `--stability` server start param is used.
+* Enable the inclusion of lower stability features in the configuration files the provisioning tool generates, avoiding the need to use a post-provisioning tool like the WildFly CLI to incorporate them into the configuration.
+
+To limit your installation level to the highest stability features, you would include the following in your maven plugin configuration:
+
+```
+<galleon-options>
+    <stability-level>default</stability-level>
+</galleon-options>
+```
+
+To allow Galleon to include lower stability features in your installation's generated configuration files, you could do something like:
+
+```
+<galleon-options>
+    <stability-level>preview</stability-level>
+</galleon-options>
+```
+
+[NOTE]
+====
+If one wants to have different values for configuration files and packages (i.e. filesystem resources like JBoss Modules modules), then the `<config-stability-level>` and `<package-stability-level>` options are to be used instead of `<stability-level>`.
+The use case for using `config-stability-level` and `package-stability-level` as an alternative to `stability-level`
+is when the user wishes to generates configurations with features at a given stability level
+while allowing provisioning of packages at a lower level.
+The presence of the lower stability level packages allows subsequent update of the configuration, e.g. with the WildFly CLI, to enable lower stability features.
+====
+
+The link:https://docs.wildfly.org/wildfly-maven-plugin/releases/5.0/[wildfly-maven-plugin 5.0.0.Beta5], link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/releases/tag/11.0.0.Beta2[wildfly-jar-maven-plugin 11.0.0.Beta2] (for bootable jars) and the link:https://github.com/wildfly/galleon/releases/tag/6.0.0.Beta6[Galleon 6.0.0.Beta6] tools all support these stability level configuration options. I encourage you to try them out.
+
+== WildFly Glow
+
+We've also continued to make improvements in link:https://www.wildfly.org/news/2024/01/29/wildfly-glow/[WildFly Glow]. Please try out the link:https://github.com/wildfly/wildfly-glow/releases/tag/1.0.0.Beta13[1.0.0.Beta13 release] and give us your feedback as we head toward the finish line and WildFly Glow 1.0.0.Final.
+
+== WildFly Preview, EE 11 and SE 17
+
+The 32 Beta release introduces a significant inflection in how we are using WildFly Preview. Beginning with this release we are starting to use WildFly Preview to provide a look at what we're doing for Jakarta EE 11 support.  EE 11 won't go GA before this summer, and standard WildFly won't support EE 11 before the WildFly 34 release, at earliest. But when we wrapped up 32 Beta development there were milestone up to release candidate releases of many EE 11 specs and implementations available, so we decided to provide those in WildFly Preview. This means for a number of EE APIs, Preview no long provides an EE 10 compatible implementation.
+
+However, for a number of specifications that are planning changes for EE 11 we are still offering the EE 10 variant. In future releases we'll shift those to the EE 11 variants.
+
+As a result of this shift to EE 11 APIs, *WildFly Preview no longer supports running on Java SE 11.* Going forward, if you want to use WildFly Preview you'll need to use SE 17 or higher.  A number of EE 11 APIs no longer produce SE 11 compatible binaries, which means an EE 11 runtime can no longer support SE 11.
+
+[NOTE]
+====
+This removal of support for SE 11 has no impact on standard WildFly. Standard WildFly 32 continues to support running on SE 11. We do, however, encourage users to move to SE 17 or later, as the general Java ecosystem is moving away from SE 11 support, and eventually standard WildFly will as well.
+====
+
+The following table lists the various Jakarta EE technologies offered by WildFly Preview 32 Beta, along with information about which EE platform version the specification relates to. Note that a number of Jakarta specifications are unchanged between EE 10 and EE 11, while other EE technologies that WildFly offers are not part of EE 11.
+
+[cols=",,",options="header"]
+|=======================================================================
+|Jakarta EE Technology |WildFly Preview Version| EE Version
+
+|Jakarta Activation| 2.1 |10 & 11
+
+|Jakarta Annotations| 3.0.0-M1 |11
+
+|Jakarta Authentication| 3.0 |10
+
+|Jakarta Authorization| 3.0.0-M2 |11
+
+|Jakarta Batch| 2.1 |10 & 11
+
+|Jakarta Concurrency| 3.1.0-M1 |11
+
+|Jakarta Connectors| 2.1 |10 & 11
+
+|Jakarta Contexts and Dependency Injection| 4.1.0.RC1 |11
+
+|Jakarta Debugging Support for Other Languages| 2.0 |10 & 11
+
+|Jakarta Dependency Injection| 2.0 |10 & 11
+
+|Jakarta Enterprise Beans| 4.0 |10 & 11
+
+|Jakarta Enterprise Web Services| 2.0 |10 xref:note1[^1^]
+
+|Jakarta Expression Language| 4.1.0-M1 |11
+
+|Jakarta Interceptors| 2.2.0-RC1 |11
+
+|Jakarta JSON Binding| 3.0 |10 & 11
+
+|Jakarta JSON Processing| 2.1 |10 & 11
+
+|Jakarta Mail| 2.1 |10 & 11
+
+|Jakarta Messaging| 3.1 |10 & 11
+
+| Jakarta MVC
+(_preview stability only_)| 2.1| N/A xref:note2[^2^]
+
+|Jakarta Persistence| 3.2.0-M2 |11
+
+|Jakarta RESTful Web Services| 3.1 |10
+
+|Jakarta Security| 4.0.0-M2 |11
+
+|Jakarta Faces| 4.1.0-M1 |11
+
+|Jakarta Server Pages| 3.1 |10
+
+|Jakarta Servlet| 6.1.0-M2 |11
+
+|Jakarta SOAP with Attachments| 1.3 |10 xref:note1[^1^]
+
+|Jakarta Standard Tag Library| 3.0 |10 & 11
+
+|Jakarta Transactions| 2.0 |10 & 11
+
+|Jakarta Validation| 3.1.0-M2 |11
+
+|Jakarta WebSocket| 2.2.0-M1 |11
+
+|Jakarta XML Binding| 4.0 |10 xref:note1[^1^]
+
+|Jakarta XML Web Services| 4.0 |10 xref:note1[^1^]
+|=======================================================================
+
+Notes:
+
+. [[note1]]This Jakarta EE 10 technology is not part of EE 11 but is still provided by WildFly.
+. [[note2]]Jakarta MVC is not of the Jakarta EE Platform or the Web or Core Profile
+
+Please try all of this out and give us your feedback while we finish up WildFly 32 Final!
+
+Best regards,
+
+Brian
