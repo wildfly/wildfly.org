@@ -21,7 +21,7 @@ Something that's pretty new in 32 Beta though is that we've started to take adva
 
 As noted in link:https://docs.wildfly.org/31/Admin_Guide.html#Feature_stability_levels[the documentation], new features are offered at one of four stability levels: `experimental`, `preview`, `commmunity` and 'default`. Most features in both standard WildFly and WildFly Preview are at `default` stability, but increasing numbers of new features will be introduced at the other levels, and hopefully will be promoted in later releases up to `community` or `default`.
 
-Out of the box, standard WildFly allows use of features at `community` or `default` stability, while WildFly Preview allows `preview`, `community` or `default`. If you wish to allow lower stability level features than the out of the box setting, or if you wish to restrict you installation to higher levels, this can be done using the `stability` command line parameter:
+Out of the box, standard WildFly allows use of features at `community` or `default` stability, while WildFly Preview allows `preview`, `community` or `default`. If you wish to allow lower stability level features than the out of the box setting, this can be done using the `stability` command line parameter:
 
 ```
 bin/standalone.sh --stability=experimental
@@ -65,7 +65,7 @@ The link:https://docs.wildfly.org/wildfly-maven-plugin/releases/5.0/[wildfly-mav
 
 == WildFly Glow
 
-We've also continued to make improvements in link:https://www.wildfly.org/news/2024/01/29/wildfly-glow/[WildFly Glow]. Please try to out the link:https://github.com/wildfly/wildfly-glow/releases/tag/1.0.0.Beta13[1.0.0.Beta13 release] and give us your feedback as we head toward the finish line and WildFly Glow 1.0.0.Final.
+We've also continued to make improvements in link:https://www.wildfly.org/news/2024/01/29/wildfly-glow/[WildFly Glow]. Please try out the link:https://github.com/wildfly/wildfly-glow/releases/tag/1.0.0.Beta13[1.0.0.Beta13 release] and give us your feedback as we head toward the finish line and WildFly Glow 1.0.0.Final.
 
 == WildFly Preview, EE 11 and SE 17
 
