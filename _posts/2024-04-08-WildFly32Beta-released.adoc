@@ -11,7 +11,7 @@ description: WildFly 32 Beta is now available for download.
 
 I'm pleased to announce that the new WildFly and WildFly Preview 32.0.0.Beta1 releases are available for download at https://wildfly.org/downloads.
 
-This is our usual single beta that we release a couple weeks before the 32 Final release. We typically don't do much of a release announcement post for the beta release, but there are a number of things happening with WildFly 32 that users of our betas should know about and that we encourage people who usually don't look at our betas to try out.
+This is our usual single beta that we release a couple of weeks before the 32 Final release. We typically don't do much of a release announcement post for the beta release, but there are a number of things happening with WildFly 32 that users of our betas should know about and that we encourage people who usually don't look at our betas to try out.
 
 == Feature Stability Levels
 
@@ -19,15 +19,16 @@ There a number of new features in WildFly 32 Beta1. I'll wait for the Final rele
 
 Something that's pretty new in 32 Beta though is that we've started to take advantage of the capabilities introduced in WildFly 31 to introduce link:https://docs.wildfly.org/31/Admin_Guide.html#Feature_stability_levels[features at different stability levels]. The goal here is to allow users who want to look at features in earlier stages of the development lifecycle to easily do so, without leaving users who are not interested in that in a situation where they may inadvertently use those features.
 
-As noted in link:https://docs.wildfly.org/31/Admin_Guide.html#Feature_stability_levels[the documentation], new features are offered at one of four stability levels: `experimental`, `preview`, `commmunity` and 'default`. Most features in both standard WildFly and WildFly Preview are at `default` stability, but increasing numbers of new features will be introduced at the other levels, and hopefully will be promoted in later releases up to `community` or `default`.
+As noted in link:https://docs.wildfly.org/31/Admin_Guide.html#Feature_stability_levels[the documentation], new features are offered at one of four stability levels: `experimental`, `preview`, `community` and `default`. Most features in both standard WildFly and WildFly Preview are at `default` stability, but increasing numbers of new features will be introduced at the other levels, and hopefully will be promoted in later releases up to `community` or `default`.
 
-Out of the box, standard WildFly allows use of features at `community` or `default` stability, while WildFly Preview allows `preview`, `community` or `default`. If you wish to allow lower stability level features than the out of the box setting, this can be done using the `stability` command line parameter:
+Out of the box, standard WildFly allows use of features at `community` or `default` stability, while WildFly Preview allows `preview`, `community` or `default`. If you wish to allow lower stability level features than the out-of-the-box setting, this can be done using the `stability` command line parameter:
 
-```
+[source]
+----
 bin/standalone.sh --stability=experimental
-```
+----
 
-In WildFly 32 Beta we've introduced features at all four stability levels. You can identify the stability level of new features by looking at the title of the JIRA ssue in the link:https://github.com/wildfly/wildfly/releases/tag/32.0.0.Beta1[release notes]. For features at anything other than `default` stability, the issue title will be prefaced by one of [Experimental], [Preview] or [Community].
+In WildFly 32 Beta we've introduced features at all four stability levels. You can identify the stability level of new features by looking at the title of the Jira issue in the link:https://github.com/wildfly/wildfly/releases/tag/32.0.0.Beta1[release notes]. For features at anything other than `default` stability, the issue title will be prefaced by one of [Experimental], [Preview] or [Community].
 
 === Tooling Support for Feature Stability Levels
 
@@ -38,25 +39,27 @@ Our Galleon-based provisioning tooling has also had updates related to feature s
 
 To limit your installation level to the highest stability features, you would include the following in your maven plugin configuration:
 
-```
+[source,xml]
+----
 <galleon-options>
     <stability-level>default</stability-level>
 </galleon-options>
-```
+----
 
 To allow Galleon to include lower stability features in your installation's generated configuration files, you could do something like:
 
-```
+[source,xml]
+----
 <galleon-options>
     <stability-level>preview</stability-level>
 </galleon-options>
-```
+----
 
 [NOTE]
 ====
 If one wants to have different values for configuration files and packages (i.e. filesystem resources like JBoss Modules modules), then the `<config-stability-level>` and `<package-stability-level>` options are to be used instead of `<stability-level>`.
 The use case for using `config-stability-level` and `package-stability-level` as an alternative to `stability-level`
-is when the user wishes to generates configurations with features at a given stability level
+is when the user wishes to generate configurations with features at a given stability level
 while allowing provisioning of packages at a lower level.
 The presence of the lower stability level packages allows subsequent update of the configuration, e.g. with the WildFly CLI, to enable lower stability features.
 ====
