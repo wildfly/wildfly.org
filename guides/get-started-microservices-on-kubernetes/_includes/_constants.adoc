@@ -10,3 +10,6 @@
 :version-org-wildfly-arquillian-wildfly-arquillian: 5.1.0.Beta1
 :version-resteasy-client: 6.2.7.Final
 :version-wildfly-cloud-galleon-pack: 6.0.0.Final
+:version-wildfly-maven-plugin: 5.0.0.Final
+:docker-image-name: my-jaxrs-app
+:quay-io-account-name: tborgato

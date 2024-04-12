@@ -1,5 +1,5 @@
-= Connect to a Database - part two: Kubernetes
-
+= {simple-microservice-database-part1}
+include::./_includes/_titles.adoc[]
 
 
 Back to Guides

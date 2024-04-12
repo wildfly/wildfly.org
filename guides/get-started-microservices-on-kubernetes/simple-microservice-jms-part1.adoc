@@ -1,5 +1,5 @@
-= Use an Infinispan remote cache - part one: bare metal
-
+= {simple-microservice-jms-part1}
+include::./_includes/_titles.adoc[]
 
 
 Back to Guides

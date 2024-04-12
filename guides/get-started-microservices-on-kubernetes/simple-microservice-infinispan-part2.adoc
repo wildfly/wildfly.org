@@ -1,5 +1,5 @@
-= Use an Infinispan remote cache - part two: Kubernetes
-
+= {simple-microservice-infinispan-part2}
+include::./_includes/_titles.adoc[]
 
 
 Back to Guides

@@ -1,5 +1,5 @@
-= Use a remote JMS Broker - part one: bare metal
-
+= {simple-microservice-jms-part2}
+include::./_includes/_titles.adoc[]
 
 
 Back to Guides

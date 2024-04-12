@@ -1,5 +1,5 @@
-= Get Enterprise Ready!
-
+= {get-enterprise-ready}
+include::./_includes/_titles.adoc[]
 
 
 Back to Guides

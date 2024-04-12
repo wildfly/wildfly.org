@@ -1,5 +1,5 @@
-= Connect to a Database - part one: bare metal
-
+= {simple-microservice-database-part2}
+include::./_includes/_titles.adoc[]
 
 
 Back to Guides

@@ -1,5 +1,5 @@
-= Use a remote JMS Broker - part two: Kubernetes
-
+= {simple-microservice-infinispan-part1}
+include::./_includes/_titles.adoc[]
 
 
 Back to Guides
