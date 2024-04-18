@@ -87,7 +87,6 @@ public String hello(String name) {
 Save the file and the application will be recompiled and updated in WildFly. If you access the application at http://localhost:8080,
 it will now return the name in upper case.
 
-== Next Steps
+== What's next?
 
-To learn more about WildFly, you can read its https://docs.wildfly.org[documentation,window=_blank]. +
-If you want to learn how to use WildFly on OpenShift, read the https://docs.wildfly.org/{{ site.data.releases | where:"qualifier", "Final" | map: "version" | first | split: "." | first }}/Getting_Started_on_OpenShift.html[Getting Started with WildFly on OpenShift Guide,window=_blank]
+To learn more about WildFly, you can read its https://docs.wildfly.org[documentation,window=_blank]. If you want to learn how to use WildFly on OpenShift, read the https://docs.wildfly.org/{{ site.data.releases | where:"qualifier", "Final" | map: "version" | first | split: "." | first }}/Getting_Started_on_OpenShift.html[Getting Started with WildFly on OpenShift Guide,window=_blank]. In addition, you can also watch the https://youtu.be/_8g1rZ80u2A?t=743[talk,window=_blank] from our first mini conference about getting started with WildFly. Finally you can browse more https://www.wildfly.org/guides/[guides] on a wide range of topics relating to WildFly.
