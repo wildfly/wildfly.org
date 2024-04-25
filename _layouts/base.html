@@ -27,6 +27,10 @@
   <script src="{{ site.baseurl }}assets/javascript/tracking.js"></script>
   <script src="https://design.jboss.org/matomo/matomo.js" async defer></script>
 
+  {% if page.link %}
+  <meta http-equiv="refresh" content="0; {{ page.link }}">
+  {% endif %}
+
 </head>
 
 <body class="{% if page.url == '/' %}homepage{% else %}{{page.title}}{% endif %}">
