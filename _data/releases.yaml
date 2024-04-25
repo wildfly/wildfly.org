@@ -46,7 +46,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://github.com/wildfly/wildfly/releases/tag/32.0.0.Final
+          url: https://wildfly.org/news/2024/04/25/WildFly32-Released/
 - version: 32.0.0.Beta1
   version_shortname: 32 Beta1
   date: 2024-04-05
