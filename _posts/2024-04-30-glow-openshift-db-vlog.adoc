@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Vlog: WildFly Glow, WildFly 32 deployment to OpenShift with database access'
+date: 2024-04-30
+tags: wildfly glow galleon openshift provisioning
+synopsis: In this video we are using WildFly Glow 1.0 to deploy the todo-backend quickstart application to OpenShift with automatic connection to PostgreSQL database. No configuration needed!
+author: jfdenise
+link: https://www.youtube.com/watch?v=z9JnweD4zQQ
+---
+
