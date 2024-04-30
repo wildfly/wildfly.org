@@ -39,7 +39,17 @@ layout: base
     </p>
   </div>
   <div class="grid__item width-10-12 doc-content">
+    {% if page.link %}
+    {% if content == empty and page.synopsis != empty %}
+    {% assign content = page.synopsis %}
+    {% endif %}
     {{ content }}
+    <p>
+      Redirecting to <a href="{{ page.link }}">{{ page.link }}</a>
+    </p>
+    {% else %}
+    {{ content }}
+    {% endif %}
   </div>
 </div>
 
