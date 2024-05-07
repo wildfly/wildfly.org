@@ -1,5 +1,5 @@
 = {simple-microservice-part1}
-:summary: ONELINE EXPLANATION OF THE GUIDE
+:summary: Java Microservice using WildFly
 :includedir: ../_includes
 include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
@@ -241,7 +241,7 @@ $ curl http://127.0.0.1:9990/health/started
 
 == What's next?
 
-link:https://kubernetes.io/[Kubernetes]: link:simple-microservice-part2[{simple-microservice-part2}]
+link:simple-microservice-part2[{simple-microservice-part2}]
 
 [[references]]
 == References

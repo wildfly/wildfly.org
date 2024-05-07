@@ -13,3 +13,10 @@
 :version-wildfly-maven-plugin: 5.0.0.Final
 :docker-image-name: my-jaxrs-app
 :quay-io-account-name: tborgato
+:version-wildfly-datasources-galleon-pack: 3.0.0.Final
+:postgre-sql-user: postgres
+:postgre-sql-password: admin
+:postgre-sql-host: localhost
+:postgre-sql-port: 5432
+:postgre-sql-database: postgres
+:postgre-sql-jndi: java:jboss/datasources/PostgreSQLDS
