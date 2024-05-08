@@ -10,7 +10,7 @@ include::./_includes/_titles.adoc[]
 In this guide, you will learn how-to run the Docker Image we built in link:simple-microservice-part1[{simple-microservice-part1}] on Kubernetes.
 
 include::{includedir}/_prerequisites.adoc[]
-* You have completed link:simple-microservice-part1.adoc[Create a JAX-RS application using Bootable Jar - part one: bare metal]
+* You have completed link:simple-microservice-part1[{simple-microservice-part1}]
 
 include::_includes/_constants.adoc[]
 

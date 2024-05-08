@@ -8,8 +8,7 @@ include::./_includes/_titles.adoc[]
 In this guide, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add Database connectivity;
 
 include::{includedir}/_prerequisites.adoc[]
-
-* link:simple-microservice-part1[{simple-microservice-part1}]
+* You have completed link:simple-microservice-part1[{simple-microservice-part1}]
 
 include::_includes/_constants.adoc[]
 
