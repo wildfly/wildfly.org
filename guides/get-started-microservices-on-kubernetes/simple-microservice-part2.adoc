@@ -16,15 +16,15 @@ include::_includes/_constants.adoc[]
 
 == Pushing the Docker Image to an Image Registry
 
-To make the `{docker-image-name}:latest` Docker Image available to Kubernetes, we need to push it to some Image Registry that is accessible by the Kubernetes cluster we want to use;
+To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to Kubernetes, we need to push it to some Image Registry that is accessible by the Kubernetes cluster we want to use;
 
-There are many options to achieve this; in this guide, we will push the `{docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
+There are many options to achieve this; in this guide, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
 
 === Quay.io
 
-You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
+You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
 
-Create a public repository named `{docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app]);
+Create a public repository named `{my-jaxrs-app-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app]);
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -32,48 +32,49 @@ Tag the Docker image:
 
 [source,bash,subs="normal"]
 ----
-podman tag {docker-image-name} quay.io/{quay-io-account-name}/{docker-image-name}
+podman tag {my-jaxrs-app-docker-image-name} quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
 ----
 
-Push the `{docker-image-name}` Docker Image to it:
-
-[source,bash,subs="normal"]
-----
-podman push quay.io/{quay-io-account-name}/{docker-image-name}
-----
-
-At this point, the `{docker-image-name}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster; you can verify this by running:
+Push the `{my-jaxrs-app-docker-image-name}` Docker Image to it:
 
 [source,bash,subs="normal"]
 ----
-podman pull quay.io/{quay-io-account-name}/{docker-image-name}
+podman push quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
+----
+
+At this point, the `{my-jaxrs-app-docker-image-name}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster; you can verify this by running:
+
+[source,bash,subs="normal"]
+----
+podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
 ----
 
 == Deploy to Kubernetes
 
-To deploy our link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker image] on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+To deploy our link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker image] on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{my-jaxrs-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
 
+.deployment-{my-jaxrs-app-docker-image-name}.yaml
 [source,yaml,subs="normal"]
 ----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {docker-image-name}-deployment
+  name: {my-jaxrs-app-docker-image-name}-deployment
   labels:
-    app: {docker-image-name}
+    app: {my-jaxrs-app-docker-image-name}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {docker-image-name}
+      app: {my-jaxrs-app-docker-image-name}
   template:
     metadata:
       labels:
-        app: {docker-image-name}
+        app: {my-jaxrs-app-docker-image-name}
     spec:
       containers:
-      - name: {docker-image-name}
-        image: quay.io/{quay-io-account-name}/{docker-image-name}
+      - name: {my-jaxrs-app-docker-image-name}
+        image: quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
         ports:
         - containerPort: 8080
         - containerPort: 9990
@@ -95,16 +96,16 @@ Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-$ kubectl apply -f deployment-{docker-image-name}.yaml
-deployment.apps/{docker-image-name}-deployment configured
+$ kubectl apply -f deployment-{my-jaxrs-app-docker-image-name}.yaml
+deployment.apps/{my-jaxrs-app-docker-image-name}-deployment created
 ----
 
 We used to link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
 
 [source,bash,subs="normal"]
 ----
-$ kubectl expose deployment.apps/{docker-image-name}-deployment --type=NodePort --port=8080
-service/{docker-image-name}-deployment exposed
+$ kubectl expose deployment.apps/{my-jaxrs-app-docker-image-name}-deployment --type=NodePort --port=8080
+service/{my-jaxrs-app-docker-image-name}-deployment exposed
 ----
 
 === Check your application
@@ -113,7 +114,7 @@ Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube] is exposi
 
 [source,bash,subs="normal"]
 ----
-$ minikube service {docker-image-name}-deployment --url
+$ minikube service {my-jaxrs-app-docker-image-name}-deployment --url
 http://192.168.39.139:30782
 ----
 

@@ -20,7 +20,7 @@ Start PostgreSQL:
 
 [source,bash,subs="normal"]
 ----
-podman run --rm --name my-postgres -p {postgre-sql-port}:{postgre-sql-port} -e POSTGRES_PASSWORD={postgre-sql-password} -e POSTGRES_USER={postgre-sql-user} -e POSTGRES_DB={postgre-sql-database} postgres
+podman run --rm --name my-postgres -p {postgre-sql-port}:{postgre-sql-port} -e POSTGRES_PASSWORD={postgre-sql-password} -e POSTGRES_USER={postgre-sql-user} -e POSTGRES_DB={postgre-sql-database} {postgre-docker-image}
 ----
 
 == Maven Project
@@ -327,13 +327,13 @@ $ curl http://localhost:8080/hello/test-table/list
 
 == Docker Image
 
-=== Re-build the Docker Image
+=== Build the Docker Image
 
-Re-build the Docker Image with the following command:
+Build the Docker Image with the following command:
 
 [source,bash,subs="normal"]
 ----
-$ podman build -t {docker-image-name}:latest .
+$ podman build -t {my-jaxrs-app-db-docker-image-name}:latest .
 STEP 1/3: FROM quay.io/wildfly/wildfly-runtime:latest
 STEP 2/3: COPY --chown=jboss:root target/server $JBOSS_HOME
 --> 4609f8ed0c7f
@@ -346,9 +346,9 @@ db4677f5bf4f471f5624bd63a21fce3d91b7b3b93e985d3e86a8a4b0682d85cd
 
 === Run the Docker Image locally
 
-To check that our brand-new `{docker-image-name}:latest` Docker Image works as expected, run the following command:
+To check that our brand-new `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image works as expected, run the following command:
 
-Note that, when running the `{docker-image-name}:latest` Docker Image, we specify some environment variables used by WildFly to connect to the PostgreSQL database:
+Note that, when running the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image, we specify some environment variables used by WildFly to connect to the PostgreSQL database:
 
 [source,bash,subs="normal"]
 ----
@@ -360,7 +360,7 @@ podman run --rm -p 8080:8080 -p 9990:9990 \
 -e POSTGRESQL_DATABASE={postgre-sql-database} \
 -e POSTGRESQL_JNDI={postgre-sql-jndi} \
 --network slirp4netns:allow_host_loopback=true \
---name={docker-image-name} {docker-image-name}
+--name={my-jaxrs-app-db-docker-image-name} {my-jaxrs-app-db-docker-image-name}:latest
 ----
 
 NOTE: we added the `--network slirp4netns:allow_host_loopback=true` option to Podman which allows to reference the host as `host.containers.internal` from inside the container

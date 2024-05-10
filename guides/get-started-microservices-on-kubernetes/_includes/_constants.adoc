@@ -11,7 +11,8 @@
 :version-resteasy-client: 6.2.7.Final
 :version-wildfly-cloud-galleon-pack: 6.0.0.Final
 :version-wildfly-maven-plugin: 5.0.0.Final
-:docker-image-name: my-jaxrs-app
+:my-jaxrs-app-docker-image-name: my-jaxrs-app
+:my-jaxrs-app-db-docker-image-name: my-jaxrs-app-db
 :quay-io-account-name: tborgato
 :version-wildfly-datasources-galleon-pack: 3.0.0.Final
 :postgre-sql-user: postgres
@@ -20,3 +21,5 @@
 :postgre-sql-port: 5432
 :postgre-sql-database: postgres
 :postgre-sql-jndi: java:jboss/datasources/PostgreSQLDS
+:postgre-docker-image: docker.io/library/postgres
+:postgre-sql-kubernetes-service-name: postgres-service

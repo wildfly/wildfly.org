@@ -159,14 +159,14 @@ Build the Docker Image with the following command:
 
 [source,bash,subs="normal"]
 ----
-$ podman build -t {docker-image-name}:latest .
+$ podman build -t {my-jaxrs-app-docker-image-name}:latest .
 STEP 1/3: FROM quay.io/wildfly/wildfly-runtime:latest
 STEP 2/3: COPY --chown=jboss:root target/server $JBOSS_HOME
 --> cf1b99511a9b
 STEP 3/3: RUN chmod -R ug+rwX $JBOSS_HOME
-COMMIT {docker-image-name}:latest
+COMMIT {my-jaxrs-app-docker-image-name}:latest
 --> e1ab6e80ed20
-Successfully tagged localhost/{docker-image-name}:latest
+Successfully tagged localhost/{my-jaxrs-app-docker-image-name}:latest
 e1ab6e80ed20c3619a7e859f03c71f33b79a4d292f971ed83e7484f4779121d8
 ----
 
@@ -174,11 +174,11 @@ NOTE: As you can see, we used link:https://podman.io/[Podman], but you can use l
 
 === Run the Docker Image locally
 
-To check that our brand-new `{docker-image-name}:latest` Docker Image works as expected, run the following command:
+To check that our brand-new `{my-jaxrs-app-docker-image-name}:latest` Docker Image works as expected, run the following command:
 
 [source,bash,subs="normal"]
 ----
-$ podman run --rm -p 8080:8080 -p 9990:9990 --name={docker-image-name} {docker-image-name}
+$ podman run --rm -p 8080:8080 -p 9990:9990 --name={my-jaxrs-app-docker-image-name} {my-jaxrs-app-docker-image-name}
 ...
 16:14:49,477 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-5) WFLYUT0006: Undertow HTTP listener default listening on 0.0.0.0:8080
 ...
@@ -211,7 +211,7 @@ $ curl http://127.0.0.1:8080/hello/pippo
 Hello 'pippo'.
 ----
 
-The only difference here, is that the response is served by the application running inside our `{docker-image-name}:latest` Docker Image;
+The only difference here, is that the response is served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image;
 
 === Check Liveness, Readiness and Startup Probes
 
