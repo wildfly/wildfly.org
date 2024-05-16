@@ -8,7 +8,18 @@ layout: base
     {% assign latestRelease = site.data.releases[site.current_release_index] %}
     <h1>Wild<strong>Fly</strong></h1>
     <h2>A powerful, modular, & lightweight application server that helps you build amazing applications.</h2>
-    <h3>Now available: <span style="font-weight: 100;">Wild</span><strong>Fly</strong> {{latestRelease.version_shortname}}</h3>
+
+    {% for link in latestRelease.link %}
+      {% if link.name == "Release Notes" %}
+        {% for item in link.items %}
+          {% if item.format == "Notes" %}
+            {% assign releaseNoteLink = item.url %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+    <h3>Now available: <a href="{{ releaseNoteLink }}"><span style="font-weight: 100;">Wild</span><strong>Fly</strong> {{latestRelease.version_shortname}}</a></h3>
     <div class="home-ctas">
       <a href="{{site.baseurl}}/downloads/" class="button-cta secondary">Download Wild<strong>Fly</strong></a>
       <a href="{{site.baseurl}}/get-started/" class="button-cta">Get Started</a>
