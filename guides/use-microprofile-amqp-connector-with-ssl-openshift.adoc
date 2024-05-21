@@ -1,0 +1,204 @@
+= Use MicroProfile Reactive Messaging with AMQP Connector with SSL Connection to AMQ 7 on OpenShift
+:summary: Learn how to securely connect to AMQ 7 deployed on OpenShift using MicroProfile Reactive Messaging application using AMQP connector.
+:includedir: _includes
+include::{includedir}/_attributes.adoc[]
+:prerequisites-time: 20
+
+In this guide, we will learn how to set up MicroProfile Reactive Messaging application with AMQP Connector
+to connect to AMQ 7 deployed on OpenShift. Communication will be secured using SSL/TLS.
+
+include::{includedir}/_prerequisites.adoc[]
+* Access to an OpenShift cluster (try the "Self-managed" variant of local development machine https://developers.redhat.com/products/openshift/download[Red Hat OpenShift
+] for free)
+* https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
+
+// login to OpenShift cluster
+include::{includedir}/_proc-log-into-openshift-cluster.adoc[]
+
+== Deploy AMQ 7 using operator
+=== Install AMQ 7 operator
+Follow instruction in https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.11/html-single/deploying_amq_broker_on_openshift/index#proc-br-installing-operator-to-project-from-operatorhub_broker-ocp[Installing the Operator using OperatorHub]
+
+=== Generate self-signed certificates for keystore and truststore
+To establish an SSL/TLS connection we need keystore and truststore. Here for demonstration purposes we prepare a self-signed certificate.
+
+[NOTE]
+--
+To ensure that the broker certificate has the correct domain of the OpenShift cluster for hostname verification during TLS handshake, you must be logged in using the 'oc' command. This step is crucial as the client verifies the broker's hostname in the certificate.
+--
+
+[source, bash ,options="nowrap"]
+----
+# Generate broker's key pair using obtained OpenShift cluster domain for `apps`
+keytool -genkeypair -alias broker -keyalg RSA -storetype PKCS12 -keystore broker.ks -storepass changeit -validity 365 -dname "CN=*.`oc get ingresscontroller default -o jsonpath='{.status.domain}' -n openshift-ingress-operator `, OU=My Org Unit, O=My Organization, L=My City, S=My State, C=My Country"
+# Generate key pair for Reactive Messaging application
+keytool -genkeypair -alias client -keyalg RSA -storetype PKCS12 -keystore client.ks -storepass changeit -validity 365 -dname "CN=localhost, OU=My Org Unit, O=My Organization, L=My City, S=My State, C=My Country"
+# Export broker certificate
+keytool -export -alias broker -file broker.cert -keystore broker.ks -storepass changeit
+# Export client certificate
+keytool -export -alias client -file client.cert -keystore client.ks -storepass changeit
+# Import broker and client certificate into a single truststore for simplicity
+keytool -import -v -trustcacerts -alias client -file client.cert -keystore client.ts -storepass changeit -noprompt
+keytool -import -v -trustcacerts -alias broker -file broker.cert -keystore client.ts -storepass changeit -noprompt
+----
+
+=== Deploy AMQ 7 broker
+First we need to create secret with server keystore and truststore which will be used by AMQ 7 broker:
+[source, bash]
+----
+oc create secret generic brokeramqp-ssl-secret --from-file=broker.ks --from-file=client.ts --from-literal=keyStorePassword='changeit' --from-literal=trustStorePassword='changeit'
+----
+
+Then create file `broker.yaml` with following content referencing above secret:
+[source, yaml]
+----
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  name: amq-broker
+  application: amq-broker-app
+spec:
+  acceptors:
+    - port: 61617
+      verifyHost: false
+      needClientAuth: true
+      expose: true
+      multicastPrefix: jms.topic.
+      name: all
+      connectionsAllowed: 10
+      sslEnabled: true
+      protocols: all
+      sslSecret: brokeramqp-ssl-secret
+      sslProvider: JDK
+      anycastPrefix: jms.queue.
+  console:
+    expose: true
+  deploymentPlan:
+    journalType: nio
+    messageMigration: false
+    persistenceEnabled: false
+    requireLogin: false
+    size: 1
+  upgrades:
+    enabled: false
+    minor: false
+----
+
+To simplify this example, there is set `verifyHost: false` to avoid need to set correct hostname in the "client" certificate for Reactive Messaging application.
+
+Run following command to deploy AMQ 7 broker with secured acceptor:
+[source, shell]
+----
+oc create -f broker.yaml
+----
+
+Check that AMQ 7 broker is in `Running` state by checking running pods:
+```[source, bash ,options="nowrap"]
+$ oc get pods
+NAME                                            READY   STATUS      RESTARTS   AGE
+amq-broker-ss-0                                 1/1     Running     0          79m
+...
+```
+
+== Build Reactive Messaging application using WildFly Glow
+
+We will use an example of Reactive Messaging application in this guide, that consists of a single `ProducingBean` and `ConsumingBean`.
+Where `ProducingBean` periodically produces messages into the channel and `ConsumingBean` consumes them. It also contains needed scripts and yaml files to set up AMQ 7 broker on OpenShift.
+
+Example application is available on GitHub:
+[source, bash]
+----
+git clone git@github.com:wildfly-extras/guides.git
+cd guides/microprofile-reactive-messaging-amqp-connector-example/
+----
+
+The important part of the application is `microprofile-config.properties` file configuring secured AMQP connector to remote AMQ 7 broker:
+[source, bash, options="nowrap"]
+----
+amqp-host=${AMQ_HOST}
+amqp-port=443
+amqp-username=admin
+amqp-password=admin
+amqp-use-ssl=true
+mp.messaging.connector.smallrye-amqp.wildfly.elytron.ssl.context=amqp-ssl-context
+
+mp.messaging.outgoing.source.connector=smallrye-amqp
+
+mp.messaging.incoming.in.connector=smallrye-amqp
+mp.messaging.incoming.in.address=source
+----
+
+* `amqp-host` - url of remote AMQ 7 broker deployed on OpenShift, for example "amq-broker-all-0-svc-rte-mnovak.apps.mnovak-oegn.psi.domain.com".
+* `amqp-port` - port where AMQ 7 broker is listening, in case of OpenShift there is used port `443` for secured communication
+* `amqp-username` and `amqp-password` - username and password for authentication to AMQ 7 broker. `admin/admin` is default used in AMQ 7 broker
+* `amqp-use-ssl=true` - specifies that we want to use a secure connection when connecting to the broker.
+* `mp.messaging.outgoing.source.connector=amqp-ssl-context` - this is not needed if there are CA signed certificates. However, in our case we're using self-signed certificates, so we need to specify a truststore
+in the Elytron subsystem and create an SSLContext referencing that. The value of this property is used to look up the SSLContext in the Elytron subsystem under /subsystem=elytron/client-ssl-context=* in the WildFly management model.
+In this case the property value is `amqp-ssl-context`, so we look up the SSLContext defined by /subsystem=elytron/client-ssl-context=amqp-ssl-context and use that to configure the truststore to use for the connection to AMQ broker.
+For this reason there is defined CLI script `scripts/config.cli` which will be used to configure client-ssl-context when the WildFly server is provisioned and configured:
+
+[source, ruby]
+----
+batch
+/subsystem=elytron/key-store=truststore-ssl-test:add(credential-reference={clear-text=changeit}, path=<path-to>/client.ts, type=PKCS12)
+/subsystem=elytron/trust-manager=truststore-ssl-test:add(key-store=truststore-ssl-test)
+/subsystem=elytron/key-store=keystore-ssl-test:add(credential-reference={clear-text=changeit}, path=<path-to>/client.ks, type=PKCS12)
+/subsystem=elytron/key-manager=keystore-ssl-test:add(key-store=keystore-ssl-test,credential-reference={clear-text=changeit})
+/subsystem=elytron/client-ssl-context=amqp-ssl-context:add(trust-manager=truststore-ssl-test,key-manager=keystore-ssl-test)
+run-batch
+----
+[NOTE]
+--
+Update `<path-to>` in above cli script to directory with generated truststore and keystore.
+--
+
+You can build the application by running:
+[source, bash]
+----
+mvn package
+----
+
+The application uses the WildFly Maven Plugin to provision an application server that is trimmed with only the required modules to run the application. It deploys reactive messaging app into it and package all as Bootable Jar which can be started like:
+[source, bash]
+----
+AMQ_HOST=<amq-broker-route> java -jar ./target/server-bootable.jar
+----
+
+You can figure out value for `AMQ_HOST` by checking `oc get routes` for `amq-broker-all-0-svc-rte` route.  Like:
+```
+$ oc get routes
+NAME                          HOST/PORT                                                                     PATH   SERVICES                  PORT       TERMINATION        WILDCARD
+amq-broker-all-0-svc-rte      amq-broker-all-0-svc-rte-mnovak.apps.eapqe-034-nvf2.eapqe.psi.redhat.com             amq-broker-all-0-svc      all-0      passthrough/None   None
+...
+```
+
+Once application starts you should see output like:
+[source, bash]
+----
+17:28:45,819 INFO  [stdout] (vert.x-eventloop-thread-0) ----> Calling generate!!!!
+17:28:45,820 INFO  [stdout] (vert.x-eventloop-thread-0) =====> Creating Next with 1
+17:28:45,821 INFO  [io.smallrye.reactive.messaging.amqp] (vert.x-eventloop-thread-0) SRMSG16203: AMQP Receiver listening address source
+17:28:45,921 INFO  [stdout] (pool-13-thread-1) ---> Sending 1
+17:28:45,926 INFO  [stdout] (pool-13-thread-1) ----> Calling generate!!!!
+17:28:45,927 INFO  [stdout] (pool-13-thread-1) =====> Creating Next with 2
+17:28:46,027 INFO  [stdout] (pool-13-thread-1) ---> Sending 2
+17:28:46,027 INFO  [stdout] (pool-13-thread-1) ----> Calling generate!!!!
+17:28:46,027 INFO  [stdout] (pool-13-thread-1) =====> Creating Next with 4
+17:28:46,046 INFO  [stdout] (vert.x-eventloop-thread-0) ---> Received 1
+17:28:46,128 INFO  [stdout] (pool-13-thread-1) ---> Sending 4
+17:28:46,128 INFO  [stdout] (pool-13-thread-1) ----> Calling generate!!!!
+17:28:46,128 INFO  [stdout] (pool-13-thread-1) =====> Creating Next with 8
+17:28:46,140 INFO  [stdout] (vert.x-eventloop-thread-0) ---> Received 2
+----
+
+== What's next?
+
+WildFly MicroProfile Reactive Messaging provides multiple options to connect to different messaging brokers like Kafka. Read the configuration from https://docs.wildfly.org/31/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye[MicroProfile Reactive Messaging Subsystem Configuration]
+
+[[references]]
+== References
+
+* https://smallrye.io/smallrye-reactive-messaging/latest/[SmallRye Reactive Messaging]
+* https://artemiscloud.io/docs/tutorials/ssl_broker_setup/[Setting up SSL connections with ArtemisCloud Operator]
+* https://docs.wildfly.org/31/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye[MicroProfile Reactive Messaging Subsystem Configuration]
+* https://docs.wildfly.org/wildfly-glow/[WildFly Glow Documentation]
