@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Blog: WildFly 32 Delivers Preview of Jakarta EE 11 and Final Version of WildFly Glow'
+date: 2024-05-27
+tags: wildfly glow galleon openshift provisioning
+synopsis: 
+author: sshaaf
+link: https://www.infoq.com/news/2024/05/wildfly32-glow-jakartaee11
+---
+Shaaf Syed, Principal Architect at Red Hat, has written a comprehensive https://www.infoq.com/news/2024/05/wildfly32-glow-jakartaee11[article] on WildFly Glow. A must read!

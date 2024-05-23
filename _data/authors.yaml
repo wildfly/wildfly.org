@@ -249,4 +249,10 @@ mnovak1:
   occupation: "Principal Software Quality Engineer"
   bio: "https://github.com/mnovak1"
   avatar: mnovak.jpg
-
+sshaaf:
+  name: "Syed M. Shaaf"
+  bio: "Shaaf is a Principal Architect and a Developer advocate. Contributes and works with multiple opensource projects like Quarkus, Keycloak and Infinispan etc. For the last 20 years, he has helped customers adopt open source solutions for applications, continuous integration environments, and frameworks. Shaaf is a Technical Editor at InfoQ and writes about Java, AI among other technology topics"
+  location: "Copenhagen, DK"
+  occupation: "Principal Architect"
+  avatar: sshaaf.jpg
+  twitter: "syshaaf"
