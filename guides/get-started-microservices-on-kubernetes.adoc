@@ -6,17 +6,17 @@ title: Java Microservices on Kubernetes wih WildFly
 include::{includedir}/_titles.adoc[]
 :page-liquid:
 
-== Build simple WildFly Java Microservices and run them on link:https://kubernetes.io/[Kubernetes].
+== Build Java Microservices with WildFly and run them on link:https://kubernetes.io/[Kubernetes].
 
 === Intro
 
-In this mini-serie, we will show how-to to quickly build some of the most common patterns in link:https://jakarta.ee/[Jakarta EE] (e.g. crating a JAX-RS service, connecting to an external Database, interacting with an external JMS Broker, etc.) and run them on link:https://kubernetes.io/[Kubernetes];
+In this series, you'll learn HOW-TO to build applications using some of the most common link:https://jakarta.ee/[Jakarta EE] specifications (e.g. JAX-RS, JPA, JMS, etc.) and run them on link:https://kubernetes.io/[Kubernetes];
 
-At some point, we'll go even further and show how-to build some common patterns in link:https://microprofile.io/[MicroProfile] (e.g. Rest Client to invoke a JAX-RS service in another application);
+At some point, we'll go even further and use some link:https://microprofile.io/[MicroProfile] specifications (e.g. Rest Client invoking a JAX-RS service in another application);
 
-We will start by showing how-to build a link:https://docs.docker.com/[Docker Image] containing a WildFly Java Microservice (link:simple-microservice-part1[{simple-microservice-part1}]), and then we will run that link:https://docs.docker.com/[Docker Image] on link:https://kubernetes.io/[Kubernetes] (link:simple-microservice-part2[{simple-microservice-part2}]); this will set the basis to extend this example and implement the following patterns (link:simple-microservice-database-part1[{simple-microservice-database-part1}], etc.);
+We will start building a link:https://docs.docker.com/[Docker Image] containing a WildFly Java Microservice (link:simple-microservice-part1[{simple-microservice-part1}]), and then we will run that Docker Image on link:https://kubernetes.io/[Kubernetes] (link:simple-microservice-part2[{simple-microservice-part2}]): this will set the basis to extend this example in subsequent posts;
 
-=== Topics
+=== Posts in this series
 
 * link:simple-microservice-part1[{simple-microservice-part1}]
 * link:simple-microservice-part2[{simple-microservice-part2}]

@@ -7,22 +7,26 @@ include::./_includes/_titles.adoc[]
 // time to complete the guide
 :prerequisites-time: 10
 
-In this guide, you will learn how-to run the Docker Image we built in link:simple-microservice-part1[{simple-microservice-part1}] on Kubernetes.
+In this post, you will learn HOW-TO run the Docker Image you built in link:simple-microservice-part1[{simple-microservice-part1}] on Kubernetes.
 
-include::{includedir}/_prerequisites.adoc[]
-* You have completed link:simple-microservice-part1[{simple-microservice-part1}]
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:simple-microservice-part1[{simple-microservice-part1}]
 
 include::_includes/_constants.adoc[]
 
-== Pushing the Docker Image to an Image Registry
+== Image Registry
 
-To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to Kubernetes, we need to push it to some Image Registry that is accessible by the Kubernetes cluster we want to use;
-
-There are many options to achieve this; in this guide, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
+To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use;
 
 === Quay.io
 
-You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
+There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
+
+NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
 
 Create a public repository named `{my-jaxrs-app-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app]);
 
@@ -49,9 +53,15 @@ At this point, the `{my-jaxrs-app-docker-image-name}:latest` Docker Image should
 podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
 ----
 
-== Deploy to Kubernetes
+== Kubernetes
 
-To deploy our link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker image] on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{my-jaxrs-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+=== Minikube
+
+You can use whatever Kubernetes cluster you have available; in this post, and in the following, we will use link:https://minikube.sigs.k8s.io/docs/[minikube];
+
+=== Deploy to Kubernetes
+
+To deploy our `quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}` Docker image to Kubernetes, create a file named `deployment-{my-jaxrs-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
 
 .deployment-{my-jaxrs-app-docker-image-name}.yaml
 [source,yaml,subs="normal"]
@@ -90,6 +100,7 @@ spec:
           httpGet:
             path: /health/started
             port: 9990
+
 ----
 
 Deploy to your Kubernetes Cluster:
@@ -130,6 +141,9 @@ Hello 'pippo'.
 
 link:simple-microservice-database-part1[{simple-microservice-database-part1}]
 
-Back to Guides
+[[references]]
+== References
+
+* Source code for this post: {source-code-git-repository}/tree/simple-microservice-part2
 
 < link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]

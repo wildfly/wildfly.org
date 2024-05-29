@@ -5,40 +5,51 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this guide, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add Database connectivity;
+In this post, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add Database connectivity;
 
-include::{includedir}/_prerequisites.adoc[]
-* You have completed link:simple-microservice-part1[{simple-microservice-part1}]
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:simple-microservice-part1[{simple-microservice-part1}]
 
 include::_includes/_constants.adoc[]
 
 == Database
 
-We need a database, and we will use PostgreSQL in its containerized version: see link:https://hub.docker.com/_/postgres[PostgreSQL Official Image];
+=== PostgreSQL
+
+We will use PostgreSQL in this post in its containerized version: see link:https://hub.docker.com/_/postgres[PostgreSQL Official Image];
 
 Start PostgreSQL:
 
 [source,bash,subs="normal"]
 ----
-podman run --rm --name my-postgres -p {postgre-sql-port}:{postgre-sql-port} -e POSTGRES_PASSWORD={postgre-sql-password} -e POSTGRES_USER={postgre-sql-user} -e POSTGRES_DB={postgre-sql-database} {postgre-docker-image}
+podman run --rm --name my-postgres \
+  -p {postgre-sql-port}:{postgre-sql-port} \
+  -e POSTGRES_PASSWORD={postgre-sql-password} \
+  -e POSTGRES_USER={postgre-sql-user} \
+  -e POSTGRES_DB={postgre-sql-database} \
+  {postgre-docker-image}
 ----
+
+NOTE: we started the container with the `--rm`: this way it is disposed automatically when we stop it
 
 == Maven Project
 
-We will extend the sample application we created in link:simple-microservice-part1[{simple-microservice-part1}];
+You will extend the sample application you created in link:simple-microservice-part1[{simple-microservice-part1}] by adding the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack];
 
-To connect to any database, we need to:
+The link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] will:
 
-* install the JDBC Drivers for the PostgreSQL Database into WildFly
-* create a database connection in WildFly
-
-To achieve both, we will use the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack]: this is a feature-packs for WildFly and, as we know, feature-packs are the building blocks of WildFly and can be used to add capabilities to WildFly;
+* install the JDBC Driver for the PostgreSQL Database into WildFly
+* add a database connection to PostgreSQL in WildFly
 
 === pom.xml
 
 ==== dependencies
 
-Add the following dependencies to the `pom-xml` file `dependencies`:
+Add the following dependencies to the `pom-xml` file `dependencies` section:
 
 [source,xml,subs="normal"]
 ----
@@ -262,7 +273,7 @@ Add the `src/main/resources/META-INF/persistence.xml` file to the project with t
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd" >
     <persistence-unit name="primary">
         <jta-data-source>{postgre-sql-jndi}</jta-data-source>
         <properties>
@@ -272,6 +283,7 @@ Add the `src/main/resources/META-INF/persistence.xml` file to the project with t
         </properties>
     </persistence-unit>
 </persistence>
+
 ----
 
 === Build the application
@@ -291,7 +303,7 @@ $ mvn clean package
 
 === Start the application
 
-Note that, before starting the application, we specify some environment variables used by WildFly to connect to the PostgreSQL database:
+Note that, before starting the application, we specify some *environment variables* used by WildFly to connect to the PostgreSQL database:
 
 [source,bash,subs="normal"]
 ----
@@ -314,7 +326,7 @@ Hit the following URLs, using a utility like `curl`:
 .Insert some Data into the Database:
 [source,bash]
 ----
-$ $ curl -X POST http://localhost:8080/hello/test-table/insert/somedata1/somedata2
+$ curl -X POST http://localhost:8080/hello/test-table/insert/somedata1/somedata2
 {"field1":"somedata1","field2":"somedata2","id":1}
 ----
 
@@ -344,26 +356,26 @@ Successfully tagged localhost/my-jaxrs-app:latest
 db4677f5bf4f471f5624bd63a21fce3d91b7b3b93e985d3e86a8a4b0682d85cd
 ----
 
-=== Run the Docker Image locally
-
-To check that our brand-new `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image works as expected, run the following command:
+=== Run the Docker Image
 
 Note that, when running the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image, we specify some environment variables used by WildFly to connect to the PostgreSQL database:
 
 [source,bash,subs="normal"]
 ----
 podman run --rm -p 8080:8080 -p 9990:9990 \
--e POSTGRESQL_USER={postgre-sql-user} \
--e POSTGRESQL_PASSWORD={postgre-sql-password} \
--e POSTGRESQL_HOST=host.containers.internal \
--e POSTGRESQL_PORT={postgre-sql-port} \
--e POSTGRESQL_DATABASE={postgre-sql-database} \
--e POSTGRESQL_JNDI={postgre-sql-jndi} \
---network slirp4netns:allow_host_loopback=true \
---name={my-jaxrs-app-db-docker-image-name} {my-jaxrs-app-db-docker-image-name}:latest
+    -e POSTGRESQL_USER={postgre-sql-user} \
+    -e POSTGRESQL_PASSWORD={postgre-sql-password} \
+    -e POSTGRESQL_HOST=host.containers.internal \
+    -e POSTGRESQL_PORT={postgre-sql-port} \
+    -e POSTGRESQL_DATABASE={postgre-sql-database} \
+    -e POSTGRESQL_JNDI={postgre-sql-jndi} \
+    --name={my-jaxrs-app-db-docker-image-name} \
+    {my-jaxrs-app-db-docker-image-name}:latest
 ----
 
-NOTE: we added the `--network slirp4netns:allow_host_loopback=true` option to Podman which allows to reference the host as `host.containers.internal` from inside the container
+NOTE: Depending on your Podman version, you might have to add the `--network slirp4netns:allow_host_loopback=true` option to Podman which allows to reference the host as `host.containers.internal` from inside the container;
+
+NOTE: if you are using Docker, you need to use `-e POSTGRESQL_HOST=host.docker.internal` instead of `-e POSTGRESQL_HOST=host.containers.internal`
 
 === Check the application
 
@@ -379,7 +391,7 @@ $ curl -X POST http://localhost:8080/hello/test-table/insert/somedata1/somedata2
 .Query the database to show the inserted data:
 [source,bash]
 ----
-$ $ curl http://localhost:8080/hello/test-table/list
+$ curl http://localhost:8080/hello/test-table/list
 [{"field1":"somedata1","field2":"somedata2","id":1},{"field1":"somedata1","field2":"somedata2","id":2}]
 ----
 
@@ -392,6 +404,7 @@ link:simple-microservice-database-part2[{simple-microservice-database-part2}]
 [[references]]
 == References
 
+* Source code for this post: {source-code-git-repository}/tree/simple-microservice-database-part1
 * link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack]
 * link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[PostgreSQL datasource example]
 

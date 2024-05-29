@@ -3,18 +3,18 @@
 :jaxrs-example-project-artifactId: jaxrs
 :jaxrs-example-project-version: 11.0.0.Final-SNAPSHOT
 :version-bootable-jar: 11.0.0.Beta1
-:version-wildfly-galleon-pack: 31.0.1.Final
+:version-wildfly-galleon-pack: 32.0.0.Final
 :jakarta-jakartaee-api-version: 10.0.0
 :version-junit-jupiter-api: 5.10.2
 :version-arquillian-junit5-container: 1.8.0.Final
 :version-org-wildfly-arquillian-wildfly-arquillian: 5.1.0.Beta1
 :version-resteasy-client: 6.2.7.Final
-:version-wildfly-cloud-galleon-pack: 6.0.0.Final
+:version-wildfly-cloud-galleon-pack: 7.0.0.Final
 :version-wildfly-maven-plugin: 5.0.0.Final
 :my-jaxrs-app-docker-image-name: my-jaxrs-app
 :my-jaxrs-app-db-docker-image-name: my-jaxrs-app-db
 :quay-io-account-name: tborgato
-:version-wildfly-datasources-galleon-pack: 3.0.0.Final
+:version-wildfly-datasources-galleon-pack: 8.0.0.Final
 :postgre-sql-user: postgres
 :postgre-sql-password: admin
 :postgre-sql-host: localhost
@@ -23,3 +23,4 @@
 :postgre-sql-jndi: java:jboss/datasources/PostgreSQLDS
 :postgre-docker-image: docker.io/library/postgres
 :postgre-sql-kubernetes-service-name: postgres-service
+:source-code-git-repository: https://github.com/tommaso-borgato/wildfly.org.sample-application
