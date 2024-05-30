@@ -13,6 +13,7 @@
 :version-wildfly-maven-plugin: 5.0.0.Final
 :my-jaxrs-app-docker-image-name: my-jaxrs-app
 :my-jaxrs-app-db-docker-image-name: my-jaxrs-app-db
+:my-jaxrs-app-infinispan-docker-image-name: my-jaxrs-app-infinispan
 :quay-io-account-name: tborgato
 :version-wildfly-datasources-galleon-pack: 8.0.0.Final
 :postgre-sql-user: postgres
@@ -23,4 +24,10 @@
 :postgre-sql-jndi: java:jboss/datasources/PostgreSQLDS
 :postgre-docker-image: docker.io/library/postgres
 :postgre-sql-kubernetes-service-name: postgres-service
+:infinispan-user: admin
+:infinispan-password: 123pippobaudo
+:infinispan-host: localhost
+:infinispan-port: 11222
+:infinispan-server-docker-image: quay.io/infinispan/server:latest
+:infinispan-cli-docker-image: quay.io/infinispan/cli:latest
 :source-code-git-repository: https://github.com/tommaso-borgato/wildfly.org.sample-application
