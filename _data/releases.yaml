@@ -42,7 +42,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://github.com/wildfly/wildfly/releases/tag/32.0.1.Final
+          url: https://wildfly.org/news/2024/05/31/WildFly3201-Released/
 - version: 32.0.0.Final
   version_shortname: 32 Final
   date: 2024-04-25

@@ -1,0 +1,57 @@
+---
+layout: post
+title:  "WildFly 32.0.1 is released!"
+date:   2024-05-31
+tags:   announcement release
+author: bstansberry
+description: WildFly 32.0.1.Final is now available for download.
+---
+
+= WildFly 32.0.1 is released!
+
+WildFly 32.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+It's been about five weeks since the WildFly 32 release, so we've done a small bug fix update, WildFly 32.0.1. This includes an update to WildFly Preview.
+
+The following issues were resolved in 32.0.1:
+
+===== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-19305[WFLY-19305]] - ClassCastException when running live-only HA policy in messaging-activemq subsystem
+* [https://issues.redhat.com/browse/WFLY-19326[WFLY-19326]] - LinkageError: loader constraint violation for class io.netty.*
+* [https://issues.redhat.com/browse/WFLY-19355[WFLY-19355]] - Deploying multiple OpenAPI endpoints can result in a NoSuchElementException
+* [https://issues.redhat.com/browse/WFLY-19366[WFLY-19366]] - OpenTelemetryDependencyProcessor should add io.smallrye.opentelemetry to deployment classpath
+
+===== Tasks
+
+* [https://issues.redhat.com/browse/WFLY-18217[WFLY-18217]] - Add LICENSE and other community documents to widfly-archetypes
+* [https://issues.redhat.com/browse/WFLY-19341[WFLY-19341]] - Make the testsuite/galleon tests appropriately scoped
+
+===== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-19278[WFLY-19278]] - Upgrade Infinispan to 14.0.28.Final
+* [https://issues.redhat.com/browse/WFLY-19279[WFLY-19279]] - Upgrade JGroups to 5.2.25.Final
+* [https://issues.redhat.com/browse/WFLY-19353[WFLY-19353]] - Upgrade RESTEasy to 6.2.9.Final
+* [https://issues.redhat.com/browse/WFLY-19364[WFLY-19364]] - Upgrade WildFly Core to 24.0.1.Final
+
+
+Issues resolved in the WildFly Core update included with WildFly 32.0.1 were:
+
+===== Bugs
+
+* [https://issues.redhat.com/browse/WFCORE-6825[WFCORE-6825]] - [CVE-2024-4029] wildfly-domain-http: wildfly: No timeout for EAP management interface may lead to Denial of Service (DoS)
+
+===== Tasks
+
+* [https://issues.redhat.com/browse/WFCORE-6792[WFCORE-6792]] - Rename Installer.Builder.async() -&gt; Installer.Builder.blocking()
+
+===== Component Upgrades
+
+
+* [https://issues.redhat.com/browse/WFCORE-6797[WFCORE-6797]] - Upgrade BouncyCastle from 1.78 to 1.78.1
+* [https://issues.redhat.com/browse/WFCORE-6831[WFCORE-6831]] - Upgrade WildFly Elytron to 2.4.2.Final
+* [https://issues.redhat.com/browse/WFCORE-6833[WFCORE-6833]] - Upgrade XNIO to 3.8.15.Final
+
+
+Enjoy!
+
