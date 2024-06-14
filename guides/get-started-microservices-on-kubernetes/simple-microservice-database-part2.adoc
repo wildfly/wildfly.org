@@ -77,7 +77,7 @@ spec:
           image: '{postgre-docker-image}'
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 5432
+            - containerPort: {postgre-sql-port}
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -119,8 +119,8 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: 5432
-      targetPort: 5432
+      port: {postgre-sql-port}
+      targetPort: {postgre-sql-port}
   selector:
     app: postgres
 ----
@@ -132,7 +132,7 @@ apply the Service configuration to the Kubernetes:
 kubectl apply -f postgres-service.yaml
 ----
 
-NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube], and you want to test if PostgreSQL is working, run `kubectl port-forward svc/{postgre-sql-kubernetes-service-name} 5432:5432` and then connect via JDBC using URL `jdbc:postgresql://{postgre-sql-host}:{postgre-sql-port}/{postgre-sql-database}`
+NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube], and you want to test if PostgreSQL is working, run `kubectl port-forward svc/{postgre-sql-kubernetes-service-name} {postgre-sql-port}:{postgre-sql-port}` and then connect via JDBC using URL `jdbc:postgresql://{postgre-sql-host}:{postgre-sql-port}/{postgre-sql-database}`
 
 == Image Registry
 
@@ -144,7 +144,7 @@ There are many options to achieve this; in this post, we will push the `{my-jaxr
 
 NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-db-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
 
-Create a public repository named `{my-jaxrs-app-db-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app]);
+Create a public repository named `{my-jaxrs-app-db-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db]);
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 

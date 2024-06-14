@@ -201,7 +201,7 @@ Note that we specify some properties used by WildFly to connect to the Infinispa
 
 === Check the application
 
-Open link:http://localhost:8080/ in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
+Open link:http://localhost:8080/[http://localhost:8080/] in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
 
 Stop the application (press CTRL+C from the terminal where you started it).
 
@@ -257,6 +257,7 @@ Repeat the checks done before;
 * Source code for this post: {source-code-git-repository}/tree/simple-microservice-infinispan-part1
 * link:https://infinispan.org/[Infinispan]
 * link:https://docs.wildfly.org/32/High_Availability_Guide.html#Distributable_Web_Applications[Distributable Web Applications]
+* link:https://docs.wildfly.org/wildfly-proposals/management/WFCORE-5464_Check_Env_Vars_On_Expression_Resolution.html[Check Environment Variables When Resolving Expressions]
 
 Back to Guides
 

@@ -30,4 +30,5 @@
 :infinispan-port: 11222
 :infinispan-server-docker-image: quay.io/infinispan/server:latest
 :infinispan-cli-docker-image: quay.io/infinispan/cli:latest
+:infinispan-kubernetes-service-name: infinispan-service
 :source-code-git-repository: https://github.com/tommaso-borgato/wildfly.org.sample-application
