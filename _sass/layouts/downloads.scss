@@ -18,14 +18,29 @@
       }
     }
   }
-  .page-subtitle {
+  .page-eap {
     text-align: center;
     border-top: 2px solid white;
     border-bottom: 2px solid white;
     padding: 0 0 2rem 0;
-    margin: 4rem 0;
+    margin: 3rem 0;
     h4 {
       text-align: left;
+      font-weight: 200;
+      color: $teal;
+      a { font-weight: 200; }
+      strong { color: $teal; }
+    }
+    h5 {
+      font-weight: 200;
+      color: $teal;
+      a { font-weight: 200; }
+      strong { color: $teal; }
+    }
+  }
+  .page-nightlies {
+    text-align: center;
+    h5 {
       font-weight: 200;
       color: $teal;
       a { font-weight: 200; }
