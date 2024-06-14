@@ -4,6 +4,137 @@
 include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
+<<<<<<< HEAD
+=======
+
+In this post, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}] on Kubernetes.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}]
+
+include::_includes/_constants.adoc[]
+
+== Infinispan
+
+We basically will repeat everything we did in link:simple-microservice-part2[{simple-microservice-part2}] but, before, we will deploy Infinispan on Kubernetes;
+
+==== Infinispan configmap
+
+Create e fine named `infinispan-configmap.yaml` with the following content:
+
+.infinispan-configmap.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infinispan-secret
+  labels:
+    app: infinispan
+data:
+  USER: {infinispan-user}
+  PASS: {infinispan-password}
+
+----
+
+apply the ConfigMap configuration to the Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f infinispan-configmap.yaml
+----
+
+==== Infinispan deployment
+
+Create e fine named `infinispan-deployment.yaml` with the following content:
+
+.infinispan-deployment.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infinispan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: infinispan
+  template:
+    metadata:
+      labels:
+        app: infinispan
+    spec:
+      containers:
+        - name: infinispan
+          image: '{infinispan-server-docker-image}'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: USER
+              valueFrom:
+                configMapKeyRef:
+                  name: infinispan-secret
+                  key: USER
+            - name: PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: infinispan-secret
+                  key: PASS
+----
+
+apply the Deployment configuration to the Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f infinispan-deployment.yaml
+----
+
+==== Infinispan service
+
+Create e fine named `infinispan-service.yaml` with the following content:
+
+.infinispan-service.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {infinispan-kubernetes-service-name}
+  labels:
+    app: infinispan
+spec:
+  ports:
+    - protocol: TCP
+      port: 11222
+      targetPort: 11222
+  selector:
+    app: infinispan
+----
+
+apply the Service configuration to the Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f infinispan-service.yaml
+----
+
+NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube], and you want to test if Infinispan Server on Kubernetes is working, run `kubectl port-forward svc/{infinispan-kubernetes-service-name} {infinispan-port}:{infinispan-port}`,  then open http://0.0.0.0:{infinispan-port}/console/ in your browser and log in as `{infinispan-user}` / `{infinispan-password}`
+
+
+
+
+
+
+
+
+
+>>>>>>> ccc9341 (Using Infinispan remote cache - PART 2: Kubernetes)
 
 In this post, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}] on Kubernetes.
 
