@@ -55,4 +55,10 @@ categories:
       - title: Deploying WildFly using Ansible
         url: /guides/automate-with-ansible
         description: Learn how to automate WildFly deployments with Ansible.
+  - category: Datasources
+    cat-id: datasources
+    guides:
+      - title: Integrating with a PostgreSQL database
+        url: /guides/database-integrating-with-postgresql
+        description: Learn how to configure a datasource to connect a PostgreSQL database.
 
