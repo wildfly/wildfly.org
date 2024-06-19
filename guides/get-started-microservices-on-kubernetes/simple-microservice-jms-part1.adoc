@@ -1,0 +1,7 @@
+= {simple-microservice-jms-part1}
+include::./_includes/_titles.adoc[]
+
+
+Back to Guides
+
+< link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
