@@ -37,6 +37,12 @@ categories:
       - title: Securing WildFly Apps with SAML on OpenShift
         url: /guides/security-saml-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
+  - category: Messaging
+    cat-id: messaging
+    guides:
+      - title: Configuring Messaging in High Availability in Wildfly
+        url: /guides/messaging-high-availability
+        description: Learn how to configure two WildFly servers with messaging (ActiveMQ Artemis broker) in high availability topology with shared journal.
   - category: MicroProfile
     cat-id: microprofile
     guides:
