@@ -1,0 +1,319 @@
+---
+layout: post
+title:  "Playing with Generative AI with WildFly"
+date:   2024-06-27
+tags: generative-ai rag wildfly
+author: ehugonne
+description: How to try the Generative AI feature pack with WildFly
+---
+
+This blog post provides information on how to use the AI Galleon Feature pack to write generative AI applications.
+Please note that this feature pack is currently a proof of concept and might not be ready for production.
+
+
+== What's in this feature pack ?
+
+This feature pack is a work in progress so we will only cover what is already available as of today.
+It relies on configuring and exposing https://github.com/langchain4j[LangChain4J] to you application.
+It provides a way to inject some basic elements to make creating a Retrieval-Augmented Generation (RAG) application easy.
+It helps by configuring and providing all the required elements for such an application:
+
+
+=== What is RAG ?
+
+As its name indicates, RAG is about retrieving relevant elements from pieces of information from your data and they enrich the prompt with them before sending the whole query (initial prompt + relevant data) to the LLM. 
+The goal is to provide sufficient context to the LLM so that it can use those pieces of information and don't hallucinate.
+
+=== The core elements of RAG
+
+As you can see on the schema, you need a few elements to provide a RAG functionality:
+ * some components to get relevant pieces of information; we will focus on using a 'semantic' search approach aka vector searchso we will need:
+    - an embedding model to create embeddings (aka semantic vectors) from the user query thus creating an embedding query.
+    - an embedding store containing all the embeddings and the associated segments of data and on which the embedding query will be run against.
+ * a client to the LLM to send the enriched query against.
+
+image::ai/rag.png[RAG]
+
+=== RAG with LangChain4j
+
+The current feature pack provides a basic integration with the library LangChain4J. That means that currently we are exposing LangChain4J API to the application.
+So it provide:
+ * embedding models 
+ * embedding stores
+ * content retrievers
+ * chat language models
+
+So you can configure instance of these objects via the WildFly management API to be injected via CDI into your application.
+
+== The feature pack
+
+The feature pack is composed of a subsystem and a CDI extension. It supports several layers based on what you are trying to acheive. The list is not exhaustive and may vary in the future.
+
+=== The layers
+
+This feature pack provides several layers to choose from when provisioning your server:
+ - ollama: provides https://ollama.com/[Ollama] integration for `ChatModelLanguage` and `EmbeddingModel`.
+ - openai: provides https://openai.com/[OpenAI] integration for `ChatModelLanguage`.
+ - embeddings: provides support for in process `EmbeddingModel`.
+ - weaviate: provides support for the Weaviate `EmbeddingStore`.
+ - web-search-engines: provides support for Google and Tavily search engine as `ContentRetriever`.
+
+The layers will provide the required management resources, operations and modules.
+
+=== Provisioning the feature pack 
+
+For example:
+
+[source,xml]
+----
+<!-- The WildFly plugin deploys your war to a local JBoss AS container -->
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:${version.wildfly.bom}</location>
+            </feature-pack>
+            <feature-pack>
+                <location>org.wildfly:wildfly-ai-galleon-pack:1.0.0-SNAPSHOT</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>cloud-server</layer>
+            <!-- layers may be used to customize the server to provision-->
+            <layer>ollama</layer>
+            <layer>openai</layer>
+            <layer>embeddings</layer>
+            <layer>weaviate</layer>
+            <layer>web-search-engines</layer>
+        </layers>
+        <name>ROOT.war</name>
+        <packagingScripts>
+            <packaging-script>
+                <scripts>
+                    <script>./src/main/resources/scripts/configure_llm.cli</script>
+                </scripts>
+            </packaging-script>
+        </packagingScripts>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+In our example we are provisioning everything and configuring the subystem in the script `configure_llm.cli`:
+
+
+[source]
+----
+###Embedding Models
+# Adding the SentenceTransformers all-MiniLM-L6-v2 EmbeddingModel that runs within the server JVM.
+/subsystem=ai/embedding-model=myembedding:add(module=dev.langchain4j.embeddings.all-minilm-l6-v2, embedding-class=dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel)
+
+# Adding an Ollama EmbeddingModel connecting to http://192.168.1.11:11434 using the model llama3:8b.
+#/subsystem=ai/ollama-embedding-model=test:add(base-url="http://192.168.1.11:11434", model-name="llama3:8b")
+
+###Chat Language Models
+# Adding an OpenAI REST ChatLanguageModel connecting to Groq using the model llama3-8b-8192.
+/subsystem=ai/openai-chat-model=mychat:add(base-url="https://api.groq.com/openai/v1", api-key="${env.GROQ_API_KEY}",model-name="llama3-8b-8192")
+
+# Adding an Ollama ChatLanguageModel connecting to http://192.168.1.11:11434 using the model llama3:8b.
+#/subsystem=ai/ollama-chat-model=mychat:add(model-name="llama3:8b", base-url="http://192.168.1.11:11434")
+
+###Embedding Stores
+
+# Adding Weaviate as an embedding store
+# podman run --rm -p 8090:8080 -p 50051:50051  -e AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED="true" -v $SOME_PATH/volumes/weaviate/_data:/data --name=weaviate cr.weaviate.io/semitechnologies/weaviate:1.24.10
+#/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=weaviate:add(host=localhost, port=8090)
+#/subsystem=ai/weaviate-embedding-store=mystore:add(socket-binding=weaviate, ssl-enabled=false, object-class=Simple, metadata=[url,language,parent_url,file_name,file_path,title,subtitle])
+#/subsystem=logging/logger=io.weaviate.client.client:add(level=TRACE)
+
+# Adding in memory embedding store loading form a json file
+/subsystem=ai/in-memory-embedding-store=mystore:add(file=/home/ehugonne/dev/AI/crawler/crawler/wildfly-admin-embeddings.json)
+
+
+###Content retrievers
+
+# Adding a content retriever using embeddings
+/subsystem=ai/embedding-store-content-retriever=myretriever:add(embedding-model=myembedding,embedding-store=mystore, max-results=2, min-score=0.7)
+
+# Adding a content retriever using Tavily search engine
+#/subsystem=ai/web-search-content-retriever=myretriever:add(tavily={api-key=${env.TAVILY_API_KEY}, base-url=https://api.tavily.com, connect-timeout=20000, exclude-domains=[example.org], include-domains=[example.com], include-answer=true})
+
+----
+
+== Putting it all together: The WebChat example
+
+To put it all together we are going to execute a sample RAG application with a web interface. It will use embeddings that were previously computed using WildFly documentation.
+If you want to check the code of the application used for that https://github.com/ehsavoie/crawler[Crawler Application]. It can be used to fill either a json file or a weaviate embedding store.
+The embeddings were computed using the All-MiniLM-L6-v2 EmbeddingModel, so we need to use the same model in our RAG application.
+This embedding model will be use to compute the embedding of the user query and then the application will search for the nearest contents in the in-memory embedding store.
+This content retriever will append those contents to the user query to create the prompt that will be sent to the LLM we are connected to via the ChatLanguageModel.
+
+=== Running Ollam locally
+
+[source, bash]
+----
+podman run -d --name ollama --replace --pull=always --restart=always \
+    -p 127.0.0.1:11434:11434 -v ollama:/root/.ollama --stop-signal=SIGKILL \
+    docker.io/ollama/ollama
+----
+
+Connect to the running container eand execute the following command:
+[source, bash]
+----
+ollama run llama3:8b
+----
+
+
+==== Configuring the server
+
+We will use the following layers:
+
+* embeddings
+* ollama
+
+So the pom.xml should look like this:
+
+[source,xml]
+----
+<!-- The WildFly plugin deploys your war to a local JBoss AS container -->
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:${version.wildfly.bom}</location>
+            </feature-pack>
+            <feature-pack>
+                <location>org.wildfly:wildfly-ai-galleon-pack:1.0.0-SNAPSHOT</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>cloud-server</layer>
+            <!-- layers may be used to customize the server to provision-->
+            <layer>ollama</layer>
+            <layer>embeddings</layer>
+        </layers>
+        <name>ROOT.war</name>
+        <packagingScripts>
+            <packaging-script>
+                <scripts>
+                    <script>./src/main/resources/scripts/configure_llm.cli</script>
+                </scripts>
+            </packaging-script>
+        </packagingScripts>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+
+And now we need to configure the resources with the `configure_llm.cli` script:
+
+[source]
+----
+/subsystem=logging/logger=dev.langchain4j.model.ollama:add(level=TRACE)
+/subsystem=ai/embedding-model=myembedding:add(module=dev.langchain4j.embeddings.all-minilm-l6-v2, embedding-class=dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel)
+/subsystem=ai/ollama-chat-model=mychat:add(model-name="llama3:8b", base-url="http://127.0.0.1:11434", log-requests="true", log-responses="true", temperature="0.9")
+/subsystem=ai/in-memory-embedding-store=mystore:add(file=${env.EMBEDDINGS_PATH})
+/subsystem=ai/embedding-store-content-retriever=myretriever:add(embedding-model=myembedding,embedding-store=mystore, max-results=2, min-score=0.7)
+----
+
+==== The code
+
+The code itself is quite straightforward:
+[source, java]
+----
+@ServerEndpoint(value = "/websocket/chatbot",
+        configurator = org.wildfly.ai.websocket.CustomConfigurator.class)
+public class RagChatBot {
+  @Inject
+  @Identifier(value = "myretriever")
+  ContentRetriever retriever;
+
+  @Inject
+  @Identifier(value = "mychat")
+  ChatLanguageModel chatModel;
+
+  private static final String PROMPT_TEMPLATE = "You are a WildFly expert who understands well how to administrate the WildFly server and its components\n"
+            + "Objective: answer the user question delimited by  ---\n"
+            + "\n"
+            + "---\n"
+            + "{{userMessage}}\n"
+            + "---"
+            + "\n Here is a few data to help you:\n"
+            + "{{contents}}";
+
+  @OnMessage
+  public String sayHello(String question, Session session) throws IOException {
+        ChatMemory chatMemory = MessageWindowChatMemory.builder().id(session.getUserProperties().get("httpSessionId")).maxMessages(3).build();
+        ConversationalRetrievalChain chain = ConversationalRetrievalChain.builder()
+                .chatLanguageModel(chatModel)
+                .chatMemory(chatMemory)
+                .retrievalAugmentor(createBasicRag())
+                .build();
+        String result = chain.execute(question).replace("\n", "<br/>");
+        return result;
+    }
+
+    private RetrievalAugmentor createBasicRag() {
+        return DefaultRetrievalAugmentor.builder()
+                .contentRetriever(retriever)
+                .contentInjector(DefaultContentInjector.builder()
+                        .promptTemplate(PromptTemplate.from(PROMPT_TEMPLATE))
+                        .build())
+                .queryRouter(new DefaultQueryRouter(retriever))
+                .build();
+    }
+}
+----
+
+The `dev.langchain4j.rag.content.retriever.ContentRetriever` called *myretriever* defined in the subsystem is injected into our WebSocket endpoint using the `io.smallrye.common.annotation.Identifier` as CDI qualifier.
+It is used to instantiate a `dev.langchain4j.rag.RetrievalAugmentor` which is in charge with retrieving the contents and enrich the prompt with them.
+In the same way the `dev.langchain4j.model.chat.ChatLanguageModel` called *mychat* defined in the subsystem is injected into our WebSocket endpoint using the `io.smallrye.common.annotation.Identifier` as CDI qualifier.
+With those two elements a `dev.langchain4j.chain.ConversationalRetrievalChain` is created and used to interact with the LLM and send back the answer to the client using the WebSocket.
+
+The final code of the application is a bit more complex than what is exposed here as it tries to keep some context between a user queries.
+
+==== Building and Running the application
+
+First you need to clone it from https://github.com/ehsavoie/webchat[https://github.com/ehsavoie/webchat].
+
+In a console execute the following commands:
+
+[source,bash]
+----
+export EMBEDDINGS_PATH=/home/ehugonne/dev/AI/crawler/crawler/wildfly-admin-embeddings.json
+mvn clean install
+./target/server/bin/standalone.sh
+----
+
+Now that the server is started, you can access the http://localhost:8080[application].
+You need to open the WebScoket connection and then you can ask your questions.
+If you look into the server log file you will see the effective prompt sent to the LLM as well as the answer from it.
+
+
+== Going further
+
+This feature pack is currently just a proof of concept and is quite limited.
+If you look at the code you can easily tweak it to try several scenarios like using a Weaviate Embedding Store with metadata.
+Also you can try https://openai.com/[OpenAI] or https://groq.com[Groq] instead of Ollama.
+
+All the source code of the feature pack is available on https://github.com/ehsavoie/ai-testing[Github] and can be improved by extending the components that may be of use.
+
