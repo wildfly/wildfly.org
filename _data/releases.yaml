@@ -1,3 +1,48 @@
+- version: 33.0.0.Beta1
+  version_shortname: 33 Beta1
+  date: 2024-07-04
+  qualifier: Beta
+  link:
+    - name: WildFly Distribution
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1.tar.gz.sha1
+    - name: WildFly Preview Distribution
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-preview-33.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-preview-33.0.0.Beta1.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-preview-33.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-preview-33.0.0.Beta1.tar.gz.sha1
+    - name: Application Server Source Code
+      licence: AL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-src.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-src.zip.sha1
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-src.tar.gz.sha1
+    - name: Quick Start Source Code
+      licence: AL
+      items:
+        - format: Source
+          url: https://github.com/wildfly/quickstart/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-quickstarts.zip
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://github.com/wildfly/wildfly/releases/tag/33.0.0.Beta1
 - version: 32.0.1.Final
   version_shortname: 32.0.1 Final
   date: 2024-05-31
@@ -92,46 +137,6 @@
       items:
         - format: Notes
           url: https://wildfly.org/news/2024/04/25/WildFly32-Released/
-- version: 32.0.0.Beta1
-  version_shortname: 32 Beta1
-  date: 2024-04-05
-  qualifier: Beta
-  link:
-    - name: WildFly Distribution
-      items:
-        - format: zip
-          url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1.zip.sha1
-        - format: tgz
-          url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1.tar.gz.sha1
-    - name: WildFly Preview Distribution
-      items:
-        - format: zip
-          url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-preview-32.0.0.Beta1.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-preview-32.0.0.Beta1.zip.sha1
-        - format: tgz
-          url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-preview-32.0.0.Beta1.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-preview-32.0.0.Beta1.tar.gz.sha1
-    - name: Application Server Source Code
-      licence: AL
-      items:
-        - format: zip
-          url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-src.zip
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-src.zip.sha1
-        - format: tgz
-          url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-src.tar.gz
-          checksum: SHA-1
-          checksum_url: https://github.com/wildfly/wildfly/releases/download/32.0.0.Beta1/wildfly-32.0.0.Beta1-src.tar.gz.sha1
-    - name: Release Notes
-      items:
-        - format: Notes
-          url: https://github.com/wildfly/wildfly/releases/tag/32.0.0.Beta1
 - version: 31.0.1.Final
   version_shortname: 31.0.1 Final
   date: 2024-02-27
