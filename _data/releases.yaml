@@ -34,6 +34,11 @@
           url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-src.tar.gz
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-src.tar.gz.sha1
+    - name: Quick Start Source Code
+      licence: AL
+      items:
+        - format: Source
+          url: https://github.com/wildfly/quickstart/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-quickstarts.zip
     - name: Release Notes
       items:
         - format: Notes
