@@ -37,8 +37,12 @@
     - name: Quick Start Source Code
       licence: AL
       items:
-        - format: Source
+        - format: Git Tag
+          url: https://github.com/wildfly/quickstart/tree/33.0.0.Beta1
+        - format: zip
           url: https://github.com/wildfly/quickstart/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-quickstarts.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/quickstart/releases/download/33.0.0.Beta1/wildfly-33.0.0.Beta1-quickstarts.zip.sha1
     - name: Release Notes
       items:
         - format: Notes
@@ -82,8 +86,12 @@
     - name: Quick Start Source Code
       licence: AL
       items:
-        - format: Source
+        - format: Git Tag
+          url: https://github.com/wildfly/quickstart/tree/32.0.1.Final
+        - format: zip
           url: https://github.com/wildfly/quickstart/releases/download/32.0.1.Final/wildfly-32.0.1.Final-quickstarts.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/quickstart/releases/download/32.0.1.Final/wildfly-32.0.1.Final-quickstarts.zip.sha1
     - name: Release Notes
       items:
         - format: Notes
@@ -176,8 +184,12 @@
     - name: Quick Start Source Code
       licence: AL
       items:
-        - format: Source
+        - format: Git Tag
+          url: https://github.com/wildfly/quickstart/tree/31.0.1.Final
+        - format: zip
           url: https://github.com/wildfly/quickstart/releases/download/31.0.1.Final/wildfly-31.0.1.Final-quickstarts.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/quickstart/releases/download/31.0.1.Final/wildfly-31.0.1.Final-quickstarts.zip.sha1
     - name: Release Notes
       items:
         - format: Notes
