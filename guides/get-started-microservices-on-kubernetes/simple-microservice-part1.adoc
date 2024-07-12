@@ -9,13 +9,13 @@ In this post, you will learn how to create and run a link:https://docs.docker.co
 
 include::{includedir}/_prerequisites.adoc[]
 
-* Complete link:/get-started[Getting Started with WildFly]
+* Install link:https://www.docker.com/[Docker] or link:https://podman.io/[Podman]
 
 include::_includes/_constants.adoc[]
 
 == Maven Project
 
-In link:/get-started[Getting Started with WildFly], we created a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service] using an existing archetype:
+Create a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service] using the `org.wildfly.archetype:wildfly-getting-started-archetype` archetype:
 
 [source,bash]
 ----
@@ -24,13 +24,13 @@ mvn archetype:generate \
 -DarchetypeArtifactId=wildfly-getting-started-archetype
 ----
 
-we'll pick up from there;
+NOTE: See link:/get-started[Getting Started with WildFly] for the details
 
 === pom.xml
 
-We need to add some features that are necessary when, in the next post, we will run our application on link:https://kubernetes.io/[Kubernetes]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Liveness, Readiness and Startup Probes];
+We need to add some features that will be required when, in the next post, we will run our application on link:https://kubernetes.io/[Kubernetes]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Liveness, Readiness and Startup Probes];
 
-We can add these features by adding the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] to our application; add the following to the the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configuration in the `pom.xml` file:
+We can add these features by adding the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] to our application; add the following to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configuration in the `pom.xml` file:
 
 [source,xml,subs="normal"]
 ----
@@ -106,7 +106,7 @@ $ ./target/server/bin/standalone.sh
 
 As you can, see the applications started, and it's ready to serve requests on port `8080`;
 
-=== Check the application
+=== Check the application [[check_the_application]]
 
 Go to this URL:
 
@@ -120,7 +120,7 @@ $ curl http://127.0.0.1:8080/hello/pippo
 Hello 'pippo'.
 ----
 
-=== Check Liveness, Readiness and Startup Probes
+=== Check Liveness, Readiness and Startup Probes [[check_liveness_readiness_and_startup_probes]]
 
 Go to these URLs:
 
@@ -154,7 +154,7 @@ Let's move on and package our application in a link:https://docs.docker.com/guid
 
 === Dockerfile
 
-We will use the link:https://docs.docker.com/build/guide/intro/#the-dockerfile/[Dockerfile] from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile] because it is crafted specifically for WildFly;
+We will use the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile] because it is crafted specifically for WildFly;
 
 Create a file named `Dockerfile` in the same directory as the `pom.xml` file, with the following content:
 
@@ -208,50 +208,29 @@ $ podman run --rm -p 8080:8080 -p 9990:9990 \
 16:14:50,461 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 1101ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-As you can, see the applications started, and it's ready to serve requests on port `8080`;
+As you can, see the application started, and it's ready to serve requests on port `8080`;
 
 NOTE: we explicitly mapped port `8080` in the container to port `8080` on the HOST (your PC); we also mapped port `9990` in the container to port `9990` on the HOST to expose the Liveness, Readiness and Startup Probes;
 
 === Check the application
 
-Just like we did before, go to this URL:
+Repeat the checks in <<check_the_application>>;
 
-* link:http://127.0.0.1:8080/hello/pippo[http://127.0.0.1:8080/hello/pippo]
-
-either in your browser, or using a utility like `curl`:
-
-[source,bash]
-----
-$ curl http://127.0.0.1:8080/hello/pippo
-Hello 'pippo'.
-----
-
-The only difference here, is that the response is served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image;
+NOTE: the only difference here, is that the response is served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image;
 
 === Check Liveness, Readiness and Startup Probes
 
-Same as before, go to these URLs:
+Repeat the checks in <<check_liveness_readiness_and_startup_probes>>;
 
-* link:http://127.0.0.1:9990/health/live[http://127.0.0.1:9990/health/live]
-* link:http://127.0.0.1:9990/health/ready[http://127.0.0.1:9990/health/ready]
-* link:http://127.0.0.1:9990/health/started[http://127.0.0.1:9990/health/started]
+NOTE: here too, the only difference, is that the responses are served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image;
 
-either in your browser, or using a utility like `curl`:
+=== Stop the Docker container
 
-[source,bash]
+Stop the running container:
+
+[source,bash,subs="normal"]
 ----
-$ curl http://127.0.0.1:9990/health/live
-{"status":"UP","checks":[{"name":"empty-liveness-checks","status":"UP"}]}
-----
-[source,bash]
-----
-$ curl http://127.0.0.1:9990/health/ready
-{"status":"UP","checks":[{"name":"suspend-state","status":"UP","data":{"value":"RUNNING"}},{"name":"server-state","status":"UP","data":{"value":"running"}},{"name":"deployments-status","status":"UP","data":{"ROOT.war":"OK"}},{"name":"boot-errors","status":"UP"},{"name":"ready-deployment.ROOT.war","status":"UP"}]}
-----
-[source,bash]
-----
-$ curl http://127.0.0.1:9990/health/started
-{"status":"UP","checks":[{"name":"started-deployment.ROOT.war","status":"UP"}]}
+$ podman stop {my-jaxrs-app-docker-image-name}
 ----
 
 == What's next?

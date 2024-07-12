@@ -113,24 +113,20 @@ You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/
 
 Add the following classes to the project:
 
-.org.wildfly.examples.model.TestTable   :
+.org.wildfly.examples.test_table.model.TestTable   :
 [source,java]
 ----
-package org.wildfly.examples.model;
+package org.wildfly.examples.test_table.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-@SuppressWarnings("serial")
 @Entity
-@XmlRootElement(name = "test-table")
 public class TestTable {
 
 	@Id
@@ -149,7 +145,6 @@ public class TestTable {
 		this.id = id;
 	}
 
-	@XmlElement
 	public String getField1() {
 		return field1;
 	}
@@ -158,7 +153,6 @@ public class TestTable {
 		this.field1 = field1;
 	}
 
-	@XmlElement
 	public String getField2() {
 		return field2;
 	}
@@ -182,17 +176,15 @@ public class TestTable {
 }
 ----
 
-.org.wildfly.examples.model.TestTableResource :
+.org.wildfly.examples.test_table.service.TestTableResource :
 [source,java]
 ----
-package org.wildfly.examples.service;
+package org.wildfly.examples.test_table.service;
 
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PersistenceContextType;
-import jakarta.transaction.UserTransaction;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -200,7 +192,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
-import org.wildfly.examples.model.TestTable;
+import org.wildfly.examples.test_table.model.TestTable;
 
 import java.util.List;
 
@@ -208,11 +200,8 @@ import java.util.List;
 @Path("/test-table")
 public class TestTableResource {
 
-	@PersistenceContext(type = PersistenceContextType.EXTENDED,unitName = "primary")
+	@PersistenceContext(unitName = "primary")
 	private EntityManager em;
-
-	@Inject
-	private UserTransaction tx;
 
 	public void createOrUpdateRow(TestTable row) {
 		if (!em.contains(row)) {
@@ -225,21 +214,20 @@ public class TestTableResource {
 		return em.createQuery("SELECT t FROM TestTable t", TestTable.class).getResultList();
 	}
 
+	@Transactional(Transactional.TxType.REQUIRED)
 	@POST
 	@Produces({"application/json"})
 	@Path("insert/{field1}/{field2}")
 	public Response insertIntoTestTable(
-							   @PathParam("field1") @DefaultValue("some data 1") String field1,
-							   @PathParam("field2") @DefaultValue("some data 2") String field2) throws Exception {
+			@PathParam("field1") @DefaultValue("some data 1") String field1,
+			@PathParam("field2") @DefaultValue("some data 2") String field2) throws Exception {
 		TestTable testTable = null;
 		try {
-			tx.begin();
 			testTable = new TestTable();
 			testTable.setField1(field1);
 			testTable.setField2(field2);
 
 			createOrUpdateRow(testTable);
-			tx.commit();
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
@@ -252,9 +240,7 @@ public class TestTableResource {
 	@Path("list")
 	public List<TestTable> getAllRowsFromTestTable() {
 		try {
-			tx.begin();
 			List<TestTable> allRows = getAllRows();
-			tx.commit();
 			return allRows;
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -319,7 +305,7 @@ export POSTGRESQL_JNDI={postgre-sql-jndi}
 16:26:11,052 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 2840ms - Started 310 of 389 services (150 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-=== Check the application
+=== Check the application [[check_the_application]]
 
 Hit the following URLs, using a utility like `curl`:
 
@@ -379,23 +365,18 @@ NOTE: if you are using Docker, you need to use `-e POSTGRESQL_HOST=host.docker.i
 
 === Check the application
 
-Just like we did before, hit the following URLs, using a utility like `curl`:
-
-.Insert some Data into the Database:
-[source,bash]
-----
-$ curl -X POST http://localhost:8080/hello/test-table/insert/somedata1/somedata2
-{"field1":"somedata1","field2":"somedata2","id":2}
-----
-
-.Query the database to show the inserted data:
-[source,bash]
-----
-$ curl http://localhost:8080/hello/test-table/list
-[{"field1":"somedata1","field2":"somedata2","id":1},{"field1":"somedata1","field2":"somedata2","id":2}]
-----
+Repeat the checks in <<check_the_application>>;
 
 NOTE: you might find your data twice if didn't restart the Database
+
+=== Stop the Docker container
+
+Stop the running container:
+
+[source,bash,subs="normal"]
+----
+$ podman stop {my-jaxrs-app-db-docker-image-name}
+----
 
 == What's next?
 

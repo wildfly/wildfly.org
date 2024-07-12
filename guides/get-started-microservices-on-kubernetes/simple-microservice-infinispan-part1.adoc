@@ -199,7 +199,7 @@ Note that we specify some properties used by WildFly to connect to the Infinispa
 16:40:05,188 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 32.0.0.Final (WildFly Core 24.0.0.Final) started in 2586ms - Started 322 of 588 services (354 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-=== Check the application
+=== Check the application [[check_the_application]]
 
 Open link:http://localhost:8080/[http://localhost:8080/] in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
 
@@ -249,7 +249,7 @@ NOTE: if you are using Docker, you need to use `-e POSTGRESQL_HOST=host.docker.i
 
 === Check the application
 
-Repeat the checks done before;
+Repeat the checks in <<check_the_application>>;
 
 [[references]]
 == References
