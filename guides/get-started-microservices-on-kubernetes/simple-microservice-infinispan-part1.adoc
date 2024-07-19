@@ -28,13 +28,20 @@ Start Infinispan:
 
 [source,bash,subs="normal"]
 ----
-podman run --rm -p {infinispan-port}:{infinispan-port} \
+podman network create {containers-demo-network}
+
+podman run --rm --network={containers-demo-network} --name={infinispan-pod-name} \
+  -p {infinispan-port}:{infinispan-port} \
   -e USER="{infinispan-user}" \
   -e PASS="{infinispan-password}" \
   {infinispan-server-docker-image}
 ----
 
-NOTE: you can check  is running by opening http://0.0.0.0:{infinispan-port}/console/ in your browser and logging in as `{infinispan-user}` / `{infinispan-password}`
+NOTE: we started the container with the `--rm`: this way it is disposed automatically when we stop it
+
+NOTE: NOTE: We created the *{containers-demo-network}* network and started the *{infinispan-pod-name}* container with the `--network={containers-demo-network}` option: later in this guide, this will allow us to connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container;
+
+NOTE: you can check the container is running by opening http://0.0.0.0:{infinispan-port}/console/ in your browser and logging in as `{infinispan-user}` / `{infinispan-password}`
 
 == Maven Project
 
@@ -234,8 +241,8 @@ Note that, when running the `{my-jaxrs-app-infinispan-docker-image-name}:latest`
 
 [source,bash,subs="normal"]
 ----
-podman run --rm -p 8080:8080 -p 9990:9990 \
-    -e INFINISPAN_SERVER_HOST=host.containers.internal \
+podman run --rm --network={containers-demo-network} -p 8080:8080 -p 9990:9990 \
+    -e INFINISPAN_SERVER_HOST={infinispan-pod-name} \
     -e INFINISPAN_SERVER_PORT={infinispan-port} \
     -e INFINISPAN_SERVER_USER={infinispan-user} \
     -e INFINISPAN_SERVER_PASSWORD={infinispan-password} \
@@ -243,13 +250,21 @@ podman run --rm -p 8080:8080 -p 9990:9990 \
     {my-jaxrs-app-infinispan-docker-image-name}:latest
 ----
 
-NOTE: Depending on your Podman version, you might have to add the `--network slirp4netns:allow_host_loopback=true` option to Podman which allows to reference the host as `host.containers.internal` from inside the container;
-
-NOTE: if you are using Docker, you need to use `-e POSTGRESQL_HOST=host.docker.internal` instead of `-e POSTGRESQL_HOST=host.containers.internal`
+NOTE: NOTE: We started the *{my-jaxrs-app-infinispan-docker-image-name}* container with the `--network={containers-demo-network}` option just like we did when we started the *{infinispan-pod-name}* container: the two containers now run in the same *{containers-demo-network}* network and we can connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container using the *{infinispan-pod-name}* DNS name;
 
 === Check the application
 
 Repeat the checks in <<check_the_application>>;
+
+=== Stop the Docker containers
+
+Stop the running container:
+
+[source,bash,subs="normal"]
+----
+podman stop {my-jaxrs-app-infinispan-docker-image-name}
+podman stop {infinispan-pod-name}
+----
 
 [[references]]
 == References

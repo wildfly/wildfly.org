@@ -24,6 +24,7 @@
 :postgre-sql-jndi: java:jboss/datasources/PostgreSQLDS
 :postgre-docker-image: docker.io/library/postgres
 :postgre-sql-kubernetes-service-name: postgres-service
+:postgre-sql-pod-name: my-postgres
 :infinispan-user: admin
 :infinispan-password: 123pippobaudo
 :infinispan-host: localhost
@@ -31,4 +32,6 @@
 :infinispan-server-docker-image: quay.io/infinispan/server:latest
 :infinispan-cli-docker-image: quay.io/infinispan/cli:latest
 :infinispan-kubernetes-service-name: infinispan-service
+:infinispan-pod-name: my-infinispan
 :source-code-git-repository: https://github.com/tommaso-borgato/wildfly.org.sample-application
+:containers-demo-network: demo
