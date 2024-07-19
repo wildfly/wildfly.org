@@ -34,4 +34,13 @@
 :infinispan-kubernetes-service-name: infinispan-service
 :infinispan-pod-name: my-infinispan
 :source-code-git-repository: https://github.com/tommaso-borgato/wildfly.org.sample-application
+:artemis-user: admin
+:artemis-password: admin
+:artemis-port: 61616
+:artemis-console-port: 8161
+:artemis-data-path: /home/jboss/data
+:artemis-docker-image: quay.io/artemiscloud/activemq-artemis-broker-kubernetes:latest
+:artemis-pod-name: my-artemis
+:my-jms-app-docker-image-name: my-jms-app
+:podman-network-name: simple-microservice
 :containers-demo-network: demo
