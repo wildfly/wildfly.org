@@ -42,5 +42,4 @@
 :artemis-docker-image: quay.io/artemiscloud/activemq-artemis-broker-kubernetes:latest
 :artemis-pod-name: my-artemis
 :my-jms-app-docker-image-name: my-jms-app
-:podman-network-name: simple-microservice
-:containers-demo-network: demo
+:podman-network-name: demo-network

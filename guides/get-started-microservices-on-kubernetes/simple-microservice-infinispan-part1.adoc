@@ -28,9 +28,9 @@ Start Infinispan:
 
 [source,bash,subs="normal"]
 ----
-podman network create {containers-demo-network}
+podman network create {podman-network-name}
 
-podman run --rm --network={containers-demo-network} --name={infinispan-pod-name} \
+podman run --rm --network={podman-network-name} --name={infinispan-pod-name} \
   -p {infinispan-port}:{infinispan-port} \
   -e USER="{infinispan-user}" \
   -e PASS="{infinispan-password}" \
@@ -39,7 +39,7 @@ podman run --rm --network={containers-demo-network} --name={infinispan-pod-name}
 
 NOTE: we started the container with the `--rm`: this way it is disposed automatically when we stop it
 
-NOTE: NOTE: We created the *{containers-demo-network}* network and started the *{infinispan-pod-name}* container with the `--network={containers-demo-network}` option: later in this guide, this will allow us to connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container;
+NOTE: NOTE: We created the *{podman-network-name}* network and started the *{infinispan-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container;
 
 NOTE: you can check the container is running by opening http://0.0.0.0:{infinispan-port}/console/ in your browser and logging in as `{infinispan-user}` / `{infinispan-password}`
 
@@ -241,7 +241,7 @@ Note that, when running the `{my-jaxrs-app-infinispan-docker-image-name}:latest`
 
 [source,bash,subs="normal"]
 ----
-podman run --rm --network={containers-demo-network} -p 8080:8080 -p 9990:9990 \
+podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
     -e INFINISPAN_SERVER_HOST={infinispan-pod-name} \
     -e INFINISPAN_SERVER_PORT={infinispan-port} \
     -e INFINISPAN_SERVER_USER={infinispan-user} \
@@ -250,7 +250,7 @@ podman run --rm --network={containers-demo-network} -p 8080:8080 -p 9990:9990 \
     {my-jaxrs-app-infinispan-docker-image-name}:latest
 ----
 
-NOTE: NOTE: We started the *{my-jaxrs-app-infinispan-docker-image-name}* container with the `--network={containers-demo-network}` option just like we did when we started the *{infinispan-pod-name}* container: the two containers now run in the same *{containers-demo-network}* network and we can connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container using the *{infinispan-pod-name}* DNS name;
+NOTE: NOTE: We started the *{my-jaxrs-app-infinispan-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{infinispan-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container using the *{infinispan-pod-name}* DNS name;
 
 === Check the application
 

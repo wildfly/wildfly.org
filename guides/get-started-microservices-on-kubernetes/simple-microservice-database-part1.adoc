@@ -26,9 +26,9 @@ Start PostgreSQL:
 
 [source,bash,subs="normal"]
 ----
-podman network create {containers-demo-network}
+podman network create {podman-network-name}
 
-podman run --rm --network={containers-demo-network} --name {postgre-sql-pod-name} \
+podman run --rm --network={podman-network-name} --name {postgre-sql-pod-name} \
   -p {postgre-sql-port}:{postgre-sql-port} \
   -e POSTGRES_PASSWORD={postgre-sql-password} \
   -e POSTGRES_USER={postgre-sql-user} \
@@ -38,7 +38,7 @@ podman run --rm --network={containers-demo-network} --name {postgre-sql-pod-name
 
 NOTE: we started the container with the `--rm`: this way it is disposed automatically when we stop it
 
-NOTE: We created the *{containers-demo-network}* network and started the *{postgre-sql-pod-name}* container with the `--network={containers-demo-network}` option: later in this guide, this will allow us to connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container;
+NOTE: We created the *{podman-network-name}* network and started the *{postgre-sql-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container;
 
 == Maven Project
 
@@ -352,7 +352,7 @@ Note that, when running the `{my-jaxrs-app-db-docker-image-name}:latest` Docker 
 
 [source,bash,subs="normal"]
 ----
-podman run --rm --network={containers-demo-network} -p 8080:8080 -p 9990:9990 \
+podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
     -e POSTGRESQL_USER={postgre-sql-user} \
     -e POSTGRESQL_PASSWORD={postgre-sql-password} \
     -e POSTGRESQL_HOST={postgre-sql-pod-name} \
@@ -363,7 +363,7 @@ podman run --rm --network={containers-demo-network} -p 8080:8080 -p 9990:9990 \
     {my-jaxrs-app-db-docker-image-name}:latest
 ----
 
-NOTE: We started the *{my-jaxrs-app-db-docker-image-name}* container with the `--network={containers-demo-network}` option just like we did when we started the *{postgre-sql-pod-name}* container: the two containers now run in the same *{containers-demo-network}* network and we can connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container using the *{postgre-sql-pod-name}* DNS name;
+NOTE: We started the *{my-jaxrs-app-db-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{postgre-sql-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container using the *{postgre-sql-pod-name}* DNS name;
 
 === Check the application
 
