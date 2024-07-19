@@ -259,6 +259,9 @@ kubectl scale deploy {my-jaxrs-app-infinispan-docker-image-name}-deployment --re
 
 Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server;
 
+== What's next?
+
+link:simple-microservice-jms-part1[{simple-microservice-jms-part1}]
 
 [[references]]
 == References

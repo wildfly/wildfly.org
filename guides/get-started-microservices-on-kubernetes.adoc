@@ -22,10 +22,10 @@ We will start building a link:https://docs.docker.com/[Docker Image] containing 
 * link:simple-microservice-part2[{simple-microservice-part2}]
 * link:simple-microservice-database-part1[{simple-microservice-database-part1}]
 * link:simple-microservice-database-part2[{simple-microservice-database-part2}]
-//* link:simple-microservice-jms-part1[{simple-microservice-jms-part1}]
-//* link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
 * link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}]
 * link:simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}]
+* link:simple-microservice-jms-part1[{simple-microservice-jms-part1}]
+//* link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
 //* link:get-enterprise-ready[{get-enterprise-ready}]
 
 [[references]]

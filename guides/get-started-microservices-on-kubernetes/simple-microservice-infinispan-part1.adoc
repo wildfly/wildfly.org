@@ -266,6 +266,11 @@ podman stop {my-jaxrs-app-infinispan-docker-image-name}
 podman stop {infinispan-pod-name}
 ----
 
+
+== What's next?
+
+link:simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}]
+
 [[references]]
 == References
 
