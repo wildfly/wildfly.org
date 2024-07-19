@@ -41,5 +41,8 @@
 :artemis-data-path: /home/jboss/data
 :artemis-docker-image: quay.io/artemiscloud/activemq-artemis-broker-kubernetes:latest
 :artemis-pod-name: my-artemis
+:artemis-kubernetes-service-name: artemis-service
+:artemis-port-name: artemis-port
+:artemis-console-port-name: artemis-console-port
 :my-jms-app-docker-image-name: my-jms-app
 :podman-network-name: demo-network

@@ -134,7 +134,7 @@ There are many options to achieve this; in this post, we will push the `{my-jaxr
 
 NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
 
-Create a public repository named `{my-jaxrs-app-infinispan-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-infinispan[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-infinispan]);
+Create a public repository named `{my-jaxrs-app-infinispan-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}]);
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -224,7 +224,7 @@ apply the Deployment configuration to the Kubernetes:
 kubectl apply -f deployment-{my-jaxrs-app-infinispan-docker-image-name}.yaml
 ----
 
-We used to link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+We used link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
 
 [source,bash,subs="normal"]
 ----

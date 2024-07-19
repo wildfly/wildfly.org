@@ -26,7 +26,7 @@ Start Apache Artemis:
 
 [source,bash,subs="normal"]
 ----
-podman netwrok create {podman-network-name}
+podman network create {podman-network-name}
 
 podman run --rm --name {artemis-pod-name} \
     --network={podman-network-name} \
@@ -260,7 +260,7 @@ Hit the following URLs, using a utility like `curl`:
 .Send and consume messages using a queue:
 [source,bash]
 ----
-$ curl -X GET http://localhost:8080/hello/message/send?content=Hello%20World
+$ curl -X GET http://localhost:8080/api/message/send?content=Hello%20World
 Sent Hello World to getting-started-queue
 ----
 
@@ -306,7 +306,7 @@ Just like we did before, hit the following URLs, using a utility like `curl`:
 .Send and consume messages using a queue:
 [source,bash]
 ----
-$ curl -X GET http://localhost:8080/hello/message/send?content=Hello%20World
+$ curl -X GET http://localhost:8080/api/message/send?content=Hello%20World
 Sent Hello World to getting-started-queue
 ----
 
@@ -317,25 +317,8 @@ link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-jms-part21
-* link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack]
-* link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[PostgreSQL datasource example]
-
-link:https://activemq.apache.org/components/artemis/documentation/latest/docker.html[ActiveMQ Artemis - Docker]
-
-[source,bash,subs="normal"]
-----
-$ podman run --rm --name activemq-artemis -e ARTEMIS_USER=artemis -e ARTEMIS_PASSWORD=123PIPPOBAUDO -p 61616:61616 -p 8161:8161  apache/activemq-artemis:latest-alpine
-----
-
-http://0.0.0.0:8161/console/
-
-/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=remote-activemq-socket-binding:add(host=${artemis.host:0.0.0.0},port=${artemis.port:61616})
-/subsystem=messaging-activemq/remote-connector=remote-activemq:add(socket-binding=remote-activemq-socket-binding)
-/subsystem=messaging-activemq/pooled-connection-factory=remote-activemq-pcf:add(connectors=[remote-activemq],entries=["java:/jms/remote/myCF"],user="artemis",password="123PIPPOBAUDO")
-/subsystem=messaging-activemq/external-jms-queue=testQueue:add(entries=["java:/jms/remote/testQueue"])
-
-http://localhost:8080/hello/message/send?content=FIGO
+* Source code for this post: {source-code-git-repository}/tree/simple-microservice-jms-part1
+* link:https://activemq.apache.org/components/artemis/documentation/latest/docker.html[ActiveMQ Artemis - Docker]
 
 
 Back to Guides

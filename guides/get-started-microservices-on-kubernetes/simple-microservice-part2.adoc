@@ -112,7 +112,7 @@ $ kubectl apply -f deployment-{my-jaxrs-app-docker-image-name}.yaml
 deployment.apps/{my-jaxrs-app-docker-image-name}-deployment created
 ----
 
-We used to link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+We used link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
 
 [source,bash,subs="normal"]
 ----
