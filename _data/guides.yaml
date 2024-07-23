@@ -85,4 +85,10 @@ categories:
       - title: Integrating with a PostgreSQL database
         url: /guides/database-integrating-with-postgresql
         description: Learn how to configure a datasource to connect to a PostgreSQL database.
+  - category: Testing
+    cat-id: testing
+    guides:
+      - title: Testing with Arquillian and JUnit 5
+        url: /guides/testing-arquillian-junit5
+        description: Learn how to write JUnit 5 tests using Arquillian for Jakarta EE based applications.
 
