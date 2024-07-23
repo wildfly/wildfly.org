@@ -1,0 +1,740 @@
+---
+layout: post
+title:  "Automate WildFly's subsystems configuration using Ansible!"
+date:   2024-09-10
+tags:   ansible cluster subsystems yaml_config
+author: rpelisse
+description: A quick overview on how to use the Ansible collection for WildFly and fully automate the configuration of its subsystems using the Yaml configuration feature of the appserver
+---
+
+= Automate WildFly's subsystems configuration using Ansible!
+
+In this brief demonstration, we’ll see how to use https://www.ansible.com/[Ansible] to fully automate the deployment of a WildFly instance, including the configuration of its subsystems. In particular, we’ll illustrate how to set up messaging queues and deploy JDBC drivers.
+
+For readers not familiar with Ansible, the article with starts with the instructions on how to set it up and install the required extension (a collection, in Ansible lexicon) for WildFly.
+
+== Install Ansible and its collection for WildFly
+
+On a Linux system using a package manager, installing Ansible is pretty straightforward:
+
+[source,bash]
+----
+$ sudo dnf install ansible-core
+----
+
+*Note:* _this demonstration assumes you are running both the Ansible controller and the target (same machine in our case) on a Linux system. However, it should work on a different OS (bearing a few adjustments). Please refer to the https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html[documentation available online] for installation on other operating systems._
+
+Before going further, double check that you are running a recent enough version of Ansible (2.16 or above will do):
+
+[source,bash]
+----
+$ ansible --version
+ansible [core 2.16.0]
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/home/rpelisse/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /home/rpelisse/.local/lib/python3.12/site-packages/ansible
+  ansible collection location = /home/rpelisse/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/bin/ansible
+  python version = 3.12.3 (main, Apr 17 2024, 00:00:00) [GCC 13.2.1 20240316 (Red Hat 13.2.1-7)] (/usr/bin/python3)
+  jinja version = 3.1.4
+  libyaml = True
+----
+
+The next and last step to ensure your Ansible environment is ready to be used is to install the https://github.com/ansible-middleware/wildfly/[Ansible collection for WildFly] on the **controller** (the machine that will run Ansible):
+
+[source,bash]
+----
+# ansible-galaxy collection install middleware_automation.wildfly
+Starting collection install process
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/middleware_automation-wildfly-1.5.2.tar.gz to /root/.ansible/tmp/ansible-local-85_kfluuxm/tmpztz1ds3y/middleware_automation-wildfly-1.5.2-veisxadr
+Installing 'middleware_automation.wildfly:1.5.2' to '/root/.ansible/collections/ansible_collections/middleware_automation/wildfly'
+ownloading https://console.redhat.com/api/automation-hub/v3/plugin/ansible/content/641409-synclist/collections/artifacts/ansible-posix-1.5.4.tar.gz to /root/.ansible/tmp/ansible-local-85_kfluuxm/tmpztz1ds3y/ansible-posix-1.5.4-it7fl_gz
+middleware_automation.wildfly:1.5.2 was installed successfully
+Installing 'ansible.posix:1.5.4' to '/root/.ansible/collections/ansible_collections/ansible/posix'
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/middleware_automation-common-1.2.1.tar.gz to /root/.ansible/tmp/ansible-local-85_kfluuxm/tmpztz1ds3y/middleware_automation-common-1.2.1-0tzs6cy9
+ansible.posix:1.5.4 was installed successfully
+Installing 'middleware_automation.common:1.2.1' to '/root/.ansible/collections/ansible_collections/middleware_automation/common'
+middleware_automation.common:1.2.1 was installed successfully
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/fedora-linux_system_roles-1.82.0.tar.gz to /root/.ansible/tmp/ansible-local-85_kfluuxm/tmpztz1ds3y/fedora-linux_system_roles-1.82.0-5rfvn8a7
+Installing 'fedora.linux_system_roles:1.82.0' to '/root/.ansible/collections/ansible_collections/fedora/linux_system_roles'
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/containers-podman-1.15.3.tar.gz to /root/.ansible/tmp/ansible-local-85_kfluuxm/tmpztz1ds3y/containers-podman-1.15.3-brqeuvs6
+fedora.linux_system_roles:1.82.0 was installed successfully
+Installing 'containers.podman:1.15.3' to '/root/.ansible/collections/ansible_collections/containers/podman'
+containers.podman:1.15.3 was installed successfully
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/community-general-9.1.0.tar.gz to /root/.ansible/tmp/ansible-local-85_kfluuxm/tmpztz1ds3y/community-general-9.1.0-1ute58rg
+Installing 'community.general:9.1.0' to '/root/.ansible/collections/ansible_collections/community/general'
+community.general:9.1.0 was installed successfully
+----
+
+To verify that the installation was successful, let's run again the `ansible-galaxy` command, this time asking it to list the installed collection:
+
+[source, bash]
+----
+$ ansible-galaxy collection list
+
+$ /home/rpelisse/.ansible/collections/ansible_collections
+Collection                    Version
+----------------------------- -------
+ansible.posix                 1.5.4
+community.general             9.1.0
+containers.podman             1.15.3
+fedora.linux_system_roles     1.82.0
+middleware_automation.common  1.2.1
+middleware_automation.wildfly 1.5.2
+----
+
+=== Define Ansible’s Inventory
+
+Ansible is an automation tool designed to manage, if necessary, thousands of machines. Thus, to work, it needs a list of the **targets** systems (the ones Ansible are in charge of). There are several ways to provide such an inventory, but the simplest, especially for the demonstration of this article to be easily reproduced, is to use a simple file.
+
+Also, for practicality’s sake, we will not set up a remote machine, but just ask Ansible to leverage the local system as a target:
+
+[source, txt]
+----
+[all]
+localhost ansible_connection=local
+----
+
+Because we utilize `localhost` as a target, we also don't need to use SSH (and setup the appropriate credentials). For more detail on Ansible inventory, please refer to https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html[the following documentation].
+
+To verify that everything works as expected and that Ansible is ready to be used, we are going to ask the tool to gather all the information it can on its targets, which, in our case, is only `localhost`:
+
+[source, bash]
+----
+# ansible -m setup -i inventory all
+localhost | SUCCESS => {
+    "ansible_facts": {
+...
+----
+
+The output of the command does not really matter (in the context of this article). The only important item is that Ansible runs successfully and can gather information on the target (`localhost`). Our system is now ready for the demonstration.
+
+=== Ansible Playbook to Install WildFly
+
+Now that Ansible and the required collection are both properly installed, we can start working on our `playbook`. To make it simple to follow, we are going to proceed step by step. First, we'll set up WildFly on the target, without any special configuration to its subsystems. Then, we'll modify the playbook below to add the necessary elements in order to adjust the instance resources (messaging queues and data sources).
+
+Here is the `playbook` we'll use to deploy our clusters. Its content is relatively self-explanatory, at least if you are somewhat familiar with the Ansible syntax.
+
+[source, yml]
+----
+- name: "WildFly installation and configuration"
+  hosts: all
+  become: yes
+  vars:
+    wildfly_install_workdir: '/opt/'
+    wildfly_config_base: 'standalone.xml'
+    wildfly_version: '30.0.1.Final'
+    wildfly_java_package_name: 'java-11-openjdk-headless.x86_64'
+    wildfly_home: "/opt/wildfly-{{ wildfly_version }}"
+  collections:
+    - middleware_automation.wildfly
+  roles:
+    - role: wildfly_install
+    - role: wildfly_systemd
+----
+
+In short, this `playbook` calls the Ansible collection for WildFly to, first, install the appserver by utilizing the `wildfly_install` role. This will download all the artifacts, create the needed system groups and users, install dependency (unzip) and so on. At the end of its execution, all the tidbits required to run WildFly on the target host are in place, but the server is not yet started. That’s what happening with the next role.
+
+There is indeed another role configured in our `playbook` called `wildfly_systemd`. This role will take care of integrating WildFly onto the target as a regular system service handled by the service manager.
+
+=== Run the playbook !
+
+Now, let’s run our Ansible `playbook` and observe its output:
+
+[source, bash]
+----
+$ ansible-playbook -i inventory playbook.yml
+
+PLAY [WildFly installation and configuration] **********************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validating arguments against arg spec 'main'] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure prerequirements are fullfilled.] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/prereqs.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate credentials] ****
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate existing zipfiles wildfly-30.0.1.Final.zip for offline installs] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate patch version for offline installs] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate existing additional zipfiles {{ eap_archive_filename }} for offline installs] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate node identifier length] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check that required packages list has been provided.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Add JDK package java-11-openjdk-headless.x86_64 to packages list] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Add selinux package java-11-openjdk-headless.x86_64 to packages list] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Install required packages (7)] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure required local user exists.] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/user.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set wildfly group] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure group wildfly exists.] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure user wildfly exists.] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure required directories exists.] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/prepdirs.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Check if work directory /opt/ exists] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check if work directory /opt/ is readable] ***
+ok: [localhost] => {
+    "changed": false,
+    "msg": "Archive directory /opt/ is readable"
+}
+
+TASK [middleware_automation.wildfly.wildfly_install : Create archive_dir /opt/, if not exists.] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check if archive directory /opt/ exists] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check if archive directory /opt/ is readable] ***
+ok: [localhost] => {
+    "changed": false,
+    "msg": "Archive directory /opt/ is readable"
+}
+
+TASK [middleware_automation.wildfly.wildfly_install : Create archive_dir /opt/, if not exists.] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure server is installed] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/install.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check local download archive path] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set download paths] ******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check target archive: /opt//wildfly-30.0.1.Final.zip] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Retrieve archive from website: https://github.com/wildfly/wildfly/releases/download] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/install/web.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Download zipfile from https://github.com/wildfly/wildfly/releases/download/30.0.1.Final/wildfly-30.0.1.Final.zip into /work/wildfly-30.0.1.Final.zip] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Retrieve archive from RHN] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Install server using RPM] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check downloaded archive] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Copy archive to target nodes] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check target archive: /opt//wildfly-30.0.1.Final.zip] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Verify target archive state: /opt//wildfly-30.0.1.Final.zip] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Read target directory information: /opt/wildfly-30.0.1.Final] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Extract files from /opt//wildfly-30.0.1.Final.zip into /opt/.] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Note: decompression was not executed] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Read information on server home directory: /opt/wildfly-30.0.1.Final] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check state of server home directory: /opt/wildfly-30.0.1.Final] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Deploy custom configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Deploy configuration] ****
+changed: [localhost]
+
+TASK [Apply latest cumulative patch] *******************************************
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure required parameters for elytron adapter are provided.] ***
+skipping: [localhost]
+
+TASK [Install elytron adapter] *************************************************
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Install server using Prospero] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check wildfly install directory state] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate conditions] *****
+ok: [localhost]
+
+TASK [Ensure firewalld configuration allows server port (if enabled).] *********
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Validating arguments against arg spec 'main'] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Validate node identifier length] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure that version is correct for yaml config extension] ***
+skipping: [localhost]
+
+TASK [Ensure required local user and group exists.] ****************************
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set wildfly group] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure group wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure user wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check if PID directory exists] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create PID directory path if not exists] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure server configuration and systemd configuration are set] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_systemd/tasks/systemd.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create basedir /opt/wildfly-30.0.1.Final/standalone for instance: wildfly] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create deployment directories for instance: wildfly] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure configuration directory exists] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Find properties for colocated instance] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy properties for colocated instance] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy configuration] ****
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy custom configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Include YAML configuration extension] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check YAML configuration is disabled] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy service instance configuration: /etc/sysconfig/wildfly.conf] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy Systemd unit for service: /etc/systemd/system/wildfly.service] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Perform daemon-reload to ensure the changes are picked up] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure service is started] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_systemd/tasks/service.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance wildfly state to started] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure server's apps are deployed] ***
+skipping: [localhost]
+
+RUNNING HANDLER [middleware_automation.wildfly.wildfly_systemd : Restart Wildfly] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_systemd/tasks/service.yml for localhost
+
+RUNNING HANDLER [middleware_automation.wildfly.wildfly_systemd : Check arguments] ***
+ok: [localhost]
+
+RUNNING HANDLER [middleware_automation.wildfly.wildfly_systemd : Set instance wildfly state to restarted] ***
+changed: [localhost]
+
+RUNNING HANDLER [middleware_automation.wildfly.wildfly_install : Execute restorecon] ***
+skipping: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=61   changed=11   unreachable=0    failed=0    skipped=24   rescued=0    ignored=0
+----
+
+=== Check that everything worked as expected
+
+The easiest way to confirm that the `playbook` did indeed install WildFly (and started the appserver) is to use the `systemctl` command to check the associate services state:
+
+[source, bash]
+----
+● wildfly.service - JBoss EAP (standalone mode)
+     Loaded: loaded (/etc/systemd/system/wildfly.service; enabled; preset: disabled)
+     Active: active (running) since Thu 2024-07-04 13:04:59 UTC; 6min ago
+   Main PID: 1173 (standalone.sh)
+      Tasks: 86 (limit: 1638)
+     Memory: 379.4M
+        CPU: 17.479s
+     CGroup: /system.slice/wildfly.service
+             ├─1173 /bin/sh /opt/wildfly-30.0.1.Final/bin/standalone.sh -c wildfly.xml -b 0.0.0.0 -bmanagement 127.0.0.1 -Djboss.bind.address.private=127.0.0.1 -Djboss.default.multicast.address=230.0.0.4 -Djboss.server.config.dir=/opt/wildfly-30.0.1.Final/standalone/configuration/ -Djboss.server.base.dir=/opt/wildfly-30.0.1.Final/standalone -Djboss.tx.node.id=localhost -Djboss.node.name=wildfly -Djboss.socket.binding.port-offset=0 -Dwildfly.statistics-enabled=false
+             └─1316 /etc/alternatives/jre_11/bin/java "-D[Standalone]" "-Djdk.serialFilter=maxbytes=10485760;maxdepth=128;maxarray=100000;maxrefs=300000" -Xmx1024M -Xms512M --add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldaps=ALL-UNNAMED --add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED --add-opens=java.base/com.sun.net.ssl.internal.ssl=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.bas>
+
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,460 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0006: Undertow HTTP listener default listening on [0:0:0:0:0:0:0:0]:8080
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,585 INFO  [org.jboss.as.ejb3] (MSC service thread 1-8) WFLYEJB0493: Jakarta Enterprise Beans subsystem suspension complete
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,585 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-2) WFLYUT0006: Undertow HTTPS listener https listening on [0:0:0:0:0:0:0:0]:8443
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,641 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-8) WFLYJCA0001: Bound data source [java:jboss/datasources/ExampleDS]
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,730 INFO  [org.jboss.as.server.deployment.scanner] (MSC service thread 1-8) WFLYDS0013: Started FileSystemDeploymentService for directory /opt/wildfly-30.0.1.Final/standalone/deployments
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,788 INFO  [org.jboss.ws.common.management] (MSC service thread 1-6) JBWS022052: Starting JBossWS 7.0.0.Final (Apache CXF 4.0.0)
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,920 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,926 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,926 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+Jul 04 13:05:02 e32fad81e375 standalone.sh[1316]: 13:05:02,928 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 30.0.1.Final (WildFly Core 22.0.2.Final) started in 2998ms - Started 280 of 522 services (317 services are lazy, passive or on-demand) - Server configuration file in use: wildfly.xml
+----
+
+=== Deploy Queues Using the Yaml Config Feature
+
+Now that we have a working instance of WildFly, let's look at the configuration of its subsystems. We have two requirements we want to implement: datasources and messaging queues. We'll start with the latter, as the setup of these resources is a bit simpler than datasources, which we'll give ourselves an opportunity to get familiar with the https://docs.wildfly.org/32/Admin_Guide.html#YAML_Configuration_file[Yaml configuration feature] before discussing how to handle the datasources.
+
+Here are the messaging requirements: the WildFly instance needs to have two queues and one topic, both ready to be used and already configured. This can be achieved using the JBoss CLI with the following queries:
+
+[source, bash]
+----
+jms-queue --profile=full add --queue-address=FirstQueue --entries=["java:/jms/queue/first"]
+jms-queue --profile=full add --queue-address=SecondQueue --entries=["java:/jms/queue/second"]
+jms-topic --profile=full add --topic-address=Topic --entries=["java:/jms/topic/Topic"]
+----
+
+Before we see how to implement these modifications using the Ansible collection and the Yaml config feature, let’s point out that we cannot (easily) automate those changes utilizing the JBoss CLI queries above. First of all, the CLI is not idempotent, which means that the first time the queries are run, it will create the resources, but the next times, it will fail, stating (quite correctly) that the resources already exist. Also, even if we bundle those queries into a batch, each time a server is set up, the CLI client will need to be started and the script executed before the instance is ready. All in all, it’s not ideal.
+
+Fortunately, this is where the Yaml Config feature comes in and nicely implements the modification in a Ansible-friendly manner (or rather in an idempotent fashion). In essence, the feature allows specifying changes in the server subsystem in a simple https://yaml.org/[YAML file].
+
+As an example, here is how one can express the messaging requirements we discussed above using this format:
+
+[source, yml]
+----
+wildfly-configuration:
+  subsystem:
+    messaging-activemq:
+      server:
+        default:
+          jms-queue:
+            FirstQueue:
+              entries:
+                - 'java:/jms/queue/first'
+            SecondQueue:
+              entries:
+                - 'java:/jms/queue/second'
+          jms-topic:
+            TheTopic:
+              entries:
+                - topic/TheTopic
+                - java:jboss/exported/topic/TheTopic
+----
+
+With this file created; we can modify our `playbook` now to use the Yaml Config feature and configure accordingly the server's subsystem:
+
+[source, yml]
+----
+    ...
+    wildfly_config_base: 'standalone.xml'
+    wildfly_version: '30.0.1.Final'
+    wildfly_java_package_name: 'java-11-openjdk-headless.x86_64'
+    wildfly_home: "/opt/wildfly-{{ wildfly_version }}"
+    wildfly_enable_yml_config: True
+    wildfly_yml_configs:
+      - 'article.yml.j2'
+----
+
+Let's run again the `playbook` with this new configuration file. Note that Ansible will ensure the functionality is activated in the server and triggers a restart of WildFly so that the changes applied with the Yaml Config feature are, indeed, live:
+
+[source, bash]
+----
+...
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy YAML configuration files: ['article.yml.j2']] *****************************
+changed: [localhost] => (item=article.yml.j2)
+...
+RUNNING HANDLER [middleware_automation.wildfly.wildfly_systemd : Set instance wildfly state to restarted] ******************************
+changed: [localhost]
+
+RUNNING HANDLER [middleware_automation.wildfly.wildfly_install : Execute restorecon] ***************************************************
+skipping: [localhost]
+
+PLAY RECAP *****************************************************************************************************************************
+localhost                  : ok=73   changed=3    unreachable=0    failed=0    skipped=35   rescued=0    ignored=0
+----
+
+This configuration above simply adds the required resources (the queues and a topic); however, real-life scenarios are rarely as clear cut. Let's introduce a bit of complexity for the sake of making our example closer to a real use case.
+
+FirstQueue is actually a legacy system, employed by a few, non-critical older apps and for this reason it has been decided it should not be durable. Also, because it is utilized by systems that are not yet updated, it needs to be associated with a legacy entry:
+
+[source, bash]
+----
+/subsystem=messaging-activemq/server=default/jms-queue=FirstQueue:read-resource
+{
+    "outcome" => "success",
+    "result" => {
+        "durable" => false,
+        "entries" => ["java:/jms/queue/first"],
+        "legacy-entries" => ["java:/jms/legacy/queue/old"],
+        "selector" => undefined
+    }
+}
+----
+
+Let's modify our Yaml Config file to reflect those extra requirements:
+
+[source, yml]
+----
+...
+FirstQueue:
+  entries:
+    - 'java:/jms/queue/first'
+  durable: false
+  legacy-entries:
+    - 'java:/jms/legacy/queue/old'
+SecondQueue:
+...
+----
+
+It's already quite nice to be able to express our changes to the subsystem configuration inside a simple text file, but, thanks to Ansible we can go further than that. Currently, the resource settings are somewhat hard-coded in this file; however, we can do better here.
+
+Ansible can easily generate the content of this file using its **templating mechanism**. Which means that we can even abstract part of the configuration and not have all the value hard-coded in the file.
+
+Let's assume, for instance, that FirstQueue is not durable when deployed on _staging_ systems. We can employ a template so that Ansible can create the appropriate configuration depending on the target system. Relying on the internal convention that any staging system as the suffix `'. stating'` in the machine hostname, Ansible be able to change the default value of durable from true to false:
+
+[source, yml]
+----
+wildfly-configuration:
+  subsystem:
+    messaging-activemq:
+      server:
+        default:
+          jms-queue:
+            FirstQueue:
+              entries:
+                - 'java:/jms/queue/first'
+{% if '.staging' in ansible_nodename %}
+              durable: false
+{% endif %}
+              legacy-entries:
+                - 'java:/jms/legacy/queue/old'
+            SecondQueue:
+              entries:
+                - 'java:/jms/queue/second'
+          jms-topic:
+            TheTopic:
+              entries:
+                - topic/TheTopic
+                - java:jboss/exported/topic/TheTopic
+----
+
+While this templating feature is quite powerful, a balance needs to be found when it is leveraged. Generating the entire template, based on rather complex data structure is not advisable, for instance. The Yaml Config file is already a configuration artifact, that can be used as a source of truth.
+
+In short, when designing the way WildFly's setup will be provisioned, it's important to determine what needs to be added directly to the default configuration (`standalone.xml` or `standalone-full.xml`) utilized as a base and what can be parameterized using the Yaml configuration feature, employing or not, the templating functionality of Ansible.
+
+To help make these decisions, here are a few rules of thumb to keep in mind:
+
+* Large alteration of the subsystems (adding one or several, or simply rewriting entirely the default configuration) are most likely easier to achieve by providing a modified base configuration.
+* Small changes to the subsystem configuration, adding a few, straightforward resources are most likely easy enough to implement.
+* Changes in the configuration linked to the target environments can be achieved using the templating feature of Ansible.
+* No matter what, remember the https://en.wikipedia.org/wiki/KISS_principle[KISS principle (Keep It Stupid Simple)].
+
+Let's run again the `playbook`. As in the above example run, Ansible will notice the change to the Yaml configuration file and consequently update the target's subsystems configuration, before restarting the server.
+
+With these first requirements in place, we now move to the deployment of our JDBC drivers and datasources.
+
+=== Deploy JDBC drivers and datasources
+
+The deployment of JDBC drivers and datasources on the target system is a somewhat more elaborated use case than the one we just saw with the messaging subsystem. Indeed, to add a JDBC driver to a WildFly server an entire module must be created; it's not just a configuration change in the `standalone.xml` that needs to be performed in an idempotent manner.
+
+Fortunately, here again, the Ansible collection for WildFly does most of the heavy lifting. In fact, the default `playbook` we used already comes with the setup of two JDBC drivers:
+
+[source, yml]
+----
+...
+  collections:
+    - middleware_automation.wildfly
+  tasks:
+    - name: Install second driver with wildfly_driver role
+      ansible.builtin.include_role:
+        name: wildfly_driver
+      when: jdbc_drivers is defined and jdbc_drivers | length > 0
+      vars:
+        wildfly_driver_module_name: "{{ item.name }}"
+        wildfly_driver_version: "{{ item.version }}"
+        wildfly_driver_jar_filename: "{{ item.jar_file }}"
+        wildfly_driver_jar_url: "{{ item.url }}"
+      loop: "{{ jdbc_drivers }}"
+...
+----
+
+As shown above, the collection provides a generic role that takes care of creating the file hierarchy associated to a JDBC driver, but also downloading the required artifacts (jar file) along with generating the needed descriptor (module.xml). The driver's specific values are stored in the `vars.yml`, imported by Ansible when executing this `playbook`:
+
+[source, yml]
+----
+postgres_driver_version: 9.4.1212
+mariadb_driver_version: 3.2.0
+jdbc_drivers:
+    - { version: "{{ postgres_driver_version }}", name: 'org.postgresql', jar_file: "postgresql-{{ postgres_driver_version }}.jar", url: "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/{{ postgres_driver_version }}/postgresql-{{ postgres_driver_version }}.jar" }
+    - { version: "{{ mariadb_driver_version }}", name: 'org.mariadb', jar_file: "mariadb-java-client-{{ mariadb_driver_version }}.jar", url: "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/{{ mariadb_driver_version }}/mariadb-java-client-{{ mariadb_driver_version }}.jar" }
+----
+
+*Note:* _The Ansible collection for WildFly comes with a default template to generate the `module.xml` of a custom module. Obviously, this template might not be a good fit for ALL the drivers that users may have to install in a WildFly setup. For this reason, the template itself can easily be replaced by another one, provided by the user._
+
+While this role ensures the modules are ready to be utilized, it does not; however, activate them. To make them available to use for datasources, we will add their definition to our Yaml configuration file:
+
+[source, yaml]
+----
+wildfly-configuration:
+  subsystem:
+  ...
+    datasources:
+      jdbc-driver:
+        postgresql:
+          driver-name: postgresql
+          driver-xa-datasource-class-name: org.postgresql.xa.PGXADataSource
+          driver-module-name: org.postgresql
+     ...
+----
+
+As we already have a datastructure with most of the required information, we are going to adopt a more dynamic approach, where the drivers configuration is automatically generated by the content of the existing array:
+
+[source, yaml]
+----
+...
+    datasources:
+      {% if jdbc_drivers is defined and jdbc_drivers | length > 0 %}jdbc-driver:
+{% for driver in jdbc_drivers %}
+        {{ driver.name | regex_replace('^org.', '') }}:
+          driver-name: {{ driver.name | regex_replace('^org.', '') }}
+          driver-xa-datasource-class-name: {{ driver.class_name }}
+          driver-module-name: {{ driver.name }}
+{% endfor %}
+{% endif %}
+----
+
+*Note:* _the jinja2 template above is there to demonstrate how much flexibility the ability to turn the Yaml Config file into a template brings to the user. It is; however, debatable if such an intricate approach is the most reasonable, or even recommended._
+
+The variable provided by the default `playbook` does not contain the JDBC driver classname, so we need to add that information to the `vars.yml` file:
+
+[source, yaml]
+----
+jdbc_drivers:
+  - { version: "{{ postgres_driver_version }}", name: 'org.postgresql', jar_file: "postgresql-{{ postgres_driver_version }}.jar", url: "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/{{ postgres_driver_version }}/postgresql-{{ postgres_driver_version }}.jar", class_name: 'org.postgresql.xa.PGXADataSource' }
+  - { version: "{{ mariadb_driver_version }}", name: 'org.mariadb', jar_file: "mariadb-java-client-{{ mariadb_driver_version }}.jar", url: "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/{{ mariadb_driver_version }}/mariadb-java-client-{{ mariadb_driver_version }}.jar", class_name: 'org.mariadb.jdbc.Driver' }
+----
+
+We can now run again the `playbook` and simply check, after it ran successfully, that the drivers have been properly added:
+
+[source, bash]
+----
+[standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mariadb:read-resource
+{
+    "outcome" => "success",
+    "result" => {
+        "deployment-name" => undefined,
+        "driver-class-name" => undefined,
+        "driver-datasource-class-name" => undefined,
+        "driver-major-version" => undefined,
+        "driver-minor-version" => undefined,
+        "driver-module-name" => "org.mariadb",
+        "driver-name" => "mariadb",
+        "driver-xa-datasource-class-name" => "org.mariadb.jdbc.Driver",
+        "jdbc-compliant" => undefined,
+        "module-slot" => undefined,
+        "profile" => undefined
+    }
+}
+[standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=postgresql:read-resource
+{
+    "outcome" => "success",
+    "result" => {
+        "deployment-name" => undefined,
+        "driver-class-name" => undefined,
+        "driver-datasource-class-name" => undefined,
+        "driver-major-version" => undefined,
+        "driver-minor-version" => undefined,
+        "driver-module-name" => "org.postgresql",
+        "driver-name" => "postgresql",
+        "driver-xa-datasource-class-name" => "org.postgresql.xa.PGXADataSource",
+        "jdbc-compliant" => undefined,
+        "module-slot" => undefined,
+        "profile" => undefined
+    }
+}
+----
+With the drivers in place, we have just one more requirement to implement: setting up the *datasources*. The parameters vary depending on the target system. When WildFly is running on Red Hat Enterprise Linux 8 (RHEL8), the server is still using Postrgesql as a default datasources; however, when running on RHEL9, it should be utilizing MariaDB.
+
+Here again, we are going to leverage the templating system of Ansible, to set up the right default datasource, with the appropriate driver on the targets.
+
+[source, yaml]
+----
+...
+wildfly-configuration:
+  subsystem:
+  ...
+      data-source:
+        DefaultDS:
+          enabled: true
+          jndi-name: java:jboss/datasources/DefaultDS
+          max-pool-size: {{ default_ds_max_size }}
+          min-pool-size: {{ default_ds_min_size }}
+          connection-url: "jdbc:{% if ansible_distribution_major_version == 9 %}mariadb{% else %}postgresql{% endif %}://localhost/default_ds"
+          driver-name: {% if ansible_distribution_major_version == 9 %}mariadb{% else %}postgresql{% endif %}
+----
+
+== Conclusion
+
+We have now fulfilled all the requirements and fully automated our set-up of WildFly. In doing so, we hopefully demonstrated how to use the Yaml Configuration feature of the Java server in conjunction with the Ansible collection for WildFly. Leveraging the latter with Ansible gives an efficient way to provision and manages hundreds, if not thousands of servers, without any manual intervention.
