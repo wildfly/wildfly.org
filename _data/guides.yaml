@@ -16,6 +16,9 @@ categories:
       - title: Deploying WildFly using Ansible
         url: /guides/automate-with-ansible
         description: Learn how to automate WildFly deployments with Ansible.
+      - title: Testing with Arquillian and JUnit 5
+        url: /guides/testing-arquillian-junit5
+        description: Learn how to write JUnit 5 tests using Arquillian for Jakarta EE based applications.
   - category: Datasources
     cat-id: datasources
     guides:
