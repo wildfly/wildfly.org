@@ -5,17 +5,17 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service] implemented using WildFly.
+In this post, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service, window="_blank"] implemented using WildFly.
 
 include::{includedir}/_prerequisites.adoc[]
 
-* Install link:https://www.docker.com/[Docker] or link:https://podman.io/[Podman]
+* Install link:https://www.docker.com/[Docker, window="_blank"] or link:https://podman.io/[Podman, window="_blank"]
 
 include::_includes/_constants.adoc[]
 
 == Maven Project
 
-Create a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service] using the `org.wildfly.archetype:wildfly-getting-started-archetype` archetype:
+Create a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service, window="_blank"] using the `org.wildfly.archetype:wildfly-getting-started-archetype` archetype:
 
 [source,bash]
 ----
@@ -24,13 +24,13 @@ mvn archetype:generate \
 -DarchetypeArtifactId=wildfly-getting-started-archetype
 ----
 
-NOTE: See link:/get-started[Getting Started with WildFly] for the details
+NOTE: See link:/get-started[Getting Started with WildFly, window="_blank"] for the details
 
 === pom.xml
 
-We need to add some features that will be required when, in the next post, we will run our application on link:https://kubernetes.io/[Kubernetes]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Liveness, Readiness and Startup Probes];
+We need to add some features that will be required when, in the next post, we will run our application on link:https://kubernetes.io/[Kubernetes, window="_blank"]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Liveness, Readiness and Startup Probes, window="_blank"];
 
-We can add these features by adding the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] to our application; add the following to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configuration in the `pom.xml` file:
+We can add these features by adding the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"] to our application; add the following to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration in the `pom.xml` file:
 
 [source,xml,subs="normal"]
 ----
@@ -39,7 +39,7 @@ We can add these features by adding the link:https://github.com/wildfly-extras/w
     </feature-pack>
 ----
 
-You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configured like in the following:
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
 
 [source,xml,subs="normal"]
 ----
@@ -104,15 +104,15 @@ $ ./target/server/bin/standalone.sh
 17:36:26,904 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 2175ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-As you can, see the applications started, and it's ready to serve requests on port `8080`;
+As you can see, the applications started, and it's ready to serve requests on port `8080`;
 
 === Check the application [[check_the_application]]
 
 Go to this URL:
 
-* link:http://127.0.0.1:8080/hello/pippo[http://127.0.0.1:8080/hello/pippo]
+* link:http://127.0.0.1:8080/hello/pippo[http://127.0.0.1:8080/hello/pippo, window="_blank"]
 
-either in your browser, or using a utility like `curl`:
+either in your browser or using a utility like `curl`:
 
 [source,bash]
 ----
@@ -124,9 +124,9 @@ Hello 'pippo'.
 
 Go to these URLs:
 
-* link:http://127.0.0.1:9990/health/live[http://127.0.0.1:9990/health/live]
-* link:http://127.0.0.1:9990/health/ready[http://127.0.0.1:9990/health/ready]
-* link:http://127.0.0.1:9990/health/started[http://127.0.0.1:9990/health/started]
+* link:http://127.0.0.1:9990/health/live[http://127.0.0.1:9990/health/live, window="_blank"]
+* link:http://127.0.0.1:9990/health/ready[http://127.0.0.1:9990/health/ready, window="_blank"]
+* link:http://127.0.0.1:9990/health/started[http://127.0.0.1:9990/health/started, window="_blank"]
 
 either in your browser, or using a utility like `curl`:
 
@@ -154,7 +154,7 @@ Let's move on and package our application in a link:https://docs.docker.com/guid
 
 === Dockerfile
 
-We will use the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile] because it is crafted specifically for WildFly;
+We will use the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile, window="_blank"] because it is crafted specifically for WildFly;
 
 Create a file named `Dockerfile` in the same directory as the `pom.xml` file, with the following content:
 
@@ -183,7 +183,7 @@ Successfully tagged localhost/{my-jaxrs-app-docker-image-name}:latest
 e1ab6e80ed20c3619a7e859f03c71f33b79a4d292f971ed83e7484f4779121d8
 ----
 
-NOTE: As you can see, we used link:https://podman.io/[Podman], but you can also use link:https://www.docker.com/[Docker], depending on your preference and on which one you have installed on your PC; to switch to Docker, replace *podman* with *docker* in the previous command (and in the ones that will follow);
+NOTE: As you can see, we used link:https://podman.io/[Podman, window="_blank"], but you can also use link:https://www.docker.com/[Docker, window="_blank"], depending on your preference and on which one you have installed on your PC; to switch to Docker, replace *podman* with *docker* in the previous command (and in the ones that will follow);
 
 === Run the Docker Image
 
@@ -208,7 +208,7 @@ $ podman run --rm -p 8080:8080 -p 9990:9990 \
 16:14:50,461 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 1101ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-As you can, see the application started, and it's ready to serve requests on port `8080`;
+As you can see, the application started, and it's ready to serve requests on port `8080`;
 
 NOTE: we explicitly mapped port `8080` in the container to port `8080` on the HOST (your PC); we also mapped port `9990` in the container to port `9990` on the HOST to expose the Liveness, Readiness and Startup Probes;
 

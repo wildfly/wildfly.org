@@ -6,15 +6,15 @@ title: Java Microservices on Kubernetes wih WildFly
 include::{includedir}/_titles.adoc[]
 :page-liquid:
 
-== Build Java Microservices with WildFly and run them on link:https://kubernetes.io/[Kubernetes].
+== Build Java Microservices with WildFly and run them on link:https://kubernetes.io/[Kubernetes, window="_blank"].
 
 === Intro
 
-In this series, you'll learn HOW-TO to build applications using some of the most common link:https://jakarta.ee/[Jakarta EE] specifications (e.g. JAX-RS, JPA, JMS, etc.) and run them on link:https://kubernetes.io/[Kubernetes];
+In this series, you'll learn HOW-TO to build applications using some of the most common link:https://jakarta.ee/[Jakarta EE, window="_blank"] specifications (e.g. JAX-RS, JPA, JMS, etc.) and run them on link:https://kubernetes.io/[Kubernetes, window="_blank"];
 
-At some point, we'll go even further and use some link:https://microprofile.io/[MicroProfile] specifications (e.g. Rest Client invoking a JAX-RS service in another application);
+At some point, we'll go even further and use some link:https://microprofile.io/[MicroProfile, window="_blank"] specifications (e.g. Rest Client invoking a JAX-RS service in another application);
 
-We will start building a link:https://docs.docker.com/[Docker Image] containing a WildFly Java Microservice (link:simple-microservice-part1[{simple-microservice-part1}]), and then we will run that Docker Image on link:https://kubernetes.io/[Kubernetes] (link:simple-microservice-part2[{simple-microservice-part2}]): this will set the basis to extend this example in subsequent posts;
+We will start building a link:https://docs.docker.com/[Docker Image, window="_blank"] containing a WildFly Java Microservice (link:simple-microservice-part1[{simple-microservice-part1}]), and then we will run that Docker Image on link:https://kubernetes.io/[Kubernetes, window="_blank"] (link:simple-microservice-part2[{simple-microservice-part2}]): this will set the basis to extend this example in subsequent posts;
 
 === Posts in this series
 
@@ -25,11 +25,11 @@ We will start building a link:https://docs.docker.com/[Docker Image] containing 
 * link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}]
 * link:simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}]
 * link:simple-microservice-jms-part1[{simple-microservice-jms-part1}]
-//* link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
+* link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
 //* link:get-enterprise-ready[{get-enterprise-ready}]
 
 [[references]]
 == References
 
-* https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config]
+* https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config, window="_blank"]
 

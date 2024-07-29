@@ -20,7 +20,7 @@ include::_includes/_constants.adoc[]
 
 === PostgreSQL
 
-We will use PostgreSQL in this post in its containerized version: see link:https://hub.docker.com/_/postgres[PostgreSQL Official Image];
+We will use PostgreSQL in this post in its containerized version: see link:https://hub.docker.com/_/postgres[PostgreSQL Official Image, window="_blank"];
 
 Start PostgreSQL:
 
@@ -42,9 +42,9 @@ NOTE: We created the *{podman-network-name}* network and started the *{postgre-s
 
 == Maven Project
 
-You will extend the sample application you created in link:simple-microservice-part1[{simple-microservice-part1}] by adding the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack];
+You will extend the sample application you created in link:simple-microservice-part1[{simple-microservice-part1}] by adding the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"];
 
-The link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] will:
+The link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"] will:
 
 * install the JDBC Driver for the PostgreSQL Database into WildFly
 * add a database connection to PostgreSQL in WildFly
@@ -78,7 +78,7 @@ Add the following dependencies to the `pom-xml` file `dependencies` section:
 
 Add the `wildfly-datasources-galleon-pack` feature-pack and the `postgresql-datasource` layer to the `wildfly-maven-plugin` configuration;
 
-You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configured like in the following:
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
 
 [source,xml,subs="normal"]
 ----
@@ -117,10 +117,10 @@ You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/
 
 Add the following classes to the project:
 
-.org.wildfly.examples.test_table.model.TestTable   :
+.org.wildfly.examples.test_table.TestTable :
 [source,java]
 ----
-package org.wildfly.examples.test_table.model;
+package org.wildfly.examples.test_table;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -180,10 +180,10 @@ public class TestTable {
 }
 ----
 
-.org.wildfly.examples.test_table.service.TestTableResource :
+.org.wildfly.examples.test_table.TestTableResource :
 [source,java]
 ----
-package org.wildfly.examples.test_table.service;
+package org.wildfly.examples.test_table;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
@@ -196,7 +196,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
-import org.wildfly.examples.test_table.model.TestTable;
+import org.wildfly.examples.test_table.TestTable;
 
 import java.util.List;
 
@@ -218,7 +218,7 @@ public class TestTableResource {
 		return em.createQuery("SELECT t FROM TestTable t", TestTable.class).getResultList();
 	}
 
-	@Transactional(Transactional.TxType.REQUIRED)
+	@Transactional
 	@POST
 	@Produces({"application/json"})
 	@Path("insert/{field1}/{field2}")
@@ -389,8 +389,8 @@ link:simple-microservice-database-part2[{simple-microservice-database-part2}]
 == References
 
 * Source code for this post: {source-code-git-repository}/tree/simple-microservice-database-part1
-* link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack]
-* link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[PostgreSQL datasource example]
+* link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"]
+* link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[PostgreSQL datasource example, window="_blank"]
 
 Back to Guides
 

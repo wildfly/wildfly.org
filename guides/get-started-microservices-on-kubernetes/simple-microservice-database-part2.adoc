@@ -24,7 +24,7 @@ We basically will repeat everything we did in link:simple-microservice-part2[{si
 
 ==== PostgreSQL configmap
 
-Create e fine named `postgres-configmap.yaml` with the following content:
+Create e file named `postgres-configmap.yaml` with the following content:
 
 .postgres-configmap.yaml
 [source,yaml,subs="normal"]
@@ -53,7 +53,7 @@ kubectl apply -f postgres-configmap.yaml
 
 ==== PostgreSQL deployment
 
-Create e fine named `postgres-deployment.yaml` with the following content:
+Create e file named `postgres-deployment.yaml` with the following content:
 
 .postgres-deployment.yaml
 [source,yaml,subs="normal"]
@@ -105,7 +105,7 @@ kubectl apply -f postgres-deployment.yaml
 
 ==== PostgreSQL service
 
-Create e fine named `postgres-service.yaml` with the following content:
+Create e file named `postgres-service.yaml` with the following content:
 
 .postgres-service.yaml
 [source,yaml,subs="normal"]
@@ -132,7 +132,7 @@ apply the Service configuration to the Kubernetes:
 kubectl apply -f postgres-service.yaml
 ----
 
-NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube], and you want to test if PostgreSQL is working, run `kubectl port-forward svc/{postgre-sql-kubernetes-service-name} {postgre-sql-port}:{postgre-sql-port}` and then connect via JDBC using URL `jdbc:postgresql://{postgre-sql-host}:{postgre-sql-port}/{postgre-sql-database}`
+NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"], and you want to test if PostgreSQL is working, run `kubectl port-forward svc/{postgre-sql-kubernetes-service-name} {postgre-sql-port}:{postgre-sql-port}` and then connect via JDBC using URL `jdbc:postgresql://{postgre-sql-host}:{postgre-sql-port}/{postgre-sql-database}`
 
 == Image Registry
 
@@ -140,11 +140,11 @@ To make the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image available 
 
 === Quay.io
 
-There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
+There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
 
-NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-db-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
+NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-db-docker-image-name}` Docker Image, that we already pushed to link:https://quay.io[quay.io, window="_blank"] in the `{quay-io-account-name}` account;
 
-Create a public repository named `{my-jaxrs-app-db-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db]);
+Create a public repository named `{my-jaxrs-app-db-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db, window="_blank"]);
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -171,7 +171,7 @@ podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-db-docker-image-name}
 
 == Deploy to Kubernetes
 
-To deploy our `{my-jaxrs-app-db-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{my-jaxrs-app-db-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+To deploy our `{my-jaxrs-app-db-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"], create a file named `deployment-{my-jaxrs-app-db-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment, window="_blank"]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
 
 .deployment-{my-jaxrs-app-db-docker-image-name}.yaml
 [source,yaml,subs="normal"]
@@ -250,7 +250,7 @@ apply the Deployment configuration to the Kubernetes:
 kubectl apply -f deployment-{my-jaxrs-app-db-docker-image-name}.yaml
 ----
 
-We used link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+We used link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
 
 [source,bash,subs="normal"]
 ----
@@ -259,7 +259,7 @@ kubectl expose deployment.apps/{my-jaxrs-app-db-docker-image-name}-deployment --
 
 === Check the application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube] is exposing your service:
+Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----

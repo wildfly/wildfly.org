@@ -22,7 +22,7 @@ We basically will repeat everything we did in link:simple-microservice-part2[{si
 
 ==== Infinispan configmap
 
-Create e fine named `infinispan-configmap.yaml` with the following content:
+Create e file named `infinispan-configmap.yaml` with the following content:
 
 .infinispan-configmap.yaml
 [source,yaml,subs="normal"]
@@ -48,7 +48,7 @@ kubectl apply -f infinispan-configmap.yaml
 
 ==== Infinispan deployment
 
-Create e fine named `infinispan-deployment.yaml` with the following content:
+Create e file named `infinispan-deployment.yaml` with the following content:
 
 .infinispan-deployment.yaml
 [source,yaml,subs="normal"]
@@ -95,7 +95,7 @@ kubectl apply -f infinispan-deployment.yaml
 
 ==== Infinispan service
 
-Create e fine named `infinispan-service.yaml` with the following content:
+Create e file named `infinispan-service.yaml` with the following content:
 
 .infinispan-service.yaml
 [source,yaml,subs="normal"]
@@ -122,7 +122,7 @@ apply the Service configuration to the Kubernetes:
 kubectl apply -f infinispan-service.yaml
 ----
 
-NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube], and you want to test if Infinispan Server on Kubernetes is working, run `kubectl port-forward svc/{infinispan-kubernetes-service-name} {infinispan-port}:{infinispan-port}`,  then open http://0.0.0.0:{infinispan-port}/console/ in your browser and log in as `{infinispan-user}` / `{infinispan-password}`
+NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"], and you want to test if Infinispan Server on Kubernetes is working, run `kubectl port-forward svc/{infinispan-kubernetes-service-name} {infinispan-port}:{infinispan-port}`,  then open http://0.0.0.0:{infinispan-port}/console/ in your browser and log in as `{infinispan-user}` / `{infinispan-password}`
 
 == Image Registry
 
@@ -130,11 +130,11 @@ To make the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image av
 
 === Quay.io
 
-There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
+There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
 
-NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
+NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}` Docker Image, that we already pushed to link:https://quay.io[quay.io, window="_blank"] in the `{quay-io-account-name}` account;
 
-Create a public repository named `{my-jaxrs-app-infinispan-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}]);
+Create a public repository named `{my-jaxrs-app-infinispan-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}, window="_blank"]);
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -161,7 +161,7 @@ podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image
 
 == Deploy to Kubernetes
 
-To deploy our `{my-jaxrs-app-infinispan-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{my-jaxrs-app-infinispan-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+To deploy our `{my-jaxrs-app-infinispan-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"], create a file named `deployment-{my-jaxrs-app-infinispan-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment, window="_blank"]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
 
 .deployment-{my-jaxrs-app-infinispan-docker-image-name}.yaml
 [source,yaml,subs="normal"]
@@ -224,7 +224,7 @@ apply the Deployment configuration to the Kubernetes:
 kubectl apply -f deployment-{my-jaxrs-app-infinispan-docker-image-name}.yaml
 ----
 
-We used link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+We used link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
 
 [source,bash,subs="normal"]
 ----
@@ -233,7 +233,7 @@ kubectl expose deployment.apps/{my-jaxrs-app-infinispan-docker-image-name}-deplo
 
 === Check the application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube] is exposing your service:
+Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----

@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and use a remote link:https://infinispan.org/[Infinispan Server] to cache HTTP Session data;
+In this post, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and use a remote link:https://infinispan.org/[Infinispan Server, window="_blank"] to cache HTTP Session data;
 
 [[prerequisites]]
 == Prerequisites
@@ -22,7 +22,7 @@ Infinispan is the most common solution used with WildFly when you want to cache 
 
 Using Infinispan, for example, you can avoid users losing their session in case WildFly is shut down and re-started;
 
-In this post, we will use the containerized version of Infinispan: see link:https://quay.io/repository/infinispan/server?tab=tags&tag=latest[Infinispan Server];
+In this post, we will use the containerized version of Infinispan: see link:https://quay.io/repository/infinispan/server?tab=tags&tag=latest[Infinispan Server, window="_blank"];
 
 Start Infinispan:
 
@@ -111,7 +111,7 @@ Add the following to the `wildfly-maven-plugin` configuration:
 * `packaging-scripts` pointing to the `infinispan.cli` file
 * `web-clustering` layer
 
-You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configured like in the following:
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
 
 [source,xml,subs="normal"]
 ----
@@ -208,7 +208,7 @@ Note that we specify some properties used by WildFly to connect to the Infinispa
 
 === Check the application [[check_the_application]]
 
-Open link:http://localhost:8080/[http://localhost:8080/] in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
+Open link:http://localhost:8080/[http://localhost:8080/, window="_blank"] in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
 
 Stop the application (press CTRL+C from the terminal where you started it).
 
@@ -275,9 +275,9 @@ link:simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}
 == References
 
 * Source code for this post: {source-code-git-repository}/tree/simple-microservice-infinispan-part1
-* link:https://infinispan.org/[Infinispan]
-* link:https://docs.wildfly.org/32/High_Availability_Guide.html#Distributable_Web_Applications[Distributable Web Applications]
-* link:https://docs.wildfly.org/wildfly-proposals/management/WFCORE-5464_Check_Env_Vars_On_Expression_Resolution.html[Check Environment Variables When Resolving Expressions]
+* link:https://infinispan.org/[Infinispan, window="_blank"]
+* link:https://docs.wildfly.org/32/High_Availability_Guide.html#Distributable_Web_Applications[Distributable Web Applications, window="_blank"]
+* link:https://docs.wildfly.org/wildfly-proposals/management/WFCORE-5464_Check_Env_Vars_On_Expression_Resolution.html[Check Environment Variables When Resolving Expressions, window="_blank"]
 
 Back to Guides
 

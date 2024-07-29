@@ -15,7 +15,7 @@ In this post, you will learn HOW-TO run the Docker Image you built in link:simpl
 To complete this guide, you need:
 
 * Complete link:simple-microservice-part1[{simple-microservice-part1}]
-* A link:https://kubernetes.io[Kubernetes] cluster: throughout this mini-series, we will use link:https://minikube.sigs.k8s.io[Minikube]
+* A link:https://kubernetes.io[Kubernetes, window="_blank"] cluster: throughout this mini-series, we will use link:https://minikube.sigs.k8s.io[Minikube, window="_blank"]
 
 include::_includes/_constants.adoc[]
 
@@ -25,11 +25,11 @@ To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to 
 
 === Quay.io
 
-There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
+There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
 
-NOTE: You can skip this step in case you prefer to re-use the Docker Image that is already available at link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}[quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}];
+NOTE: You can skip this step in case you prefer to re-use the Docker Image that is already available at link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}[quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}, window="_blank"];
 
-Create a public repository named `{my-jaxrs-app-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app]);
+Create a public repository named `{my-jaxrs-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app, window="_blank"]);
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -58,11 +58,11 @@ podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
 
 === Minikube
 
-You can use whatever Kubernetes cluster you have available; in this post, and in the following, we will use link:https://minikube.sigs.k8s.io/docs/[minikube];
+You can use whatever Kubernetes cluster you have available; in this post, and in the following, we will use link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"];
 
 === Deploy to Kubernetes
 
-To deploy our `quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}` Docker image to Kubernetes, create a file named `deployment-{my-jaxrs-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+To deploy our `quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}` Docker image to Kubernetes, create a file named `deployment-{my-jaxrs-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment, window="_blank"]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
 
 .deployment-{my-jaxrs-app-docker-image-name}.yaml
 [source,yaml,subs="normal"]
@@ -112,7 +112,7 @@ $ kubectl apply -f deployment-{my-jaxrs-app-docker-image-name}.yaml
 deployment.apps/{my-jaxrs-app-docker-image-name}-deployment created
 ----
 
-We used link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+We used link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
 
 [source,bash,subs="normal"]
 ----
@@ -120,11 +120,11 @@ $ kubectl expose deployment.apps/{my-jaxrs-app-docker-image-name}-deployment --t
 service/{my-jaxrs-app-docker-image-name}-deployment exposed
 ----
 
-NOTE: you can also use link:https://docs.wildfly.org/wildfly-charts/[Helm Chart for WildFly] to deploy your application
+NOTE: you can also use link:https://docs.wildfly.org/wildfly-charts/[Helm Chart for WildFly, window="_blank"] to deploy your application
 
 === Check your application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube] is exposing your service:
+Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----

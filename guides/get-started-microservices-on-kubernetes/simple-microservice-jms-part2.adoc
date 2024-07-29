@@ -22,7 +22,7 @@ We basically will repeat everything we did in link:simple-microservice-part2[{si
 
 ==== Apache Artemis deployment
 
-Create e fine named `artemis-deployment.yaml` with the following content:
+Create e file named `artemis-deployment.yaml` with the following content:
 
 .artemis-deployment.yaml
 [source,yaml,subs="normal"]
@@ -66,7 +66,7 @@ kubectl apply -f artemis-deployment.yaml
 
 ==== Apache Artemis service
 
-Create e fine named `artemis-service.yaml` with the following content:
+Create e file named `artemis-service.yaml` with the following content:
 
 .artemis-service.yaml
 [source,yaml,subs="normal"]
@@ -104,11 +104,11 @@ To make the `{my-jms-app-docker-image-name}:latest` Docker Image available to Ku
 
 === Quay.io
 
-There are many options to achieve this; in this post, we will push the `{my-jms-app-docker-image-name}:latest` Docker Image, to the link:quay.io[quay.io] Image Registry;
+There are many options to achieve this; in this post, we will push the `{my-jms-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
 
-NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}` Docker Image, that we already pushed to link:quay.io[quay.io] in the `{quay-io-account-name}` account;
+NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}` Docker Image, that we already pushed to link:https://quay.io[quay.io, window="_blank"] in the `{quay-io-account-name}` account;
 
-Create a public repository named `{my-jms-app-docker-image-name}` on link:quay.io[quay.io] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}]);
+Create a public repository named `{my-jms-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}, window="_blank"]);
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -135,7 +135,7 @@ podman pull quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}
 
 == Deploy to Kubernetes
 
-To deploy our `{my-jms-app-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{my-jms-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+To deploy our `{my-jms-app-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{my-jms-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment, window="_blank"]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
 
 .deployment-{my-jms-app-docker-image-name}.yaml
 [source,yaml,subs="normal"]
@@ -188,7 +188,7 @@ apply the Deployment configuration to the Kubernetes:
 kubectl apply -f deployment-{my-jms-app-docker-image-name}.yaml
 ----
 
-We used link:https://minikube.sigs.k8s.io/docs/[minikube] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+We used link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
 
 [source,bash,subs="normal"]
 ----
@@ -197,7 +197,7 @@ kubectl expose deployment.apps/{my-jms-app-docker-image-name}-deployment --type=
 
 === Check the application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube] is exposing your service:
+Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----

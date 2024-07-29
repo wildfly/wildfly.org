@@ -20,7 +20,7 @@ include::_includes/_constants.adoc[]
 
 === Apache Artemis
 
-We will use Apache Artemis in this post in its containerized version: see link:https://quay.io/artemiscloud/activemq-artemis-broker-kubernetes[Artemis Official Image];
+We will use Apache Artemis in this post in its containerized version: see link:https://quay.io/artemiscloud/activemq-artemis-broker-kubernetes[Artemis Official Image, window="_blank"];
 
 Start Apache Artemis:
 
@@ -73,7 +73,7 @@ Add the following dependencies to the `pom-xml` file `dependencies` section:
 
 We need to add some features that are necessary when to connect to the broker and to support a Message Driven Bean.
 
-We can add these features by adding the `remote-activemq` layer to our application; add the following to the the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configuration in the `pom.xml` file:
+We can add these features by adding the `remote-activemq` layer to our application; add the following to the the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration in the `pom.xml` file:
 
 [source,xml,subs="normal"]
 ----
@@ -85,7 +85,7 @@ We can add these features by adding the `remote-activemq` layer to our applicati
     </layers>
 ----
 
-You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin] configured like in the following:
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
 
 [source,xml,subs="normal"]
 ----
@@ -318,7 +318,7 @@ link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
 == References
 
 * Source code for this post: {source-code-git-repository}/tree/simple-microservice-jms-part1
-* link:https://activemq.apache.org/components/artemis/documentation/latest/docker.html[ActiveMQ Artemis - Docker]
+* link:https://activemq.apache.org/components/artemis/documentation/latest/docker.html[ActiveMQ Artemis - Docker, window="_blank"]
 
 
 Back to Guides
