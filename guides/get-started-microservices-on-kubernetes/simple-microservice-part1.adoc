@@ -28,18 +28,9 @@ NOTE: See link:/get-started[Getting Started with WildFly, window="_blank"] for t
 
 === pom.xml
 
-We need to add some features that will be required when, in the next post, we will run our application on link:https://kubernetes.io/[Kubernetes, window="_blank"]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Liveness, Readiness and Startup Probes, window="_blank"];
+We need to add some features that will be required when, in the next post, we will run our application on link:https://kubernetes.io/[Kubernetes, window="_blank"]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/["Liveness, Readiness and Startup Probes", window="_blank"]; we can add these features thanks to the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"];
 
-We can add these features by adding the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"] to our application; add the following to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration in the `pom.xml` file:
-
-[source,xml,subs="normal"]
-----
-    <feature-pack>
-        <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
-    </feature-pack>
-----
-
-You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
+Update the `pom.xml` file and add the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"] to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration like in the following:
 
 [source,xml,subs="normal"]
 ----

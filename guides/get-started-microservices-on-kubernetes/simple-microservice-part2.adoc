@@ -25,9 +25,7 @@ To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to 
 
 === Quay.io
 
-There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
-
-NOTE: You can skip this step in case you prefer to re-use the Docker Image that is already available at link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}[quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}, window="_blank"];
+There are many Image Registries you can use: in this post, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
 
 Create a public repository named `{my-jaxrs-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app, window="_blank"]);
 
