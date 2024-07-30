@@ -31,6 +31,9 @@ categories:
       - title: Securing WildFly Apps on OpenShift with OpenID Connect Using Additional Scope Values
         url: /guides/security-oidc-scope-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with OpenID Connect using additional scope values.
+      - title: Sending Request Objects as A JWT Using Request Parameters for OpenID Connect
+        url: /guides/security-oidc-request-openshift
+        description: Learn how to send the request object as a Json Web Token when securing a WildFly application using OpenID Connect on OpenShift.
       - title: Securing the WildFly Management Console with OpenID Connect
         url: /guides/security-oidc-management-console
         description: Learn how to secure the WildFly management console with the Keycloak OpenID provider.
