@@ -18,9 +18,7 @@ include::_includes/_constants.adoc[]
 
 == Apache Artemis
 
-We basically will repeat everything we did in link:simple-microservice-part2[{simple-microservice-part2}] but, before, we will deploy Apache Artemis on Kubernetes;
-
-==== Apache Artemis deployment
+=== Apache Artemis deployment
 
 Create e file named `artemis-deployment.yaml` with the following content:
 
@@ -64,7 +62,7 @@ apply the Deployment configuration to the Kubernetes:
 kubectl apply -f artemis-deployment.yaml
 ----
 
-==== Apache Artemis service
+=== Apache Artemis service
 
 Create e file named `artemis-service.yaml` with the following content:
 
@@ -105,8 +103,6 @@ To make the `{my-jms-app-docker-image-name}:latest` Docker Image available to Ku
 === Quay.io
 
 There are many options to achieve this; in this post, we will push the `{my-jms-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
-
-NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}` Docker Image, that we already pushed to link:https://quay.io[quay.io, window="_blank"] in the `{quay-io-account-name}` account;
 
 Create a public repository named `{my-jms-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}, window="_blank"]);
 
@@ -208,7 +204,7 @@ http://192.168.39.143:31858
 .Send and consume messages using a queue (replace "http://192.168.39.143:31858" with the output of the command above!):
 [source,bash,subs="normal"]
 ----
-$ curl -X GET http://192.168.39.143:31858/api/message/send?content=Hello%20World
+$ curl -X GET http://192.168.39.143:31858/hello/message/send?content=Hello%20World
 Sent Hello World to getting-started-queue
 ----
 
