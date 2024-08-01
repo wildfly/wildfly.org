@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and use a remote link:https://infinispan.org/[Infinispan Server, window="_blank"] to cache HTTP Session data;
+In this guide, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and use a remote link:https://infinispan.org/[Infinispan Server, window="_blank"] to cache HTTP Session data.
 
 [[prerequisites]]
 == Prerequisites
@@ -18,11 +18,11 @@ include::_includes/_constants.adoc[]
 
 == Infinispan Server
 
-Infinispan is the most common solution used with WildFly when you want to cache some data outside WildFly;
+Infinispan is the most common solution used with WildFly when you want to cache some data outside WildFly.
 
-Using Infinispan, for example, you can avoid users loosing their session in case WildFly is shut down and re-started;
+Using Infinispan, for example, you can avoid users losing their session in case WildFly is shut down and re-started.
 
-In this post, we will use the containerized version of Infinispan: see link:https://quay.io/repository/infinispan/server?tab=tags&tag=latest[Infinispan Server, window="_blank"];
+In this guide, we will use the containerized version of Infinispan: see link:https://quay.io/repository/infinispan/server?tab=tags&tag=latest[Infinispan Server, window="_blank"].
 
 === Start Infinispan [[start_infinispan_container]]
 
@@ -37,11 +37,9 @@ podman run --rm --network={podman-network-name} --name={infinispan-pod-name} \
   {infinispan-server-docker-image}
 ----
 
-NOTE: if you are using podman on Linux, then run the previous commands using link:https://en.wikipedia.org/wiki/Sudo[sudo]
+NOTE: NOTE: We created the *{podman-network-name}* network and started the *{infinispan-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container.
 
-NOTE: NOTE: We created the *{podman-network-name}* network and started the *{infinispan-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container;
-
-NOTE: you can check the container is running by opening http://0.0.0.0:{infinispan-port}/console/ in your browser and logging in as `{infinispan-user}` / `{infinispan-password}`
+NOTE: you can check the container is running by opening http://localhost:{infinispan-port}/console/ in your browser and logging in as `{infinispan-user}` / `{infinispan-password}`
 
 == Maven Project
 
@@ -70,10 +68,10 @@ Add a file named `infinispan.cli` to the root of the maven project:
 ----
 /subsystem=jgroups/channel=ee:write-attribute(name=stack,value=tcp)
 /subsystem=transactions:write-attribute(name=node-identifier,value=${transactions.node-identifier:wildfly1})
-# missing clustering protocol in stack
+# add DNS_PING protocol to TCP stack
 /subsystem=jgroups/stack=tcp/protocol=dns.DNS_PING:add(add-index=1, properties={dns_query="_ping._tcp.jgroups-dns-ping.myproject.svc.cluster.local"})
 # connection to the remote infinispan server
-/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=remote-infinispan-server:add(host=${infinispan.server.host:0.0.0.0}, port=${infinispan.server.port:{infinispan-port}})
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=remote-infinispan-server:add(host=${infinispan.server.host}, port=${infinispan.server.port:{infinispan-port}})
 batch
 # remote-cache-container
 /subsystem=infinispan/remote-cache-container=web-sessions:add(default-remote-cluster=infinispan-server-cluster, statistics-enabled=true, properties={infinispan.client.hotrod.auth_username=${infinispan.server.user:{infinispan-user}}, infinispan.client.hotrod.auth_password=${infinispan.server.password:{infinispan-password}}, infinispan.client.hotrod.sasl_mechanism=DIGEST-MD5})
@@ -206,7 +204,7 @@ $ ./target/server/bin/standalone.sh \
 16:40:05,188 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 32.0.0.Final (WildFly Core 24.0.0.Final) started in 2586ms - Started 322 of 588 services (354 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-NOTE: if you see an error like *"WARN  [org.infinispan.HOTROD] (HotRod-client-async-pool-1) ISPN004015: Failed adding new server 10.89.2.7/<unresolved>:11222: io.netty.channel.ConnectTimeoutException: connection timed out after 60000 ms: /10.89.2.7:11222"* either switch to docker or run podman commands in <<start_infinispan_container>> with link:https://en.wikipedia.org/wiki/Sudo[sudo]
+NOTE: if you see an error like *"WARN  [org.infinispan.HOTROD] (HotRod-client-async-pool-1) ISPN004015: Failed adding new server 10.89.2.7/<unresolved>:11222: io.netty.channel.ConnectTimeoutException: connection timed out after 60000 ms: /10.89.2.7:11222"* either switch to docker or run all podman commands in this guide (including <<start_infinispan_container>>) with link:https://en.wikipedia.org/wiki/Sudo[sudo] (on some Linux hosts, rootless podman can't bind to the ipv4 address)
 
 === Check the application [[check_the_application]]
 
@@ -214,9 +212,9 @@ Open link:http://localhost:8080/[http://localhost:8080/, window="_blank"] in you
 
 Stop the application (press CTRL+C from the terminal where you started it).
 
-Start the application once again;
+Start the application once again.
 
-Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server;
+Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server.
 
 == Docker Image
 
@@ -252,7 +250,7 @@ podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
     {my-jaxrs-app-infinispan-docker-image-name}:latest
 ----
 
-NOTE: NOTE: We started the *{my-jaxrs-app-infinispan-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{infinispan-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container using the *{infinispan-pod-name}* DNS name;
+NOTE: NOTE: We started the *{my-jaxrs-app-infinispan-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{infinispan-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container using the *{infinispan-pod-name}* DNS name
 
 === Check the application
 
@@ -276,7 +274,7 @@ link:simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-infinispan-part1
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-infinispan-part1
 * link:https://infinispan.org/[Infinispan, window="_blank"]
 * link:https://docs.wildfly.org/32/High_Availability_Guide.html#Distributable_Web_Applications[Distributable Web Applications, window="_blank"]
 * link:https://docs.wildfly.org/wildfly-proposals/management/WFCORE-5464_Check_Env_Vars_On_Expression_Resolution.html[Check Environment Variables When Resolving Expressions, window="_blank"]

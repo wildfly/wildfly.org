@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add Database connectivity;
+In this guide, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add Database connectivity.
 
 [[prerequisites]]
 == Prerequisites
@@ -20,7 +20,7 @@ include::_includes/_constants.adoc[]
 
 === PostgreSQL
 
-We will use PostgreSQL in this post in its containerized version: see link:https://hub.docker.com/_/postgres[PostgreSQL Official Image, window="_blank"];
+We will use PostgreSQL in this guide in its containerized version: see link:https://hub.docker.com/_/postgres[PostgreSQL Official Image, window="_blank"].
 
 Start PostgreSQL:
 
@@ -36,13 +36,13 @@ podman run --rm --network={podman-network-name} --name {postgre-sql-pod-name} \
   {postgre-docker-image}
 ----
 
-NOTE: we started the container with the `--rm`: this way it is disposed automatically when we stop it
+NOTE: we started the container with the `--rm` flag: this way it is disposed of automatically when we stop it
 
-NOTE: We created the *{podman-network-name}* network and started the *{postgre-sql-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container;
+NOTE: We created the *{podman-network-name}* network and started the *{postgre-sql-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container
 
 == Maven Project
 
-You will extend the sample application you created in link:simple-microservice-part1[{simple-microservice-part1}] by adding the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"];
+You will extend the sample application you created in link:simple-microservice-part1[{simple-microservice-part1}] by adding the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"].
 
 The link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"] will:
 
@@ -76,7 +76,7 @@ Add the following dependencies to the `pom-xml` file `dependencies` section:
 
 ==== wildfly-maven-plugin
 
-Add the `wildfly-datasources-galleon-pack` feature-pack and the `postgresql-datasource` layer to the `wildfly-maven-plugin` configuration;
+Add the `wildfly-datasources-galleon-pack` feature-pack and the `postgresql-datasource` layer to the `wildfly-maven-plugin` configuration.
 
 You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
 
@@ -196,7 +196,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
-import org.wildfly.examples.test_table.TestTable;
 
 import java.util.List;
 
@@ -221,7 +220,7 @@ public class TestTableResource {
 	@Transactional
 	@POST
 	@Produces({"application/json"})
-	@Path("insert/{field1}/{field2}")
+	@Path("{field1}/{field2}")
 	public Response insertIntoTestTable(
 			@PathParam("field1") @DefaultValue("some data 1") String field1,
 			@PathParam("field2") @DefaultValue("some data 2") String field2) throws Exception {
@@ -241,7 +240,6 @@ public class TestTableResource {
 
 	@GET
 	@Produces({"application/json"})
-	@Path("list")
 	public List<TestTable> getAllRowsFromTestTable() {
 		try {
 			List<TestTable> allRows = getAllRows();
@@ -316,14 +314,14 @@ Hit the following URLs, using a utility like `curl`:
 .Insert some Data into the Database:
 [source,bash]
 ----
-$ curl -X POST http://localhost:8080/hello/test-table/insert/somedata1/somedata2
+$ curl -X POST http://localhost:8080/hello/test-table/somedata1/somedata2
 {"field1":"somedata1","field2":"somedata2","id":1}
 ----
 
 .Query the database to show the inserted data:
 [source,bash]
 ----
-$ curl http://localhost:8080/hello/test-table/list
+$ curl http://localhost:8080/hello/test-table
 [{"field1":"somedata1","field2":"somedata2","id":1}]
 ----
 
@@ -388,7 +386,7 @@ link:simple-microservice-database-part2[{simple-microservice-database-part2}]
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-database-part1
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-database-part1
 * link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"]
 * link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[PostgreSQL datasource example, window="_blank"]
 

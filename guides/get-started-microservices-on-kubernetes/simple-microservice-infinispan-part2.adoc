@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}] on Kubernetes.
+In this guide, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}] on Kubernetes.
 
 [[prerequisites]]
 == Prerequisites
@@ -18,11 +18,11 @@ include::_includes/_constants.adoc[]
 
 == Infinispan
 
-We basically will repeat everything we did in link:simple-microservice-part2[{simple-microservice-part2}] but, before, we will deploy Infinispan on Kubernetes;
+We basically will repeat everything we did in link:simple-microservice-part2[{simple-microservice-part2}] but, before, we will deploy Infinispan on Kubernetes.
 
 ==== Infinispan configmap
 
-Create e file named `infinispan-configmap.yaml` with the following content:
+Create a file named `infinispan-configmap.yaml` with the following content:
 
 .infinispan-configmap.yaml
 [source,yaml,subs="normal"]
@@ -39,7 +39,7 @@ data:
 
 ----
 
-apply the ConfigMap configuration to the Kubernetes:
+apply the ConfigMap configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -48,7 +48,7 @@ kubectl apply -f infinispan-configmap.yaml
 
 ==== Infinispan deployment
 
-Create e file named `infinispan-deployment.yaml` with the following content:
+Create a file named `infinispan-deployment.yaml` with the following content:
 
 .infinispan-deployment.yaml
 [source,yaml,subs="normal"]
@@ -88,7 +88,7 @@ spec:
               value: '-Dinfinispan.cluster.stack=kubernetes -Djgroups.dns.query="infinispan-dns-ping.myproject.svc.cluster.local"'
 ----
 
-apply the Deployment configuration to the Kubernetes:
+apply the Deployment configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -97,7 +97,7 @@ kubectl apply -f infinispan-deployment.yaml
 
 ==== Infinispan service
 
-Create e file named `infinispan-service.yaml` with the following content:
+Create a file named `infinispan-service.yaml` with the following content:
 
 .infinispan-service.yaml
 [source,yaml,subs="normal"]
@@ -117,7 +117,7 @@ spec:
     app: infinispan
 ----
 
-apply the Service configuration to the Kubernetes:
+apply the Service configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -128,13 +128,13 @@ NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube, window=
 
 == Image Registry
 
-To make the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use;
+To make the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
 
 === Quay.io
 
-There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
+There are many options to achieve this; in this guide, we will push the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
 
-Create a public repository named `{my-jaxrs-app-infinispan-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}, window="_blank"]);
+Create a public repository named `{my-jaxrs-app-infinispan-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -217,7 +217,7 @@ spec:
               key: PASS
 ----
 
-apply the Deployment configuration to the Kubernetes:
+apply the Deployment configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -233,7 +233,7 @@ kubectl expose deployment.apps/{my-jaxrs-app-infinispan-docker-image-name}-deplo
 
 === Check the application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
+Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----
@@ -257,7 +257,7 @@ Start the application once again:
 kubectl scale deploy {my-jaxrs-app-infinispan-docker-image-name}-deployment --replicas=1
 ----
 
-Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server;
+Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server.
 
 == What's next?
 
@@ -266,7 +266,7 @@ link:simple-microservice-jms-part1[{simple-microservice-jms-part1}]
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-infinispan-part2
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-infinispan-part2
 
 Back to Guides
 

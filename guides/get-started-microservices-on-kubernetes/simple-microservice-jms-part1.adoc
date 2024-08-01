@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add an external JMS broker connectivity;
+In this guide, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add an external Message Broker connectivity.
 
 [[prerequisites]]
 == Prerequisites
@@ -16,11 +16,11 @@ To complete this guide, you need:
 
 include::_includes/_constants.adoc[]
 
-== External JMS broker 
+== External Message Broker
 
 === Apache Artemis
 
-We will use Apache Artemis in this post in its containerized version: see link:https://quay.io/artemiscloud/activemq-artemis-broker-kubernetes[Artemis Official Image, window="_blank"];
+We will use Apache Artemis in this guide in its containerized version: see link:https://quay.io/artemiscloud/activemq-artemis-broker-kubernetes[Artemis Official Image, window="_blank"].
 
 Start Apache Artemis:
 
@@ -38,7 +38,7 @@ podman run --rm --name {artemis-pod-name} \
     {artemis-docker-image}
 ----
 
-NOTE: we started the container with the `--rm`: this way it is disposed automatically when we stop it
+NOTE: we started the container with the `--rm` flag: this way it is disposed of automatically when we stop it
 
 NOTE: We started the *{artemis-pod-name}* container with the --network=bridge option: later in this guide, this will allow us to connect to the *{artemis-pod-name}* container from the *{my-jms-app-docker-image-name}* container; 
 
@@ -233,7 +233,7 @@ $ mvn clean package
 
 [source,bash,subs="normal"]
 ----
-./target/server/bin/standalone.sh
+$ ./target/server/bin/standalone.sh
 ...
 10:11:59,045 INFO  [org.jboss.as.connector.services.resourceadapters.ResourceAdapterActivatorService$ResourceAdapterActivator] (MSC service thread 1-6) IJ020002: Deployed: file://RaActivatoractivemq-ra
 10:11:59,046 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-8) WFLYJCA0118: Binding connection factory named java:/JmsXA to alias java:jboss/DefaultJMSConnectionFactory
@@ -253,14 +253,14 @@ $ mvn clean package
 
 ----
 
-=== Check the application
+=== Check the application [[check_the_application]]
 
 Hit the following URLs, using a utility like `curl`:
 
 .Send and consume messages using a queue:
 [source,bash]
 ----
-$ curl -X GET http://localhost:8080/api/message/send?content=Hello%20World
+$ curl -X GET http://localhost:8080/hello/message/send?content=Hello%20World
 Sent Hello World to getting-started-queue
 ----
 
@@ -300,15 +300,7 @@ NOTE: We started the *{my-jms-app-docker-image-name}* container with the `--netw
 
 === Check the application
 
-Just like we did before, hit the following URLs, using a utility like `curl`:
-
-
-.Send and consume messages using a queue:
-[source,bash]
-----
-$ curl -X GET http://localhost:8080/api/message/send?content=Hello%20World
-Sent Hello World to getting-started-queue
-----
+Repeat the check in <<check_the_application>>.
 
 == What's next?
 
@@ -317,7 +309,7 @@ link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-jms-part1
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-jms-part1
 * link:https://activemq.apache.org/components/artemis/documentation/latest/docker.html[ActiveMQ Artemis - Docker, window="_blank"]
 
 

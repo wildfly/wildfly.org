@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service, window="_blank"] implemented using WildFly.
+In this guide, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] implemented using WildFly.
 
 include::{includedir}/_prerequisites.adoc[]
 
@@ -15,7 +15,7 @@ include::_includes/_constants.adoc[]
 
 == Maven Project
 
-Create a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Service, window="_blank"] using the `org.wildfly.archetype:wildfly-getting-started-archetype` archetype:
+Create a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] using the `org.wildfly.archetype:wildfly-getting-started-archetype` archetype:
 
 [source,bash]
 ----
@@ -28,7 +28,7 @@ NOTE: See link:/get-started[Getting Started with WildFly, window="_blank"] for t
 
 === pom.xml
 
-We need to add some features that will be required when, in the next post, we will run our application on link:https://kubernetes.io/[Kubernetes, window="_blank"]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/["Liveness, Readiness and Startup Probes", window="_blank"]; we can add these features thanks to the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"];
+We need to add some features that will be required when, in the next guide, we will run our application on link:https://kubernetes.io/[Kubernetes, window="_blank"]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/["Liveness, Readiness and Startup Probes", window="_blank"]; we can add these features thanks to the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"].
 
 Update the `pom.xml` file and add the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"] to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration like in the following:
 
@@ -95,7 +95,7 @@ $ ./target/server/bin/standalone.sh
 17:36:26,904 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 2175ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-As you can see, the applications started, and it's ready to serve requests on port `8080`;
+As you can see, the application started, and it's ready to serve requests on port `8080`.
 
 === Check the application [[check_the_application]]
 
@@ -145,7 +145,7 @@ Let's move on and package our application in a link:https://docs.docker.com/guid
 
 === Dockerfile
 
-We will use the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile, window="_blank"] because it is crafted specifically for WildFly;
+We will use the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile, window="_blank"] because it is crafted specifically for WildFly.
 
 Create a file named `Dockerfile` in the same directory as the `pom.xml` file, with the following content:
 
@@ -174,7 +174,7 @@ Successfully tagged localhost/{my-jaxrs-app-docker-image-name}:latest
 e1ab6e80ed20c3619a7e859f03c71f33b79a4d292f971ed83e7484f4779121d8
 ----
 
-NOTE: As you can see, we used link:https://podman.io/[Podman, window="_blank"], but you can also use link:https://www.docker.com/[Docker, window="_blank"], depending on your preference and on which one you have installed on your PC; to switch to Docker, replace *podman* with *docker* in the previous command (and in the ones that will follow);
+NOTE: As you can see, we used link:https://podman.io/[Podman, window="_blank"], but you can also use link:https://www.docker.com/[Docker, window="_blank"], depending on your preference and on which one you have installed on your PC; to switch to Docker, replace *podman* with *docker* in the previous command (and in the ones that will follow).
 
 === Run the Docker Image
 
@@ -199,21 +199,21 @@ $ podman run --rm -p 8080:8080 -p 9990:9990 \
 16:14:50,461 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 1101ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
 
-As you can see, the application started, and it's ready to serve requests on port `8080`;
+As you can see, the application started, and it's ready to serve requests on port `8080`.
 
-NOTE: we explicitly mapped port `8080` in the container to port `8080` on the HOST (your PC); we also mapped port `9990` in the container to port `9990` on the HOST to expose the Liveness, Readiness and Startup Probes;
+NOTE: we explicitly mapped port `8080` in the container to port `8080` on the HOST (your PC); we also mapped port `9990` in the container to port `9990` on the HOST to expose the Liveness, Readiness and Startup Probes.
 
 === Check the application
 
-Repeat the checks in <<check_the_application>>;
+Repeat the checks in <<check_the_application>>.
 
-NOTE: the only difference here, is that the response is served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image;
+NOTE: the only difference here, is that the response is served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image
 
 === Check Liveness, Readiness and Startup Probes
 
 Repeat the checks in <<check_liveness_readiness_and_startup_probes>>;
 
-NOTE: here too, the only difference, is that the responses are served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image;
+NOTE: here too, the only difference, is that the responses are served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image
 
 === Stop the Docker container
 
@@ -232,6 +232,6 @@ link:simple-microservice-part2[{simple-microservice-part2}]
 == References
 
 * https://docs.wildfly.org/wildfly-maven-plugin
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-part1
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-part1
 
 < link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]

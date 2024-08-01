@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-database-part1[{simple-microservice-database-part1}] on Kubernetes.
+In this guide, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-database-part1[{simple-microservice-database-part1}] on Kubernetes.
 
 [[prerequisites]]
 == Prerequisites
@@ -20,11 +20,11 @@ include::_includes/_constants.adoc[]
 
 === PostgreSQL
 
-We basically will repeat everything we did in link:simple-microservice-part2[{simple-microservice-part2}] but, before, we will deploy PostgreSQL on Kubernetes;
+We basically will repeat everything we did in link:simple-microservice-part2[{simple-microservice-part2}] but, before, we will deploy PostgreSQL on Kubernetes.
 
 ==== PostgreSQL configmap
 
-Create e file named `postgres-configmap.yaml` with the following content:
+Create the file named `postgres-configmap.yaml` with the following content:
 
 .postgres-configmap.yaml
 [source,yaml,subs="normal"]
@@ -44,7 +44,7 @@ data:
   POSTGRESQL_JNDI: {postgre-sql-jndi}
 ----
 
-apply the ConfigMap configuration to the Kubernetes:
+apply the ConfigMap configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -53,7 +53,7 @@ kubectl apply -f postgres-configmap.yaml
 
 ==== PostgreSQL deployment
 
-Create e file named `postgres-deployment.yaml` with the following content:
+Create the file named `postgres-deployment.yaml` with the following content:
 
 .postgres-deployment.yaml
 [source,yaml,subs="normal"]
@@ -96,7 +96,7 @@ spec:
                   key: POSTGRESQL_DATABASE
 ----
 
-apply the Deployment configuration to the Kubernetes:
+apply the Deployment configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -105,7 +105,7 @@ kubectl apply -f postgres-deployment.yaml
 
 ==== PostgreSQL service
 
-Create e file named `postgres-service.yaml` with the following content:
+Create a file named `postgres-service.yaml` with the following content:
 
 .postgres-service.yaml
 [source,yaml,subs="normal"]
@@ -125,7 +125,7 @@ spec:
     app: postgres
 ----
 
-apply the Service configuration to the Kubernetes:
+apply the Service configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -136,13 +136,13 @@ NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube, window=
 
 == Image Registry
 
-To make the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use;
+To make the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
 
 === Quay.io
 
-There are many Image Registries you can use: in this post, we will push the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
+There are many Image Registries you can use: in this guide, we will push the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
 
-Create a public repository named `{my-jaxrs-app-db-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db, window="_blank"]);
+Create a public repository named `{my-jaxrs-app-db-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app-db, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -241,7 +241,7 @@ spec:
               key: POSTGRESQL_JNDI
 ----
 
-apply the Deployment configuration to the Kubernetes:
+apply the Deployment configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -257,7 +257,7 @@ kubectl expose deployment.apps/{my-jaxrs-app-db-docker-image-name}-deployment --
 
 === Check the application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
+Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----
@@ -270,14 +270,14 @@ Just like we did before, hit the following URLs, using a utility like `curl`:
 .Insert some Data into the Database:
 [source,bash]
 ----
-$ curl -X POST http://192.168.39.143:30433/hello/test-table/insert/somedata1/somedata2
+$ curl -X POST http://192.168.39.143:30433/hello/test-table/somedata1/somedata2
 {"field1":"somedata1","field2":"somedata2","id":1}
 ----
 
 .Query the database to show the inserted data:
 [source,bash]
 ----
-$ curl http://192.168.39.143:30433/hello/test-table/list
+$ curl http://192.168.39.143:30433/hello/test-table
 [{"field1":"somedata1","field2":"somedata2","id":1}]
 ----
 
@@ -288,7 +288,7 @@ link:simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-database-part2
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-database-part2
 
 Back to Guides
 

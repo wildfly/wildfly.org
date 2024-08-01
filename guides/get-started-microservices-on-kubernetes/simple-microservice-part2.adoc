@@ -7,7 +7,7 @@ include::./_includes/_titles.adoc[]
 // time to complete the guide
 :prerequisites-time: 10
 
-In this post, you will learn HOW-TO run the Docker Image you built in link:simple-microservice-part1[{simple-microservice-part1}] on Kubernetes.
+In this guide, you will learn HOW-TO run the Docker Image you built in link:simple-microservice-part1[{simple-microservice-part1}] on Kubernetes.
 
 [[prerequisites]]
 == Prerequisites
@@ -21,13 +21,13 @@ include::_includes/_constants.adoc[]
 
 == Image Registry
 
-To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use;
+To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
 
 === Quay.io
 
-There are many Image Registries you can use: in this post, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
+There are many Image Registries you can use: in this guide, we will push the `{my-jaxrs-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
 
-Create a public repository named `{my-jaxrs-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app, window="_blank"]);
+Create a public repository named `{my-jaxrs-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -56,7 +56,7 @@ podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
 
 === Minikube
 
-You can use whatever Kubernetes cluster you have available; in this post, and in the following, we will use link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"];
+You can use whatever Kubernetes cluster you have available; in this guide, and in the following, we will use link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"].
 
 === Deploy to Kubernetes
 
@@ -122,7 +122,7 @@ NOTE: you can also use link:https://docs.wildfly.org/wildfly-charts/[Helm Chart 
 
 === Check your application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
+Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----
@@ -145,6 +145,6 @@ link:simple-microservice-database-part1[{simple-microservice-database-part1}]
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-part2
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-part2
 
 < link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]

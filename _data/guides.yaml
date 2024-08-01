@@ -7,7 +7,7 @@ categories:
       - title: Getting Started with WildFly
         url: /get-started
         description: Build and run a Jakarta EE application with WildFly in a few minutes
-      - title: Java Microservices on Kubernetes wih WildFly
+      - title: Java Microservices on Kubernetes with WildFly
         url: /guides/get-started-microservices-on-kubernetes
         description: Build and run Jakarta EE applications with WildFly on Kubernetes in a few minutes
   - category: Observability

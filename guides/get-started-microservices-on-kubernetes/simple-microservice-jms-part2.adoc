@@ -5,7 +5,7 @@ include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
 :prerequisites-time: 10
 
-In this post, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-jms-part1[{simple-microservice-jms-part1}] on Kubernetes.
+In this guide, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-jms-part1[{simple-microservice-jms-part1}] on Kubernetes.
 
 [[prerequisites]]
 == Prerequisites
@@ -18,11 +18,9 @@ include::_includes/_constants.adoc[]
 
 == Apache Artemis
 
-We basically will repeat everything we did in link:simple-microservice-part2[{simple-microservice-part2}] but, before, we will deploy Apache Artemis on Kubernetes;
+=== Apache Artemis deployment
 
-==== Apache Artemis deployment
-
-Create e file named `artemis-deployment.yaml` with the following content:
+Create a file named `artemis-deployment.yaml` with the following content:
 
 .artemis-deployment.yaml
 [source,yaml,subs="normal"]
@@ -57,16 +55,16 @@ spec:
               value: /{artemis-data-path}
 ----
 
-apply the Deployment configuration to the Kubernetes:
+apply the Deployment configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
 kubectl apply -f artemis-deployment.yaml
 ----
 
-==== Apache Artemis service
+=== Apache Artemis service
 
-Create e file named `artemis-service.yaml` with the following content:
+Create a file named `artemis-service.yaml` with the following content:
 
 .artemis-service.yaml
 [source,yaml,subs="normal"]
@@ -91,7 +89,7 @@ spec:
     app: artemis
 ----
 
-apply the Service configuration to the Kubernetes:
+apply the Service configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -100,15 +98,13 @@ kubectl apply -f artemis-service.yaml
 
 == Image Registry
 
-To make the `{my-jms-app-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use;
+To make the `{my-jms-app-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
 
 === Quay.io
 
-There are many options to achieve this; in this post, we will push the `{my-jms-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
+There are many options to achieve this; in this guide, we will push the `{my-jms-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
 
-NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}` Docker Image, that we already pushed to link:https://quay.io[quay.io, window="_blank"] in the `{quay-io-account-name}` account;
-
-Create a public repository named `{my-jms-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}, window="_blank"]);
+Create a public repository named `{my-jms-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -181,7 +177,7 @@ spec:
           value: '{artemis-port}'
 ----
 
-apply the Deployment configuration to the Kubernetes:
+apply the Deployment configuration to Kubernetes:
 
 [source,bash,subs="normal"]
 ----
@@ -197,7 +193,7 @@ kubectl expose deployment.apps/{my-jms-app-docker-image-name}-deployment --type=
 
 === Check the application
 
-Find out on what IP, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
+Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
 
 [source,bash,subs="normal"]
 ----
@@ -208,14 +204,14 @@ http://192.168.39.143:31858
 .Send and consume messages using a queue (replace "http://192.168.39.143:31858" with the output of the command above!):
 [source,bash,subs="normal"]
 ----
-$ curl -X GET http://192.168.39.143:31858/api/message/send?content=Hello%20World
+$ curl -X GET http://192.168.39.143:31858/hello/message/send?content=Hello%20World
 Sent Hello World to getting-started-queue
 ----
 
 [[references]]
 == References
 
-* Source code for this post: {source-code-git-repository}/tree/simple-microservice-jms-part2
+* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-jms-part2
 
 Back to Guides
 
