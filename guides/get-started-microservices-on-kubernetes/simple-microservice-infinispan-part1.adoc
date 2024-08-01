@@ -20,11 +20,11 @@ include::_includes/_constants.adoc[]
 
 Infinispan is the most common solution used with WildFly when you want to cache some data outside WildFly;
 
-Using Infinispan, for example, you can avoid users losing their session in case WildFly is shut down and re-started;
+Using Infinispan, for example, you can avoid users loosing their session in case WildFly is shut down and re-started;
 
 In this post, we will use the containerized version of Infinispan: see link:https://quay.io/repository/infinispan/server?tab=tags&tag=latest[Infinispan Server, window="_blank"];
 
-Start Infinispan:
+=== Start Infinispan [[start_infinispan_container]]
 
 [source,bash,subs="normal"]
 ----
@@ -37,7 +37,7 @@ podman run --rm --network={podman-network-name} --name={infinispan-pod-name} \
   {infinispan-server-docker-image}
 ----
 
-NOTE: we started the container with the `--rm`: this way it is disposed automatically when we stop it
+NOTE: if you are using podman on Linux, then run the previous commands using link:https://en.wikipedia.org/wiki/Sudo[sudo]
 
 NOTE: NOTE: We created the *{podman-network-name}* network and started the *{infinispan-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container;
 
@@ -76,7 +76,7 @@ Add a file named `infinispan.cli` to the root of the maven project:
 /socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=remote-infinispan-server:add(host=${infinispan.server.host:0.0.0.0}, port=${infinispan.server.port:{infinispan-port}})
 batch
 # remote-cache-container
-/subsystem=infinispan/remote-cache-container=web-sessions:add(default-remote-cluster=infinispan-server-cluster, statistics-enabled=true, properties={infinispan.client.hotrod.auth_username=${infinispan.server.user:{infinispan-user}}, infinispan.client.hotrod.auth_password=${infinispan.server.password:{infinispan-password}}})
+/subsystem=infinispan/remote-cache-container=web-sessions:add(default-remote-cluster=infinispan-server-cluster, statistics-enabled=true, properties={infinispan.client.hotrod.auth_username=${infinispan.server.user:{infinispan-user}}, infinispan.client.hotrod.auth_password=${infinispan.server.password:{infinispan-password}}, infinispan.client.hotrod.sasl_mechanism=DIGEST-MD5})
 /subsystem=infinispan/remote-cache-container=web-sessions/remote-cluster=infinispan-server-cluster:add(socket-bindings=[remote-infinispan-server])
 # hotrod
 /subsystem=infinispan/remote-cache-container=web-sessions:write-attribute(name=modules,value=[org.wildfly.clustering.web.hotrod])
@@ -93,7 +93,7 @@ run-batch
 
 ==== dependencies
 
-Add the following dependency to the `pom-xml` file `dependencies` section:
+Add the following dependency to `dependencies` section:
 
 [source,xml,subs="normal"]
 ----
@@ -197,7 +197,7 @@ Note that we specify some properties used by WildFly to connect to the Infinispa
 
 [source,bash,subs="normal"]
 ----
-./target/server/bin/standalone.sh \
+$ ./target/server/bin/standalone.sh \
   -Dinfinispan.server.host={infinispan-host} \
   -Dinfinispan.server.port={infinispan-port} \
   -Dinfinispan.server.user={infinispan-user} \
@@ -205,6 +205,8 @@ Note that we specify some properties used by WildFly to connect to the Infinispa
 ...
 16:40:05,188 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 32.0.0.Final (WildFly Core 24.0.0.Final) started in 2586ms - Started 322 of 588 services (354 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
+
+NOTE: if you see an error like *"WARN  [org.infinispan.HOTROD] (HotRod-client-async-pool-1) ISPN004015: Failed adding new server 10.89.2.7/<unresolved>:11222: io.netty.channel.ConnectTimeoutException: connection timed out after 60000 ms: /10.89.2.7:11222"* either switch to docker or run podman commands in <<start_infinispan_container>> with link:https://en.wikipedia.org/wiki/Sudo[sudo]
 
 === Check the application [[check_the_application]]
 

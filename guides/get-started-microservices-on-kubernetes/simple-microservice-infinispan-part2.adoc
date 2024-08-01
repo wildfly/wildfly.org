@@ -84,6 +84,8 @@ spec:
                 configMapKeyRef:
                   name: infinispan-secret
                   key: PASS
+            - name: JAVA_OPTIONS
+              value: '-Dinfinispan.cluster.stack=kubernetes -Djgroups.dns.query="infinispan-dns-ping.myproject.svc.cluster.local"'
 ----
 
 apply the Deployment configuration to the Kubernetes:
@@ -131,8 +133,6 @@ To make the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image av
 === Quay.io
 
 There are many options to achieve this; in this post, we will push the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry;
-
-NOTE: You can skip this step in case you prefer to re-use the `quay.io/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}` Docker Image, that we already pushed to link:https://quay.io[quay.io, window="_blank"] in the `{quay-io-account-name}` account;
 
 Create a public repository named `{my-jaxrs-app-infinispan-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-infinispan-docker-image-name}, window="_blank"]);
 
