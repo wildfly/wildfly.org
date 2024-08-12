@@ -93,18 +93,14 @@ more_links:
         url: https://weld.cdi-spec.org/
       - page: Shrinkwrap
         url: http://arquillian.org/
-      - page: Snowdrop
-        url: http://snowdrop.jboss.org/
       - page: Switchyard
         url: https://switchyard.jboss.org/
       - page: Tattletale
         url: https://tattletale.jboss.org/
       - page: Teiid
-        url: http://teiid.jboss.org/
+        url: https://teiid.io/
       - page: WildFly Elytron
         url: https://wildfly-security.github.io/wildfly-elytron/
-      - page: Thorntail
-        url: https://thorntail.io/
       - page: Wise
         url: http://wise.jboss.org/
       - page: XNIO
