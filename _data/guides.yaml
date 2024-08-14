@@ -37,6 +37,9 @@ categories:
       - title: Securing WildFly Apps with SAML on OpenShift
         url: /guides/security-saml-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
+      - title: Using Credential Stores to Replace Clear Text Passwords in WildFly
+        url: /guides/security-credential-store-for-passwords
+        description: How to use credential stores to specify passwords for resources.
   - category: MicroProfile
     cat-id: microprofile
     guides:
