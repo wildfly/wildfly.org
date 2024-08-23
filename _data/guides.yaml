@@ -43,6 +43,9 @@ categories:
       - title: Using Credential Stores to Replace Clear Text Passwords with WildFly
         url: /guides/security-credential-store-for-passwords
         description: How to use credential stores to specify passwords for resources.
+      - title: Using Credential Stores for WildFly Client
+        url: /guides/security-credential-store-client-config
+        description: How to set up a credential store using the elytron-tool and use it to configure WildFly clients.
       - title: Using Credential Stores With Encrypted Expressions with WildFly
         url: /guides/security-credential-store-enc-exp
         description: How to set up encrypted expressions and use it to replace clear-text sensitive information.
