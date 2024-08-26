@@ -60,5 +60,5 @@ categories:
     guides:
       - title: Integrating with a PostgreSQL database
         url: /guides/database-integrating-with-postgresql
-        description: Learn how to configure a datasource to connect a PostgreSQL database.
+        description: Learn how to configure a datasource to connect to a PostgreSQL database.
 
