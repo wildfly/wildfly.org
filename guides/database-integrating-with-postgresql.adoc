@@ -11,7 +11,7 @@ include::{includedir}/_attributes.adoc[]
 :postgre-docker-image: docker.io/library/postgres
 :postgre-sql-kubernetes-service-name: postgres-service
 
-In this guide, you will learn how to configure WildFly to connect to a PostgreSQL database. You will create a simple Book Store API application to manage books stored in the database using https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Services (JAX-RS), window=_blank].
+In this guide, you will learn how to configure WildFly to connect to a PostgreSQL database. You will create a simple Book Store API application to manage books stored in the database using https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Services (Jakarta REST), window=_blank].
 
 include::{includedir}/_prerequisites.adoc[]
 
@@ -143,11 +143,11 @@ Create the following `persistence.xml` file in the `src/main/resources/META-INF`
 ----
 NOTE: We don't need to specify the name of the Datasource by using `<jta-data-source>`. In absence of this property, JPA will use the default datasource configured in the server.
 
-=== Configure the Jakarta RESTful Web Services (JAX-RS) application
+=== Configure the Jakarta RESTful Web Services application
 
-The `BookStoreApplication` class acts as a configuration class for the JAX-RS application. It essentially tells the JAX-RS runtime that this is a JAX-RS application and provides the base path for the application's RESTful web services.
+The `BookStoreApplication` class acts as a configuration class for the Jakarta REST application. It essentially tells the WildFly runtime that this is a Jakarta REST application and provides the base path for the application's RESTful web services.
 
-Modify it as follows to specify `/api` as the base URL for our JAX-RS Web Service:
+Modify it as follows to specify `/api` as the base URL for our Jakarta REST Web Service:
 
 [source,java]
 ----
