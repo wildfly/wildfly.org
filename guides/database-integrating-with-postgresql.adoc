@@ -42,7 +42,7 @@ NOTE: we started the container with the `--rm` flag so it can be disposed of aut
 
 === Create a new Maven project
 
-We are going to use the *WildFly Getting Started Archetype* to create the base structure of our Book Store API application.
+We are going to use the https://github.com/wildfly/wildfly-archetypes/tree/main/wildfly-getting-started-archetype[WildFly Getting Started Archetype, window=_blank] to create the base structure of our Book Store API application.
 
 Open a new terminal window and create a new project using the WildFly Getting Started Archetype:
 
@@ -93,7 +93,7 @@ Add the following dependencies to the `pom.xml` file:
 ----
 
 ==== Configure WildFly Datasource and trimming server capabilities:
-To connect to the database we need to configure the https://docs.wildfly.org/32/Admin_Guide.html#DataSource[WildFly Datasource Subsystem,window=_blank] and install the PostgreSQL driver into the WildFly server. The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasource Galleon Pack, window=_blank] contains a set of https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/main/doc/postgresql/README.md[Galleon Layers, window=_blank] that provide *JDBC drivers* and *WildFly Datasource Subsystem* configurations for various databases. For this guide, we will use the `postgresql-default-datasource` Galleon layer that will configure a PostgreSQL datasource as the default datasource for the server.
+To connect to the database we need to configure the https://docs.wildfly.org/32/Admin_Guide.html#DataSource[WildFly Datasource Subsystem,window=_blank] and install the PostgreSQL driver into the WildFly server. The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack, window=_blank] contains a set of https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/main/doc/postgresql/README.md[Galleon Layers, window=_blank] that provide *JDBC drivers* and *WildFly Datasource Subsystem* configurations for various databases. For this guide, we will use the `postgresql-default-datasource` Galleon layer that will configure a PostgreSQL datasource as the default datasource for the server.
 
 In addition to the Galleon Layers to configure the datasource and install the drivers, we also want to trim the WildFly server to remove any unnecessary subsystems and features we don't need. That will reduce the server footprint and the security attack surface. This task can be done by selecting the appropriate https://docs.wildfly.org/32/Galleon_Guide.html#wildfly_galleon_layers[Galleon Layers, window=_blank] shipped with any WildFly distribution. However, instead of adding a static list of Galleon Layers, we are going to configure the `wildfly-maven-plugin` plugin to discover the required layers automatically for us.
 
@@ -124,7 +124,7 @@ Replace the current `wildfly-maven-plugin` configuration in the `pom.xml` file p
 In the above configuration, behind the scenes the `wildfly-maven-plugin` is using https://docs.wildfly.org/wildfly-glow/[WildFly Glow, window=_blank] to discover automatically the required Galleon Layers for our application. The `discover-provisioning-info` configuration tells the plugin to discover the required layers by inspecting our application code. By using the `postgresql:default` addon, we are specifying we want to use a PostgreSQL database, and we want to configure it as the default datasource for the server.
 
 === persistence.xml
-This file is used to configure the Jakarta Persistence API (JPA) persistence unit and its database schema generation strategy. In this guide, we are using the `drop-and-create` strategy to drop the existing schema and create a new one every time the application starts. For a production environment, you should use a more appropriate strategy to avoid data loss.
+This file is used to configure the Jakarta Persistence persistence unit and its database schema generation strategy. In this guide, we are using the `drop-and-create` strategy to drop the existing schema and create a new one every time the application starts. For a production environment, you should use a more appropriate strategy to avoid data loss.
 
 Create the following `persistence.xml` file in the `src/main/resources/META-INF` directory:
 
@@ -141,7 +141,7 @@ Create the following `persistence.xml` file in the `src/main/resources/META-INF`
     </persistence-unit>
 </persistence>
 ----
-NOTE: We don't need to specify the name of the Datasource by using `<jta-data-source>`. In absence of this property, JPA will use the default datasource configured in the server.
+NOTE: We don't need to specify the name of the Datasource by using `<jta-data-source>`. In absence of this property, Jakarta Persistence will use the default datasource configured in the server.
 
 === Configure the Jakarta RESTful Web Services application
 
@@ -728,12 +728,12 @@ Finally, to stop the PostgreSQL database, press `Ctrl+C` in the terminal where t
 == What's next?
 
 In this guide we have learned how to configure a WildFly server to access to a PostgreSQL database and how to easily trim the server capabilities using WildFly Glow. Seamlessly, you can adapt the same application to use other databases by changing the Galleon Layers used by the WildFly server.
-You can learn more about how to configure WildFly for other databases by looking at the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasource Galleon Pack] documentation and https://docs.wildfly.org/32/Glow_Guide.html[WildFly Glow Guide].
+You can learn more about how to configure WildFly for other databases by looking at the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack] documentation and https://docs.wildfly.org/32/Glow_Guide.html[WildFly Glow Guide].
 
 // Always add this section last to link to any relevant content
 [[references]]
 == References
 
 * https://docs.wildfly.org/32/Admin_Guide.html#DataSource[WildFly Datasource Subsystem]
-* https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasource Galleon Pack]
+* https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack]
 * https://docs.wildfly.org/32/Glow_Guide.html[WildFly Glow Guide].
