@@ -49,6 +49,12 @@ categories:
       - title: Using Credential Stores With Encrypted Expressions with WildFly
         url: /guides/security-credential-store-enc-exp
         description: How to set up encrypted expressions and use it to replace clear-text sensitive information.
+  - category: Messaging
+    cat-id: messaging
+    guides:
+      - title: Configuring High Availability Messaging in WildFly
+        url: /guides/messaging-high-availability
+        description: Learn how to configure two WildFly servers with messaging (ActiveMQ Artemis broker) in a high availability topology using a shared journal.
   - category: MicroProfile
     cat-id: microprofile
     guides:
