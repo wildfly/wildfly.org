@@ -266,7 +266,7 @@ link:simple-microservice-jms-part1[{simple-microservice-jms-part1}]
 [[references]]
 == References
 
-* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-infinispan-part2
+* Source code for this guide: {source-code-git-repository}/simple-microservice-infinispan
 
 Back to Guides
 

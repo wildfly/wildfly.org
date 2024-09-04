@@ -211,7 +211,7 @@ Sent Hello World to getting-started-queue
 [[references]]
 == References
 
-* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-jms-part2
+* Source code for this guide: {source-code-git-repository}/simple-microservice-jms
 
 Back to Guides
 

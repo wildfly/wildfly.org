@@ -362,7 +362,7 @@ link:simple-microservice-database-part2[{simple-microservice-database-part2}]
 [[references]]
 == References
 
-* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-database-part1
+* Source code for this guide: {source-code-git-repository}/simple-microservice-database
 * link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"]
 * link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[PostgreSQL datasource example, window="_blank"]
 

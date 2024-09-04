@@ -253,7 +253,7 @@ link:simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}
 [[references]]
 == References
 
-* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-infinispan-part1
+* Source code for this guide: {source-code-git-repository}/simple-microservice-infinispan
 * link:https://infinispan.org/[Infinispan, window="_blank"]
 * link:https://docs.wildfly.org/32/High_Availability_Guide.html#Distributable_Web_Applications[Distributable Web Applications, window="_blank"]
 * link:https://docs.wildfly.org/wildfly-proposals/management/WFCORE-5464_Check_Env_Vars_On_Expression_Resolution.html[Check Environment Variables When Resolving Expressions, window="_blank"]

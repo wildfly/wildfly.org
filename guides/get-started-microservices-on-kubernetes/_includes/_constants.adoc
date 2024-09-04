@@ -33,7 +33,7 @@
 :infinispan-cli-docker-image: quay.io/infinispan/cli:latest
 :infinispan-kubernetes-service-name: infinispan-service
 :infinispan-pod-name: my-infinispan
-:source-code-git-repository: https://github.com/tommaso-borgato/wildfly.org.sample-application
+:source-code-git-repository: https://github.com/wildfly-extras/guides/tree/main/get-started-microservices-on-kubernetes
 :artemis-user: admin
 :artemis-password: admin
 :artemis-port: 61616

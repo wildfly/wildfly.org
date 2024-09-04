@@ -280,7 +280,7 @@ link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
 [[references]]
 == References
 
-* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-jms-part1
+* Source code for this guide: {source-code-git-repository}/simple-microservice-jms
 * link:https://activemq.apache.org/components/artemis/documentation/latest/docker.html[ActiveMQ Artemis - Docker, window="_blank"]
 
 

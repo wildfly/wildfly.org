@@ -232,6 +232,6 @@ link:simple-microservice-part2[{simple-microservice-part2}]
 == References
 
 * https://docs.wildfly.org/wildfly-maven-plugin
-* Source code for this guide: {source-code-git-repository}/tree/simple-microservice-part1
+* Source code for this guide: {source-code-git-repository}/simple-microservice
 
 < link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
