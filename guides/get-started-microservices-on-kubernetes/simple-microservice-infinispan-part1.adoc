@@ -189,33 +189,6 @@ $ mvn clean package
 [INFO] ------------------------------------------------------------------------
 ----
 
-=== Start the application
-
-Note that we specify some properties used by WildFly to connect to the Infinispan Server:
-
-[source,bash,subs="normal"]
-----
-$ ./target/server/bin/standalone.sh \
-  -Dinfinispan.server.host={infinispan-host} \
-  -Dinfinispan.server.port={infinispan-port} \
-  -Dinfinispan.server.user={infinispan-user} \
-  -Dinfinispan.server.password={infinispan-password}
-...
-16:40:05,188 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 32.0.0.Final (WildFly Core 24.0.0.Final) started in 2586ms - Started 322 of 588 services (354 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
-----
-
-NOTE: if you see an error like *"WARN  [org.infinispan.HOTROD] (HotRod-client-async-pool-1) ISPN004015: Failed adding new server 10.89.2.7/<unresolved>:11222: io.netty.channel.ConnectTimeoutException: connection timed out after 60000 ms: /10.89.2.7:11222"* either switch to docker or run all podman commands in this guide (including <<start_infinispan_container>>) with link:https://en.wikipedia.org/wiki/Sudo[sudo] (on some Linux hosts, rootless podman can't bind to the ipv4 address)
-
-=== Check the application [[check_the_application]]
-
-Open link:http://localhost:8080/[http://localhost:8080/, window="_blank"] in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
-
-Stop the application (press CTRL+C from the terminal where you started it).
-
-Start the application once again.
-
-Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server.
-
 == Docker Image
 
 === Build the Docker Image
@@ -252,9 +225,15 @@ podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
 
 NOTE: NOTE: We started the *{my-jaxrs-app-infinispan-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{infinispan-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container using the *{infinispan-pod-name}* DNS name
 
-=== Check the application
+=== Check the application [[check_the_application]]
 
-Repeat the checks in <<check_the_application>>;
+Open link:http://localhost:8080/[http://localhost:8080/, window="_blank"] in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
+
+Stop the application (press CTRL+C from the terminal where you started it).
+
+Start the application once again.
+
+Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server.
 
 === Stop the Docker containers
 

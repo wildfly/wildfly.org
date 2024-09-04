@@ -289,42 +289,6 @@ $ mvn clean package
 [INFO] ------------------------------------------------------------------------
 ----
 
-=== Start the application
-
-Note that, before starting the application, we specify some *environment variables* used by WildFly to connect to the PostgreSQL database:
-
-[source,bash,subs="normal"]
-----
-export POSTGRESQL_USER={postgre-sql-user}
-export POSTGRESQL_PASSWORD={postgre-sql-password}
-export POSTGRESQL_HOST={postgre-sql-host}
-export POSTGRESQL_PORT={postgre-sql-port}
-export POSTGRESQL_DATABASE={postgre-sql-database}
-export POSTGRESQL_JNDI={postgre-sql-jndi}
-
-./target/server/bin/standalone.sh
-...
-16:26:11,052 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 2840ms - Started 310 of 389 services (150 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
-----
-
-=== Check the application [[check_the_application]]
-
-Hit the following URLs, using a utility like `curl`:
-
-.Insert some Data into the Database:
-[source,bash]
-----
-$ curl -X POST http://localhost:8080/hello/test-table/somedata1/somedata2
-{"field1":"somedata1","field2":"somedata2","id":1}
-----
-
-.Query the database to show the inserted data:
-[source,bash]
-----
-$ curl http://localhost:8080/hello/test-table
-[{"field1":"somedata1","field2":"somedata2","id":1}]
-----
-
 == Docker Image
 
 === Build the Docker Image
@@ -363,11 +327,23 @@ podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
 
 NOTE: We started the *{my-jaxrs-app-db-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{postgre-sql-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container using the *{postgre-sql-pod-name}* DNS name;
 
-=== Check the application
+=== Check the application [[check_the_application]]
 
-Repeat the checks in <<check_the_application>>;
+Hit the following URLs, using a utility like `curl`:
 
-NOTE: you might find your data twice if didn't restart the Database
+.Insert some Data into the Database:
+[source,bash]
+----
+$ curl -X POST http://localhost:8080/hello/test-table/somedata1/somedata2
+{"field1":"somedata1","field2":"somedata2","id":1}
+----
+
+.Query the database to show the inserted data:
+[source,bash]
+----
+$ curl http://localhost:8080/hello/test-table
+[{"field1":"somedata1","field2":"somedata2","id":1}]
+----
 
 === Stop the Docker containers
 

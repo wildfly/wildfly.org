@@ -228,42 +228,6 @@ $ mvn clean package
 [INFO] ------------------------------------------------------------------------
 ----
 
-=== Start the application
-
-
-[source,bash,subs="normal"]
-----
-$ ./target/server/bin/standalone.sh
-...
-10:11:59,045 INFO  [org.jboss.as.connector.services.resourceadapters.ResourceAdapterActivatorService$ResourceAdapterActivator] (MSC service thread 1-6) IJ020002: Deployed: file://RaActivatoractivemq-ra
-10:11:59,046 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-8) WFLYJCA0118: Binding connection factory named java:/JmsXA to alias java:jboss/DefaultJMSConnectionFactory
-10:11:59,046 INFO  [org.jboss.as.connector.deployment] (MSC service thread 1-5) WFLYJCA0002: Bound Jakarta Connectors ConnectionFactory [java:/JmsXA]
-10:11:59,073 INFO  [org.hibernate.validator.internal.util.Version] (MSC service thread 1-7) HV000001: Hibernate Validator 8.0.1.Final
-10:11:59,232 INFO  [org.wildfly.extension.messaging-activemq] (MSC service thread 1-5) WFLYMSGAMQ0002: Bound messaging object to jndi name java:/queue/gettingStartedQueue
-10:11:59,262 INFO  [org.jboss.weld.Version] (MSC service thread 1-3) WELD-000900: 5.1.2 (Final)
-10:11:59,320 INFO  [org.jboss.as.ejb3] (MSC service thread 1-1) WFLYEJB0042: Started message driven bean 'GettingStartedQueueMDB' with 'activemq-ra.rar' resource adapter
-10:11:59,651 INFO  [org.wildfly.extension.messaging-activemq] (Thread-1 (ActiveMQ-client-global-threads)) Creating queue getting-started-queue on node UP 01abde48-44d8-11ef-8f51-f2c0ca584945 - TransportConfiguration(name=67e0edf8-44dd-11ef-a580-6ab85081923f, factory=org-apache-activemq-artemis-core-remoting-impl-netty-NettyConnectorFactory)?host=localhost&useNioGlobalWorkerPool=true&port=61616&localAddress=127-0-0-1&useNio=true
-10:11:59,845 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 70) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.wildfly.examples.GettingStartedApplication
-10:11:59,868 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 70) WFLYUT0021: Registered web context: '/' for server 'default-server'
-10:11:59,897 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 38) WFLYSRV0010: Deployed "ROOT.war" (runtime-name : "ROOT.war")
-10:11:59,932 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
-10:11:59,940 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
-10:11:59,940 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
-10:11:59,942 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 32.0.1.Final (WildFly Core 24.0.1.Final) started in 2430ms - Started 379 of 547 services (259 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
-
-----
-
-=== Check the application [[check_the_application]]
-
-Hit the following URLs, using a utility like `curl`:
-
-.Send and consume messages using a queue:
-[source,bash]
-----
-$ curl -X GET http://localhost:8080/hello/message/send?content=Hello%20World
-Sent Hello World to getting-started-queue
-----
-
 == Docker Image
 
 === Build the Docker Image
@@ -298,9 +262,16 @@ podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
 
 NOTE: We started the *{my-jms-app-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{artemis-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to *{artemis-pod-name}* container from the *{my-jms-app-docker-image-name}* container using the *{artemis-pod-name}* name.
 
-=== Check the application
+=== Check the application [[check_the_application]]
 
-Repeat the check in <<check_the_application>>.
+Hit the following URLs, using a utility like `curl`:
+
+.Send and consume messages using a queue:
+[source,bash]
+----
+$ curl -X GET http://localhost:8080/hello/message/send?content=Hello%20World
+Sent Hello World to getting-started-queue
+----
 
 == What's next?
 
