@@ -1,0 +1,9 @@
+:simple-microservice-part1: WildFly Java Microservice - PART 1: Docker Image
+:simple-microservice-part2: WildFly Java Microservice - PART 2: Kubernetes
+:simple-microservice-database-part1: Connecting to a DB - PART 1: Docker Image
+:simple-microservice-database-part2: Connecting to a DB - PART 2: Kubernetes
+:simple-microservice-jms-part1: Using a Message Broker - PART 1: Docker Image
+:simple-microservice-jms-part2: Using a Message Broker - PART 2: Kubernetes
+:simple-microservice-infinispan-part1: Using Infinispan remote cache - PART 1: Docker Image
+:simple-microservice-infinispan-part2: Using Infinispan remote cache - PART 2: Kubernetes
+:get-enterprise-ready: Get “Enterprise” ready

@@ -1,0 +1,289 @@
+= {simple-microservice-jms-part1}
+:summary: Java Microservice using WildFly
+:includedir: ../_includes
+include::{includedir}/_attributes.adoc[]
+include::./_includes/_titles.adoc[]
+:prerequisites-time: 10
+
+In this guide, we will extend the example created in link:simple-microservice-part1[{simple-microservice-part1}] and add an external Message Broker connectivity.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:simple-microservice-part1[{simple-microservice-part1}]
+
+include::_includes/_constants.adoc[]
+
+== External Message Broker
+
+=== Apache Artemis
+
+We will use Apache Artemis in this guide in its containerized version: see link:https://quay.io/artemiscloud/activemq-artemis-broker-kubernetes[Artemis Official Image, window="_blank"].
+
+Start Apache Artemis:
+
+[source,bash,subs="normal"]
+----
+podman network create {podman-network-name}
+
+podman run --rm --name {artemis-pod-name} \
+    --network={podman-network-name} \
+    -p {artemis-console-port}:{artemis-console-port} \
+    -p {artemis-port}:{artemis-port}\
+    -e AMQ_USER={artemis-user} \
+    -e AMQ_PASSWORD={artemis-password} \
+    -e AMQ_DATA_DIR=/{artemis-data-path} \
+    {artemis-docker-image}
+----
+
+NOTE: we started the container with the `--rm` flag: this way it is disposed of automatically when we stop it
+
+NOTE: We started the *{artemis-pod-name}* container with the --network=bridge option: later in this guide, this will allow us to connect to the *{artemis-pod-name}* container from the *{my-jms-app-docker-image-name}* container; 
+
+== Maven Project
+
+=== pom.xml
+
+==== dependencies
+
+Add the following dependencies to the `pom-xml` file `dependencies` section:
+
+[source,xml,subs="normal"]
+----
+        <dependency>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.jms</groupId>
+            <artifactId>jakarta.jms-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+----
+
+==== wildfly-maven-plugin
+
+We need to add some features that are necessary when to connect to the broker and to support a Message Driven Bean.
+
+We can add these features by adding the `remote-activemq` layer to our application; add the following to the the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration in the `pom.xml` file:
+
+[source,xml,subs="normal"]
+----
+    <layers>
+        ...
+        <layer>ejb</layer>
+        <layer>remote-activemq</layer>
+        ...
+    </layers>
+----
+
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
+
+[source,xml,subs="normal"]
+----
+    <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>{version-wildfly-maven-plugin}</version>
+        <configuration>
+            <feature-packs>
+                <feature-pack>
+                    <location>org.wildfly:wildfly-galleon-pack:{version-wildfly-galleon-pack}</location>
+                </feature-pack>
+                <feature-pack>
+                    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
+                </feature-pack>
+            </feature-packs>
+            <layers>
+                <layer>cloud-server</layer>
+                <layer>ejb</layer>
+                <layer>remote-activemq</layer>
+            </layers>
+        </configuration>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>package</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+----
+
+
+=== Java Classes
+
+Add the following classes to the project:
+
+.org.wildfly.examples.mdb.GettingStartedQueueMDB :
+[source,java]
+----
+package org.wildfly.examples.mdb;
+
+import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.MessageDriven;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.TextMessage;
+
+import java.util.logging.Logger;
+
+@MessageDriven(
+        name = "GettingStartedQueueMDB",
+        activationConfig = {
+            @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/gettingStartedQueue"),
+            @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue"),
+            @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge")}
+)
+public class GettingStartedQueueMDB implements MessageListener {
+
+    private static final Logger LOGGER = Logger.getLogger(GettingStartedQueueMDB.class.toString());
+
+    public void onMessage(Message rcvMessage) {
+        TextMessage msg = null;
+        try {
+            if (rcvMessage instanceof TextMessage) {
+                msg = (TextMessage) rcvMessage;
+                LOGGER.info("Received Message from queue: " + msg.getText());
+            } else {
+                LOGGER.warning("Message of wrong type: " + rcvMessage.getClass().getName());
+            }
+        } catch (JMSException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+
+----
+
+.org.wildfly.examples.GettingStartedQueueEndpoint :
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.annotation.Resource;
+import jakarta.inject.Inject;
+import jakarta.jms.JMSContext;
+import jakarta.jms.JMSDestinationDefinition;
+import jakarta.jms.JMSDestinationDefinitions;
+import jakarta.jms.JMSException;
+import jakarta.jms.Queue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+@JMSDestinationDefinitions(
+    value = {
+        @JMSDestinationDefinition(
+            name = "java:/queue/gettingStartedQueue",
+            interfaceName = "jakarta.jms.Queue",
+            destinationName = "getting-started-queue",
+            properties = {"enable-amq1-prefix=false"}
+        )
+    }
+)
+@Path("/message")
+public class GettingStartedQueueEndpoint {
+
+    @Resource(lookup="java:/queue/gettingStartedQueue")
+    private Queue queue;
+
+    @Inject
+    private JMSContext context;
+
+    @GET
+    @Path("/send")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response sendMessage(final @QueryParam("content") String content) throws JMSException {
+        String response = "Sent " + content + " to " + queue.getQueueName();
+        context.createProducer().send(queue, content);
+        return Response.ok(response).build();
+    }
+}
+----
+
+=== Build the application
+
+[source,bash]
+----
+$ mvn clean package
+...
+[INFO] Copy deployment /home/ehugonne/dev/wildfly/guides/get-started-microservices-on-kubernetes/simple-microservice-jms/target/ROOT.war to /home/ehugonne/dev/wildfly/guides/get-started-microservices-on-kubernetes/simple-microservice-jms/target/server/standalone/deployments/ROOT.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.848 s
+[INFO] Finished at: 2024-07-18T10:06:17+02:00
+[INFO] ------------------------------------------------------------------------
+----
+
+== Docker Image
+
+=== Build the Docker Image
+
+Build the Docker Image with the following command:
+
+[source,bash,subs="normal"]
+----
+$ podman build -t {my-jms-app-docker-image-name}:latest .
+STEP 1/3: FROM quay.io/wildfly/wildfly-runtime:latest
+STEP 2/3: COPY --chown=jboss:root target/server $JBOSS_HOME
+--> 4609f8ed0c7f
+STEP 3/3: RUN chmod -R ug+rwX $JBOSS_HOME
+COMMIT my-jms-app:latest
+--> db4677f5bf4f
+Successfully tagged localhost/my-jms-app:latest
+db4677f5bf4f471f5624bd63a21fce3d91b7b3b93e985d3e86a8a4b0682d85cd
+----
+
+=== Run the Docker Image
+
+Note that, when running the `{my-jms-app-docker-image-name}:latest` Docker Image:
+
+[source,bash,subs="normal"]
+----
+podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
+    --name={my-jms-app-docker-image-name} \
+    -e JBOSS_MESSAGING_CONNECTOR_HOST={artemis-pod-name} \
+    {my-jms-app-docker-image-name}:latest
+
+----
+
+NOTE: We started the *{my-jms-app-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{artemis-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to *{artemis-pod-name}* container from the *{my-jms-app-docker-image-name}* container using the *{artemis-pod-name}* name.
+
+=== Check the application [[check_the_application]]
+
+Hit the following URLs, using a utility like `curl`:
+
+.Send and consume messages using a queue:
+[source,bash]
+----
+$ curl -X GET http://localhost:8080/hello/message/send?content=Hello%20World
+Sent Hello World to getting-started-queue
+----
+
+== What's next?
+
+link:simple-microservice-jms-part2[{simple-microservice-jms-part2}]
+
+[[references]]
+== References
+
+* Source code for this guide: {source-code-git-repository}/simple-microservice-jms
+* link:https://activemq.apache.org/components/artemis/documentation/latest/docker.html[ActiveMQ Artemis - Docker, window="_blank"]
+
+
+Back to Guides
+
+< link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]

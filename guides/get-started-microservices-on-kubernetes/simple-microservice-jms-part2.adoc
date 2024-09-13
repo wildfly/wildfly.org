@@ -1,0 +1,218 @@
+= {simple-microservice-jms-part2}
+:summary: Java Microservice using WildFly
+:includedir: ../_includes
+include::{includedir}/_attributes.adoc[]
+include::./_includes/_titles.adoc[]
+:prerequisites-time: 10
+
+In this guide, you will learn HOW-TO run the Docker Image we built in link:simple-microservice-jms-part1[{simple-microservice-jms-part1}] on Kubernetes.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:simple-microservice-jms-part1[{simple-microservice-jms-part1}]
+
+include::_includes/_constants.adoc[]
+
+== Apache Artemis
+
+=== Apache Artemis deployment
+
+Create a file named `artemis-deployment.yaml` with the following content:
+
+.artemis-deployment.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: artemis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: artemis
+  template:
+    metadata:
+      labels:
+        app: artemis
+    spec:
+      containers:
+        - name: artemis
+          image: '{artemis-docker-image}'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {artemis-port}
+            - containerPort: {artemis-console-port}
+          env:
+            - name: AMQ_USER
+              value: {artemis-user}
+            - name: AMQ_PASSWORD
+              value: {artemis-password}
+            - name: AMQ_DATA_DIR
+              value: /{artemis-data-path}
+----
+
+apply the Deployment configuration to Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f artemis-deployment.yaml
+----
+
+=== Apache Artemis service
+
+Create a file named `artemis-service.yaml` with the following content:
+
+.artemis-service.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {artemis-kubernetes-service-name}
+  labels:
+    app: artemis
+spec:
+  ports:
+    - protocol: TCP
+      port: {artemis-port}
+      targetPort: {artemis-port}
+      name: {artemis-port-name}
+    - protocol: TCP
+      port: {artemis-console-port}
+      targetPort: {artemis-console-port}
+      name: {artemis-console-port-name}
+  selector:
+    app: artemis
+----
+
+apply the Service configuration to Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f artemis-service.yaml
+----
+
+== Image Registry
+
+To make the `{my-jms-app-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
+
+=== Quay.io
+
+There are many options to achieve this; in this guide, we will push the `{my-jms-app-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
+
+Create a public repository named `{my-jms-app-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jms-app-docker-image-name}, window="_blank"]).
+
+NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
+
+Tag the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman tag {my-jms-app-docker-image-name} quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}
+----
+
+Push the `{my-jms-app-docker-image-name}` Docker Image to it:
+
+[source,bash,subs="normal"]
+----
+podman push quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}
+----
+
+At this point, the `{my-jms-app-docker-image-name}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster; you can verify this by running:
+
+[source,bash,subs="normal"]
+----
+podman pull quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}
+----
+
+== Deploy to Kubernetes
+
+To deploy our `{my-jms-app-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube], create a file named `deployment-{my-jms-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment, window="_blank"]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+
+.deployment-{my-jms-app-docker-image-name}.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {my-jms-app-docker-image-name}-deployment
+  labels:
+    app: {my-jms-app-docker-image-name}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {my-jms-app-docker-image-name}
+  template:
+    metadata:
+      labels:
+        app: {my-jms-app-docker-image-name}
+    spec:
+      containers:
+      - name: {my-jms-app-docker-image-name}
+        image: quay.io/{quay-io-account-name}/{my-jms-app-docker-image-name}
+        ports:
+        - containerPort: 8080
+        - containerPort: 9990
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 9990
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 9990
+        startupProbe:
+          httpGet:
+            path: /health/started
+            port: 9990
+        env:
+        - name: JBOSS_MESSAGING_CONNECTOR_HOST
+          value: {artemis-kubernetes-service-name}
+        - name: JBOSS_MESSAGING_CONNECTOR_PORT
+          value: '{artemis-port}'
+----
+
+apply the Deployment configuration to Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f deployment-{my-jms-app-docker-image-name}.yaml
+----
+
+We used link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+
+[source,bash,subs="normal"]
+----
+kubectl expose deployment.apps/{my-jms-app-docker-image-name}-deployment --type=NodePort --port=8080
+----
+
+=== Check the application
+
+Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
+
+[source,bash,subs="normal"]
+----
+$ minikube service {my-jms-app-docker-image-name}-deployment --url
+http://192.168.39.143:31858
+----
+
+.Send and consume messages using a queue (replace "http://192.168.39.143:31858" with the output of the command above!):
+[source,bash,subs="normal"]
+----
+$ curl -X GET http://192.168.39.143:31858/hello/message/send?content=Hello%20World
+Sent Hello World to getting-started-queue
+----
+
+[[references]]
+== References
+
+* Source code for this guide: {source-code-git-repository}/simple-microservice-jms
+
+Back to Guides
+
+< link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
