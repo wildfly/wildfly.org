@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "WildFly 33.0.2 is released!"
-date:   2024-09-16
+date:   2024-09-17
 tags:   announcement release
 author: darranl
 description: WildFly 33.0.2.Final is now available for download.
