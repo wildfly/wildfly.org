@@ -176,6 +176,8 @@ e1ab6e80ed20c3619a7e859f03c71f33b79a4d292f971ed83e7484f4779121d8
 
 NOTE: As you can see, we used link:https://podman.io/[Podman, window="_blank"], but you can also use link:https://www.docker.com/[Docker, window="_blank"], depending on your preference and on which one you have installed on your PC; to switch to Docker, replace *podman* with *docker* in the previous command (and in the ones that will follow).
 
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+
 === Run the Docker Image
 
 To check that our brand-new `{my-jaxrs-app-docker-image-name}:latest` Docker Image works as expected, run the following command:

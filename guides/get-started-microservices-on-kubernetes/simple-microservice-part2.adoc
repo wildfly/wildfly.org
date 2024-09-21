@@ -52,6 +52,8 @@ At this point, the `{my-jaxrs-app-docker-image-name}:latest` Docker Image should
 podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}
 ----
 
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image push to an image registry
+
 == Kubernetes
 
 === Minikube
