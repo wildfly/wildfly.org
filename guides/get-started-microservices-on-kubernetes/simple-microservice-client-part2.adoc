@@ -179,6 +179,8 @@ At this point, the `{simple-microservice-client}:latest` Docker Image should be 
 
 NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image push to an image registry
 
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image push to an image registry
+
 === Deploy on Kubernetes
 
 Create a file named `{simple-microservice-client}-deployment.yaml` in the `kubernetes` folder:
