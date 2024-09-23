@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Hacktoberfest 2024"
-date:   2024-09-20
+date:   2024-09-23
 tags:   Hacktoberfest
 author: rchakrab
 description: Article about Hacktoberfest participation and small descriptions about the participating projects and how to contribute in it.
