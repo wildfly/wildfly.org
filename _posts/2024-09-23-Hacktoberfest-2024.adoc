@@ -62,6 +62,9 @@ This list features an exciting variety of projects under the WildFly umbrella, j
 . *WildFly Docker Images:* The WildFly Docker project provides Docker images for running the WildFly application server with support for various JDK versions. It allows easy customization of server configurations, application deployment, and management in both standalone and domain modes.
 * Here are the https://github.com/jboss-dockerfiles/wildfly[GitHub repository], https://github.com/jboss-dockerfiles/wildfly/blob/master/CONTRIBUTING.adoc[Contributing Guide], and https://github.com/jboss-dockerfiles/wildfly/issues[Hacktoberfest Issues link].
 
+. *Berg:* Berg is a test-suite for HAL Management Console based on Cypress UI test automation.
+* Here are the https://github.com/hal/berg[GitHub repository], https://github.com/hal/berg/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/hal/berg/issues?q=is%3Aissue+is%3Aopen+label%3Ahacktoberfest[Hacktoberfest Issues link].
+
 == How to reach out to us for Hacktoberfest related queries?
 
 Please join our https://wildfly.zulipchat.com/#narrow/stream/Hacktoberfest[Hacktoberfest Zulip chatroom] and reach out to us if you have any queries or need assistance. We’re here to ensure a smooth journey for you.
