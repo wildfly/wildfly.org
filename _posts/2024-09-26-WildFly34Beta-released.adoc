@@ -1,0 +1,29 @@
+---
+layout: post
+title:  "New WildFly 34 Beta release"
+date:   2024-09-26
+tags:   announcement release
+author: darranl
+description: WildFly 34 Beta is now available for download.
+---
+
+= WildFly 34 Beta is released!
+
+I'm pleased to announce that the new WildFly 34.0.0.Beta1 release is available for download at https://wildfly.org/downloads.
+
+As can be seen from the https://github.com/wildfly/wildfly/releases/tag/34.0.0.Beta1[Release Notes] a lot of maintenance and
+component upgrades have been included in this release but I would also like to call out some of the following highlights:
+
+* [https://issues.redhat.com/browse/WFLY-19306[WFLY-19306]] -- move from ORM 6.4.x to 6.6.x
+* [https://issues.redhat.com/browse/WFLY-19632[WFLY-19632]] -- Hibernate Search 7.1.x to 7.2.x
+* [https://issues.redhat.com/browse/WFLY-19298[WFLY-19298]] -- FasterXML Jackson from 2.15.x to 2.17.x
+
+Within the WildFly Preview distribution we also have:
+
+* [https://issues.redhat.com/browse/WFLY-19397[WFLY-19397]] -- Jakarta Data
+* [https://issues.redhat.com/browse/WFLY-19589[WFLY-19589]] -- MP REST Client 4.0
+* [https://issues.redhat.com/browse/WFLY-19464[WFLY-19464]] -- User boms for WildFly Preview
+
+Please try out this release and let us know how you get on.
+
+
