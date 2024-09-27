@@ -1,0 +1,24 @@
+- description: "WildFly 30 Beta: PR submission deadline"
+  date: 2023-09-20
+- description: "WildFly 30 Beta: WildFly Core ready to tag"
+  date: 2023-09-22
+- description: "WildFly 30 Beta: Final merges and checks"
+  date: 2023-09-25
+- description: "WildFly 30 Beta: Tag and deploy to repository.jboss.org"
+  date: 2023-09-27
+- description: "WildFly 30 Beta: Release available on wildfly.org, public announcement."
+  date: 2023-09-28
+- description: "WildFly 30 Beta: Other release deliverables not ready on release day."
+  date: 2023-09-29
+- description: "WildFly 30 Final: PR submission deadline"
+  date: 2023-10-4
+- description: "WildFly 30 Final: WildFly Core ready to tag"
+  date: 2023-10-6
+- description: "WildFly 30 Final: Final merges and checks"
+  date: 2023-10-9
+- description: "WildFly 30 Final: Tag and deploy to repository.jboss.org"
+  date: 2023-10-11
+- description: "WildFly 30 Final: Release available on wildfly.org, public announcement."
+  date: 2023-10-12
+- description: "WildFly 30 Final: Other release deliverables not ready on release day."
+  date: 2023-10-13
