@@ -1,0 +1,252 @@
+---
+layout: post
+title:  "Debug a provisioned WildFly server with the help of wildfly-maven-plugin"
+date:   2024-10-04
+tags:   wildfly wildfly-maven-plugin jberet
+author: liweinan
+description: Introducing the use of the wildfly-maven-plugin to debug a provisioned WildFly server.
+---
+
+== Debug a provisioned WildFly server with the help of the wildfly-maven-plugin
+
+Sometimes I need to debug my project in a customized WildFly server. The requirements are:
+
+* I need to use a specific version of WildFly server.
+* I need to override the version of some artifacts used in modules inside the WildFly server.
+* I need to run the WildFly server in debug mode, so I can use IDE tools to remotely debug the code.
+
+With the use of the `wildfly-maven-plugin`, the above goals can be achieved in an automated way. Here is an example of the configuration to show the use of the plugin to achieve the above goals:
+
+* https://github.com/jberet/jberet-examples/blob/main/deployment/pom.xml[jberet-examples/deployment/pom.xml at main · jberet/jberet-examples]
+
+The `wildfly-maven-plugin` configuration in the above `pom.xml` looks like this:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.maven.wildfly.plugin}</version>
+    <configuration>
+        <provisioning-dir>${jboss.home}</provisioning-dir>
+        <galleon-options>
+            <jboss-fork-embedded>${galleon.fork.embedded}</jboss-fork-embedded>
+        </galleon-options>
+        <feature-packs>
+            <feature-pack>
+                <groupId>${server.test.feature.pack.groupId}</groupId>
+                <artifactId>${server.test.feature.pack.artifactId}</artifactId>
+                <version>${wildfly.version}</version>
+                <inherit-configs>false</inherit-configs>
+                <included-configs>
+                    <config>
+                        <model>standalone</model>
+                        <name>standalone-full.xml</name>
+                    </config>
+                    <config>
+                        <model>standalone</model>
+                        <name>standalone.xml</name>
+                    </config>
+                </included-configs>
+                <excluded-packages>
+                    <name>docs.schema</name>
+                    <name>appclient</name>
+                    <name>domain</name>
+                </excluded-packages>
+            </feature-pack>
+        </feature-packs>
+        <channels>
+            <channel>
+                <manifest>
+                    <groupId>org.jberet</groupId>
+                    <artifactId>jberet-channel-manifest</artifactId>
+                    <version>${version.jberet}</version>
+                </manifest>
+            </channel>
+        </channels>
+    </configuration>
+...
+</plugin>
+----
+
+In the above configuration, the `feature-packs` section specifies the feature packs to be used by the provisioned server(there is no default feature pack that would be used if this wasn't set), and the `channels` section is using the `jberet-channel-manifest` channel to override the `batch-jberet` module to be used in the provisioned server. Please note that you need to use the `channels` with the `feature-packs` together. Here are the properties used by the configuration:
+
+[source,xml]
+----
+<properties>
+    ...
+    <version.jberet>3.0.0.Final</version.jberet>
+    ...
+    <version.maven.wildfly.plugin>5.0.1.Final</version.maven.wildfly.plugin>
+    <jboss.home>${project.build.directory}${file.separator}wildfly</jboss.home>
+    <wildfly.version>33.0.2.Final</wildfly.version>
+    <server.test.feature.pack.groupId>org.wildfly</server.test.feature.pack.groupId>
+    <server.test.feature.pack.artifactId>wildfly-ee-galleon-pack</server.test.feature.pack.artifactId>
+    ...
+</properties>
+----
+
+In the above way, I can define the WildFly version to be used and the JBeret version to be used in the provisioned WildFly server.
+
+The `jberet-channel-manifest` is provided by the JBeret project itself:
+
+* https://github.com/jberet/jsr352/tree/main/jberet-manifest[jsr352/jberet-manifest at main · jberet/jsr352]
+
+The above subproject provides the JBeret module that can be used in the WildFly server. It uses the concept of WildFly Channel to achieve this goal. It can be used to override the version of some artifacts used in modules inside the WildFly server. I won’t explain the concept of WildFly Channel in this blog post. If you are interested in this topic, these articles are worth reading:
+
+* https://www.wildfly.org/news/2023/04/05/prospero/[An Introduction To The Prospero Usage]
+* https://www.wildfly.org/news/2024/01/29/wildfly-glow/[WildFly Glow, an evolution of WildFly provisioning]
+* https://www.wildfly.org/news/2024/01/31/whats-new-in-provisioning/[What’s new in WildFly provisioning]
+
+With the above configuration, the `3.0.0.Final` version of that manifest specifies use of JBeret `3.0.0` while WildFly `33.0.2` used `2.2.1`. If I run the following command in the above example project, the output showing the relative provision process:
+
+[source,bash]
+----
+$ mvn wildfly:run
+...
+[INFO] Resolving channel metadata from Maven artifact org.jberet:jberet-channel-manifest:3.0.0.Final
+[INFO] Provisioning server in /Users/weli/works/jberet-examples/deployment/target/wildfly
+[INFO] Resolving feature-packs
+[INFO] Installing packages
+[INFO] 6 of 523 (1.1%)
+[INFO] Resolving artifacts
+[INFO] 11 of 491 (2.2%)
+...
+[INFO] Generating configurations
+[INFO] Delayed generation, waiting...
+[INFO] Resolving channel metadata from Maven artifact org.jberet:jberet-channel-manifest:3.0.0.Final
+...
+[INFO] --- wildfly:5.0.1.Final:start (wildfly-start) @ batch-deployment-examples ---
+[INFO] Provisioning default server in /Users/weli/works/jberet-examples/deployment/target/server
+Downloading from jboss-public-repository-group: https://repository.jboss.org/nexus/content/groups/public/org/wildfly/wildfly-galleon-pack/33.0.2.Final/wildfly-galleon-pack-33.0.2.Final.zip
+...
+----
+
+From the above output, we can see that `org.jberet:jberet-channel-manifest:3.0.0.Final` is used for provision, and the `wildfly-galleon-pack-33.0.2.Final.zip` is downloaded. If I check the generated WildFly server directory, I can see that JBeret `3.0.0.Final` is used in the provisioned WildFly server:
+
+[source,bash]
+----
+$ pwd
+/Users/weli/works/jberet-examples/deployment/target/wildfly
+$ find modules -name "*jberet*"
+modules/system/layers/base/org/wildfly/extension/batch/jberet
+modules/system/layers/base/org/wildfly/extension/batch/jberet/main/wildfly-batch-jberet-33.0.2.Final.jar
+modules/system/layers/base/org/jberet
+modules/system/layers/base/org/jberet/jberet-core
+modules/system/layers/base/org/jberet/jberet-core/main/jberet-core-3.0.0.Final.jar
+----
+
+To run the provisioned WildFly server in debug mode, the `wildfly-maven-plugin` provide options to support the debug mode. To check the usages of `wildfly-maven-plugin`, I can run the following command in the above example project to do so:
+
+[source,bash]
+----
+$ mvn wildfly:help -Ddetail=true
+----
+
+The above command will output the full document of the `wildfly-maven-plugin`. Following are the relative parts of the document:
+
+[source,txt]
+----
+wildfly:dev
+  Description: Starts a standalone instance of WildFly and deploys the
+    application to the server. The deployment type must be a WAR. Once the
+    server is running, the source directories are monitored for changes. If
+    required the sources will be compiled and the deployment may be redeployed.
+    Note that changes to the POM file are not monitored. If changes are made
+    the POM file, the process will need to be terminated and restarted. Note
+    that if a WildFly Bootable JAR is packaged, it is ignored by this goal.
+  Implementation: org.wildfly.plugin.dev.DevMojo
+  Language: java
+  Bound to phase: package
+
+  Available parameters:
+
+    ...
+
+    debug (Default: false)
+      User property: wildfly.debug
+      Starts the server with debugging enabled.
+
+    debugHost (Default: *)
+      User property: wildfly.debug.host
+      Sets the hostname to listen on for debugging. An * means all hosts.
+
+    debugPort (Default: 8787)
+      User property: wildfly.debug.port
+      Sets the port the debugger should listen on.
+
+    debugSuspend (Default: false)
+      User property: wildfly.debug.suspend
+      Indicates whether the server should suspend itself until a debugger is
+      attached.
+
+...
+
+wildfly:run
+  Description: Starts a standalone instance of WildFly and deploys the
+    application to the server. This goal will block until cancelled or a
+    shutdown is invoked from a management client. Note that if a WildFly
+    Bootable JAR is packaged, it is ignored by this goal.
+  Implementation: org.wildfly.plugin.server.RunMojo
+  Language: java
+  Before this goal executes, it will call:
+    Phase: 'package'
+
+  Available parameters:
+
+    ...
+
+    debug (Default: false)
+      User property: wildfly.debug
+      Starts the server with debugging enabled.
+
+    debugHost (Default: *)
+      User property: wildfly.debug.host
+      Sets the hostname to listen on for debugging. An * means all hosts.
+
+    debugPort (Default: 8787)
+      User property: wildfly.debug.port
+      Sets the port the debugger should listen on.
+
+    debugSuspend (Default: false)
+      User property: wildfly.debug.suspend
+      Indicates whether the server should suspend itself until a debugger is
+      attached.
+----
+
+As the document written in above, both the `wildfly:dev` and the `wildfly:run` goals support the `debug` mode, and the property to activate it is the `wildfly.debug` option.
+
+[NOTE]
+====
+If you want to check the help text of a specific goal of the plugin, taking the `wildfly:dev` goal for example, you can use this command to do so:
+
+[source,bash]
+----
+mvn wildfly:help -Ddetail=true -Dgoal=dev
+----
+
+In addition, instead of reading the embedded help text, you can also refer to the online documentation of `wildfly-maven-plugin` here:
+
+* https://docs.wildfly.org/wildfly-maven-plugin[WildFly Maven Plugin
+(wildfly-maven-plugin)]
+====
+
+With the above information, I can run the provisioned WildFly server in debug mode:
+
+[source,bash]
+----
+$ mvn wildfly:run -Dwildfly.debug=true
+----
+
+And from the server output I can see the debug options are added:
+
+[source,txt]
+----
+[INFO] JAVA_OPTS : -Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.modules.system.pkgs=org.jboss.byteman -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787 --add-exports=java.base/sun.nio.ch=ALL-UNNAMED --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED --add-modules=java.se
+----
+
+As the output shows above, the debug options are added and the remote debug port is set as `8787` by default. This means the WildFly server is ready to accept the remote debug requests. In addition, the customized version of the WildFly server codebase and the overridden version of the JBeret module codebase can be used for debugging now. I won’t introduce the way to use an IDE to debug the WildFly server in this blog post. If you’d like to learn about the way to do so, I have written a personal blog post on this topic before:
+
+* https://weinan.io/2017/05/07/troubleshooting-wildfly.html[Troubleshooting the Wildfly startup process]
+
+Enjoy :D
