@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Debug a provisioned WildFly server with the help of wildfly-maven-plugin"
-date:   2024-10-03
+date:   2024-10-04
 tags:   wildfly wildfly-maven-plugin jberet
 author: liweinan
 description: Introducing the use of the wildfly-maven-plugin to debug a provisioned WildFly server.
