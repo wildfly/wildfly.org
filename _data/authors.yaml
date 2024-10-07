@@ -256,3 +256,10 @@ sshaaf:
   occupation: "Principal Architect"
   avatar: sshaaf.jpg
   twitter: "syshaaf"
+frainone:
+  name: "Flavia Rainone"
+  bio: "Flavia is a Principal Software Engineer with Red Hat. With contributions spanning a multitude of projects within WildFly, from EJB to JCA, she is currently the lead of Undertow and responsible for the IO layer in the server."
+  location: "Sao Paulo, Brazil"
+  occupation: "Principal Software Engineer"
+  avatar: frainone.jpg
+  bio: "https://github.com/fl4via"
