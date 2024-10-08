@@ -55,6 +55,9 @@ categories:
   - category: Messaging
     cat-id: messaging
     guides:
+      - title: Configuring Clustered Messaging in WildFly
+        url: /guides/messaging-clustering
+        description: Learn how to configure WildFly with an ActiveMQ Artemis Cluster, Server-Side Message and Client Load Balancing.
       - title: Configuring High Availability Messaging in WildFly
         url: /guides/messaging-high-availability
         description: Learn how to configure two WildFly servers with messaging (ActiveMQ Artemis broker) in a high availability topology using a shared journal.
