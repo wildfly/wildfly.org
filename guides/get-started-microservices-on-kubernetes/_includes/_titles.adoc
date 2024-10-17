@@ -1,9 +1,17 @@
+:simple-microservice-header: WildFly Java Microservice
 :simple-microservice-part1: WildFly Java Microservice - PART 1: Docker Image
 :simple-microservice-part2: WildFly Java Microservice - PART 2: Kubernetes
+:simple-microservice-database-header: Connecting to a DB
 :simple-microservice-database-part1: Connecting to a DB - PART 1: Docker Image
 :simple-microservice-database-part2: Connecting to a DB - PART 2: Kubernetes
+:simple-microservice-jms-header: Using a Message Broker
 :simple-microservice-jms-part1: Using a Message Broker - PART 1: Docker Image
 :simple-microservice-jms-part2: Using a Message Broker - PART 2: Kubernetes
+:simple-microservice-infinispan-header: Using Infinispan remote cache
 :simple-microservice-infinispan-part1: Using Infinispan remote cache - PART 1: Docker Image
 :simple-microservice-infinispan-part2: Using Infinispan remote cache - PART 2: Kubernetes
+:simple-microservice-client-header: Invoke one Microservices from another
+:simple-microservice-client-part1: Invoke one Microservices from another - PART 1: Docker Images
+:simple-microservice-client-part2: Invoke one Microservices from another - PART 2: Kubernetes
+:simple-microservice-client-part3: Invoke one Microservices from another - PART 3: Propagate Authentication
 :get-enterprise-ready: Get “Enterprise” ready

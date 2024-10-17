@@ -1,0 +1,735 @@
+= {simple-microservice-client-part3}
+:summary: Invoke one microservice from another on Kubernetes propagating users authentication
+:includedir: ../_includes
+include::{includedir}/_attributes.adoc[]
+include::./_includes/_titles.adoc[]
+include::_includes/_constants.adoc[]
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 10
+
+In this guide, you will learn HOW-TO propagate user authentication and authorization data between two microservices;
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:simple-microservice-client-part2[{simple-microservice-client-part2}]
+
+== Introduction
+
+The scenario consists of:
+
+* a *Service* deployed on a Kubernetes cluster which is not exposed outside the cluster
+* a *Web Application* deployed on a Kubernetes cluster which is exposed outside the cluster and consumes the *Service*
+
+The user is required to authenticate before using the *Web Application* and, after authentication happens, we want authentication data to be available, not only to the *Web Application*, but also tho the *Service*; authentication is delegated to *Keycloak* using link:https://www.keycloak.org/securing-apps/oidc-layers[OpenID Connect] protocol;
+
+The overall architecture is:
+
+image::get-started-microservices-on-kubernetes/simple-microservice-client-part3-1.png[]
+
+We will start from the two microservices we built in link:simple-microservice-client-part2[{simple-microservice-client-part2}] and:
+
+* *Microservice A* will be the basis for *Web Application*
+* *Microservice B* will be the basis for *Service*
+
+=== How it works
+
+This is how it works:
+
+1. The user tries to access *Web Application* (*Microservice A*) from a web browser
+2. The browser is redirected to *Keycloak* where, by providing username and password, the user authenticates itself
+3. The browser is redirected back to *Web Application*: this time the request contains a *JWT Access Token* (and a few more tokens actually) provided by *Keycloak*, containing authentication and authorization data
+4. *Web Application* validates the *JWT Access Token* and grants access to the user
+5. *Web Application* invokes *Service* (*Microservice B*) forwarding to it the *JWT Access Token* it just received
+6. *Service* validates the *JWT Access Token* and grants access to *Web Application*
+
+== Keycloak
+
+First, we install and configure Keycloak with users, groups etc..
+
+=== Run Keycloak on Kubernetes
+
+Download link:{source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client-secured/kubernetes/keycloak-realm-realm.json[keycloak-realm-realm.json] and create a `configmap` using it as its content:
+
+[source,bash,subs="normal"]
+----
+kubectl create configmap {keycloak-data-import} --from-file=keycloak-realm-realm.json=keycloak-realm-realm.json
+----
+
+Create a file named `keycloak.yaml`:
+
+.keycloak.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {keycloak-external}
+  labels:
+    app: keycloak
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: keycloak
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {keycloak-internal}
+  labels:
+    app: keycloak
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: keycloak
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      volumes:
+        - name: {keycloak-data-import}-volume
+          configMap:
+            name: {keycloak-data-import}
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:26.0
+          args: [ "start-dev", "--import-realm" ]
+          env:
+            - name: KEYCLOAK_ADMIN
+              value: "{keycloak-admin-user}"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "{keycloak-admin-pws}"
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /realms/master
+              port: 8080
+          volumeMounts:
+            - name: {keycloak-data-import}-volume
+              mountPath: /opt/keycloak/data/import
+----
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f keycloak.yaml
+----
+
+To access the Keycloak console, find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your **{keycloak-external}** service:
+
+[source,bash,subs="normal"]
+----
+$ minikube service keycloak-external --url
+http://192.168.39.190:31950
+----
+
+Open the link in your web browser and login to Keycloak with username/password "*{keycloak-admin-user}*/*{keycloak-admin-pws}*";
+
+NOTE: since we are using minikube, we expose *Keycloak* outside the cluster with a `NodePort` service (**{keycloak-external}**) and inside the cluster with a `ClusterIP` service (**{keycloak-internal}**)
+
+==== optional alternative: configure Keycloak manually
+
+As an alternative to using *Keycloak* auto import feature (see the "--import-realm" command argument above), you can configure *Keycloak* manually: remove `volumes` and `volumeMounts` and follow these steps:
+
+1. Create a realm called **{keycloak-realm}**
+2. Create a client called **{simple-microservice-client-secured}**; in the Capability config, turn on +++<u>Client authentication</u>+++.
+3. For the **{simple-microservice-client-secured}** client, we also need to set the valid redirect URIs to ***** and set the Web origins to **+** to permit all origins of Valid Redirect URIs.
+4. For the **{simple-microservice-client-secured}** client, note down the +++<u>Client Secret</u>+++ in the +++<u>Credentials</u>+++ tab (e.g. `KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB`);
+5. Now, click on Realm roles and create two roles, **{keycloak-role1}** and **{keycloak-role2}**.
+6. Create a user called **{keycloak-user1}** and assign her the **{keycloak-role1}** and **{keycloak-role2}** roles; set password **{keycloak-user1-pws}** for **{keycloak-user1}**
+7. Create a user called **{keycloak-user2}** and assign him only the **{keycloak-role1}** role; set password **{keycloak-user2-pws}** for **{keycloak-user2}**
+
+NOTE: in case you want to go deeper, find more information and examples in link:https://wildfly-security.github.io/wildfly-elytron/blog/bearer-only-support-openid-connect/[Setting up your Keycloak OpenID provider]
+
+== Web Application (Microservice A)
+
+=== Maven Project
+
+Copy link:{source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client[simple-microservice-client]
+into a new folder named **{simple-microservice-client-secured}**;
+
+==== pom.xml
+
+Set `<artifactId>{simple-microservice-client-secured}</artifactId>`;
+
+Add the following to `dependencies`:
+
+[source,xml,subs="normal"]
+----
+        <dependency>
+            <groupId>org.wildfly.security</groupId>
+            <artifactId>wildfly-elytron-http-oidc</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+----
+
+Add the following `layers` in the `wildfly-maven-plugin`:
+
+[source,xml,subs="normal"]
+----
+    <layer>elytron-oidc-client</layer>
+----
+
+==== web.xml
+
+Create file `src/main/webapp/WEB-INF/web.xml` with the following content:
+
+.src/main/webapp/WEB-INF/web.xml:
+[source,xml,subs="normal"]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         metadata-complete="false">
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>secured</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>{keycloak-role1}</role-name>
+            <role-name>{keycloak-role2}</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>OIDC</auth-method>
+    </login-config>
+
+    <security-role>
+        <role-name>{keycloak-role1}</role-name>
+    </security-role>
+    <security-role>
+        <role-name>{keycloak-role2}</role-name>
+    </security-role>
+</web-app>
+----
+
+==== oidc.json
+
+Create file `src/main/webapp/WEB-INF/oidc.json` with the following content:
+
+.src/main/webapp/WEB-INF/oidc.json:
+[source,json,subs="normal"]
+----
+{
+  "client-id" : "{simple-microservice-client-secured}",
+  "provider-url" : "${env.OIDC_PROVIDER_URL:http://localhost:8080}/realms/{keycloak-realm}",
+  "ssl-required" : "EXTERNAL",
+  "credentials" : {
+    "secret" : "${env.OIDC_CLIENT_SECRET:KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB}"
+  }
+}
+----
+
+replace `KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB` with the +++<u>Client Secret</u>+++ you previously noted down;
+
+
+=== Java code
+
+==== GettingStartedEndpointInterface
+
+Add the following interface:
+
+.org.wildfly.examples.GettingStartedEndpointInterface.java:
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+@RegisterClientHeaders
+@RegisterRestClient(configKey="simple-microservice-server")
+@Path("/hello")
+public interface GettingStartedEndpointInterface {
+	@GET
+	@Path("/{name}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response sayHello(@HeaderParam("Authorization") String authorization, final @PathParam("name") String name);
+}
+----
+
+==== GettingStartedEndpoint
+
+Modify the following class:
+
+.org.wildfly.examples.GettingStartedEndpoint.java:
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.wildfly.security.http.oidc.OidcSecurityContext;
+
+import java.io.IOException;
+
+@Path("/")
+public class GettingStartedEndpoint {
+
+    @Context
+    private HttpServletRequest httpServletRequest;
+
+    @Inject
+    @RestClient
+    private GettingStartedEndpointInterface service;
+
+    @GET
+    @Path("/{name}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response sayHello(final @PathParam("name") String name) throws IOException {
+        Response response;
+        OidcSecurityContext oidcSecurityContext = getOidcSecurityContext(httpServletRequest);
+        if (oidcSecurityContext != null) {
+            String authzHeaderValue = "Bearer " + oidcSecurityContext.getTokenString();
+            System.out.println("\n\n[JWT] service Token: " + authzHeaderValue + "\n\n");
+            return service.sayHello(authzHeaderValue, name);
+        } else {
+            System.out.println("\n\n[JWT] No token :(\n\n");
+            return service.sayHello(null, name);
+        }
+    }
+
+    private OidcSecurityContext getOidcSecurityContext(HttpServletRequest req) {
+        return (OidcSecurityContext) req.getAttribute(OidcSecurityContext.class.getName());
+    }
+}
+----
+
+=== Build and push the image to Quay.io
+
+Build the application:
+
+[source,bash]
+----
+mvn clean package
+----
+
+Build the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman build -t {simple-microservice-client-secured}:latest .
+----
+
+Create a public repository named `{simple-microservice-client-secured}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{simple-microservice-client-secured}[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-client-secured}, window="_blank"]).
+
+NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
+
+Tag the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman tag {simple-microservice-client-secured} quay.io/{quay-io-account-name}/{simple-microservice-client-secured}
+----
+
+Push the `{simple-microservice-client-secured}` Docker Image:
+
+[source,bash,subs="normal"]
+----
+podman push quay.io/{quay-io-account-name}/{simple-microservice-client-secured}
+----
+
+=== Deploy to Kubernetes
+
+Create file `{simple-microservice-client-secured}-deployment.yaml`:
+
+.{simple-microservice-client-secured}-deployment.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {simple-microservice-client-secured}-deployment
+  labels:
+    app: {simple-microservice-client-secured}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {simple-microservice-client-secured}
+  template:
+    metadata:
+      labels:
+        app: {simple-microservice-client-secured}
+    spec:
+      containers:
+        - name: {simple-microservice-client-secured}
+          image: quay.io/{quay-io-account-name}/{simple-microservice-client-secured}
+          ports:
+            - containerPort: 8080
+            - containerPort: 9990
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 9990
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 9990
+          startupProbe:
+            httpGet:
+              path: /health/started
+              port: 9990
+          env:
+            - name: SIMPLE-MICROSERVICE-SERVER_MP_REST_URI
+              value: "http://{simple-microservice-server-secured}-service:8080"
+            - name: OIDC_PROVIDER_URL
+              # replace with the outcome of "minikube service keycloak-external --url"
+              value: "http://192.168.39.190:31950"
+            - name: OIDC_CLIENT_SECRET
+              value: "KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB"
+----
+
+Then:
+
+* replace "http://192.168.39.190:31950" with the outcome of command `minikube service keycloak-external --url`
+* replace "{quay-io-account-name}" with your account name on link:quay.io[quay.io]
+* replace `KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB` with the +++<u>Client Secret</u>+++ you previously noted down;
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f {simple-microservice-client-secured}-deployment.yaml
+----
+
+Create file `{simple-microservice-client-secured}-service.yaml`:
+
+.{simple-microservice-client-secured}-service.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {simple-microservice-client-secured}-service
+  labels:
+    app: {simple-microservice-client-secured}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: {simple-microservice-client-secured}
+  type: NodePort
+----
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f {simple-microservice-client-secured}-service.yaml
+----
+
+== Service (Microservice B)
+
+=== Maven Project
+
+Copy link:{source-code-git-repository}/simple-microservice-rest-client/simple-microservice-server[simple-microservice-server]
+into a new folder named **simple-microservice-server-secured**;
+
+==== pom.xml
+
+Set `<artifactId>simple-microservice-server-secured</artifactId>`;
+
+Add the following to `dependencyManagement`:
+
+[source,xml,subs="normal"]
+----
+<dependency>
+    <groupId>org.wildfly.bom</groupId>
+    <artifactId>wildfly-microprofile</artifactId>
+    <version>${version.wildfly.bom}</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+----
+
+Add the following to `dependencies`:
+
+[source,xml,subs="normal"]
+----
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.jwt</groupId>
+            <artifactId>microprofile-jwt-auth-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+----
+
+Add the following `layers` in the `wildfly-maven-plugin`:
+
+[source,xml,subs="normal"]
+----
+        <layer>microprofile-config</layer>
+        <layer>microprofile-jwt</layer>
+----
+
+=== microprofile-config.properties
+
+Add file `src/main/resources/META-INF/microprofile-config.properties` with the following content:
+
+.microprofile-config.properties:
+[source,properties]
+----
+mp.jwt.verify.publickey.location=http://localhost:8080/realms/keycloak-realm/protocol/openid-connect/certs
+----
+
+=== Java code
+
+==== GettingStartedApplication
+
+Modify the following class:
+
+.org.wildfly.examples.GettingStartedApplication.java:
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+import org.eclipse.microprofile.auth.LoginConfig;
+
+@LoginConfig(authMethod="MP-JWT")
+@ApplicationPath("/hello")
+public class GettingStartedApplication extends Application {
+
+}
+----
+
+==== GettingStartedEndpoint
+
+Modify the following class:
+
+.org.wildfly.examples.GettingStartedEndpoint.java:
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
+@Path("/")
+public class GettingStartedEndpoint {
+
+	@Inject
+	@ConfigProperty(name = "mp.jwt.verify.publickey.location")
+	private String publicKeyLocation;
+
+	@Inject
+	JsonWebToken jwt;
+
+	@GET
+	@Path("/{name}")
+	@Produces(MediaType.TEXT_PLAIN)
+	@RolesAllowed({"admin"})
+	public Response sayHello(final @PathParam("name") String name) {
+		System.out.println("mp.jwt.verify.publickey.location=" + publicKeyLocation);
+
+		String response =
+				"Hello " + name
+						+ (jwt != null ? (" Subject:" + jwt.getSubject()) : null)
+						+ (jwt != null ? (" Issuer: " + jwt.getIssuer()) : null);
+
+		return Response.ok(response).build();
+	}
+}
+----
+
+=== Build and push the image to Quay.io
+
+Create a public repository named `{simple-microservice-server-secured}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-server-secured}, window="_blank"]).
+
+NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
+
+Tag the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman tag {simple-microservice-server-secured} quay.io/{quay-io-account-name}/{simple-microservice-server-secured}
+----
+
+Push the `{simple-microservice-server-secured}` Docker Image:
+
+[source,bash,subs="normal"]
+----
+podman push quay.io/{quay-io-account-name}/{simple-microservice-server-secured}
+----
+
+=== Deploy to Kubernetes
+
+Create file `{simple-microservice-server-secured}-deployment.yaml`:
+
+.{simple-microservice-server-secured}-deployment.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {simple-microservice-server-secured}-deployment
+  labels:
+    app: {simple-microservice-server-secured}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {simple-microservice-server-secured}
+  template:
+    metadata:
+      labels:
+        app: {simple-microservice-server-secured}
+    spec:
+      containers:
+        - name: {simple-microservice-server-secured}
+          image: quay.io/tborgato/{simple-microservice-server-secured}
+          ports:
+            - containerPort: 8080
+            - containerPort: 9990
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 9990
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 9990
+          startupProbe:
+            httpGet:
+              path: /health/started
+              port: 9990
+          env:
+            - name: MP_JWT_VERIFY_PUBLICKEY_LOCATION
+              value: "http://keycloak-internal:8080/realms/{keycloak-realm}/protocol/openid-connect/certs"
+----
+
+Then:
+
+* replace "{quay-io-account-name}" with your account name on link:quay.io[quay.io]
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f {simple-microservice-server-secured}-deployment.yaml
+----
+
+Create file `{simple-microservice-server-secured}-service.yaml`:
+
+.{simple-microservice-server-secured}-service.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {simple-microservice-server-secured}-service
+  labels:
+    app: {simple-microservice-server-secured}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: {simple-microservice-server-secured}
+  type: ClusterIP
+----
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f {simple-microservice-server-secured}-service.yaml
+----
+
+== Test
+
+[source,bash,subs="normal"]
+----
+$ minikube service {simple-microservice-client-secured}-service --url
+http://192.168.39.190:32225
+----
+
+Open that URL in your browser, log in as *{keycloak-user1}*/*{keycloak-user1-pws}* and try it out!
+
+After pressing the "Say Hello" button, you should see something like:
+
+[source,text]
+----
+Hello ddd Subject:aaef43ee-4005-4d2d-a5f0-0e0d11a1f831 Issuer: http://192.168.39.190:31950/realms/keycloak-realm
+----
+
+
+[[references]]
+== References
+
+* https://wildfly-security.github.io/wildfly-elytron/blog/bearer-only-support-openid-connect/
+* https://github.com/wildfly-security-incubator/elytron-examples/tree/main/oidc-with-bearer
+* https://www.keycloak.org/getting-started/getting-started-kube
+* Source code for this guide:
+** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client-secured
+** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-server-secured

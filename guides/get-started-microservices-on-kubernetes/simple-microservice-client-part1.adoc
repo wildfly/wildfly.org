@@ -1,0 +1,290 @@
+= {simple-microservice-client-part1}
+:summary: Invoke one microservice from another
+:includedir: ../_includes
+include::{includedir}/_attributes.adoc[]
+include::./_includes/_titles.adoc[]
+include::_includes/_constants.adoc[]
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 10
+
+In this guide, you will learn HOW-TO invoke one microservice from another;
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:simple-microservice-part1[{simple-microservice-part1}]
+
+== Introduction
+
+This guide is the first in a series of three:
+
+1. In link:simple-microservice-client-part1[{simple-microservice-client-part1}] (this guide), we explain HOW-TO invoke one microservice from another;
+2. In link:simple-microservice-client-part2[{simple-microservice-client-part2}], as usual, we explain HOW-TO run the whole thing on Kubernetes
+3. In link:simple-microservice-client-part3[{simple-microservice-client-part3}] we explain HOW-TO propagate user authentication and authorization data from the calling microservice to the invoked microservice; this is most useful in a scenario where you have a "chain" of microservices ("**A -> B -> C -> etc.**") and you want the user's authentication and authorization data to be propagated from one microservice to the next;
+
+== This Guide
+
+In these guides, we work with a simple invocation chain composed by +++<u>two</u>+++ microservices:
+
+* **Microservice A**: acting as **client**
+* **Microservice B**: acting as **server**
+
+Our invocation chain is then: "**Microservice A -> Microservice B**": when working with https://microprofile.io/[Microprofile], this is achieved by using the https://github.com/eclipse/microprofile-rest-client[microprofile-rest-client];
+
+Specifically, **Microservice A** will use the https://github.com/eclipse/microprofile-rest-client[microprofile-rest-client] to invoke the Jakarta REST service exposed by **Microservice B**;
+
+For both services, we will start from the microservice we built in link:simple-microservice-part1[{simple-microservice-part1}] (complete code in {source-code-git-repository}/simple-microservice);
+
+== Microservice B - the server
+
+We start from the server because we need the server's API for the client later on;
+
+=== Maven Project
+
+Copy {source-code-git-repository}/simple-microservice into a new folder named *simple-microservice-server* and:
+
+* remove folder *src/test*
+* remove all test scope dependencies
+
+NOTE: we remove tests in preparation for the upcoming guides
+
+==== pom.xml
+
+Set `<artifactId>simple-microservice-server</artifactId>`;
+
+NOTE: **Microservice B** is basically unchanged, we will modify it in link:simple-microservice-client-part3[{simple-microservice-client-part3}]
+
+==== Build the application
+
+[source,bash]
+----
+mvn clean package
+----
+
+=== Docker Image
+
+==== Dockerfile
+
+Since you copied {source-code-git-repository}/simple-microservice[simple-microservice], the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile, window="_blank"] should already be at the root of your project;
+
+==== Build the Docker Image
+
+[source,bash,subs="normal"]
+----
+podman build -t {my-jaxrs-app-docker-image-name-server}:latest .
+----
+
+==== Run the Docker Image
+
+First we create a network for our containers:
+
+[source,bash,subs="normal"]
+----
+podman network create {podman-network-name}
+----
+
+Then we run our container using this network:
+
+[source,bash,subs="normal"]
+----
+podman run --rm -p 8180:8080 -p 10090:9990 \
+  --network={podman-network-name} \
+  --name={my-jaxrs-app-docker-image-name-server} \
+  {my-jaxrs-app-docker-image-name-server}
+----
+
+== Microservice A - the client
+
+=== Maven Project
+
+Copy {source-code-git-repository}/simple-microservice into a new folder named *simple-microservice-client* and:
+
+* remove folder *src/test*
+* remove all test scope dependencies
+
+NOTE: we remove tests in preparation for the upcoming guides
+
+==== pom.xml
+
+Set `<artifactId>simple-microservice-client</artifactId>`;
+
+Add the following to `dependencyManagement`:
+
+[source,xml,subs="normal"]
+----
+<dependency>
+    <groupId>org.wildfly.bom</groupId>
+    <artifactId>wildfly-microprofile</artifactId>
+    <version>${version.wildfly.bom}</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+----
+
+Add the following to `dependencies`:
+
+[source,xml,subs="normal"]
+----
+    <dependency>
+        <groupId>org.eclipse.microprofile.rest.client</groupId>
+        <artifactId>microprofile-rest-client-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.microprofile.config</groupId>
+        <artifactId>microprofile-config-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+----
+
+Add the following `layers` in the `wildfly-maven-plugin`:
+
+[source,xml,subs="normal"]
+----
+    <layer>microprofile-config</layer>
+    <layer>microprofile-rest-client</layer>
+----
+
+Later on, we will use:
+
+* **microprofile-config** to make the URL to **Microservice B** configurable
+* **microprofile-rest-client** to actually invoke **Microservice B**
+
+==== microprofile-config.properties
+
+As anticipated, we use **microprofile-config** to make the URL to **Microservice B** configurable;
+
+Add file `src/main/resources/META-INF/microprofile-config.properties` with the following content:
+
+.microprofile-config.properties:
+[source,properties]
+----
+simple-microservice-server/mp-rest/uri=${simple-microservice-server-uri:http://127.0.0.1:8080}
+simple-microservice-server/mp-rest/connectTimeout=3000
+----
+
+NOTE: `simple-microservice-server-uri` would pick up its value, whenever set, from the environment variable named `SIMPLE_MICROSERVICE_SERVER_URI` (see https://download.eclipse.org/microprofile/microprofile-config-3.0/microprofile-config-spec-3.0.html#default_configsources.env.mapping[env.mapping])
+
+==== Java code
+
+Add the following interface:
+
+.GettingStartedEndpointInterface.java:
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+@RegisterRestClient(configKey="simple-microservice-server")
+@Path("/hello")
+public interface GettingStartedEndpointInterface {
+	@GET
+	@Path("/{name}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response sayHello(final @PathParam("name") String name);
+}
+----
+
+NOTE: this class is used to define the API to be invoked by the Rest Client; the actual URL where the remote service is
+located, comes from the `microprofile-config.properties` file we just added;
+
+Remove the `src/main/java/org/wildfly/examples/GettingStartedService.java` file and replace the content of
+`src/main/java/org/wildfly/examples/GettingStartedEndpoint.java` with the following:
+
+.GettingStartedEndpoint.java:
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+
+@Path("/")
+public class GettingStartedEndpoint {
+
+    @Inject
+    @RestClient
+    private GettingStartedEndpointInterface service;
+
+    @GET
+    @Path("/{name}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response sayHello(final @PathParam("name") String name) {
+        return service.sayHello(name);
+    }
+}
+----
+
+NOTE: as anticipated, we use **microprofile-rest-client** to actually invoke **Microservice B**
+
+==== Build the application
+
+[source,bash]
+----
+mvn clean package
+----
+
+=== Docker Image
+
+==== Dockerfile
+
+Since you copied {source-code-git-repository}/simple-microservice[simple-microservice], the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile, window="_blank"] should already be at the root of your project;
+
+==== Build the Docker Image `{my-jaxrs-app-docker-image-name-client}:latest` with the following command:
+
+[source,bash,subs="normal"]
+----
+podman build -t {my-jaxrs-app-docker-image-name-client}:latest .
+----
+
+==== Run the Docker Image
+
+[source,bash,subs="normal"]
+----
+podman run --rm -p 8080:8080 -p 9990:9990 \
+  --network={podman-network-name} \
+  --env "SIMPLE_MICROSERVICE_SERVER_URI=http://{my-jaxrs-app-docker-image-name-server}:8080/hello" \
+  --name={my-jaxrs-app-docker-image-name-client} \
+  {my-jaxrs-app-docker-image-name-client}
+----
+
+NOTE: The **{my-jaxrs-app-docker-image-name-server}** container can be reached, inside the **{podman-network-name}** network, using the DNS name **{my-jaxrs-app-docker-image-name-server}**
+
+== Test
+
+Open http://localhost:8080[http://localhost:8080] in your browser: this web page is served by the **{my-jaxrs-app-docker-image-name-client}** container;
+
+Write something in the "Name" input box and then press "Say Hello": the response you'll see will come from **{my-jaxrs-app-docker-image-name-server}** container!
+
+The complete invocation chain is "**web browser** -> **{my-jaxrs-app-docker-image-name-client}** -> **{my-jaxrs-app-docker-image-name-server}**"
+
+== What's next?
+
+link:simple-microservice-client-part2[{simple-microservice-client-part2}]
+
+[[references]]
+== References
+
+* https://microprofile.io/specifications/microprofile-rest-client[microprofile-rest-client]
+* https://microprofile.io/specifications/microprofile-config[microprofile-config]
+* Source code for this guide:
+** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client
+** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-server
+
+
