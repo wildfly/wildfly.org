@@ -18,14 +18,22 @@ We will start building a link:https://docs.docker.com/[Docker Image, window="_bl
 
 === Guides in this series
 
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}]
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[{simple-microservice-part2}]
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-database-part1[{simple-microservice-database-part1}]
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-database-part2[{simple-microservice-database-part2}]
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}]
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}]
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part1[{simple-microservice-jms-part1}]
-* link:/guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part2[{simple-microservice-jms-part2}]
+* **{simple-microservice-header}**
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}]
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[{simple-microservice-part2}]
+* **{simple-microservice-database-header}**
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-database-part1[{simple-microservice-database-part1}]
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-database-part2[{simple-microservice-database-part2}]
+* **{simple-microservice-infinispan-header}**
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part1[{simple-microservice-infinispan-part1}]
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}]
+* **{simple-microservice-jms-header}**
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part1[{simple-microservice-jms-part1}]
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part2[{simple-microservice-jms-part2}]
+* **{simple-microservice-client-header}**
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-client-part1[{simple-microservice-client-part1}]
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-client-part2[{simple-microservice-client-part2}]
+** link:/guides/get-started-microservices-on-kubernetes/simple-microservice-client-part3[{simple-microservice-client-part3}]
 //* link:get-enterprise-ready[{get-enterprise-ready}]
 
 [[references]]
