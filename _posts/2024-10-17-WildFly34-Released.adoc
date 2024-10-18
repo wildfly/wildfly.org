@@ -42,8 +42,8 @@ directly in the management model. This feature is provided at the link:https://d
 
 Standard WildFly 34 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 11, Java SE 17 and Java SE 21.
 
-////
-Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications] repository on GitHub:
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications, window=_blank] repository on GitHub:
 [cols=",",options="header"]
 |=======================================================================
 |Specification |Compatibility Evidence
@@ -60,7 +60,7 @@ Evidence supporting our certification is available in the link:https://github.co
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_34.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_34.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
 |=======================================================================
-////
+
 
 === MicroProfile
 
