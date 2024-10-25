@@ -7,9 +7,6 @@ categories:
       - title: Getting Started with WildFly
         url: /get-started
         description: Build and run a Jakarta EE application with WildFly in a few minutes
-      - title: Java Microservices on Kubernetes with WildFly
-        url: /guides/get-started-microservices-on-kubernetes
-        description: Build and run Jakarta EE applications with WildFly on Kubernetes in a few minutes
   - category: Automation
     cat-id: automation
     guides:
@@ -19,6 +16,41 @@ categories:
       - title: Testing with Arquillian and JUnit 5
         url: /guides/testing-arquillian-junit5
         description: Learn how to write JUnit 5 tests using Arquillian for Jakarta EE based applications.
+  - category: Cloud / Containerization
+    cat-id: cloud-containerization
+    groups:
+      - title: Jakarta REST service
+        guides:
+          - description: Build the Container Image
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-part1
+          - description: Run the Container Image on Kubernetes
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-part2
+      - title: Jakarta REST service using a Database
+        guides:
+          - description: Build the Container Image
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-database-part1
+          - description: Run the Container Image on Kubernetes
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-database-part2
+      - title: Jakarta REST service using Infinispan
+        guides:
+          - description: Build the Container Image
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part1
+          - description: Run the Container Image on Kubernetes
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part2
+      - title: Jakarta REST service using a Message Broker
+        guides:
+          - description: Build the Container Image
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part1
+          - description: Run the Container Image on Kubernetes
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part2
+      - title: Jakarta REST service invoking another Jakarta REST service
+        guides:
+          - description: Build the Container Image
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part1
+          - description: Run the Container Image on Kubernetes
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part2
+          - description: Propagate Authentication and Authorization
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part3
   - category: Datasources
     cat-id: datasources
     guides:
