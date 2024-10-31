@@ -13,7 +13,7 @@ Hello, WildFly Community!
 
 We are happy to announce that the next WildFly Mini Conference is scheduled for November 20th, 2024! Building on the success of our previous mini conference event, we are eager to bring together our community for another day of insightful discussions and online networking.
 
-As you know, a few weeks ago we sent a link:http://localhost:4000/news/2024/10/07/WildFly-mini-conference-session-form[request for feedback, window=_blank]. Based on the  feedback we received, the most voted topics were:
+As you know, a few weeks ago we sent a link:http://wildfly.org/news/2024/10/07/WildFly-mini-conference-session-form[request for feedback, window=_blank]. Based on the  feedback we received, the most voted topics were:
 
 * Jakarta EE11: Dive deep into the latest advancements and explore how Jakarta EE11 is shaping the future of enterprise Java.
 * Latest News on WildFly: Stay updated with the latest news on WildFly
