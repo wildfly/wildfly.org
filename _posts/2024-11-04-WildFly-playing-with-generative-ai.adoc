@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Playing with Generative AI with WildFly"
-date:   2024-10-31
+date:   2024-11-04
 tags: generative-ai rag wildfly
 author: ehugonne
 description: How to try the Generative AI feature pack with WildFly
