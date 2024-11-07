@@ -1,9 +1,9 @@
 - title: Welcome and opening ceremony
   from: "14:00"
-  to: "14:10"
+  to: "14:15"
 - title: Next-gen management console
   from: "14:15"
-  to: "15:00"
+  to: "14:45"
   abstract:
     - "The administration console is currently undergoing a major update. In this session we will present the latest milestone, demonstrate new features and explain what you can expect."
   speaker: hpehl
