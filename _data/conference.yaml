@@ -27,7 +27,7 @@
   abstract:
     - "Event Driven Ansible is new capacity of the automation tool to react to change or incidents on a system. A basic application of this would be for instance to detect an out-of-memory error in an app hosted by Wildfly and trigger a restart. We'll demo that during the presentation."
   speaker: rpelisse
-  bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (Wildfly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+  bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
 - title: Lightning Talk 2
   from: "16:45"
   to: "17:00"
@@ -35,7 +35,7 @@
   from: "17:00"
   to: "17:40"
   abstract:
-    - "Learn how to use the new WildFly AI Feature Pack to build an AI-powered application.In this presentation we will see how we can configure WildFly to a Large Language Model and build a Retrieval Augmented Application using CDI to inject all the pieces we need."
+    - "Learn how to use the new WildFly AI Feature Pack to build an AI-powered application. In this presentation we will see how we can configure WildFly to a Large Language Model and build a Retrieval Augmented Application using CDI to inject all the pieces we need."
   speaker: ehsavoie
   bio: "Emmanuel works at Red Hat on the messaging subsystem and on the developer experience."
 - title: Feedback and closing ceremony
