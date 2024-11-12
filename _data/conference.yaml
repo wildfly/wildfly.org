@@ -15,7 +15,7 @@
   from: "15:00"
   to: "15:45"
   abstract:
-    - "As cloud-native and microservices architectures continue to dominate modern application development, Jakarta EE 11 emerges as a powerful evolution of the enterprise Java ecosystem. This talk delves into the new features and enhancements in Jakarta EE 11, including updates in REST, JSON, Concurrency, and Security APIs, as well as improved support for reactive and modular applications. We’ll explore how these changes streamline development, enhance performance, and provide a robust foundation for scalable cloud-native applications. Attendees will gain insights into migrating existing Jakarta EE applications, leveraging its cloud-ready features, and the ways Jakarta EE 11 harmonizes with popular frameworks like MicroProfile to simplify building, deploying, and maintaining enterprise-grade solutions."
+    - "Abstract to follow."
   speaker: bstansberry
   bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
 - title: Lightning Talk 2
@@ -35,7 +35,7 @@
   from: "17:00"
   to: "17:40"
   abstract:
-    - "A sample on how to use the new AI feature pack to build an AI powered application."
+    - "A sample on how to use the new AI feature pack to build an AI-powered application."
   speaker: ehsavoie
   bio: "Emmanuel works at Red Hat on WildFly Core. He currently works on domain management and also maintains the NetBeans WildFly plugin."
 - title: Feedback and closing ceremony
