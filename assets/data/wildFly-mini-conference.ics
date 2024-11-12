@@ -2,15 +2,15 @@ BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:wildfly@googlegroups.com
 BEGIN:VEVENT
-UID:20240209T113915Z@wildfly.org
-DTSTAMP:20240209T113915Z
-DTSTART:20240306T140000Z
-DTEND:20240306T180000Z
+UID:20241107T151515Z@wildfly.org
+DTSTAMP:20241107T151515Z
+DTSTART:20241120T140000Z
+DTEND:20241120T180000Z
 SUMMARY:WildFly Mini Conference
 URL:https://wildfly.org/conference
 DESCRIPTION:A dedicated conference for the community with topics 
  around WildFly.
-LOCATION;ALTREP="https://youtube.com/live/_8g1rZ80u2A":
+LOCATION;ALTREP="https://youtube.com/live/OfEv05N8EUg":
  Virtually on YouTube Live
 CLASS:PUBLIC
 END:VEVENT
