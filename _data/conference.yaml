@@ -18,7 +18,7 @@
     - "Jakarta EE 11 is coming soon! In this session you'll learn what's new in EE 11, particularly in the new Jakarta Data specification. We'll give you an update on where things stand with integrating EE 11 into WildFly and on what our plans are."
   speaker: bstansberry
   bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
-- title: Lightning Talk 2
+- title: Break
   from: "15:45"
   to: "16:00"
 - title: WildFly Remediation with Event-Driven Ansible
