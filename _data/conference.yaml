@@ -8,6 +8,7 @@
     - "The administration console is currently undergoing a major update. In this session we will present the latest milestone, demonstrate new features and explain what you can expect."
   speaker: hpehl
   bio: "Harald Pehl is a principal software engineer at Red Hat. He works on the management capabilities of WildFly and leads the management console (HAL)."
+  slides: "/assets/data/conference/202411_wmc_nextgen_console.pdf"
   feedback: https://docs.google.com/forms/d/e/1FAIpQLSe6cFEI4WzxJTR6YZRTTLqb4zueg6iVmqxyD9Xz_ryuMm_M2A/viewform?usp=sf_link
 - title: Lightning Talk 1
   from: "14:45"
@@ -19,6 +20,7 @@
     - "Jakarta EE 11 is coming soon! In this session you'll learn what's new in EE 11, particularly in the new Jakarta Data specification. We'll give you an update on where things stand with integrating EE 11 into WildFly and on what our plans are."
   speaker: bstansberry
   bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
+  slides: "/assets/data/conference/202411_Jakarta_EE_11.pdf"
   feedback: https://docs.google.com/forms/d/e/1FAIpQLSe9Cre9qPp2D0MqBnUTfF2HUPN06bcEf1NTRd1zLVnf-LJdkw/viewform?usp=sf_link
 - title: Break
   from: "15:45"
@@ -30,6 +32,7 @@
     - "Event Driven Ansible is new capacity of the automation tool to react to change or incidents on a system. A basic application of this would be for instance to detect an out-of-memory error in an app hosted by Wildfly and trigger a restart. We'll demo that during the presentation."
   speaker: rpelisse
   bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+  slides: "https://github.com/ansible-middleware/wfly-remediation-with-eda"
   feedback: https://docs.google.com/forms/d/e/1FAIpQLSf6fCFe1Z3OoGnRbxiH-JnFdtEN45pM9wDqvvmxc-W_FB-D1w/viewform?usp=sf_link
 - title: Lightning Talk 2
   from: "16:45"
@@ -41,6 +44,7 @@
     - "Learn how to use the new WildFly AI Feature Pack to build an AI-powered application. In this presentation we will see how we can configure WildFly to a Large Language Model and build a Retrieval Augmented Application using CDI to inject all the pieces we need."
   speaker: ehsavoie
   bio: "Emmanuel works at Red Hat on the messaging subsystem and on the developer experience."
+  slides: "/assets/data/conference/202411_WildFly_AI_Feature_Pack.pdf"
   feedback: https://docs.google.com/forms/d/e/1FAIpQLSfXmjQbPJmETjQ5cDOfLa9AOkKCg2uCURjlBFWgQ9kueW2XuA/viewform?usp=sf_link
 - title: Feedback and closing ceremony
   from: "17:40"
