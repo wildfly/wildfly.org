@@ -67,7 +67,7 @@ layout: base
       <div class="c-speaker-bio">{{ session.bio }}</div>
       {% endif %}
       {% if session.feedback %}
-      <div class="c-feedback"><p>Please provide feedback on the session at <a href="{{ session.feedback | join: "<br/>" }}">using this form</a></p></div>
+      <div class="c-feedback"><p>Please provide feedback on the session <a href="{{ session.feedback | join: "<br/>" }}">using this form</a></p></div>
       {% endif %}
     </div>
     {% endfor %}
