@@ -8,7 +8,14 @@
 
   <div class="grid__item width-12-12 sec-title-red">
     <h2>Agenda</h2>
-    <p>Our first WildFly Mini Conference took place on March 6. Many thanks to all participants! You can view the recording at our <a href="https://www.youtube.com/@WildFlyAS" target="_blank">YouTube channel</a>. The slides can be downloaded using the links below.</p>
+    <p>Our last WildFly Mini Conference took place on November 20, 2024. Many thanks to all participants! You can view
+      the recording at our <a href="https://www.youtube.com/@WildFlyAS" target="_blank">YouTube channel</a>. The slides
+      can be downloaded using the links below.</p>
+
+    <p>Please take some time to answer a few questions about the conference. What did you like, what can we do
+      better? It won't take long and will help us make the next WildFly conference even better: <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSdljkyVdr1cJdVcuz5ZfQwysRw4naBy6SdJoYFntOWUP_h0Mw/viewform?usp=sf_link" target="_blank">conference feedback</a>.
+      We'd also love to hear your opinion on the sessions itself! Please use the links below to give feedback.</p>
 
     {% for session in site.data.conference %}
     {% if session.abstract %}
@@ -16,12 +23,27 @@
       <div class="c-time">
         <span class="c-from">{{ session.from }}</span><span class="c-to">{{ session.to }}</span>
       </div>
-      <div class="c-title"><a href="{{session.slides}}" target="_blank">{{ session.title}}</a></div>
+      <div class="c-title">{{ session.title}}</div>
       <div class="c-abstract"><p>{{ session.abstract | join: "<br/>" }}</p></div>
+
+      {% if session.slides or session.feedback %}
+      <div class="c-links">
+        <ul>
+          {% if session.slides %}
+          <li>Vou can access the presentation <a target="_blank" href="{{ session.slides }}">slides.</a></li>
+          {% endif %}
+          {% if session.feedback %}
+          <li>Please provide feedback on the session <a target="_blank" href="{{ session.feedback }}">using this form.</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      {% endif %}
+
       {% if session.speaker %}
       {% assign speaker = site.data.authors[session.speaker] -%}
       <div class="c-speaker-avatar">
-        <img class="avatar" height="60px" width="60px" src="{{site.baseurl}}/assets/img/authors/{{ session.speaker }}.jpg"
+        <img class="avatar" height="60px" width="60px"
+             src="{{site.baseurl}}/assets/img/authors/{{ session.speaker }}.jpg"
              alt="{{ speaker.name }}" title="{{ speaker.name }}"/>
       </div>
       <div class="c-speaker-bio">{{ session.bio }}</div>
@@ -29,13 +51,5 @@
     </div>
     {% endif %}
     {% endfor %}
-  </div>
-
-  <div class="grid__item width-12-12 sec-title-teal">
-    <h2>Feedback</h2>
-    <p>Please take some time to answer a few questions about the conference. What did you like, what can we do
-      better? It won't take long, and will help us make the next WildFly conference even better: <a
-              href="https://forms.gle/ruEytViEBBwthr5K7" target="_blank">conference feedback</a></p>
-
   </div>
 </div>

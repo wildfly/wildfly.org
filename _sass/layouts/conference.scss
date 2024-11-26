@@ -25,7 +25,7 @@
     grid-template-areas:
       "time title"
       "time abstract"
-      "time feedback"
+      "time links"
       "avatar bio";
     grid-column-gap: 3rem;
     padding: 2rem 1rem;
@@ -111,6 +111,17 @@
     line-height: 1.2rem;
   }
 
+  .c-links {
+    grid-area: links;
+    line-height: 1.2rem;
+
+    ul {
+      margin: 0 0 1.5rem 0;
+      padding: 0;
+      list-style: none;
+    }
+  }
+
   .c-speaker-avatar {
     align-items: center;
     display: flex;
@@ -130,8 +141,4 @@
     grid-area: bio;
   }
 
-  .c-feedback {
-    grid-area: feedback;
-    line-height: 1.2rem;
-  }
 }
