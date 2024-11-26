@@ -22,6 +22,7 @@ layout: base
       </dd>
     </dl>
     <p>Registration is not required, but you can let us know that you <a href="https://forms.gle/eFxBA2h9QuewAmQM8" target="_blank">plan to attend</a>. Click on the date to add the event to your calendar.<br/>You can also use the "Notify Me" button on YouTube if you would like to be notified about the conference.</p>
+    <p>After the event, please do provide feedback for the overall event <a href="https://docs.google.com/forms/d/e/1FAIpQLSdljkyVdr1cJdVcuz5ZfQwysRw4naBy6SdJoYFntOWUP_h0Mw/viewform?usp=sf_link">using this form</a>.</p>
   </div>
 
   <div class="grid__item width-12-12 sec-title-yellow">
@@ -64,6 +65,9 @@ layout: base
              alt="{{ speaker.name }}" title="{{ speaker.name }}"/>
       </div>
       <div class="c-speaker-bio">{{ session.bio }}</div>
+      {% endif %}
+      {% if session.feedback %}
+      <div class="c-feedback"><p>Please provide feedback on the session <a href="{{ session.feedback | join: "<br/>" }}">using this form</a></p></div>
       {% endif %}
     </div>
     {% endfor %}

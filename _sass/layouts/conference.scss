@@ -25,6 +25,7 @@
     grid-template-areas:
       "time title"
       "time abstract"
+      "time feedback"
       "avatar bio";
     grid-column-gap: 3rem;
     padding: 2rem 1rem;
@@ -127,5 +128,10 @@
     font-weight: 100;
     opacity: 0.6;
     grid-area: bio;
+  }
+
+  .c-feedback {
+    grid-area: feedback;
+    line-height: 1.2rem;
   }
 }
