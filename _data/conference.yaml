@@ -9,7 +9,7 @@
   speaker: hpehl
   bio: "Harald Pehl is a principal software engineer at Red Hat. He works on the management capabilities of WildFly and leads the management console (HAL)."
   slides: "/assets/data/conference/202411_wmc_nextgen_console.pdf"
-  feedback: https://docs.google.com/forms/d/e/1FAIpQLSe6cFEI4WzxJTR6YZRTTLqb4zueg6iVmqxyD9Xz_ryuMm_M2A/viewform?usp=sf_link
+  feedback: https://docs.google.com/forms/d/e/1FAIpQLSd88A04DziaVdzIF3acVvrpzn7ZW2sV31m9VxXluA4YUDIrdQ/viewform
 - title: Lightning Talk 1
   from: "14:45"
   to: "15:00"
@@ -21,7 +21,7 @@
   speaker: bstansberry
   bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
   slides: "/assets/data/conference/202411_Jakarta_EE_11.pdf"
-  feedback: https://docs.google.com/forms/d/e/1FAIpQLSe9Cre9qPp2D0MqBnUTfF2HUPN06bcEf1NTRd1zLVnf-LJdkw/viewform?usp=sf_link
+  feedback: https://docs.google.com/forms/d/e/1FAIpQLSeTuEIU_1QTWdX8I6zs6JaEsOKJfEtMbImdbYCpFoJ6tkBL6A/viewform
 - title: Break
   from: "15:45"
   to: "16:00"
@@ -33,7 +33,7 @@
   speaker: rpelisse
   bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
   slides: "https://github.com/ansible-middleware/wfly-remediation-with-eda"
-  feedback: https://docs.google.com/forms/d/e/1FAIpQLSf6fCFe1Z3OoGnRbxiH-JnFdtEN45pM9wDqvvmxc-W_FB-D1w/viewform?usp=sf_link
+  feedback: https://docs.google.com/forms/d/e/1FAIpQLScWXmX996YKz0JmV4z2vNSDnpDHVc3VgLD7XEjDEibfcbBaCQ/viewform
 - title: Lightning Talk 2
   from: "16:45"
   to: "17:00"
