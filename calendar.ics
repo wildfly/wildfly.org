@@ -1,0 +1,39 @@
+---
+layout: none
+---
+BEGIN:VCALENDAR
+PRODID:-//wildfly.org/WildFly Calendar V1.1//EN
+URL: https://wildfly.org/calendar.ics
+NAME: "WildFly Development Calendar"
+REFRESH-INTERVAL;VALUE=DURATION:PT12H
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Etc/GMT
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0
+TZOFFSETTO:+0
+TZNAME:Etc/GMT
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0
+TZOFFSETTO:+0
+TZNAME:Etc/GMT
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+METHOD:PUBLISH
+{% for entry in site.data.schedule %}BEGIN:VEVENT
+UID:{{ entry.date | date: "%Y%m%d" }}
+LOCATION:https://wildfly.org
+SUMMARY:{{ entry.description | strip }}
+DESCRIPTION:{{ entry.comments | strip }}
+ORGANIZER:MAILTO:wildfly-dev@lists.jboss.org
+CLASS:PUBLIC
+DTSTART:{{ entry.date | date: "%Y%m%d" }}{% if entry.start_time %}{{ entry.start_time | date: "T%H%M%S" }}{% endif %}
+DTEND:{{ entry.date | date: "%Y%m%d" }}{% if entry.end_time %}{{ entry.end_time |  date: "T%H%M%S" }}{% endif %}
+DTSTAMP:{{ site.time | date: "%Y%m%dT%H%M%SZ" }}
+END:VEVENT
+{% endfor %}END:VCALENDAR
