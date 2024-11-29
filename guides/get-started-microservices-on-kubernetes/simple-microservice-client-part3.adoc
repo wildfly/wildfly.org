@@ -52,14 +52,18 @@ First, we install and configure Keycloak with users, groups etc..
 
 === Run Keycloak on Kubernetes
 
-Download link:{source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client-secured/kubernetes/keycloak-realm-realm.json[keycloak-realm-realm.json] and create a `configmap` using it as its content:
+Create a folder named `keycloak` wherever you want;
+
+Download file link:{source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client-secured/kubernetes/keycloak/keycloak-realm-realm.json[keycloak-realm-realm.json] inside the `keycloak` folder you just created;
+
+Then, create a `configmap` using it as its content (run the command from the `keycloak` folder):
 
 [source,bash,subs="normal"]
 ----
 kubectl create configmap {keycloak-data-import} --from-file=keycloak-realm-realm.json=keycloak-realm-realm.json
 ----
 
-Create a file named `keycloak.yaml`:
+Create a file named `keycloak.yaml` in the `keycloak` folder:
 
 .keycloak.yaml:
 [source,yaml,subs="normal"]
@@ -135,7 +139,7 @@ spec:
               mountPath: /opt/keycloak/data/import
 ----
 
-Deploy to your Kubernetes Cluster:
+Deploy to your Kubernetes Cluster (run the command from the `keycloak` folder):
 
 [source,bash,subs="normal"]
 ----
@@ -154,7 +158,7 @@ Open the link in your web browser and login to Keycloak with username/password "
 
 NOTE: since we are using minikube, we expose *Keycloak* outside the cluster with a `NodePort` service (**{keycloak-external}**) and inside the cluster with a `ClusterIP` service (**{keycloak-internal}**)
 
-==== optional alternative: configure Keycloak manually
+==== optional alternative: configure Keycloak manually [[configure-keycloak-manually]]
 
 As an alternative to using *Keycloak* auto import feature (see the "--import-realm" command argument above), you can configure *Keycloak* manually: remove `volumes` and `volumeMounts` and follow these steps:
 
@@ -177,7 +181,7 @@ into a new folder named **{simple-microservice-client-secured}**;
 
 ==== pom.xml
 
-Set `<artifactId>{simple-microservice-client-secured}</artifactId>`;
+Update the artifactId to `<artifactId>{simple-microservice-client-secured}</artifactId>`;
 
 Add the following to `dependencies`:
 
@@ -256,16 +260,16 @@ Create file `src/main/webapp/WEB-INF/oidc.json` with the following content:
 }
 ----
 
-replace `KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB` with the +++<u>Client Secret</u>+++ you previously noted down;
+In case you followed the steps in <<configure-keycloak-manually>>, replace `KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB` with the +++<u>Client Secret</u>+++ you previously noted down;
 
 
 === Java code
 
-==== GettingStartedEndpointInterface
+==== GettingStartedEndpointClient
 
 Add the following interface:
 
-.org.wildfly.examples.GettingStartedEndpointInterface.java:
+.org.wildfly.examples.GettingStartedEndpointClient.java:
 [source,java]
 ----
 package org.wildfly.examples;
@@ -283,7 +287,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterClientHeaders
 @RegisterRestClient(configKey="simple-microservice-server")
 @Path("/hello")
-public interface GettingStartedEndpointInterface {
+public interface GettingStartedEndpointClient {
 	@GET
 	@Path("/{name}")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -293,7 +297,7 @@ public interface GettingStartedEndpointInterface {
 
 ==== GettingStartedEndpoint
 
-Modify the following class:
+Modify the class `GettingStartedEndpoint` as in the following:
 
 .org.wildfly.examples.GettingStartedEndpoint.java:
 [source,java]
@@ -322,7 +326,7 @@ public class GettingStartedEndpoint {
 
     @Inject
     @RestClient
-    private GettingStartedEndpointInterface service;
+    private GettingStartedEndpointClient client;
 
     @GET
     @Path("/{name}")
@@ -333,10 +337,10 @@ public class GettingStartedEndpoint {
         if (oidcSecurityContext != null) {
             String authzHeaderValue = "Bearer " + oidcSecurityContext.getTokenString();
             System.out.println("\n\n[JWT] service Token: " + authzHeaderValue + "\n\n");
-            return service.sayHello(authzHeaderValue, name);
+            return client.sayHello(authzHeaderValue, name);
         } else {
             System.out.println("\n\n[JWT] No token :(\n\n");
-            return service.sayHello(null, name);
+            return client.sayHello(null, name);
         }
     }
 
@@ -362,6 +366,8 @@ Build the Docker image:
 podman build -t {simple-microservice-client-secured}:latest .
 ----
 
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+
 Create a public repository named `{simple-microservice-client-secured}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{simple-microservice-client-secured}[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-client-secured}, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
@@ -382,7 +388,7 @@ podman push quay.io/{quay-io-account-name}/{simple-microservice-client-secured}
 
 === Deploy to Kubernetes
 
-Create file `{simple-microservice-client-secured}-deployment.yaml`:
+Create file `{simple-microservice-client-secured}-deployment.yaml` in the `kubernetes` folder in the root of your project:
 
 .{simple-microservice-client-secured}-deployment.yaml:
 [source,yaml,subs="normal"]
@@ -433,18 +439,18 @@ spec:
 
 Then:
 
-* replace "http://192.168.39.190:31950" with the outcome of command `minikube service keycloak-external --url`
+* replace "http://192.168.39.190:31950" with the outcome of command `minikube service keycloak-external --url` (this is where your web browser will be redirected for authentication)
 * replace "{quay-io-account-name}" with your account name on link:quay.io[quay.io]
-* replace `KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB` with the +++<u>Client Secret</u>+++ you previously noted down;
+* In case you followed the steps in <<configure-keycloak-manually>>, replace `KqIQIzNHD9LnCRjsCxblDnfEl4rcNoKB` with the +++<u>Client Secret</u>+++ you previously noted down;
 
 Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {simple-microservice-client-secured}-deployment.yaml
+kubectl apply -f kubernetes/{simple-microservice-client-secured}-deployment.yaml
 ----
 
-Create file `{simple-microservice-client-secured}-service.yaml`:
+Create file `{simple-microservice-client-secured}-service.yaml` in the `kubernetes` folder:
 
 .{simple-microservice-client-secured}-service.yaml:
 [source,yaml,subs="normal"]
@@ -470,7 +476,7 @@ Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {simple-microservice-client-secured}-service.yaml
+kubectl apply -f kubernetes/{simple-microservice-client-secured}-service.yaml
 ----
 
 == Service (Microservice B)
@@ -482,7 +488,7 @@ into a new folder named **simple-microservice-server-secured**;
 
 ==== pom.xml
 
-Set `<artifactId>simple-microservice-server-secured</artifactId>`;
+Update the artifactId to `<artifactId>simple-microservice-server-secured</artifactId>`;
 
 Add the following to `dependencyManagement`:
 
@@ -490,7 +496,7 @@ Add the following to `dependencyManagement`:
 ----
 <dependency>
     <groupId>org.wildfly.bom</groupId>
-    <artifactId>wildfly-microprofile</artifactId>
+    <artifactId>wildfly-expansion</artifactId>
     <version>${version.wildfly.bom}</version>
     <type>pom</type>
     <scope>import</scope>
@@ -535,7 +541,7 @@ mp.jwt.verify.publickey.location=http://localhost:8080/realms/keycloak-realm/pro
 
 ==== GettingStartedApplication
 
-Modify the following class:
+Modify the class `GettingStartedApplication` as in the following:
 
 .org.wildfly.examples.GettingStartedApplication.java:
 [source,java]
@@ -555,7 +561,7 @@ public class GettingStartedApplication extends Application {
 
 ==== GettingStartedEndpoint
 
-Modify the following class:
+Modify the class `GettingStartedEndpoint` as in the following:
 
 .org.wildfly.examples.GettingStartedEndpoint.java:
 [source,java]
@@ -602,6 +608,20 @@ public class GettingStartedEndpoint {
 
 === Build and push the image to Quay.io
 
+Build the application:
+
+[source,bash]
+----
+mvn clean package
+----
+
+Build the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman build -t {simple-microservice-server-secured}:latest .
+----
+
 Create a public repository named `{simple-microservice-server-secured}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-server-secured}, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
@@ -622,7 +642,7 @@ podman push quay.io/{quay-io-account-name}/{simple-microservice-server-secured}
 
 === Deploy to Kubernetes
 
-Create file `{simple-microservice-server-secured}-deployment.yaml`:
+Create file `{simple-microservice-server-secured}-deployment.yaml` in the `kubernetes` folder:
 
 .{simple-microservice-server-secured}-deployment.yaml:
 [source,yaml,subs="normal"]
@@ -674,10 +694,10 @@ Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {simple-microservice-server-secured}-deployment.yaml
+kubectl apply -f kubernetes/{simple-microservice-server-secured}-deployment.yaml
 ----
 
-Create file `{simple-microservice-server-secured}-service.yaml`:
+Create file `{simple-microservice-server-secured}-service.yaml` in the `kubernetes` folder:
 
 .{simple-microservice-server-secured}-service.yaml:
 [source,yaml,subs="normal"]
@@ -703,7 +723,7 @@ Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {simple-microservice-server-secured}-service.yaml
+kubectl apply -f kubernetes/{simple-microservice-server-secured}-service.yaml
 ----
 
 == Test

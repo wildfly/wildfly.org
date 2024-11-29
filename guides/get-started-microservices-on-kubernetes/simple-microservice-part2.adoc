@@ -60,6 +60,13 @@ NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{v
 
 You can use whatever Kubernetes cluster you have available; in this guide, and in the following, we will use link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"].
 
+In case you are using `minikube`, start the cluster:
+
+[source,bash,subs="normal"]
+----
+minikube start
+----
+
 === Deploy to Kubernetes
 
 To deploy our `quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name}` Docker image to Kubernetes, create a file named `deployment-{my-jaxrs-app-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment, window="_blank"]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:

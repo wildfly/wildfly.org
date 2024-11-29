@@ -29,13 +29,13 @@ You can use whatever Kubernetes cluster you have available; in this guide, and i
 
 === Image Registry
 
-To make the `{my-jaxrs-app-docker-image-name-server}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
+To make the `{simple-microservice-server}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
 
 ==== Quay.io
 
-There are many Image Registries you can use: in this guide, we will push the `{my-jaxrs-app-docker-image-name-server}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
+There are many Image Registries you can use: in this guide, we will push the `{simple-microservice-server}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
 
-Create a public repository named `{my-jaxrs-app-docker-image-name-server}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-docker-image-name-server}, window="_blank"]).
+Create a public repository named `{simple-microservice-server}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-server}, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -43,44 +43,44 @@ Tag the Docker image:
 
 [source,bash,subs="normal"]
 ----
-podman tag {my-jaxrs-app-docker-image-name-server} quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name-server}
+podman tag {simple-microservice-server} quay.io/{quay-io-account-name}/{simple-microservice-server}
 ----
 
-Push the `{my-jaxrs-app-docker-image-name-server}` Docker Image to it:
+Push the `{simple-microservice-server}` Docker Image to it:
 
 [source,bash,subs="normal"]
 ----
-podman push quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name-server}
+podman push quay.io/{quay-io-account-name}/{simple-microservice-server}
 ----
 
-At this point, the `{my-jaxrs-app-docker-image-name-server}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster;
+At this point, the `{simple-microservice-server}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster;
 
 === Deploy on Kubernetes
 
-Create a file named `{my-jaxrs-app-docker-image-name-server}-deployment.yaml`:
+Create a folder named `kubernetes` in the root of your project and create a file named `{simple-microservice-server}-deployment.yaml` inside it:
 
-.{my-jaxrs-app-docker-image-name-server}-deployment.yaml:
+.{simple-microservice-server}-deployment.yaml:
 [source,yaml,subs="normal"]
 ----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {my-jaxrs-app-docker-image-name-server}-deployment
+  name: {simple-microservice-server}-deployment
   labels:
-    app: {my-jaxrs-app-docker-image-name-server}
+    app: {simple-microservice-server}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {my-jaxrs-app-docker-image-name-server}
+      app: {simple-microservice-server}
   template:
     metadata:
       labels:
-        app: {my-jaxrs-app-docker-image-name-server}
+        app: {simple-microservice-server}
     spec:
       containers:
-        - name: {my-jaxrs-app-docker-image-name-server}
-          image: quay.io/tborgato/{my-jaxrs-app-docker-image-name-server}
+        - name: {simple-microservice-server}
+          image: quay.io/tborgato/{simple-microservice-server}
           ports:
             - containerPort: 8080
             - containerPort: 9990
@@ -102,24 +102,26 @@ Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {my-jaxrs-app-docker-image-name-server}-deployment.yaml
+kubectl apply -f kubernetes/{simple-microservice-server}-deployment.yaml
 ----
+
+NOTE: before running any `kubectl` remember to start you Kubernetes cluster (use `minikube start` if using  `minikube`)
 
 === Create Kubernetes ClusterIP Service
 
-We create a service to consume the services exposed by **{my-jaxrs-app-docker-image-name-server}** from inside Kubernetes;
+We create a link:https://kubernetes.io/docs/concepts/services-networking/service/[kubernetes service] to consume the services exposed by **{simple-microservice-server}** from inside Kubernetes;
 
-Create a file named `{my-jaxrs-app-docker-image-name-server}-service.yaml`:
+Create a file named `{simple-microservice-server}-service.yaml` in the `kubernetes` folder:
 
-.{my-jaxrs-app-docker-image-name-server}-service.yaml:
+.{simple-microservice-server}-service.yaml:
 [source,yaml,subs="normal"]
 ----
 apiVersion: v1
 kind: Service
 metadata:
-  name: {my-jaxrs-app-docker-image-name-server}-service
+  name: {simple-microservice-server}-service
   labels:
-    app: {my-jaxrs-app-docker-image-name-server}
+    app: {simple-microservice-server}
 spec:
   ports:
     - name: http
@@ -127,7 +129,7 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: {my-jaxrs-app-docker-image-name-server}
+    app: {simple-microservice-server}
   type: ClusterIP
 ----
 
@@ -135,27 +137,27 @@ Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {my-jaxrs-app-docker-image-name-server}-service.yaml
+kubectl apply -f kubernetes/{simple-microservice-server}-service.yaml
 ----
 
 === Check Kubernetes Service
 
 [source,bash,subs="normal"]
 ----
-kubectl run --rm -it --tty curl-{my-jaxrs-app-docker-image-name-server} --image=curlimages/curl --restart=Never &dash;&dash; {my-jaxrs-app-docker-image-name-server}-service:8080/hello/pippo
+kubectl run --rm -it --tty curl-{simple-microservice-server} --image=curlimages/curl --restart=Never --&nbsp;http://{simple-microservice-server}-service:8080/hello/pippo
 ----
 
 == Microservice A - the client
 
 === Image Registry
 
-To make the `{my-jaxrs-app-docker-image-name-client}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
+To make the `{simple-microservice-client}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
 
 ==== Quay.io
 
-There are many Image Registries you can use: in this guide, we will push the `{my-jaxrs-app-docker-image-name-client}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
+There are many Image Registries you can use: in this guide, we will push the `{simple-microservice-client}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
 
-Create a public repository named `{my-jaxrs-app-docker-image-name-client}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-docker-image-name-client}, window="_blank"]).
+Create a public repository named `{simple-microservice-client}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-client}, window="_blank"]).
 
 NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
 
@@ -163,46 +165,46 @@ Tag the Docker image:
 
 [source,bash,subs="normal"]
 ----
-podman tag {my-jaxrs-app-docker-image-name-client} quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name-client}
+podman tag {simple-microservice-client} quay.io/{quay-io-account-name}/{simple-microservice-client}
 ----
 
-Push the `{my-jaxrs-app-docker-image-name-client}` Docker Image to it:
+Push the `{simple-microservice-client}` Docker Image to it:
 
 [source,bash,subs="normal"]
 ----
-podman push quay.io/{quay-io-account-name}/{my-jaxrs-app-docker-image-name-client}
+podman push quay.io/{quay-io-account-name}/{simple-microservice-client}
 ----
 
-At this point, the `{my-jaxrs-app-docker-image-name-client}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster;
+At this point, the `{simple-microservice-client}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster;
 
 NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image push to an image registry
 
 === Deploy on Kubernetes
 
-Create a file named `{my-jaxrs-app-docker-image-name-client}-deployment.yaml`:
+Create a file named `{simple-microservice-client}-deployment.yaml` in the `kubernetes` folder:
 
-.{my-jaxrs-app-docker-image-name-client}-deployment.yaml:
+.{simple-microservice-client}-deployment.yaml:
 [source,yaml,subs="normal"]
 ----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {my-jaxrs-app-docker-image-name-client}-deployment
+  name: {simple-microservice-client}-deployment
   labels:
-    app: {my-jaxrs-app-docker-image-name-client}
+    app: {simple-microservice-client}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {my-jaxrs-app-docker-image-name-client}
+      app: {simple-microservice-client}
   template:
     metadata:
       labels:
-        app: {my-jaxrs-app-docker-image-name-client}
+        app: {simple-microservice-client}
     spec:
       containers:
-        - name: {my-jaxrs-app-docker-image-name-client}
-          image: quay.io/tborgato/{my-jaxrs-app-docker-image-name-client}
+        - name: {simple-microservice-client}
+          image: quay.io/tborgato/{simple-microservice-client}
           ports:
             - containerPort: 8080
             - containerPort: 9990
@@ -220,33 +222,33 @@ spec:
               port: 9990
           env:
             - name: SIMPLE_MICROSERVICE_SERVER_URI
-              value: "http://{my-jaxrs-app-docker-image-name-server}-service:8080"
+              value: "http://{simple-microservice-server}-service:8080"
 ----
 
-NOTE: The environment variable `SIMPLE_MICROSERVICE_SERVER_URI` allows **{my-jaxrs-app-docker-image-name-client}** to invoke **{my-jaxrs-app-docker-image-name-server}** through the service **{my-jaxrs-app-docker-image-name-server}-service**
+NOTE: The environment variable `SIMPLE_MICROSERVICE_SERVER_URI` allows **{simple-microservice-client}** to invoke **{simple-microservice-server}** through the service **{simple-microservice-server}-service**
 
 Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {my-jaxrs-app-docker-image-name-client}-deployment.yaml
+kubectl apply -f kubernetes/{simple-microservice-client}-deployment.yaml
 ----
 
 === Create Kubernetes NodePort Service
 
-We create a service to consume the services exposed by **{my-jaxrs-app-docker-image-name-client}** from outside Kubernetes;
+We create a service to consume the services exposed by **{simple-microservice-client}** from outside Kubernetes;
 
-Create a file named `{my-jaxrs-app-docker-image-name-client}-service.yaml`:
+Create a file named `{simple-microservice-client}-service.yaml` in the `kubernetes` folder:
 
-.{my-jaxrs-app-docker-image-name-client}-service.yaml:
+.{simple-microservice-client}-service.yaml:
 [source,yaml,subs="normal"]
 ----
 apiVersion: v1
 kind: Service
 metadata:
-  name: {my-jaxrs-app-docker-image-name-client}-service
+  name: {simple-microservice-client}-service
   labels:
-    app: {my-jaxrs-app-docker-image-name-client}
+    app: {simple-microservice-client}
 spec:
   ports:
     - name: http
@@ -254,7 +256,7 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: {my-jaxrs-app-docker-image-name-client}
+    app: {simple-microservice-client}
   type: NodePort
 ----
 
@@ -262,7 +264,7 @@ Deploy to your Kubernetes Cluster:
 
 [source,bash,subs="normal"]
 ----
-kubectl apply -f {my-jaxrs-app-docker-image-name-client}-service.yaml
+kubectl apply -f kubernetes/{simple-microservice-client}-service.yaml
 ----
 
 === Check your application
@@ -271,7 +273,7 @@ Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[miniku
 
 [source,bash,subs="normal"]
 ----
-$ minikube service {my-jaxrs-app-docker-image-name-client}-service --url
+$ minikube service {simple-microservice-client}-service --url
 http://192.168.39.143:30347
 ----
 
