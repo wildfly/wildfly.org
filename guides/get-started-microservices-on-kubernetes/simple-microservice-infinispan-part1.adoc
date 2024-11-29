@@ -208,6 +208,8 @@ Successfully tagged localhost/my-jaxrs-app-infinispan:latest
 625a63506dab171c4750f6be89e45c236591d40524b239307e32c716add01457
 ----
 
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+
 === Run the Docker Image
 
 Note that, when running the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image, we specify some environment variables used by WildFly to connect to the PostgreSQL database:

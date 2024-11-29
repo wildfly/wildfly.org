@@ -74,7 +74,7 @@ Since you copied {source-code-git-repository}/simple-microservice[simple-microse
 
 [source,bash,subs="normal"]
 ----
-podman build -t {my-jaxrs-app-docker-image-name-server}:latest .
+podman build -t {simple-microservice-server}:latest .
 ----
 
 NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
@@ -94,8 +94,8 @@ Then we run our container using this network:
 ----
 podman run --rm -p 8180:8080 -p 10090:9990 \
   --network={podman-network-name} \
-  --name={my-jaxrs-app-docker-image-name-server} \
-  {my-jaxrs-app-docker-image-name-server}
+  --name={simple-microservice-server} \
+  {simple-microservice-server}
 ----
 
 == Microservice A - the client
@@ -111,7 +111,7 @@ NOTE: we remove tests because, since we are going to introduce service to servic
 
 ==== pom.xml
 
-Set `<artifactId>simple-microservice-client</artifactId>`;
+Update the artifactId to `<artifactId>simple-microservice-client</artifactId>`;
 
 Add the following to `dependencyManagement`:
 
@@ -119,7 +119,7 @@ Add the following to `dependencyManagement`:
 ----
 <dependency>
     <groupId>org.wildfly.bom</groupId>
-    <artifactId>wildfly-microprofile</artifactId>
+    <artifactId>wildfly-expansion</artifactId>
     <version>${version.wildfly.bom}</version>
     <type>pom</type>
     <scope>import</scope>
@@ -174,7 +174,7 @@ NOTE: `simple-microservice-server-uri` would pick up its value, whenever set, fr
 
 Add the following interface:
 
-.GettingStartedEndpointInterface.java:
+.GettingStartedEndpointClient.java:
 [source,java]
 ----
 package org.wildfly.examples;
@@ -189,11 +189,11 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey="simple-microservice-server")
 @Path("/hello")
-public interface GettingStartedEndpointInterface {
+public interface GettingStartedEndpointClient {
 	@GET
 	@Path("/{name}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response sayHello(final @PathParam("name") String name);
+	Response sayHello(@PathParam("name") String name);
 }
 ----
 
@@ -222,13 +222,13 @@ public class GettingStartedEndpoint {
 
     @Inject
     @RestClient
-    private GettingStartedEndpointInterface service;
+    private GettingStartedEndpointClient client;
 
     @GET
     @Path("/{name}")
     @Produces(MediaType.TEXT_PLAIN)
     public Response sayHello(final @PathParam("name") String name) {
-        return service.sayHello(name);
+        return client.sayHello(name);
     }
 }
 ----
@@ -248,12 +248,16 @@ mvn clean package
 
 Since you copied {source-code-git-repository}/simple-microservice[simple-microservice], the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile, window="_blank"] should already be at the root of your project;
 
-==== Build the Docker Image `{my-jaxrs-app-docker-image-name-client}:latest` with the following command:
+==== Build the Docker Image
+
+Build the Docker Image `{simple-microservice-client}:latest` with the following command:
 
 [source,bash,subs="normal"]
 ----
-podman build -t {my-jaxrs-app-docker-image-name-client}:latest .
+podman build -t {simple-microservice-client}:latest .
 ----
+
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
 
 ==== Run the Docker Image
 
@@ -261,20 +265,20 @@ podman build -t {my-jaxrs-app-docker-image-name-client}:latest .
 ----
 podman run --rm -p 8080:8080 -p 9990:9990 \
   --network={podman-network-name} \
-  --env "SIMPLE_MICROSERVICE_SERVER_URI=http://{my-jaxrs-app-docker-image-name-server}:8080/hello" \
-  --name={my-jaxrs-app-docker-image-name-client} \
-  {my-jaxrs-app-docker-image-name-client}
+  --env "SIMPLE_MICROSERVICE_SERVER_URI=http://{simple-microservice-server}:8080" \
+  --name={simple-microservice-client} \
+  {simple-microservice-client}
 ----
 
-NOTE: The **{my-jaxrs-app-docker-image-name-server}** container can be reached, inside the **{podman-network-name}** network, using the DNS name **{my-jaxrs-app-docker-image-name-server}**
+NOTE: The **{simple-microservice-server}** container can be reached, inside the **{podman-network-name}** network, using the *DNS* name **{simple-microservice-server}**
 
 == Test
 
-Open http://localhost:8080[http://localhost:8080] in your browser: this web page is served by the **{my-jaxrs-app-docker-image-name-client}** container;
+Open http://localhost:8080[http://localhost:8080] in your browser: this web page is served by the **{simple-microservice-client}** container;
 
-Write something in the "Name" input box and then press "Say Hello": the response you'll see will come from **{my-jaxrs-app-docker-image-name-server}** container!
+Write something in the "Name" input box and then press "Say Hello": the response you'll see will come from **{simple-microservice-server}** container!
 
-The complete invocation chain is "**web browser** -> **{my-jaxrs-app-docker-image-name-client}** -> **{my-jaxrs-app-docker-image-name-server}**"
+The complete invocation chain is "**web browser** -> **{simple-microservice-client}** -> **{simple-microservice-server}**"
 
 == What's next?
 
