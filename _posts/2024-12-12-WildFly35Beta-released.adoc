@@ -9,7 +9,7 @@ description: WildFly 35 Beta is now available for download.
 
 = WildFly 35 Beta is released!
 
-I'm pleased to announce that the new WildFly 35.0.0.Beta1 release is available for download at https://wildfly.org/downloads.
+I'm pleased to announce that the new WildFly 35.0.0.Beta1 release is available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank].
 
 [[new_and_notable]]
 == New and Notable
@@ -28,20 +28,20 @@ This quarter we had a heavy focus on MicroProfile, particularly link:https://mic
 
 There's plenty of new things beyond MicroProfile area as well, though:
 
-* WildFly now includes link:https://docs.wildfly.org/wildfly-proposals/scripts/WFCORE-6935-system-daemon-scripts.html[supported `systemd` units] in the `bin/systemd` directory, replacing the old, unsupported `docs/contrib/scripts/systemd` files. The new units include support for a managed domain.
+* WildFly now includes link:https://docs.wildfly.org/wildfly-proposals/scripts/WFCORE-6935-system-daemon-scripts.html[supported `systemd` units, window=_blank] in the `bin/systemd` directory, replacing the old, unsupported `docs/contrib/scripts/systemd` files. The new units include support for a managed domain.
 
 * The `jaxrs` subsystem now link:https://docs.wildfly.org/wildfly-proposals/jaxrs/WFLY-13122_Add_Json_Merge_Patch_support.html[provides JSON merge patch support, window=_blank]. This feature allows the client to send a JSON http request with Content-Type "application/merge-patch+json", and the JSON content will be directly merged to the target resource.
 
 * We added link:https://docs.wildfly.org/wildfly-proposals/ee/WFLY-19776_Jakarta_Data_in_standard_WildFly.html[support for Jakarta Data 1.0, window=_blank] to standard WildFly. This was previously link:https://www.wildfly.org/news/2024/10/10/jakarta-data/[included in WildFly Preview 34, window=_blank]; now it is available in standard WildFly as well. This feature is provided at the link:https://docs.wildfly.org/34/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
 
-* WildFly Preview has  a new link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19954_Preview_Support_vertx_feature_pack.html[`vertx` subsystem and Galleon layer], intended to give user's greater control over the configuration of Vert.x instances running in the server. This feature is provided at the link:https://docs.wildfly.org/34/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
+* WildFly Preview has  a new link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19954_Preview_Support_vertx_feature_pack.html[`vertx` subsystem and Galleon layer, window=_blank], intended to give user's greater control over the configuration of Vert.x instances running in the server. This feature is provided at the link:https://docs.wildfly.org/34/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
 
-* WildFly Glow has also received a new feature to https://github.com/wildfly/wildfly-proposals/pull/627[Introduce spaces to structure discovered Galleon feature-packs], this allows feature packs to be grouped into spaces such as an `experimental` space or a `default` space to reflect the stability of the feature pack and to allow users to select which spaces they want to use.
+* WildFly Glow has also received a new feature to https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[introduce spaces to structure discovered Galleon feature-packs, window=_blank], this allows feature packs to be grouped into spaces such as an incubating space to reflect the stability of the feature pack and to allow users to select which spaces they want to use.
 
-For further details please see the detailed https://github.com/wildfly/wildfly/releases/tag/35.0.0.Beta1[35.0.0.Beta1 Release Notes] in GitHub.
+For further details please see the detailed https://github.com/wildfly/wildfly/releases/tag/35.0.0.Beta1[35.0.0.Beta1 Release Notes, window=_blank] in GitHub.
 
 As we approach the end of 2024 this is the time of the year where we release the Beta release of the major version just before
 we wrap up for the end of the year and will follow up with the Final release once we return in the new year.  Please take this
 time as an opportunity to try out this release and provide us with any feedback.
 
-Finally I would like to thank everyone who has contributed to making this release happen, both via direct contributions to WildFly as well as the countless contributions to the projects that WildFly depends upon. We also had a couple of first time contributors this release so I would like to thank https://github.com/aldaris[Peter Major] for taking on one of our `good-first-issue` Jira issues to remove redundant code from our application client implementation and https://github.com/pedro-hos[Pedro Hos] for contributing updates to our testsuite to move tests to a more appropriate location.
+Finally I would like to thank everyone who has contributed to making this release happen, both via direct contributions to WildFly as well as the countless contributions to the projects that WildFly depends upon. We also had a couple of first time contributors this release so I would like to thank https://github.com/aldaris[Peter Major, window=_blank] for taking on one of our `good-first-issue` Jira issues to remove redundant code from our application client implementation and https://github.com/pedro-hos[Pedro Hos, window=_blank] for contributing updates to our testsuite to move tests to a more appropriate location.
