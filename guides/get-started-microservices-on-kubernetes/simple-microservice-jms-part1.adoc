@@ -247,6 +247,8 @@ Successfully tagged localhost/my-jms-app:latest
 db4677f5bf4f471f5624bd63a21fce3d91b7b3b93e985d3e86a8a4b0682d85cd
 ----
 
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+
 === Run the Docker Image
 
 Note that, when running the `{my-jms-app-docker-image-name}:latest` Docker Image:
