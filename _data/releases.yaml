@@ -46,7 +46,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://wildfly.org/news/2024/12/12/WildFly35Beta-Released/
+          url: https://wildfly.org/news/2024/12/12/WildFly35Beta-released/
 - version: 34.0.1.Final
   version_shortname: 34.0.1 Final
   date: 2024-11-22
