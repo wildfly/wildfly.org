@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Introducing Vertx Subsystem in WildFly Preview"
-date:   2024-12-16
+date:   2024-12-17
 tags:   wildfly, vertx, microprofile
 author: gaol
 description: Learn about Vertx configuration in WildFly Preview 35
