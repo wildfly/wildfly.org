@@ -80,6 +80,7 @@ Please note that the above instructions are just a workaround to access the Open
 
 * Changing the management configuration of a pod is an antipattern as it will not outlive a pod restart. At that point, you'll have to reconfigure the allowed origin.
 * With a route, you are accessing pods behind a service. If your deployments have multiple pods, it's complex and hacky to access a specific pod or configure all pods.
+* Please do not use the https://quay.io/repository/halconsole/wildfly[quay.io/halconsole/wildfly] images in production. It contains preconfigured, insecure credentials and is meant only for development and testing purposes.
 
 == Outlook
 
