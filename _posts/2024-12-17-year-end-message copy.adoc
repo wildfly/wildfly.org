@@ -1,0 +1,47 @@
+---
+layout: post
+title:  "Thanks for a great 2024!"
+date:   2024-12-17
+tags:
+author: bstansberry
+description: Thanks to the WildFly community for a great 2024.
+---
+
+We are almost at the end of 2024 and we wanted to take this opportunity to thank all our community members for their help on https://wildfly.org[WildFly] this year.
+
+2024 was a busy year for WildFly and a lot was accomplished. We went back to our quarterly releases and delivered 4 Major versions (31, 32, 33, 34) and 5 micro updates. WildFly 35 Beta also just came out last week.
+
+There were many developments done this year but here are some of the highlights from our https://wildfly.org/releases/[release notes]:
+
+Jakarta EE 11::  Support of Jakarta EE 11 is ongoing with inclusion of https://jakarta.ee/specifications/data/[Jakarta Data] & https://www.mvc-spec.org[Jakarta MVC] in addition to the updates of Jakarta EE 10 APIs.
+
+MicroProfile 7.0:: We have added support for MicroProfile 7.0 with inclusion of updated specifications such as MicroProfile REST Client 4.0 &  MicroProfile Telemetry 2.0.
+
+Stability levels:: The WildFly project has high standards related to quality, stability and backwards compatibility. A key way an open source project like WildFly can ensure high standards are met is by "community bake", allowing interested users to have access to features that are still undergoing a hardening process, while not forcing users who are not interested in such things to consume them. To better facilitate this, WildFly 31 introduced the notion of formal "stability levels" that can be associated with functionality. 
+
+WildFly Glow:: The WildFly Glow tools (a CLI application and a Maven plugin) will analyze your application artifact, determine what WildFly feature-packs and Galleon layers are needed to run your application, and make suggestions about other features (e.g. TSL support) that you may want to include in your optimized WildFly installation. You can take the information WildFly Glow provides and use it in your own provisioning configuration, or you can have WildFly Glow provision a server, bootable jar or Docker image for you.
+
+Vert.x extension:: We have added an extension and subsystem for https://vertx.io[Vert.x] to configure and share the Vert.x instance within WildFly server for other subsystems which need it.
+
+WildFly AI:: We have created a https://github.com/wildfly-extras/wildfly-ai-feature-pack[Feature pack] for Generative AI that simplifies the integration of AI in WildFly applications.
+
+Overal all, more than 300 issues and enhancements were resolved in our main code by more than 60 contributors. This is not counting all the work done in the components integrated in WildFly.
+
+We have updated our release process with an emphasis on 
+https://docs.wildfly.org/wildfly-proposals/[WildFly Proposals] to enhance and expand WildFly.
+
+We continued to expand our https://www.wildfly.org/guides/[guides] to cover more use cases.
+
+
+We also organized two mini conferences around WildFly in March and November:
+
+* https://www.youtube.com/watch?v=_8g1rZ80u2A&t=22s[Live stream of the March conference]
+* https://www.youtube.com/watch?v=Karu90yDIhs[Live stream of the November conference]
+
+We will start 2025 with the release of WildFly 35 and we have a lot of exciting news for the future of WildFly!
+
+Thanks all for of your for your work and help in making WildFly a successful Open Source project. We are looking forward to continuing working with you next year!
+
+Best wishes from the WildFly team and Happy New Year 🎉🎊!
+
+Brian
