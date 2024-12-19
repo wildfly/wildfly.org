@@ -22,7 +22,7 @@ The console is an integral part of WildFly and is activated by default when runn
 
 You can build such an image on your own based on the official WildFly images available at https://quay.io/repository/wildfly/wildfly[quay.io/wildfly/wildfly] (see "Extending the image"). Another way is to use the pre-built images from https://quay.io/repository/halconsole/wildfly[quay.io/halconsole/wildfly]. These images are mainly meant for HAL development and testing but already meet these requirements, which makes them suitable for our use case. In particular the images add a management user `admin:admin` and have a list of preconfigured allowed origins.
 
-WARNING: The additions in the https://quay.io/repository/halconsole/wildfly[quay.io/halconsole/wildfly] images are only meant for development and testing purposes. Please do not rely on the management user `admin:admin` or the preconfigured allowed origins. It is strongly recommended not to use that in production!
+WARNING: The additions in the https://quay.io/repository/halconsole/wildfly[quay.io/halconsole/wildfly] images are *only* meant for *development and testing* purposes. Under *no circumstances* must this be *used in production*! Do not rely on the management user `admin:admin` or the preconfigured allowed origins.
 
 To add the allowed origin for the public route, we make use of the https://github.com/jmesnil/kubectl-jboss-cli/[`jboss-cli`] `kubectl` plugin. This plugin makes it straightforward to connect to a WildFly instance running on OpenShift and execute CLI commands. Please visit https://github.com/jmesnil/kubectl-jboss-cli/ to find out how to install and use the plugin.
 
@@ -80,7 +80,7 @@ Please note that the above instructions are just a workaround to access the Open
 
 * Changing the management configuration of a pod is an antipattern as it will not outlive a pod restart. At that point, you'll have to reconfigure the allowed origin.
 * With a route, you are accessing pods behind a service. If your deployments have multiple pods, it's complex and hacky to access a specific pod or configure all pods.
-* Please do not use the https://quay.io/repository/halconsole/wildfly[quay.io/halconsole/wildfly] images in production. They contain preconfigured, insecure credentials and are meant only for development and testing purposes.
+* *Do not use* the https://quay.io/repository/halconsole/wildfly[quay.io/halconsole/wildfly] images *in production* under any circumstances. They contain preconfigured, insecure credentials and are meant only for development and testing purposes.
 
 == Outlook
 
