@@ -61,6 +61,9 @@ categories:
       - title: Configuring High Availability Messaging in WildFly
         url: /guides/messaging-high-availability
         description: Learn how to configure two WildFly servers with messaging (ActiveMQ Artemis broker) in a high availability topology using a shared journal.
+      - title: Deploying High-Availability Messaging with WildFly and AMQ 7 on OpenShift
+        url: /guides/messaging-high-availability-openshift
+        description: Discover how to configure WildFly with AMQ 7 (ActiveMQ Artemis) on OpenShift, using a clustered, high-availability topology for reliable messaging.
   - category: MicroProfile
     cat-id: microprofile
     guides:
