@@ -3,7 +3,7 @@
 // Minimal version of Maven
 :maven-version: 3.9+
 // Minimal Version of JDK
-:jdk-minimal-version: 11+
+:jdk-minimal-version: 17+
 // .
 :toc: right
 // Default time to display in the prerequisites section
