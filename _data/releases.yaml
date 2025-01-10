@@ -46,7 +46,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://wildfly.org/news/2025/01/09/WildFly35-Released/
+          url: https://wildfly.org/news/2025/01/09/WildFly35Released/
 - version: 35.0.0.Beta1
   version_shortname: 35 Beta1
   date: 2025-12-12
