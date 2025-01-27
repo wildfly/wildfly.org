@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Testing WildFly applications on Docker with Arquillian Cube
-date: 2025-01-21
+date: 2025-01-27
 tags: wildfly docker arquillian cube containers
 synopsis: Arquillian Cube is an Arquillian extension that provides an easy way to test a WildFly containerized application on Docker
 author: fabiobrz
