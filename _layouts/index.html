@@ -28,11 +28,9 @@ layout: base
 
   </div>
 
-  <div class="grid__item width-12-12 home-section">
-    <h2>Watch again and give feedback!</h2>
-    <h3>We’ve hosted our last conference on Wednesday, November 20</h3>
-    <h3><a href="{{site.baseurl}}/conference/">Wild<strong>Fly</strong> Mini Conference</a></h3>
-  </div>
+  {% if site.show_teaser %}
+  {% include teaser.html %}
+  {% endif %}
 
   <div class="grid__item width-12-12 home-section">
     <div class="home-icons">
