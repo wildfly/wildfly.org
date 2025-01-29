@@ -1,0 +1,34 @@
+= Conference Data Structure
+
+This document describes the YAML data structure for a conference. It is used by the templates `_layouts/events.html` and `_layouts/conference.html`.
+
+== Conference Metadata
+
+date:: Date of the event as `yyyy-mm-dd`.
+start:: Time as `HH:MM`.
+end:: Time as `HH:MM`.
+status::
+  done::: The event has been completed. It is visible and linked from the events page.
+  planing::: The event is being planned, but the agenda is not yet finalized. The event is visible but not linked on the events page.
+  preview::: The event is being planned and the agenda has been finalized. The event is visible and linked from the events page.
+video-id:: The video ID.
+video:: The link to the video.
+registration:: An optional link to the registration form for the event.
+
+Please note: Only one event must have status `planing` or `preview`, all others must have status `done`.
+
+== Agenda
+
+title:: The title of the talk.
+start:: Time as `HH:MM`.
+end:: Time as `HH:MM`.
+type::
+  talk::: A talk or lightning talk.
+  other::: Used for breaks or opening and closing ceremonies.
+abstract:: A list of strings (paragraphs).
+speaker:: A list of speakers defined by
+  name::: Username of the speaker as listed in `_data/authors.yaml`.
+  bio::: Bio of the speaker. If omitted, the bio is taken from `_data/authors.yaml`.
+links:: A list of named links related to the talk (e.g. chat, video, slides, feedback)
+  title::: The name of the link.
+  url::: The link itself.

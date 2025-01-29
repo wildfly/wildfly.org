@@ -1,0 +1,72 @@
+---
+layout: base
+---
+<div class="events grid-wrapper">
+  <div class="grid__item width-12-12">
+    <h1>Wild<strong>Fly</strong> Conferences</h1>
+    <h2 class="page-subtitle">
+      We host regular conferences for the community with topics related to Wild<strong>Fly</strong>.
+    </h2>
+  </div>
+
+  <div class="grid__item width-12-12 sec-title-yellow">
+    <h2>Next Events</h2>
+    {%- assign conferences-planing-or-preview = site.pages | where: "event-type", "wmc" -%}
+    {%- for conference-page in conferences-planing-or-preview -%}
+    {%- assign key = conference-page.data-key -%}
+    {%- assign conference-data = site.data.conference[key] -%}
+    {%- if conference-data.status == "planing" or conference-data.status == "preview" -%}
+    <div class="event">
+      {%- if conference-data.status == "preview" -%}
+      <div class="event-details">
+        <h3 id="{{ key }}"><a href="{{ conference-page.url }}">{{ conference-data.date | date: "%B %Y" }}</a></h3>
+        <p>The next conference is planned for <strong>{{ conference-data.date | date: "%A, %B %d, %Y" }}</strong>.</p>
+        <ul>
+          {%- for session in conference-data.agenda -%}
+          {%- if session.type == "talk" -%}
+          <li>{{ session.title }}</li>
+          {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+      {%- else -%}
+      <div class="event-details">
+        <h3 id="{{ key }}">{{ conference-data.date | date: "%B %Y" }}</h3>
+        <p>We're planning our next event for <strong>{{ conference-data.date | date: "%B %Y" }}</strong>. We will update this page as soon as the planning is complete and the agenda is finalized. Stay tuned!</p>
+      </div>
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  <div class="grid__item width-12-12 sec-title-red">
+    <h2>Previous Events</h2>
+    {%- assign conferences-done = site.pages | where: "event-type", "wmc" -%}
+    {%- for conference-page in conferences-done reversed -%}
+    {%- assign key = conference-page.data-key -%}
+    {%- assign conference-data = site.data.conference[key] -%}
+    {%- if conference-data.status == "done" -%}
+    <div class="event">
+      <div class="event-video">
+        <iframe class="youtube-video" style="border: none"
+                src="https://www.youtube.com/embed/{{ conference-data.video-id }}"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <div class="event-details">
+        <h3 id="{{ key }}"><a href="{{ conference-page.url }}">{{ conference-data.date | date: "%B %Y" }}</a></h3>
+        <ul>
+          {%- for session in conference-data.agenda -%}
+          {%- if session.type == "talk" -%}
+          <li>{{ session.title }}</li>
+          {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+    {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>

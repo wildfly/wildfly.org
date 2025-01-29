@@ -1,0 +1,100 @@
+# Conference data structure documented in README.adoc
+# If you modify the data structure, please document the changes in README.adoc
+date: "2025-03-01"
+start: "14:00"
+end: "18:00"
+status: planing
+rsvp: "https://wildfly.org"
+feedback: "https://wildfly.org"
+agenda:
+  - title: "Welcome and opening ceremony"
+    start: "14:00"
+    end: "14:15"
+    type: other
+  - title: "Eu do pariatur quis veniam"
+    start: "14:15"
+    end: "14:45"
+    type: talk
+    abstract:
+      - "Do eiusmod pariatur nostrud tempor esse proident enim culpa elit labore ex. Dolor cupidatat aliquip ea quis magna culpa laboris sint consequat. Adipisicing aliquip do Lorem ea culpa commodo ea sit nisi esse enim reprehenderit do. Non mollit pariatur veniam elit in velit incididunt incididunt irure aliquip eiusmod mollit. Adipisicing minim cillum ea ipsum ea."
+    speaker:
+      - name: hpehl
+        bio: "Harald Pehl is a principal software engineer at Red Hat. He works on the management capabilities of WildFly and leads the management console (HAL)."
+    links:
+      - title: "Chat"
+        url: "https://wildfly.org"
+      - title: "Slides"
+        url: "https://wildfly.org"
+  - title: "Lightning Talk 1: Commodo mollit est ea eiusmod"
+    start: "14:45"
+    end: "15:00"
+    type: talk
+    abstract:
+      - "Aliqua qui velit nulla eiusmod veniam dolore voluptate ut Lorem. Est aliquip tempor magna cillum. Dolore voluptate ex pariatur eiusmod sunt id culpa irure aliqua minim deserunt consequat cillum elit magna."
+    speaker:
+      - name: jfdenise
+        bio: "Jean-François Denise is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
+  - title: "Nulla et sit duis"
+    start: "15:00"
+    end: "15:45"
+    type: talk
+    abstract:
+      - "Mollit veniam et laboris est. Cillum commodo et enim cupidatat est consequat quis nisi aliqua sint sunt magna. Incididunt cillum veniam nostrud enim adipisicing anim culpa in deserunt sint."
+      - "Excepteur sunt sunt mollit cupidatat aute exercitation do. Reprehenderit eiusmod elit non ipsum."
+    speaker:
+      - name: bstansberry
+        bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
+    links:
+      - title: "Chat"
+        url: "https://wildfly.org"
+      - title: "Slides"
+        url: "https://wildfly.org"
+  - title: "Break"
+    start: "15:45"
+    end: "16:00"
+    type: other
+  - title: "Ea aliqua elit velit mollit"
+    start: "16:00"
+    end: "16:45"
+    type: talk
+    abstract:
+      - "Id dolor aute Lorem sit nisi. Laborum sunt in excepteur occaecat reprehenderit mollit minim reprehenderit. Est culpa in quis laboris anim voluptate incididunt ad voluptate eiusmod enim proident aliquip amet commodo. Reprehenderit pariatur ut sunt voluptate."
+    speaker:
+      - name: rpelisse
+        bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+    links:
+      - title: "Chat"
+        url: "https://wildfly.org"
+      - title: "Slides"
+        url: "https://wildfly.org"
+  - title: "Lightning Talk 2: Officia id eu"
+    start: "16:45"
+    end: "17:00"
+    type: talk
+    abstract:
+      - "Minim culpa cupidatat velit magna ex. Esse nulla eiusmod irure ad culpa tempor. Laboris ad qui eu eiusmod commodo magna labore labore minim duis voluptate qui anim commodo velit."
+      - "Ipsum officia Lorem eiusmod. Fugiat laborum qui tempor ad est Lorem reprehenderit aliquip veniam."
+      - "Aliquip ea est laboris. Adipisicing aliquip ad aute et id amet enim aute sint anim. Eiusmod Lorem laborum non magna ullamco aute id anim dolore."
+    speaker:
+      - name: frainone
+        bio: "Flavia is a Principal Software Engineer with Red Hat. With contributions spanning a multitude of projects within WildFly, from EJB to JCA, she is currently the lead of Undertow and responsible for the IO layer in the server."
+      - name: rchakrab
+        bio: "Ranabir works as a Software Engineer in Red Hat on Open Source projects like WildFly and WildFly Core. He also works on internal DevOps tools which provide continuous integration and continuous deployment to JBoss EAP."
+  - title: "In nulla veniam magna culpa"
+    start: "17:00"
+    end: "17:40"
+    type: talk
+    abstract:
+      - "Nulla minim reprehenderit magna nisi non incididunt consequat est irure veniam aute proident elit et. Laboris consectetur tempor adipisicing proident enim est nisi ullamco enim duis culpa. Anim duis tempor voluptate id voluptate. Lorem nisi ea proident ipsum consequat minim ex. Enim nisi consectetur ea exercitation et velit velit anim eiusmod commodo reprehenderit. Dolore dolore labore nisi Lorem veniam ad."
+    speaker:
+      - name: ehsavoie
+        bio: "Emmanuel works at Red Hat on the messaging subsystem and on the developer experience."
+    links:
+      - title: "Chat"
+        url: "https://wildfly.org"
+      - title: "Slides"
+        url: "https://wildfly.org"
+  - title: "Feedback and closing ceremony"
+    start: "17:40"
+    end: "18:00"
+    type: other
