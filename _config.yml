@@ -28,6 +28,7 @@ forum_url: "https://groups.google.com/forum/#!forum/wildfly"
 # This should typically be 0. However, in some cases we might want a different index to be used. For example if a micro
 # is released, but we still want to advertise the newest minor or major.
 current_release_index: 0
+show_teaser: false
 
 # Build settings
 markdown: kramdown
