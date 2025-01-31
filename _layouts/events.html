@@ -17,9 +17,14 @@ layout: base
     {%- assign conference-data = site.data.conference[key] -%}
     {%- if conference-data.status == "planning" or conference-data.status == "preview" -%}
     <div class="event">
-      {%- if conference-data.status == "preview" -%}
+      {%- if conference-data.status == "planning" -%}
       <div class="event-details">
-        <h3 id="{{ key }}"><a href="{{ conference-page.url }}">{{ conference-data.date | date: "%B %Y" }}</a></h3>
+        <h3 id="{{ key }}">{{ conference-data.date | date: "%B %Y" }}</h3>
+        <p>We're planning our next event for <strong>{{ conference-data.date | date: "%B %Y" }}</strong>. We will update this page as soon as the planning is complete and the agenda is finalized. Stay tuned!</p>
+      </div>
+      {%- else -%}
+      <div class="event-details">
+        <h3 id="{{ key }}"><a href="{{ site.baseurl }}{{ conference-page.url }}">{{ conference-data.date | date: "%B %Y" }}</a></h3>
         <p>The next conference is planned for <strong>{{ conference-data.date | date: "%A, %B %d, %Y" }}</strong>.</p>
         <ul>
           {%- for session in conference-data.agenda -%}
@@ -28,11 +33,6 @@ layout: base
           {%- endif -%}
           {%- endfor -%}
         </ul>
-      </div>
-      {%- else -%}
-      <div class="event-details">
-        <h3 id="{{ key }}">{{ conference-data.date | date: "%B %Y" }}</h3>
-        <p>We're planning our next event for <strong>{{ conference-data.date | date: "%B %Y" }}</strong>. We will update this page as soon as the planning is complete and the agenda is finalized. Stay tuned!</p>
       </div>
       {%- endif -%}
     </div>
@@ -56,7 +56,7 @@ layout: base
                 referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
       </div>
       <div class="event-details">
-        <h3 id="{{ key }}"><a href="{{ conference-page.url }}">{{ conference-data.date | date: "%B %Y" }}</a></h3>
+        <h3 id="{{ key }}"><a href="{{ site.baseurl }}{{ conference-page.url }}">{{ conference-data.date | date: "%B %Y" }}</a></h3>
         <ul>
           {%- for session in conference-data.agenda -%}
           {%- if session.type == "talk" -%}
