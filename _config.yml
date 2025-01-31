@@ -35,6 +35,7 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-paginate-v2
+  - jekyll-redirect-from
 
 sass:
   style: compressed
