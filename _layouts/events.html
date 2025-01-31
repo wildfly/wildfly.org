@@ -11,11 +11,11 @@ layout: base
 
   <div class="grid__item width-12-12 sec-title-yellow">
     <h2>Next Events</h2>
-    {%- assign conferences-planing-or-preview = site.pages | where: "event-type", "wmc" -%}
-    {%- for conference-page in conferences-planing-or-preview -%}
+    {%- assign conferences-planning-or-preview = site.pages | where: "event-type", "wmc" -%}
+    {%- for conference-page in conferences-planning-or-preview -%}
     {%- assign key = conference-page.data-key -%}
     {%- assign conference-data = site.data.conference[key] -%}
-    {%- if conference-data.status == "planing" or conference-data.status == "preview" -%}
+    {%- if conference-data.status == "planning" or conference-data.status == "preview" -%}
     <div class="event">
       {%- if conference-data.status == "preview" -%}
       <div class="event-details">
