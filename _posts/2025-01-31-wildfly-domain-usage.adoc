@@ -1,28 +1,27 @@
 ---
 layout: post
-title:  "An introduction to use the domain mode of WildFly 35"
+title:  "An introduction to use the domain mode of the current release of WildFly"
 date:   2025-01-31
 tags:   wildfly domain
 author: liweinan
-description: An introduction to use the domain mode of WildFly 35
+description: An introduction to use the domain mode of the current release of WildFly with the instructions on configuring the Elytron subsystem.
 ---
 
-I recently tried to play with the domain mode in the current release of WildFly, version 34, while writing this blog post.
+I recently tried to play with the domain mode in the current release of WildFly, version 35, while writing this blog post.
 
-I won’t explain much about the concept of WildFly’s domain mode. I have written a book before, explaining the domain mode usage of WildFlyfootnote:[https://www.packtpub.com/en-us/product/jboss-eap6-high-availability-9781783282449?srsltid=AfmBOooUR6olUaY8qVHB6U70wb2oe_nAk8OloSeJAtkbn6AGgoQ7-OM9[JBoss EAP6 High Availability | Programming | eBook]]. There is also a relative document about the domain mode setupfootnote:[https://docs.wildfly.org/35/High_Availability_Guide.html[High Availability Guide]]. Nevertheless, the resources I could find are mostly outdated or don't contain the step-by-step walkthrough about the minimal configuration to be done for using the domain mode of WildFly. Especially in the security configuration part related to Elytron, according to the blog post written by Brian Stansberryfootnote:[https://www.wildfly.org/news/2021/10/05/WildFly25-Final-Released/[WildFly
-25 is released!]]:
+According to the blog post written by Brian Stansberryfootnote:[https://www.wildfly.org/news/2021/10/05/WildFly25-Final-Released/[WildFly 25 is released!]], there are some breaking backward-compatibility changes in the security configuration part related to Elytron since WildFly 25:
 
 ____
 A key focus in WildFly 25 has been completing our migration away from the legacy security layer that dates back to JBoss AS and onto the https://wildfly-security.github.io/wildfly-elytron/[WildFly Elytron] based https://docs.wildfly.org/24/WildFly_Elytron_Security.html[security layer] introduced in WildFly 11. SE 17 does not provide packages that legacy security heavily relies upon, so the time has come to complete the transition off of legacy security.
 ____
 
-So I’d like to briefly introduce the current usage of domain mode in the current version of WildFly. I won’t cover all the detail usages of the domain mode in this blog post, but it will be a good start to follow the example introduced in this article for the further studies.
+Nevertheless, the resources I could find are mostly outdated or don't contain the step-by-step walkthrough about the minimal configuration to be done for using the domain mode of WildFly. I have written a book before, explaining the domain mode usage of WildFlyfootnote:[https://www.packtpub.com/en-us/product/jboss-eap6-high-availability-9781783282449?srsltid=AfmBOooUR6olUaY8qVHB6U70wb2oe_nAk8OloSeJAtkbn6AGgoQ7-OM9[JBoss EAP6 High Availability | Programming | eBook]]. There is also a relative document about the domain mode setupfootnote:[https://docs.wildfly.org/35/Admin_Guide.html#Domain_Setup[https://docs.wildfly.org/35/Admin_Guide.html#Domain_Setup]]. All these materials are outdated on the domain configuration topic, so I'd like to update the knowledge on this topic in this blog post, showing how to configure the domain mode for the most recent version of WildFly server, which is version 35 when I'm writing this blog post. I won’t cover all the detail usages of the domain mode in this blog post, but it will be a good start to follow the instructions in this blog posts for the further studies.
 
-Here is my local environment setup:
+Here is my local environment setup to use the domain mode of the WildFly server:
 
 image:2025-01-wildfly-domain/01.png[image]
 
-As the deployment diagram shows above, I used two machines to run the WildFly server in domain mode. In the above setup, the WildFly server run on Machine A acts as a domain controller, and the WildFly server on Machine B will be connected to Machine A accepting the management from the domain server.
+As the deployment diagram shows above, I used two machines to run the WildFly server in domain mode. In the above setup, the WildFly server running on Machine A acts as a domain controller, and the WildFly server on Machine B will be connected to Machine A accepting the management from the domain server.
 
 The host name of the WildFly server running on Machine A will be configured to `primary`(this will be defined in the `name` property in the `host.xml`), and the host name of the WildFly server running on Machine B will be configured to `secondary`.
 
@@ -53,7 +52,7 @@ domain.xml                              mgmt-groups.properties
 host-primary.xml                        mgmt-users.properties
 ----
 
-From the above command output, we can see in the `wildfly-35.0.0.Final/domain/configuration/` directory, it contains `host-primary.xml` and `host-secondary.xml` files. I will use `host-secondary.xml` with some modifications in Machine B. However, I’ll use the `host.xml` instead of `host-primary.xml` in Machine A, because `host-primary.xml` has removed all the `servers` configuration which only acts as a domain controller. However, I still need to run the server in Machine A for demonstration purposes.
+From the above command output, we can see in the `wildfly-35.0.0.Final/domain/configuration/` directory, it contains `host-primary.xml` and `host-secondary.xml` files. I will use `host-secondary.xml` with some modifications in Machine B. However, I’ll use the `host.xml` instead of `host-primary.xml` in Machine A, because `host-primary.xml` has removed all the `servers` configuration, but we need these `servers` configuration in our setup. However, I still need to configure a Managed Server in Machine A for demonstration purposes.
 
 First, let’s check the `host.xml` on Machine A to fit the requirement. In `host.xml`, the host name is set to `primary` by default:
 
@@ -158,7 +157,7 @@ Please note that we didn’t generate a secret value related to the generated `a
 
 As the Primary Host Controller is started on Machine A, now we can check the WildFly server configuration on Machine B. As planned, the WildFly server is named `secondary`, and the server will be connected to the Primary Host Controller on Machine A, which acts as the domain controller.
 
-In the Secondary Host Controller on Machine B, it will use the `host-secondary.xml` as its server configuration. We need to make some modifications to this file. First I need to add the `name` property to the `host` section:
+The Secondary Host Controller on Machine B will use the `host-secondary.xml` as its configuration file. We need to make some modifications to this file. First I need to add the `name` property to the `host` section:
 
 [source,xml]
 ----
@@ -281,11 +280,11 @@ We need to enter `admin` as the username and `123` as the password, which is the
 
 image:2025-01-wildfly-domain/03.png[image]
 
-As we have entered the WildFly admin page, we can try to upload an example project to the domain servers. There is a `helloworld` project in the WildFly Quickstart project:
+As we have entered the WildFly admin page, we can try to deploy an example application. There is a `helloworld` project in the WildFly Quickstart project:
 
-* https://github.com/wildfly/quickstart/tree/main/helloworld[quickstart/helloworld at main · wildfly/quickstart]
+* https://github.com/wildfly/quickstart/tree/35.0.0.Final/helloworld[https://github.com/wildfly/quickstart/tree/35.0.0.Final/helloworld]
 
-The above project is a simple project that just contains a servlet that will respond with the text `<h1>Hello World!</h1>` to the request. So I cloned the WildFly Quickstart project into my local environment and then built the `helloworld` project to generate the `helloworld.war`:
+The above project is a simple application that just contains a servlet that will respond with the text `<h1>Hello World!</h1>` to the request. So I cloned the WildFly Quickstart project into my local environment and then built the `helloworld` project to generate the `helloworld.war`:
 
 [source,bash]
 ----
