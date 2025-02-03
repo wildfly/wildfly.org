@@ -9,14 +9,16 @@ layout: base
     <h1>Wild<strong>Fly</strong> Mini Conference</h1>
     {%- if conference-data.status == "done" -%}
     <h2 class="page-subtitle">{{ conference-data.date | date: "%B %d, %Y" }}</h2>
-    {%- else -%}
+    {%- elsif conference-data.status == "preview" -%}
     <h2 class="page-subtitle">The next Wild<strong>Fly</strong> Mini Conference is coming up!</h2>
+    {%- elsif conference-data.status == "planning" -%}
+    <h2 class="page-subtitle">Planning for the next Wild<strong>Fly</strong> Mini Conference is in full swing!</h2>
     {%- endif -%}
   </div>
 
   <div class="grid__item width-12-12 sec-title-red">
     {%- if conference-data.status == "done" -%}
-    <h2>Key Points</h2>
+    <h2>Review</h2>
     <dl class="c-when-and-where">
       <dt>Date</dt>
       <dd>
@@ -33,7 +35,7 @@ layout: base
       {%- endif -%}
     </dl>
 
-    {%- else -%}
+    {%- elsif conference-data.status == "preview" -%}
     <h2>What you need to know</h2>
     <dl class="c-when-and-where">
       <dt>Date</dt>
@@ -54,9 +56,29 @@ layout: base
       your calendar.<br/>
       You can also use the "Notify Me" button on YouTube if you would like to be notified about the conference.</p>
     {%- endif -%}
+
+    {%- elsif conference-data.status == "planning" -%}
+    <h2>In Planning</h2>
+    <div class="admonitionblock warning">
+      <table>
+        <tbody>
+        <tr>
+          <td class="icon">
+            <div class="title">Note</div>
+          </td>
+          <td class="content">
+            <div class="paragraph">
+              <p>We're planning our next event for <strong>{{ conference-data.date | date: "%B %Y" }}</strong>. We will update this page as soon as the planning is complete and the agenda is finalized. Stay tuned!</p>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
     {%- endif -%}
   </div>
 
+  {%- if conference-data.status == "done" or conference-data.status == "preview" -%}
   <div class="grid__item width-12-12 sec-title-yellow">
     <h2>Agenda</h2>
     {%- if conference-data.status == "done" -%}
@@ -132,8 +154,9 @@ layout: base
       {%- endfor -%}
     </div>
   </div>
+  {%- endif -%}
 
-  {%- if conference-data.status != "done" and conference-data.feedback -%}
+  {%- if conference-data.status == "preview" and conference-data.feedback -%}
   <div class="grid__item width-12-12 sec-title-teal">
     <h2>After the conference</h2>
     <p>Please take some time to answer a few questions about the conference. What did you like, what can we do
