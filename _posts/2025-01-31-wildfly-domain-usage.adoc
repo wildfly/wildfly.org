@@ -155,7 +155,7 @@ Please note that we didn’t generate a secret value related to the generated `a
 </server-identities>
 ----
 
-As the Primary Host Controller is started on Machine A, now we can check the WildFly server configuration on Machine B. As planned, the WildFly server is named `secondary`, and the server will be connected to the Primary Host Controller on Machine A, which acts as the domain controller.
+As the Primary Host Controller is started on Machine A, now we can check the WildFly server configuration on Machine B. As planned, the Host Controller is named `secondary`, and it will be connected to the Primary Host Controller on Machine A, which acts as the domain controller.
 
 The Secondary Host Controller on Machine B will use the `host-secondary.xml` as its configuration file. We need to make some modifications to this file. First I need to add the `name` property to the `host` section:
 
