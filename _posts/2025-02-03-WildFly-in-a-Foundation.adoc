@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "WildFly in a Foundation"
-date:   2025-01-30
+date:   2025-02-03
 tags:   announcement foundation
 author: bstansberry
 description: WildFly is considering moving a vendor-neutral foundation.
