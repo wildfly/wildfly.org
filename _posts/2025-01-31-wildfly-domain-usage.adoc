@@ -248,7 +248,7 @@ Here is the method to use the CLI command to modify the host controller name:
 $ ./wildfly-35.0.0.Final/bin/jboss-cli.sh
 You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.
 [disconnected /] embed-host-controller --host-config=host-secondary.xml
-[domain@embedded /] /host=localhost:write-attribute(name=name,value=something)
+[domain@embedded /] /host=localhost:write-attribute(name=name,value=secondary)
 {
 "outcome" => "success",
 "result" => undefined,
@@ -261,7 +261,7 @@ You are disconnected at the moment. Type 'connect' to connect to the server or '
 {"outcome" => "success"}
 ----
 
-Giving the host a name can help to analyze the server log output later. Then I need to add another configuration to the `domain-controller`:
+Please note that if you use tab complete, it should autocomplete your default host name. Giving the host a name can help to analyze the server log output later. Then I need to add another configuration to the `domain-controller`:
 
 [source,xml]
 ----
