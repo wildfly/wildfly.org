@@ -241,6 +241,26 @@ We need to make some modifications to this file. First I need to add the `name` 
 <host xmlns="urn:jboss:domain:community:20.0" name="secondary">
 ----
 
+Here is the method to use the CLI command to modify the host controller name:
+
+[source,bash]
+----
+$ ./wildfly-35.0.0.Final/bin/jboss-cli.sh
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.
+[disconnected /] embed-host-controller --host-config=host-secondary.xml
+[domain@embedded /] /host=localhost:write-attribute(name=name,value=something)
+{
+"outcome" => "success",
+"result" => undefined,
+"server-groups" => undefined,
+"response-headers" => {"process-state" => "reload-required"}
+}
+
+[domain@embedded /]
+[domain@embedded /] /host=secondary:reload(admin-only=true)
+{"outcome" => "success"}
+----
+
 Giving the host a name can help to analyze the server log output later. Then I need to add another configuration to the `domain-controller`:
 
 [source,xml]
