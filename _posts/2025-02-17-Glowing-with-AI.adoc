@@ -1,0 +1,210 @@
+---
+layout: post
+title: Making WildFly Glow with Intelligence
+date: 2025-02-10
+tags: wildfly glow ai
+synopsis: How to use WildFly Glow to provision a Generative AI WildFly server.
+author: ehugonne
+---
+
+= Making WildFly Glow with Intelligence
+
+In WildFly 35 Beta, WildFly Glow has also received a new feature to https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[introduce spaces to structure discovered Galleon feature-packs, window=_blank], this allows feature packs to be grouped into spaces such as an incubating space to reflect the stability of the feature pack and to allow users to select which spaces they want to use.
+
+One of the first feature pack to take advantage of that is the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature Pack] using the new *incubating* space.
+
+In this article I will show you how you can take advantage of this to provision a Generative AI server.
+
+== WildFly AI Feature Pack
+
+Since my first article the WildFly AI Feature Pack has evolved quite a bit. Of course we are following https://docs.langchain4j.dev/[LangChain4J] and https://github.com/smallrye/smallrye-llm[smallrye-llm] evolutions. 
+
+We have also added support for streaming tokens making the interaction lot more lively. Now, it is providing OpenTelemetry support to track your LLM usage and integrating with WildFly Glow to provide a default configuration on provisioning a lot easier.
+
+Let's dive into this new feature. 
+
+== WildFly AI Feature Pack layers
+
+Currently the feature-pack provides 18 Galleon layers that build upon each other :
+
+* Support for chat models to interact with a LLM:
+** _mistral-ai-chat-model_
+** _ollama-chat-model_
+** _groq-chat-model_ (same as openai-chat-model but targeting Groq)
+** _openai-chat-model_
+* Support for embedding models:
+** _in-memory-embedding-model-all-minilm-l6-v2_
+** _in-memory-embedding-model-all-minilm-l6-v2-q_
+** _in-memory-embedding-model-bge-small-en_
+** _in-memory-embedding-model-bge-small-en-q_
+** _in-memory-embedding-model-bge-small-en-v15_
+** _in-memory-embedding-model-bge-small-en-v15-q_
+** _in-memory-embedding-model-e5-small-v2_
+** _in-memory-embedding-model-e5-small-v2-q_
+** _ollama-embedding-model_
+* Support for embedding stores:
+** _in-memory-embedding-store_
+** _neo4j-embedding-store_
+** _weaviate-embedding-store_
+* Support for content retriever for RAG:
+** _default-embedding-content-retriever_: default content retriever using an in-memory-embedding-store and in-memory-embedding-model-all-minilm-l6-v2 for embedding model.
+** _web-search-engines_
+
+For more details on these you can take a look at https://docs.langchain4j.dev/[LangChain4J] and https://github.com/smallrye/smallrye-llm[Smallrye-llm].
+
+== Provisioning the server with Glow
+
+We are going to use the https://github.com/wildfly-extras/wildfly-mcp/tree/main/wildfly-chat-bot[chabot example] of the https://github.com/wildfly-extras/wildfly-mcp[WildFly MCP].
+
+The initial way to provision our server was to define the layers in the _pom.xml_ like this:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack> 
+                <location>org.wildfly:wildfly-galleon-pack:${version.wildfly.server}</location>*
+            </feature-pack>
+            <feature-pack>
+                <location>org.wildfly:wildfly-ai-feature-pack:${version.wildfly.ai.feature.pack}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>ee-core-profile-server</layer>
+            <layer>jaxrs</layer>
+            <layer>ollama-chat-model</layer>
+            <layer>groq-chat-model</layer>
+            <layer>openai-chat-model</layer>
+            <layer>default-embedding-content-retriever</layer>
+        </layers>
+        <name>ROOT.war</name>
+        <bootableJar>true</bootableJar>
+        <packagingScripts>
+            <packaging-script>
+                <scripts>
+                    <script>./src/scripts/configure_server.cli</script>
+                </scripts>
+            </packaging-script>
+        </packagingScripts>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+But using WildFly Glow we can make that way simpler:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <discoverProvisioningInfo>
+            <version>${version.wildfly.server}</version>
+            <spaces>
+                <space>incubating</space>
+            </spaces>
+        </discoverProvisioningInfo>
+        <name>ROOT.war</name>
+        <bootableJar>true</bootableJar>
+        <packagingScripts>
+            <packaging-script>
+                <scripts>
+                    <script>./src/scripts/configure_server.cli</script>
+                </scripts>
+            </packaging-script>
+        </packagingScripts>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+AS you can see we are using the _discoverProvisioningInfo_ element to define which version of WildFly server we want to start from. AS you can see we have added an incubating  _space_ which enables the discovery of the WildFly AI Feature Pack.
+
+Now when we run Apache Maven we can see the following traces :
+
+image::ai/glow_ai_fp.png[Glow traces]
+
+As you can see, Glow discovered the use of the following LLMs: 
+
+* ollama-chat-model
+* openai-chat-model
+* groq-chat-model
+
+How did Glow found those ?
+
+
+== How Glow works under the hood for the WildFly AI Feature Pack ?
+
+Here is where the magic is happening :
+
+[source,java]
+----
+@ServerEndpoint(value = "/chatbot",
+        configurator = CustomConfigurator.class)
+public class ChatBotWebSocketEndpoint {
+
+    private static final Logger logger = Logger.getLogger(ChatBotWebSocketEndpoint.class.getName());
+
+    @Inject
+    @Named(value = "ollama")
+    ChatLanguageModel ollama;
+    @Inject
+    @Named(value = "openai")
+    ChatLanguageModel openai;
+    @Inject
+    @Named(value = "groq")
+    ChatLanguageModel groq;
+    //@Inject Instance<ChatLanguageModel> instance;
+    private PromptHandler promptHandler;
+    private Bot bot;
+    private List<McpClient> clients = new ArrayList<>();
+    private final List<McpTransport> transports = new ArrayList<>();
+    private Session session;
+    private final ExecutorService executor = Executors.newFixedThreadPool(1);
+    private final BlockingQueue<String> workQueue = new ArrayBlockingQueue<>(1);
+
+    // It starts a Thread that notifies all sessions each second
+    @PostConstruct
+    public void init() {
+    ...
+    }
+...
+}
+----
+
+As you can see, we inject _dev.langchain4j.model.chat.ChatLanguageModel_ in the _org.wildfly.ai.chatbot. ChatBotWebSocketEndpoint_ using a _@Named_ annotation. This is the rule that Glow uses to detect what the application is using.
+
+You can see the Glow rule https://github.com/wildfly-extras/wildfly-ai-feature-pack/blob/main/ai-feature-pack/src/main/resources/layers/standalone/ollama-chat-model/layer-spec.xml#L11[here].
+
+
+[source,xml]
+----
+ <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.ChatLanguageModel,jakarta.inject.Named[value=ollama]"/>
+----
+
+So this explain why Glow is detecting that the WildFly MCP application is using *Groq*,*OpenAI* and *Ollama*.
+
+Of course, similar rules exist for the embedding models and embedding store.
+
+
+== In conclusion
+
+As you could see, developping a Generative AI application using WildFly Glow and the WildFly AI Feature Pack is, as Duke Nukem used to say, a piece of cake.
