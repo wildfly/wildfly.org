@@ -4,7 +4,7 @@ title: Making WildFly Glow with Intelligence
 date: 2025-02-10
 tags: wildfly glow ai
 synopsis: How to use WildFly Glow to provision a Generative AI WildFly server.
-author: ehugonne
+author: ehsavoie
 ---
 
 = Making WildFly Glow with Intelligence
