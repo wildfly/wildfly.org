@@ -1,58 +1,177 @@
 ---
 layout: base
 ---
+{%- assign key = page.data-key -%}
+{%- assign conference-data = site.data.conference[key] -%}
 
-<div class="about-page grid-wrapper conference">
+<div class="grid-wrapper conference">
   <div class="grid__item width-12-12">
     <h1>Wild<strong>Fly</strong> Mini Conference</h1>
-    <h2 class="page-subtitle">A dedicated conference for the community with topics around Wild<strong>Fly</strong>.
-    </h2>
+    {%- if conference-data.status == "done" -%}
+    <h2 class="page-subtitle">{{ conference-data.date | date: "%B %d, %Y" }}</h2>
+    {%- elsif conference-data.status == "preview" -%}
+    <h2 class="page-subtitle">The next Wild<strong>Fly</strong> Mini Conference is coming up!</h2>
+    {%- elsif conference-data.status == "planning" -%}
+    <h2 class="page-subtitle">Planning for the next Wild<strong>Fly</strong> Mini Conference is in full swing!</h2>
+    {%- endif -%}
   </div>
 
   <div class="grid__item width-12-12 sec-title-red">
-    <h2>Agenda</h2>
-    <p>Our last WildFly Mini Conference took place on November 20, 2024. Many thanks to all participants! You can view
-      the recording at our <a href="https://www.youtube.com/@WildFlyAS" target="_blank">YouTube channel</a>. The slides
-      can be downloaded using the links below.</p>
+    {%- if conference-data.status == "done" -%}
+    <h2>Review</h2>
+    <dl class="c-when-and-where">
+      <dt>Date</dt>
+      <dd>
+        {{ conference-data.date | date: "%A, %B %d, %Y" }}
+      </dd>
+      <dt>Video</dt>
+      <dd>
+        <a href="{{ conference-data.video }}">Full recording</a>
+      </dd>
+      {%- if conference-data.feedback -%}
+      <dt>Feedback</dt>
+      <dd>If not already done: Please give <a href="{{ conference-data.feedback }}" target="_blank">feedback</a>.
+      </dd>
+      {%- endif -%}
+    </dl>
 
-    <p>Please take some time to answer a few questions about the conference. What did you like, what can we do
-      better? It won't take long and will help us make the next WildFly conference even better: <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLScsCr_4l1IIRJc87vb924OOHOetyTSw0lPwRR9syLU0mqQ-ZQ/viewform" target="_blank">conference feedback</a>.
-      We'd also love to hear your opinion on the sessions itself! Please use the links below to give feedback.</p>
+    {%- elsif conference-data.status == "preview" -%}
+    <h2>What you need to know</h2>
+    <dl class="c-when-and-where">
+      <dt>Date</dt>
+      <dd id="c-date" data-date="{{ conference-data.date }}">
+        <a href="{{site.baseurl}}/assets/conference/wildfly-mini-conference.ics"
+                title="Click here to download an ICS file for the conference"
+                type="text/calendar">{{ conference-data.date | date: "%A, %B %d, %Y" }}</a></dd>
+      <dt>Time</dt>
+      <dd>{{ conference-data.start }} - {{ conference-data.end }} UTC</dd>
+      <dt>Location</dt>
+      <dd>
+        Virtually on <a href="{{ conference-data.video }}" target="_blank">YouTube Live</a>
+      </dd>
+    </dl>
+    {%- if conference-data.rsvp -%}
+    <p>Registration is not required, but you can let us know that you
+      <a href="{{ conference-data.rsvp }}" target="_blank">plan to attend</a>. Click on the date to add the event to
+      your calendar.<br/>
+      You can also use the "Notify Me" button on YouTube if you would like to be notified about the conference.</p>
+    {%- endif -%}
 
-    {% for session in site.data.conference %}
-    {% if session.abstract %}
-    <div class="c-session c-session-blue">
-      <div class="c-time">
-        <span class="c-from">{{ session.from }}</span><span class="c-to">{{ session.to }}</span>
-      </div>
-      <div class="c-title">{{ session.title}}</div>
-      <div class="c-abstract"><p>{{ session.abstract | join: "<br/>" }}</p></div>
-
-      {% if session.slides or session.feedback %}
-      <div class="c-links">
-        <ul>
-          {% if session.slides %}
-          <li>You can access the presentation <a target="_blank" href="{{ session.slides }}">slides.</a></li>
-          {% endif %}
-          {% if session.feedback %}
-          <li>Please provide feedback on the session <a target="_blank" href="{{ session.feedback }}">using this form.</a></li>
-          {% endif %}
-        </ul>
-      </div>
-      {% endif %}
-
-      {% if session.speaker %}
-      {% assign speaker = site.data.authors[session.speaker] -%}
-      <div class="c-speaker-avatar">
-        <img class="avatar" height="60px" width="60px"
-             src="{{site.baseurl}}/assets/img/authors/{{ session.speaker }}.jpg"
-             alt="{{ speaker.name }}" title="{{ speaker.name }}"/>
-      </div>
-      <div class="c-speaker-bio">{{ session.bio }}</div>
-      {% endif %}
+    {%- elsif conference-data.status == "planning" -%}
+    <h2>In Planning</h2>
+    <div class="admonitionblock warning">
+      <table>
+        <tbody>
+        <tr>
+          <td class="icon">
+            <div class="title">Note</div>
+          </td>
+          <td class="content">
+            <div class="paragraph">
+              <p>We're planning our next event for <strong>{{ conference-data.date | date: "%B %Y" }}</strong>. We will update this page as soon as the planning is complete and the agenda is finalized. Stay tuned!</p>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
-    {% endif %}
-    {% endfor %}
+    {%- endif -%}
+  </div>
+
+  {%- if conference-data.status == "done" or conference-data.status == "preview" -%}
+  <div class="grid__item width-12-12 sec-title-yellow">
+    <h2>Agenda</h2>
+    {%- if conference-data.status == "done" -%}
+    {%- assign sessions = conference-data.agenda | where: "type", "talk" -%}
+    {%- else -%}
+    {%- assign sessions = conference-data.agenda -%}
+    <div class="admonitionblock note" style="margin-bottom: 2rem">
+      <table>
+        <tbody>
+        <tr>
+          <td class="icon">
+            <div class="title">Note</div>
+          </td>
+          <td class="content">
+            <div class="paragraph">
+              <p>All times are in <strong>UTC</strong>. Click on the time to show the time in your time zone.</p>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    {%- endif -%}
+
+    <div class="c-sessions">
+      {% for session in sessions %}
+      {%- if conference-data.status == "done" -%}
+      {%- assign classes = "c-session c-session-blue done" -%}
+      {%- else -%}
+      {%- if session.type == "other" -%}
+      {%- assign classes = "c-session c-session-other" -%}
+      {%- else -%}
+      {%- assign classes = "c-session c-session-blue" -%}
+      {%- endif -%}
+      {%- endif -%}
+      <div class="{{ classes }}">
+        {%- if conference-data.status != "done" -%}
+        <div class="c-time">
+          <span class="c-from">{{ session.start }}</span><span class="c-to">{{ session.end }}</span>
+        </div>
+        {%- endif -%}
+        <div class="c-title">{{ session.title}}</div>
+        {%- if session.abstract -%}
+        <div class="c-abstract">
+          <p>{{ session.abstract | join: "<br/>" }}</p>
+
+          {%- if session.links -%}
+          <div class="c-links">
+            <ul>
+              {%- for link in session.links -%}
+              <li><a target="_blank" href="{{ link.url }}">{{ link.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {%- if session.speaker -%}
+        {%- for speaker in session.speaker -%}
+        {%- assign fullname = site.data.authors[speaker.name].name -%}
+        <div class="c-speaker-avatar">
+          <img class="avatar" height="60px" width="60px"
+                  src="{{site.baseurl}}/assets/img/authors/{{ speaker.name }}.jpg"
+                  alt="{{ fullname }}" title="{{ fullname }}"/>
+        </div>
+        <div class="c-speaker-bio">
+          {%- if speaker.bio -%}{{ speaker.bio }}{%- else -%}{{ site.data.authors[speaker.name].bio }}{%- endif -%}
+        </div>
+        {%- endfor -%}
+        {%- endif -%}
+      </div>
+      {%- endfor -%}
+    </div>
+  </div>
+  {%- endif -%}
+
+  {%- if conference-data.status == "preview" and conference-data.feedback -%}
+  <div class="grid__item width-12-12 sec-title-teal">
+    <h2>After the conference</h2>
+    <p>Please take some time to answer a few questions about the conference. What did you like, what can we do
+      better? It won't take long, and will help us make the next WildFly conference even better:
+      <a href="{{ conference-data.feedback }}" target="_blank">conference feedback</a></p>
+  </div>
+  {%- endif -%}
+</div>
+
+<div class="grid-wrapper conference">
+  <div class="grid__item width-12-12">
+    <div>&lt; <a href="{{ site.baseurl }}/events">Back to Events</a></div>
   </div>
 </div>
+
+{%- if conference-data.status != "done" -%}
+<script type="text/javascript" src="{{ '/assets/javascript/conference.js' | relative_url }}"></script>
+{%- endif -%}
