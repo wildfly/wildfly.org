@@ -1,0 +1,654 @@
+---
+layout: post
+title: Testing WildFly applications on Kubernetes with Arquillian Cube
+date: 2025-02-19
+tags: wildfly kubernetes arquillian cube containers
+synopsis: Arquillian Cube is an Arquillian extension that provides an easy way to test containerized applications and
+  services on Docker, Kubernetes and OpenShift
+author: fabiobrz
+---
+
+= Testing WildFly applications on Kubernetes with Arquillian Cube
+
+Recently we blogged about testing WildFly on Docker effectively and easily, thanks to Arquillian Cube, now it's time to make it Kubernetes!
+
+In the https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[Testing WildFly applications on Docker with Arquillian Cube]
+article we saw how an Arquillian Cube test can be implemented to automate the build and execution of a Docker image that
+contains a WildFly deployment, and to run tests against it.
+
+This time we'll see how a very similar process can be used to set up an automated integration test for a WildFly
+application that should instead be run on Kubernetes.
+
+Our goal is to provide an automated solution to replace the final part of the
+https://www.wildfly.org/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[WildFly Java Microservice - PART 2: Kubernetes]
+guide.
+
+== Use case
+The https://www.wildfly.org/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[WildFly Java Microservice - PART 2: Kubernetes]
+guide uses an existing Docker image, pushes it to Quay.io, and then shows how to create Kubernetes resources, namely a
+`Deployment` that manages the WildFly application workload, and a `NodePort` type `Service` that exposes it externally.
+
+That's cool!... but still, it is based on manual steps.
+
+In order to automate this, we'll modify the example application that we showcased in
+https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[our previous article],
+to add a JUnit test, powered by Arquillian Cube, that will automate the Kubernetes resources creation, starting from
+existing YAML definitions, and use APIs and annotations at the test class level.
+
+== Step by step changes
+
+As said, we will to start from the
+https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[Testing WildFly applications on Docker with Arquillian Cube] article, so make sure to go through it, and maybe create a separate Git repo, or branch if you want to keep working on
+both examples, then...
+
+=== Kubernetes resources definition
+
+Let's copy/paste the YAML definition which is used in
+https://www.wildfly.org/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[WildFly Java Microservice - PART 2: Kubernetes] into a _kubernetes.yaml_ file, that we'll place in our project `test/resources` folder.
+
+We'll modify the `Deployment` name, but it is basically the same as the one in the guide:
+
+[source,yaml]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-jaxrs-app-deployment
+  labels:
+    app: my-jaxrs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-jaxrs-app
+  template:
+    metadata:
+      labels:
+        app: my-jaxrs-app
+    spec:
+      containers:
+      - name: my-jaxrs-app
+        image: quay.io/tborgato/my-jaxrs-app
+        ports:
+        - containerPort: 8080
+        - containerPort: 9990
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 9990
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 9990
+        startupProbe:
+          httpGet:
+            path: /health/started
+            port: 9990
+----
+
+Then - similarly to what is manually done in the WildFly miniseries guide - let's add a Kubernetes `Service` resource
+definition, by appending it to the same file. Here as well, we'll use a meaningful name:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-jaxrs-app-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: my-jaxrs-app
+----
+
+The whole _kubernetes.yaml_ file will now look like this:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-jaxrs-app-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: my-jaxrs-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-jaxrs-app-deployment
+  labels:
+    app: my-jaxrs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-jaxrs-app
+  template:
+    metadata:
+      labels:
+        app: my-jaxrs-app
+    spec:
+      containers:
+      - name: my-jaxrs-app
+        image: quay.io/tborgato/my-jaxrs-app
+        ports:
+        - containerPort: 8080
+        - containerPort: 9990
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 9990
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 9990
+        startupProbe:
+          httpGet:
+            path: /health/started
+            port: 9990
+----
+
+and, rather than applying it manually to our _Minikube_ instance via a `kubectl` command, we'll let Arquillian Cube do the job!
+
+Specifically, Arquillian Cube provides several ways to automate your Kubernetes tests - including a
+http://arquillian.org/arquillian-cube/#_jkube_kubernetes_openshift_maven_plugin_integration_with_cube[JKube plugin
+integration] - but we'll use the most common approach in this example, i.e. using a _kubernetes.yaml_ definition in the
+classpath.
+
+If such a definition exists, then Arquillian Cube will apply it to the cluster, and it will provide us with APIs and
+annotations at the class level that we'll use to wire the test logic up, as we'll see later on.
+
+
+=== Update the example project POM
+
+A few changes, provided we started from the previous article about
+https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[Testing WildFly applications on Docker with Arquillian Cube].
+
+The first thing we need to do is to add a couple more properties for two new dependencies that we'll need to add; details
+are explained later:
+
+[source,xml]
+----
+    <fabric8.kubernetes-client.version>6.9.2</fabric8.kubernetes-client.version>
+    <undertow-core.version>1.3.33.Final</undertow-core.version>
+    <resteasy-client.version>6.2.11.Final</resteasy-client.version>
+----
+
+
+Then, in order to make our project POM more readable, we should *remove* the code that we commented out
+https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[in the above-mentioned article], so let's start
+by removing the following block in the `<dependencyManagment>` section, i.e.:
+
+[source,xml]
+----
+        <!-- Arquillian Cube still using JUnit 4 by default -->
+        <!--            &lt;!&ndash;Define the JUnit5 bom. WildFly BOM still contains JUnit4, so we have to declare a version here &ndash;&gt;-->
+        <!--            <dependency>-->
+        <!--                <groupId>org.junit</groupId>-->
+        <!--                <artifactId>junit-bom</artifactId>-->
+        <!--                <version>${version.junit5}</version>-->
+        <!--                <type>pom</type>-->
+        <!--                <scope>import</scope>-->
+        <!--            </dependency>-->
+----
+
+then, let's *remove* the commented out fragments in the `<build>/<dependencies>` section:
+
+[source,xml]
+----
+        <!-- Test scope dependencies -->
+        <!-- Arquillian Cube still using JUnit 4 by default -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.junit.jupiter</groupId>-->
+        <!--            <artifactId>junit-jupiter</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
+
+        <!-- Not needed anymore because the test uses a standalone Docker container -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.wildfly.arquillian</groupId>-->
+        <!--            <artifactId>wildfly-arquillian-container-managed</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
+----
+
+Done with removals.
+
+Now, onto the `dependencyManagment` section, which also contains a definition of the wildfly-ee BOM,
+used in https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[our previous example]. We can comment that
+out now:
+
+[source,xml]
+----
+            <!-- The wildfly-ee BOM isn't needed, since we will not build any WildFly application, but rather use an
+            existing image on Quay.io -->
+            <!--&lt;!&ndash; JBoss distributes a complete set of Jakarta EE APIs including
+                a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
+                a collection) of artifacts. We use this here so that we always get the correct
+                versions of artifacts (you can read this as the WildFly stack of the Jakarta EE APIs,
+                with some extras tools for your project, such as Arquillian for testing)
+            &ndash;&gt;
+            <dependency>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>wildfly-ee</artifactId>
+                <version>${version.wildfly.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>-->
+----
+
+Let's move to the `dependencies` section, where we'll first comment the Jakarta EE dependencies out:
+
+[source,xml]
+----
+        <!-- No Jakarta EE application is built, so we don't need the dependencies that WildFly is meant to provide -->
+        <!--&lt;!&ndash; Import the CDI API, we use provided scope as the API is included in WildFly &ndash;&gt;
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        &lt;!&ndash; Import the JAX-RS API, we use provided scope as the API is included in WildFly &ndash;&gt;
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>-->
+----
+
+The next one is quite important from the Arquillian perspective: we'll replace the dependency from the Arquillian Cube
+Docker extension with the Arquillian Cube Kubernetes extension, so we'll keep the following commented out
+block in the example sources for clarity:
+
+[source,xml]
+----
+        <!-- Here we'll depend on arquillian-cube-kubernetes, in order to test on Kubernetes, so let's remove arquillian-cube-docker... -->
+        <!--<dependency>
+                <groupId>org.arquillian.cube</groupId>
+                <artifactId>arquillian-cube-docker</artifactId>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.junit</groupId>
+                <artifactId>arquillian-junit-container</artifactId>
+                <scope>test</scope>
+            </dependency>-->
+        <!-- ... and depend on arquillian-cube-kubernetes instead, in order to test on Kubernetes. -->
+        <dependency>
+            <groupId>org.arquillian.cube</groupId>
+            <artifactId>arquillian-cube-kubernetes</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.arquillian.cube</groupId>
+            <artifactId>arquillian-cube-kubernetes-starter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+            <version>${fabric8.kubernetes-client.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>${undertow-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+----
+
+As you can see we added the `arquillian-cube-kubernetes-starter` and `kubernetes-client` dependencies, too.
+The former is needed to let Arquillian Cube automatically start the Kubernetes "container" (broader meaning here).
+The latter provides us with all the Kubernetes APIs, which we'll use in the test class, as we'll see below.
+We had to lock the `undertow-core` dependency version too, since we need one that is compatible with Arquillian Cube 2.0.
+
+Let's remove the following JBoss Logging dependency, as it will not be used:
+
+[source,xml]
+----
+        <!--See https://issues.redhat.com/browse/WFLY-19779 and https://github.com/wildfly/quickstart/pull/957/
+            httpclient needs commons-logging yet the server uses this instead,
+            to be fully compatible on apps we need to add this dependency whenever commons-logging is needed,
+            but on testing clients like this we could use commons-logging instead
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>commons-logging-jboss-logging</artifactId>
+            <scope>test</scope>
+        </dependency>
+        -->
+----
+
+One last thing in the test dependencies section, let's give a version to the RESTEasy client dependency, since we
+removed the `wildfly--ee` BOM from the `dependencyManagment` section:
+
+[source,xml]
+----
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <!-- Add a version to the resteasy-client dependency, as the WildFly EE BOM has been removed from the
+            dependencyManagement section -->
+            <version>${resteasy-client.version}</version>
+            <scope>test</scope>
+        </dependency>
+----
+
+Now, onto the `<build>/<plugins>` section. First off we don't need for the `maven-clean-plugin` to clean up any
+Docker files; in fact we'll remove those from our project sources later on, since this test will not build nor run any
+Docker images. Let's comment the section as follows:
+
+[source,xml]
+----
+        <!-- No Docker resources are used in the test, so we don't need to clean up anything else -->
+        <!--&lt;!&ndash; Let's remove ./docker-build/server, too &ndash;&gt;
+        <configuration>
+            <filesets>
+                <fileset>
+                    <directory>${project.basedir}/docker-build/server</directory>
+                </fileset>
+            </filesets>
+        </configuration>-->
+----
+
+Then we should remove the WildFly Maven plugin definition, too, as this a Kubernetes test, which will rely on an
+image that is deployed to Quay.io already, as per the
+https://www.wildfly.org/guides/get-started-microservices-on-kubernetes/simple-microservice-part2#quay-io[WildFly Java
+Microservice - PART 2: Kubernetes] original example. Let's comment the whole plugin configuration out:
+[source,xml]
+----
+        <!-- Not needed here, the test relies on an existing docker image which is deployed to Quay.io -->
+        <!--&lt;!&ndash; The WildFly plugin deploys your war to a local JBoss AS container &ndash;&gt;
+        <plugin>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-maven-plugin</artifactId>
+            <version>${version.wildfly.maven.plugin}</version>
+            <configuration>
+                &lt;!&ndash; We need for the server to be provisioned in ./docker-build/server, as required by the Dockerfile &ndash;&gt;
+                <provisioningDir>${project.basedir}/docker-build/server</provisioningDir>
+                <overwriteProvisionedServer>true</overwriteProvisionedServer>
+                <feature-packs>
+                    <feature-pack>
+                        <location>org.wildfly:wildfly-galleon-pack:${version.wildfly.bom}</location>
+                    </feature-pack>
+                    <feature-pack>
+                        <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:7.0.2.Final</location>
+                    </feature-pack>
+                </feature-packs>
+                <layers>
+                    &lt;!&ndash; layers may be used to customize the server to provision&ndash;&gt;
+                    <layer>cloud-server</layer>
+                </layers>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>package</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>-->
+----
+
+Finally, let's comment the following section properties, too, since they're no longer relevant nor used:
+
+[source,xml]
+----
+        <!-- Wildfly dependencies are not used directly, as the test is using an existing WildFly application image -->
+        <!--&lt;!&ndash; JBoss dependency versions &ndash;&gt;
+        <version.wildfly.maven.plugin>5.1.1.Final</version.wildfly.maven.plugin>
+        <version.wildfly.bom>35.0.0.Final</version.wildfly.bom>-->
+----
+
+and similarly with the JUnit 5 related property, since we're using JUnit 4:
+
+[source,xml]
+----
+        <!-- We don't need JUnit5, and this property is not used -->
+        <!--&lt;!&ndash;Use JUnit 5 here - the WildFly bom still brings 4.x &ndash;&gt;
+        <version.junit5>5.10.1</version.junit5>-->
+----
+
+And that's it, we're done with the POM, and feel free to check your version against the example sources on GitHub, where
+you can find a https://github.com/fabiobrz/wildfly-mini-series-k8s-cube/blob/main/pom.minified.xml["minified"] version, too.
+
+Let's get to the `arquillian.xml` file now, and see how should be modified.
+
+
+=== Update `arquillian.xml` configuration
+
+A simple update will do, start by removing or commenting the `docker` extension part out: easy, we don't need a `wildfly`
+container anymore, so let's remove it, and add a `kubernetes` extension declaration, which we'll keep empty.
+
+[source,xml]
+----
+    <!--<extension qualifier="docker">
+        <property name="dockerContainersFile">./docker-compose.yml</property>
+    </extension>-->
+    <extension qualifier="kubernetes">
+    </extension>
+----
+
+The last part is about the test class itself, let's dive in...
+
+=== Remove the application sources
+
+Again, we're not building any application here. We rely on a Docker image on Quay that contains the application
+already; therefore we don't need the application sources, which can be safely removed:
+
+[source,shell]
+----
+$ rm -rf src/main/java/org
+$ rm -rf src/main/webapp
+----
+
+=== Create a test class for testing on Kubernetes
+
+We must actually delete the existing Docker test, first:
+
+[source,shell]
+----
+$ rm src/test/java/org/wildfly/examples/GettingStartedDockerIT.java
+----
+
+and - as anticipated previously, we'll now remove the Docker related resources, too:
+[source,shell]
+----
+$ rm -rf docker-build
+$ rm docker-compose.yml
+----
+
+
+There we go, now it's time to create a new `GettingStartedKubernetesIT.java` class, with the following contents:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import io.fabric8.kubernetes.api.model.Service;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
+import org.arquillian.cube.kubernetes.annotations.Named;
+import org.arquillian.cube.kubernetes.annotations.PortForward;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+/**
+ * Run integration tests on Kubernetes with Arquillian Cube!
+ */
+@RunWith(Arquillian.class)
+public class GettingStartedKubernetesIT {
+
+    @Named("my-jaxrs-app-service")
+    @ArquillianResource
+    private Service myJaxrsAppService;
+
+    @Named("my-jaxrs-app-service")
+    @PortForward
+    @ArquillianResource
+    private URL url;
+
+    @Test
+    public void shouldFindServiceInstance() {
+        assertNotNull(myJaxrsAppService);
+        assertNotNull(myJaxrsAppService.getSpec());
+        assertNotNull(myJaxrsAppService.getSpec().getPorts());
+        assertFalse(myJaxrsAppService.getSpec().getPorts().isEmpty());
+    }
+
+    @Test
+    public void shouldShowHelloWorld() throws URISyntaxException {
+        assertNotNull(url);
+        try (Client client = ClientBuilder.newClient()) {
+            final String name = "World";
+            Response response = client
+                    .target(url.toURI())
+                    .path("/hello/" + name)
+                    .request()
+                    .get();
+            Assert.assertEquals(200, response.getStatus());
+            Assert.assertEquals(String.format("Hello '%s'.", name), response.readEntity(String.class));
+        }
+    }
+}
+----
+
+As you can see, the test didn't change much from the one in the
+https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[Testing WildFly applications on Docker with
+Arquillian Cube] example:
+we verify that the service - which is implemented by a Kubernetes workload - returns HTTP 200 and the expected response
+body when it is called via its URL.
+
+And that is where Arquillian Cube comes in handy because, thanks to it, we could inject such a URL in our test class
+`url` _field_ just by using an annotation.
+Similarly, we have injected an `io.fabric8.kubernetes.api.model.Service` instance which represents the Kubernetes
+service resource that we Arquillian Cube creates based on the _kubernetes.yaml_ definition.
+
+
+=== Run the test
+
+That's it, we can run our Kubernetes integration test. Arquillian Cube will use the information stored in the
+~/.kube/config file to connect to a Kubernetes cluster, or
+http://arquillian.org/arquillian-cube/#_kubernetes_configuration_parameters[let you provide parameters].
+For this example, starting a https://minikube.sigs.k8s.io/docs/[`minikube`] instance will be enough:
+
+[source,shell]
+----
+minikube start
+----
+
+and then issue the following command:
+
+[source,shell]
+----
+mvn clean install
+----
+
+and we'll see how Arquillian Cube will gather the kubernetes extension configuration, then summarize the container
+definition, trace the resources creation on the cluster, and eventually run the test:
+
+[source,shell]
+----
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.wildfly.examples.GettingStartedKubernetesIT
+...
+CubeKubernetesConfiguration:
+  namespace = itest-4d12b880
+  master.url = https://192.168.39.213:8443/
+  namespace.lazy.enabled = true
+  namespace.cleanup.enabled = true
+  namespace.cleanup.timeout = 0
+  namespace.cleanup.confirm.enabled = false
+  namespace.destroy.enabled = true
+  namespace.destroy.confirm.enabled = false
+  namespace.destroy.timeout = 0
+  wait.enabled = true
+  wait.timeout = 480000
+  wait.poll.interval = 5000
+  ansi.logger.enabled = true
+  env.init.enabled = true
+  logs.copy = false
+  cube.api.version = v1
+  cube.trust.certs = true
+  cube.fmp.build = false
+  cube.fmp.build.disable.for.mvn = false
+  cube.fmp.pom.path = pom.xml
+  cube.fmp.debug.output = false
+  cube.fmp.logs = true
+
+Initializing Session:4d12b880
+Using Kubernetes at: https://192.168.39.213:8443/
+Creating namespace: itest-4d12b880...
+To switch to the new namespace: kubectl config set-context `kubectl config current-context` --namespace=itest-4d12b880
+Applying kubernetes configuration from: file:/home/fburzigo/Projects/git/fabiobrz/wfly-mini-k8s-cube/getting-started/target/test-classes/kubernetes.yaml
+ReplicaSet: [my-jaxrs-app-deployment-56bbc54bf9]
+Pod: [my-jaxrs-app-deployment-56bbc54bf9-zsc2m] Status: [Running]
+Service: [my-jaxrs-app-service] IP: [10.111.189.164] Ports: [ 80 ]
+Jan 31, 2025 4:49:45 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier applyKubernetesResourcesAtClassScope
+INFO: Creating environment for org.wildfly.examples.GettingStartedKubernetesIT
+Jan 31, 2025 4:49:45 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier applyKubernetesResourcesAtMethodScope
+INFO: Creating environment for org.wildfly.examples.GettingStartedKubernetesIT method shouldShowHelloWorld
+Jan 31, 2025 4:49:45 PM org.xnio.Xnio <clinit>
+INFO: XNIO version 3.8.16.Final
+Jan 31, 2025 4:49:45 PM org.xnio.nio.NioXnio <clinit>
+INFO: XNIO NIO Implementation Version 3.8.16.Final
+Jan 31, 2025 4:49:46 PM org.jboss.threads.Version <clinit>
+INFO: JBoss Threads version 2.4.0.Final
+Jan 31, 2025 4:49:46 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier removeKubernetesResourcesAtMethodScope
+INFO: Deleting environment for org.wildfly.examples.GettingStartedKubernetesIT method shouldShowHelloWorld
+Jan 31, 2025 4:49:46 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier applyKubernetesResourcesAtMethodScope
+INFO: Creating environment for org.wildfly.examples.GettingStartedKubernetesIT method shouldFindServiceInstance
+Jan 31, 2025 4:49:46 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier removeKubernetesResourcesAtMethodScope
+INFO: Deleting environment for org.wildfly.examples.GettingStartedKubernetesIT method shouldFindServiceInstance
+Jan 31, 2025 4:49:46 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier removeKubernetesResourcesAtClassScope
+INFO: Deleting environment for org.wildfly.examples.GettingStartedKubernetesIT
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.05 s -- in org.wildfly.examples.GettingStartedKubernetesIT
+Deleting namespace: itest-4d12b880...
+Namespace: itest-4d12b880, successfully deleted
+Destroying Session:4d12b880
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  18.281 s
+[INFO] Finished at: 2025-01-31T16:49:47+01:00
+[INFO] ------------------------------------------------------------------------
+
+----
+
+== In conclusion
+
+Testing a WildFly application directly on Kubernetes will make the test more effective, and will allow prototyping and
+make debugging easier.
+
+Arquillian Cube provides an easy and effective way to test on Kubernetes, with almost no configuration and instrumentation
+changes with respect to existing Arquillian based tests.
+
+The code for the example application which is described in this article is here: https://github.com/fabiobrz/wildfly-mini-series-k8s-cube
+
+Fabio Burzigotti
