@@ -9,7 +9,7 @@ permalink: /get-started/
 
 === Step 0. Install Java & Maven
 
-You need Java (at least version `11`, and preferably `17`) and Maven installed on your machine to create a Maven project that contains the source code of the Jakarta EE application.
+You need Java (at least version `17`, and preferably `21`) and Maven installed on your machine to create a Maven project that contains the source code of the Jakarta EE application.
 
 You can verify they are installed by executing the commands:
 
