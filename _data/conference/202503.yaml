@@ -34,7 +34,7 @@ agenda:
       - "We'll discuss and demonstrate how to use Ansible to managed and make evolve, in fully automated fashion, our Wildfly infrastructure. For instance, we'll see how to change the clustering configuration, smoothly and automatically, using Ansible. Wildfly's cluster capabilities is one of the most powerful features of the app server. It’s ability to leverage multicast to forms itself is also quite appreciated by developers, but sometimes creates problems in production, where ops teams prefer to forbid such network communication. With this context in mind, this presentation and demonstration will show how to use Ansible to both set up a cluster of Wildfly instances, but also dynamically change the running cluster from using multicast to tcp, with just one playbook run."
     speaker:
       - name: rpelisse
-        bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+        bio: "Romain Pelisse has been working at Red Hat for over a decade. He started as a runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
   - title: "Everything about Jakarta EE TCKs in twenty minutes"
     start: "15:40"
     end: "16:00"
