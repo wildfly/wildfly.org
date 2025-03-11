@@ -31,7 +31,7 @@ agenda:
     end: "15:40"
     type: talk
     abstract:
-      - "We'll discuss and demonstrate how to use Ansible to managed and make evolve, in fully automated fashion, our Wildfly infrastructure. For instance, we'll see how to change the clustering configuration, smoothly and automatically, using Ansible. Wildfly's cluster capabilities is one of the most powerful features of the app server. It’s ability to leverage multicast to forms itself is also quite appreciated by developers, but sometimes creates problems in production, where ops teams prefer to forbid such network communication. With this context in mind, this presentation and demonstration will show how to use Ansible to both set up a cluster of Wildfly instances, but also dynamically change the running cluster from using multicast to tcp, with just one playbook run."
+      - "We'll discuss and demonstrate how to use Ansible to manage and make evolve, in fully automated fashion, our WildFly infrastructure. For instance, we'll see how to change the clustering configuration, smoothly and automatically, using Ansible. WildFly's cluster capabilities are some of the most powerful features of the app server. It’s ability to leverage multicast to form itself is also quite appreciated by developers, but sometimes creates problems in production, where ops teams prefer to forbid such network communication. With this context in mind, this presentation and demonstration will show how to use Ansible to both set up a cluster of WildFly instances, but also dynamically change the running cluster from using multicast to tcp, with just one playbook run."
     speaker:
       - name: rpelisse
         bio: "Romain Pelisse has been working at Red Hat for over a decade. He started as a runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
@@ -56,12 +56,12 @@ agenda:
     speaker:
       - name: bstansberry
         bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
-  - title: "WildFly AI FP: Deploying an MCP server"
+  - title: "WildFly AI Feature Pack: Deploying an MCP server"
     start: "17:00"
     end: "17:30"
     type: talk
     abstract:
-      - "In this session we will show how to expose a JakartaEE application as a MCP server. We will interact with WildFly servers in natural language to monitor and troubleshoot running instances."
+      - "In this session we will show how to expose a Jakarta EE application as an MCP server. We will interact with WildFly servers using natural language to monitor and troubleshoot running instances."
       - "The technology in use is defined by the [MCP protocol](https://modelcontextprotocol.io/introduction) and the [WildFly MCP server](https://github.com/wildfly-extras/wildfly-mcp-server) (incubating project)"
     speaker:
       - name: ehsavoie
