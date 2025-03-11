@@ -94,6 +94,14 @@ agenda:
         url: "https://wildfly.org"
       - title: "Slides"
         url: "https://wildfly.org"
+    speaker:
+      - name: Scott Marlow
+        bio: "Scott is a long time WildFly/JBoss developer (around 19 years), contributes to Jakarta EE and also is one of the Jakarta EE Platform TCK leads."
+    links:
+      - title: "Chat"
+        url: "https://wildfly.org"
+      - title: "Slides"
+        url: "https://wildfly.org"
   - title: "Feedback and closing ceremony"
     start: "17:40"
     end: "18:00"
