@@ -2,15 +2,15 @@ BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:wildfly@googlegroups.com
 BEGIN:VEVENT
-UID:20241107T151515Z@wildfly.org
-DTSTAMP:20241107T151515Z
-DTSTART:20241120T140000Z
-DTEND:20241120T180000Z
+UID:20250325T151515Z@wildfly.org
+DTSTAMP:20250325T151515Z
+DTSTART:20250325T140000Z
+DTEND:20250325T180000Z
 SUMMARY:WildFly Mini Conference
-URL:https://wildfly.org/conference
-DESCRIPTION:A dedicated conference for the community with topics 
+URL:https://wildfly.org/events/wmc-202503.html
+DESCRIPTION:A dedicated conference for the community with topics
  around WildFly.
-LOCATION;ALTREP="https://youtube.com/live/OfEv05N8EUg":
+LOCATION;ALTREP="https://youtube.com/live/d8IExBP7rxw":
  Virtually on YouTube Live
 CLASS:PUBLIC
 END:VEVENT

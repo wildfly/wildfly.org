@@ -123,7 +123,7 @@ layout: base
         <div class="c-title">{{ session.title}}</div>
         {%- if session.abstract -%}
         <div class="c-abstract">
-          <p>{{ session.abstract | join: "<br/>" }}</p>
+          <p>{{ session.abstract | join: "<br/>" | markdownify }}</p>
 
           {%- if session.links -%}
           <div class="c-links">
