@@ -22,7 +22,7 @@
             {% for guide in item.guides %}
               <div class="grid__item width-3-12 news-block-item">
                 <div class="post-title">
-                  <h4><a href="{{site.baseurl}}{{ guide.url }}">{{ guide.title}}</a></h4>
+                  <h4><a href="{{ site.baseurl }}{{ guide.url }}">{{ guide.title }}</a></h4>
                   <div class="description">{{ guide.description | markdownify }}</div>
                 </div>
               </div>
