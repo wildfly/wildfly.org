@@ -12,7 +12,7 @@
                     <div class="post-title">
                         <h4>{{ group.title}}</h4>
                         {% for guide in group.guides %}
-                        <div class="description"><a href="{{site.baseurl}}{{ guide.url }}">{{ guide.description}}</a></div>
+                        <div class="description"><a href="{{ site.baseurl }}{{ guide.url }}">{{ guide.description }}</a></div>
                         {% endfor %}
                     </div>
                 </div>
