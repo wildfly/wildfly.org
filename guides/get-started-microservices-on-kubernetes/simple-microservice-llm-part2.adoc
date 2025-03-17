@@ -1,0 +1,14 @@
+= {simple-microservice-llm-part2}
+:summary: Java Microservice using WildFly on Kubernetes that invokes an LLM
+:includedir: ../_includes
+include::{includedir}/_attributes.adoc[]
+include::./_includes/_titles.adoc[]
+:prerequisites-time: 10
+
+In this guide, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] implemented using WildFly.
+
+include::{includedir}/_prerequisites.adoc[]
+
+* Install link:https://www.docker.com/[Docker, window="_blank"] or link:https://podman.io/[Podman, window="_blank"]
+
+include::_includes/_constants.adoc[]
