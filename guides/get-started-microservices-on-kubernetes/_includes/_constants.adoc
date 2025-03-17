@@ -2,18 +2,20 @@
 :jaxrs-example-project-groupId: org.wildfly.examples
 :jaxrs-example-project-artifactId: jaxrs
 :jaxrs-example-project-version: 11.0.0.Final-SNAPSHOT
-:version-wildfly: 35.0.0.Final
-:version-wildfly-galleon-pack: 35.0.0.Final
+:version-wildfly: 36.0.1.Final
+:version-wildfly-galleon-pack: 36.0.1.Final
 :jakarta-jakartaee-api-version: 10.0.0
 :version-junit-jupiter-api: 5.11.3
-:version-wildfly-cloud-galleon-pack: 7.0.2.Final
-:version-wildfly-maven-plugin: 5.1.1.Final
+:version-wildfly-cloud-galleon-pack: 8.0.0.Final
+:version-wildfly-ai-feature-pack: 0.6.0
+:version-wildfly-maven-plugin: 5.1.3.Final
 :version-wildfly-maven-plugin-docs: 5.1
+:version-langchain4j: 1.0.1
 :my-jaxrs-app-docker-image-name: my-jaxrs-app
 :my-jaxrs-app-db-docker-image-name: my-jaxrs-app-db
 :my-jaxrs-app-infinispan-docker-image-name: my-jaxrs-app-infinispan
 :quay-io-account-name: tborgato
-:version-wildfly-datasources-galleon-pack: 9.1.0.Final
+:version-wildfly-datasources-galleon-pack: 10.0.0.Final
 :postgre-sql-user: postgres
 :postgre-sql-password: admin
 :postgre-sql-host: localhost
@@ -60,3 +62,10 @@
 :keycloak-user2-pws: 123
 :keycloak-role1: user
 :keycloak-role2: admin
+:ollama-pod-name: ollama
+:ollama-docker-image: ollama/ollama
+:ollama-llm: smollm2
+:my-jaxrs-app-llm-docker-image-name: my-jaxrs-app-llm
+:ollama-kubernetes-service-name: ollama-service
+:ollama-port: 11434
+

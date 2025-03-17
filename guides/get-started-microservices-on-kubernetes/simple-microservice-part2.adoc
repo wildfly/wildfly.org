@@ -1,5 +1,5 @@
 = {simple-microservice-part2}
-:summary: ONELINE EXPLANATION OF THE GUIDE
+:summary: Java Microservice using WildFly on Kubernetes
 :includedir: ../_includes
 include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
