@@ -40,8 +40,10 @@ These instructions will get you a copy of the wildfly.org website up and running
 
 To write a News post:
 
-- If you are a new author, create an author entry in [_data/authors.yaml](https://github.com/wildfly/wildfly.org/tree/master/_data/authors.yaml)
-    - `avatar` is used the name of the author's picture in [this directory](https://github.com/wildfly/wildfly.org/tree/master/assets/img/authors)
+- If you are a new author:
+  - If you wish to have a picture associated with your posts, please add a file to the [authors subdir in the assets directory](https://github.com/wildfly/wildfly.org/tree/master/assets/img/authors). This is optional, but encouraged.
+  - Create an author entry in [_data/authors.yaml](https://github.com/wildfly/wildfly.org/tree/master/_data/authors.yaml)
+      - If you added an author photo, include the `avatar` field with a value that is the name of the author's picture file in [authors subdir](https://github.com/wildfly/wildfly.org/tree/master/assets/img/authors)  in the assets directory.
 - Create an news entry under [_posts](https://github.com/wildfly/wildfly.org/tree/master/_posts)
     - The file name is `yyyy-mm-dd-slug.adoc`
 - All news posts should be written in [AsciiDoc format](https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/).
@@ -51,9 +53,9 @@ To write a News post:
 
 Please read [CONTRIBUTING.md](https://github.com/wildfly/wildfly.org/blob/master/contribute.md) for details on the process for submitting pull requests to us.
 
-**Important:** the guides are maintained in the wildfly.github.io repository and pull requests should be submitted there:
-https://github.com/wildfly/wildfly.github.io
+**Important:** Code examples referred to in the guides are maintained in the [wildfly-extras/guides](https://github.com/wildfly-extras/guides) repository and pull requests should be submitted there.
+
 
 ## License
 
-This website is licensed under the [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/).
+This website is licensed under the [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/) license.
