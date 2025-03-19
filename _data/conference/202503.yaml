@@ -46,10 +46,10 @@ agenda:
         bio: "Scott is a long time WildFly/JBoss developer (around 19 years), contributes to Jakarta EE and also is one of the Jakarta EE Platform TCK leads."
   - title: "Break"
     start: "16:00"
-    end: "16:15"
+    end: "16:30"
     type: other
   - title: "WildFly in a Vendor-Neutral Foundation"
-    start: "16:15"
+    start: "16:30"
     end: "17:00"
     type: talk
     abstract:
@@ -59,7 +59,7 @@ agenda:
         bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
   - title: "WildFly AI Feature Pack: Deploying an MCP server"
     start: "17:00"
-    end: "17:30"
+    end: "17:45"
     type: talk
     abstract:
       - "In this session we will show how to expose a Jakarta EE application as an MCP server. We will interact with WildFly servers using natural language to monitor and troubleshoot running instances."
@@ -70,6 +70,6 @@ agenda:
       - name: jfdenise
         bio: "Jean-François Denise is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
   - title: "Feedback and closing ceremony"
-    start: "17:30"
+    start: "17:45"
     end: "18:00"
     type: other
