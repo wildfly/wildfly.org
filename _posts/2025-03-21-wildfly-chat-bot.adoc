@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: WildFly AI, monitor and troubleshoot WildFly server with the WildFly chatbot.'
+date:   2025-03-21
+tags:   wildfly ai management vlog
+synopsis:  This video demonstrates how you can interact with WildFly server using natural language.
+author: jfdenise
+link: https://youtu.be/crSKeeBsXoE
+---
