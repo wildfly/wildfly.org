@@ -7,7 +7,7 @@ status: preview
 video-id: "d8IExBP7rxw"
 video: "https://youtube.com/live/d8IExBP7rxw"
 rsvp: "https://forms.gle/GpNLNaU1H3y1vkXg8"
-feedback: "https://forms.gle/g1m4sCqoVYtF7cYLA"
+feedback: "https://forms.gle/747ueCwGk37rEofV6"
 agenda:
   - title: "Welcome and opening ceremony"
     start: "14:00"
@@ -25,6 +25,8 @@ agenda:
     links:
       - title: Chat
         url: https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Quick.20prototyping.20with.20WildFly/with/507327271
+      - title: Feedback
+        url: https://forms.gle/GgbBoPC4AYtnLiz87
   - title: Break
     start: "14:40"
     end: "14:55"
@@ -41,6 +43,8 @@ agenda:
     links:
       - title: Chat
         url: https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20Day.20One.20operations.20with.20Ansible.20Automation/with/507327383
+      - title: Feedback
+        url: https://forms.gle/G98na7gMUG76hThn6
   - title: "Everything about Jakarta EE TCKs in twenty minutes"
     start: "15:40"
     end: "16:00"
@@ -53,6 +57,8 @@ agenda:
     links:
       - title: Chat
         url: https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Everything.20about.20Jakarta.20EE.20TCKs.20in.20twenty.20minutes/with/507327634
+      - title: Feedback
+        url: https://forms.gle/keqbSHeaACdM4rzx6
   - title: "Break"
     start: "16:00"
     end: "16:30"
@@ -69,6 +75,8 @@ agenda:
     links:
       - title: Chat
         url: https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20in.20a.20Vendor-Neutral.20Foundation/with/507327701
+      - title: Feedback
+        url: https://forms.gle/yuzMPgpLDyFYFWPy9
   - title: "WildFly AI Feature Pack: Deploying an MCP server"
     start: "17:00"
     end: "17:45"
@@ -84,6 +92,8 @@ agenda:
     links:
       - title: Chat
         url: https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20AI.20Feature.20Pack.3A.20deploying.20an.20.20MCP.20server/with/507327790
+      - title: Feedback
+        url: https://forms.gle/9ubP5Akxi7jrh56D8
   - title: "Feedback and closing ceremony"
     start: "17:45"
     end: "18:00"
