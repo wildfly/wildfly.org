@@ -98,8 +98,10 @@ agenda:
     links:
       - title: "Chat"
         url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20AI.20Feature.20Pack.3A.20deploying.20an.20.20MCP.20server/with/507327790"
-      - title: "Slides"
-        url: "https://www.wildfly.org/assets/conference/202503-ai-mcp-server.pdf"
+      - title: "Slides (WildFly MCP Server)"
+        url: "https://www.wildfly.org/assets/conference/202503-mcp-server.pdf"
+      - title: "Slides (WildFly AI Feature Pack)"
+        url: "https://www.wildfly.org/assets/conference/202503-ai-fp.pdf"
       - title: "Feedback"
         url: "https://forms.gle/9ubP5Akxi7jrh56D8"
   - title: "Feedback and closing ceremony"
