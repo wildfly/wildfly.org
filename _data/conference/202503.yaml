@@ -61,6 +61,8 @@ agenda:
     links:
       - title: "Chat"
         url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Everything.20about.20Jakarta.20EE.20TCKs.20in.20twenty.20minutes/with/507327634"
+      - title: "Slides"
+        url: "https://github.com/scottmarlow/talks/blob/main/EverythingAboutJakartaEETCKsInTwentyMinutes.md"
       - title: "Feedback"
         url: "https://forms.gle/keqbSHeaACdM4rzx6"
   - title: "Break"
