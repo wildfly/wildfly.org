@@ -79,6 +79,8 @@ agenda:
     links:
       - title: "Chat"
         url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20in.20a.20Vendor-Neutral.20Foundation/with/507327701"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202503-wildfly-foundation.pdf"
       - title: "Feedback"
         url: "https://forms.gle/yuzMPgpLDyFYFWPy9"
   - title: "WildFly AI Feature Pack: Deploying an MCP server"
