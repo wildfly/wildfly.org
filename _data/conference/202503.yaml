@@ -3,7 +3,7 @@
 date: "2025-03-25"
 start: "14:00"
 end: "18:00"
-status: preview
+status: done
 video-id: "d8IExBP7rxw"
 video: "https://youtube.com/live/d8IExBP7rxw"
 rsvp: "https://forms.gle/GpNLNaU1H3y1vkXg8"
@@ -23,10 +23,12 @@ agenda:
     speaker:
       - name: jmesnil
     links:
-      - title: "Chat"
-        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Quick.20prototyping.20with.20WildFly/with/507327271"
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=557s"
       - title: "Slides"
         url: "https://www.wildfly.org/assets/conference/202503-jbang-prototyping.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Quick.20prototyping.20with.20WildFly/with/507327271"
       - title: "Feedback"
         url: "https://forms.gle/GgbBoPC4AYtnLiz87"
   - title: Break
@@ -43,10 +45,12 @@ agenda:
       - name: rpelisse
         bio: "Romain Pelisse has been working at Red Hat for over a decade. He started as a runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
     links:
-      - title: "Chat"
-        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20Day.20One.20operations.20with.20Ansible.20Automation/with/507327383"
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=3324s"
       - title: "Slides"
         url: "https://www.wildfly.org/assets/conference/202503-wildfly-day-one-ops.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20Day.20One.20operations.20with.20Ansible.20Automation/with/507327383"
       - title: "Feedback"
         url: "https://forms.gle/G98na7gMUG76hThn6"
   - title: "Everything about Jakarta EE TCKs in twenty minutes"
@@ -59,10 +63,12 @@ agenda:
       - name: scottmarlow
         bio: "Scott is a long time WildFly/JBoss developer (around 19 years), contributes to Jakarta EE and also is one of the Jakarta EE Platform TCK leads."
     links:
-      - title: "Chat"
-        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Everything.20about.20Jakarta.20EE.20TCKs.20in.20twenty.20minutes/with/507327634"
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=6376s"
       - title: "Slides"
         url: "https://www.wildfly.org/assets/conference/202503-ee-tck.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Everything.20about.20Jakarta.20EE.20TCKs.20in.20twenty.20minutes/with/507327634"
       - title: "Feedback"
         url: "https://forms.gle/keqbSHeaACdM4rzx6"
   - title: "Break"
@@ -79,10 +85,12 @@ agenda:
       - name: bstansberry
         bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
     links:
-      - title: "Chat"
-        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20in.20a.20Vendor-Neutral.20Foundation/with/507327701"
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=9009s"
       - title: "Slides"
         url: "https://www.wildfly.org/assets/conference/202503-wildfly-foundation.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20in.20a.20Vendor-Neutral.20Foundation/with/507327701"
       - title: "Feedback"
         url: "https://forms.gle/yuzMPgpLDyFYFWPy9"
   - title: "WildFly AI Feature Pack: Deploying an MCP server"
@@ -98,12 +106,14 @@ agenda:
       - name: jfdenise
         bio: "Jean-François Denise is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
     links:
-      - title: "Chat"
-        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20AI.20Feature.20Pack.3A.20deploying.20an.20.20MCP.20server/with/507327790"
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=10904s"
       - title: "Slides (WildFly MCP Server)"
         url: "https://www.wildfly.org/assets/conference/202503-mcp-server.pdf"
       - title: "Slides (WildFly AI Feature Pack)"
         url: "https://www.wildfly.org/assets/conference/202503-ai-fp.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20AI.20Feature.20Pack.3A.20deploying.20an.20.20MCP.20server/with/507327790"
       - title: "Feedback"
         url: "https://forms.gle/9ubP5Akxi7jrh56D8"
   - title: "Feedback and closing ceremony"
