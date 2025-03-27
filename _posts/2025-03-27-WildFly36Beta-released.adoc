@@ -3,7 +3,7 @@ layout: post
 title:  "New WildFly 36 Beta release"
 date:   2025-03-27
 tags:   announcement release
-author: darranlß
+author: darranl
 description: WildFly 36 Beta is now available for download.
 ---
 
