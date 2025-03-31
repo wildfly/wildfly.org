@@ -149,7 +149,8 @@ Hello 'pippo'.
 
 == What's next?
 
-link:simple-microservice-database-part1[{simple-microservice-database-part1}]
+* link:simple-microservice-database-part1[{simple-microservice-database-part1}]
+* link:https://www.wildfly.org/news/2025/03/06/testing-on-k8s-with-cube/[Testing WildFly applications on Kubernetes with Arquillian Cube]
 
 [[references]]
 == References
