@@ -7,6 +7,9 @@ categories:
       - title: Getting Started with WildFly
         url: /get-started
         description: Build and run a Jakarta EE application with WildFly in a few minutes
+      - title: Prototyping with JBang
+        url: /guides/prototyping-with-jbang
+        description: Use JBang to prototype simple WildFly applications from a single source file.
   - category: Automation
     cat-id: automation
     guides:
