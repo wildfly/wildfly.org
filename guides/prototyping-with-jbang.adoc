@@ -278,7 +278,7 @@ $ curl "http://localhost:8080/myapp/hello?name=Alice"
 
 == Export the application
 
-If if you want to publish or share your Web application, you can _export_ it with JBang with the command:
+If you want to publish or share your Web application, you can _export_ it with JBang with the command:
 
 [source,bash]
 ----
