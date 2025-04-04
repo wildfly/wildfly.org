@@ -1,0 +1,323 @@
+= Prototype WildFly applications with JBang
+:summary: Learn how to use JBang to prototype simple WildFly applications from a single Java source file.
+:includedir: _includes
+include::{includedir}/_attributes.adoc[]
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 15
+
+In this guide, you will learn how to use https://jbang.dev[JBang] to prototype enterprise Java applications running with WildFly.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Roughly {prerequisites-time} minutes
+
+== Install JBang
+
+https://jbang.dev[JBang] is a tool to create, edit and run self-contained source-only Java programs with unprecedented ease.
+
+There are numerous ways to install JBang (as described in its https://www.jbang.dev/download/[Download page]) but the simplest one is to execute the command:
+
+
+[source,bash]
+----
+curl -Ls https://sh.jbang.dev | bash -s - app setup
+----
+
+The `jbang` executable is then added to your path and you can start using it.
+
+[NOTE]
+====
+You do not even need to have Java installed in your machine. If Java is not present, JBang will install it for you.
+====
+
+JBang is a powerful tool with many features. For the purpose of this guide, we will cover the ones you need to understand to prototype WildFly applications.
+
+JBang allows you to create, edit and run self-contained source-only Java programs.
+
+You can make your `.java` file an executable script by adding at the top of the file the comment:
+
+[source,java]
+----
+///usr/bin/env jbang "$0" "$@" ; exit $?
+----
+
+JBang provides dependency declarations using `//DEPS <gav>` comments for automatic dependency resolution.
+If your Java source depends on a library, you can import its package and add a  `//DEPS` comment to declare which library in Maven is providing these packages.
+
+A simple example of a Java program with JBang is:
+
+.myapp.java
+[source,java]
+----
+///usr/bin/env jbang "$0" "$@" ; exit $?
+//DEPS com.github.lalyos:jfiglet:0.0.8
+import com.github.lalyos.jfiglet.FigletFont;
+
+class myapp {
+   public static void main(String[] args) throws Exception {
+       String name = args.length==0 ? "World" : args[0];
+       String hello = String.format("Hello, %s!", name);
+       System.out.println(FigletFont.convertOneLine(hello));
+   }
+}
+----
+
+You can save this program in a `myapp.java` file and run it with JBang:
+
+[%nowrap]
+----
+$ jbang run myapp.java Bob
+[jbang] Building jar for myapp.java...
+  _   _          _   _                 ____            _       _
+ | | | |   ___  | | | |   ___         | __ )    ___   | |__   | |
+ | |_| |  / _ \ | | | |  / _ \        |  _ \   / _ \  | '_ \  | |
+ |  _  | |  __/ | | | | | (_) |  _    | |_) | | (_) | | |_) | |_|
+ |_| |_|  \___| |_| |_|  \___/  ( )   |____/   \___/  |_.__/  (_)
+
+----
+
+== Prototype a Jakarta RESTful Application
+
+To create a source-only Java file that runs on WildFly, you need to follow a few rules:
+
+1. Create a Jakarta RESTful application that defines your HTTP API
+2. Always add the dependency: `//DEPS org.wildfly.glow:wildfly-glow:1.4.0.Final`
+ * https://docs.wildfly.org/wildfly-glow/[WildFly Glow] is the magic "sauce" that binds JBang with WildFly to deploy and run the Web application.`
+ 3. Use the WildFly BOM dependency to add dependencies provided by WildFly: `//DEPS org.wildfly.bom:wildfly-expansion:35.0.1.Final@pom`(note the `@pom` after the version that identifies this dependency as a _POM_ dependency instead of a _Jar_ dependency).
+   * You can then add non-versioned dependencies on the APIs you are using to pull the versions provided by WildFly. For example `//DEPS jakarta.ws.rs:jakarta.ws.rs-api`
+
+[NOTE]
+====
+Make sure to always use the latest version of WildFly BOM and Glow.
+====
+
+You *do not* need to download WildFly: a WildFly server will automatically be provisioned with the capabilities required to run your application when `jbang run` is executed.
+
+If you change the Java program listed above to make it a Web application running on WildFly, it will now look like:
+
+.myapp.java
+[source,java]
+----
+///usr/bin/env jbang "$0" "$@" ; exit $?
+//DEPS com.github.lalyos:jfiglet:0.0.8
+//DEPS org.wildfly.bom:wildfly-expansion:35.0.1.Final@pom
+//DEPS jakarta.ws.rs:jakarta.ws.rs-api
+//DEPS jakarta.enterprise:jakarta.enterprise.cdi-api
+//DEPS org.wildfly.glow:wildfly-glow:1.4.1.Final
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
+import com.github.lalyos.jfiglet.FigletFont;
+
+@ApplicationPath("/")
+public class myapp extends Application {
+
+   @Path("/hello")
+   @ApplicationScoped
+   public static class Hello {
+
+       @GET
+       public String sayHello(@QueryParam("name") @DefaultValue("World") String name) throws Exception {
+           String hello = String.format("Hello, %s!", name);
+           return FigletFont.convertOneLine(hello);
+       }
+   }
+}
+----
+
+You can run this Web application with:
+
+[source,bash]
+----
+$ jbang run myapp.java
+
+[jbang] Resolving dependencies...
+[jbang]    org.wildfly.glow:wildfly-glow:1.4.0.Final
+[jbang]    com.github.lalyos:jfiglet:0.0.8
+[jbang]    org.wildfly.bom:wildfly-expansion:35.0.1.Final@pom
+[jbang]    jakarta.ws.rs:jakarta.ws.rs-api:3.1.0
+[jbang]    jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.1
+[jbang] Dependencies resolved
+[jbang] Building jar for myapp.java...
+[jbang] Post build with org.wildfly.glow.jbang.JBangIntegration
+...
+17:02:39,613 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 20) WFLYSRV0010: Deployed "myapp.war" (runtime-name : "myapp.war")
+...
+17:02:39,632 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly 35.0.1.Final (WildFly Core 27.0.1.Final) started in 2225ms - Started 192 of 196 services (35 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml - Minimum feature stability level: community
+----
+
+Your web application can now be accessed with:
+
+[%nowrap]
+----
+$ curl "http://localhost:8080/myapp/hello?name=Alice"
+
+  _   _          _   _                    _      _   _                 _
+ | | | |   ___  | | | |   ___            / \    | | (_)   ___    ___  | |
+ | |_| |  / _ \ | | | |  / _ \          / _ \   | | | |  / __|  / _ \ | |
+ |  _  | |  __/ | | | | | (_) |  _     / ___ \  | | | | | (__  |  __/ |_|
+ |_| |_|  \___| |_| |_|  \___/  ( )   /_/   \_\ |_| |_|  \___|  \___| (_)
+----
+
+== Use MicroProfile Config
+
+Let's update the code to use MicroProfile Config to inject the "Hello" word so that the application can be localized.
+
+To do so, we will add a `String` with the `@Inject @ConfigProperty` annotations and use it in our HTTP API:
+
+[source,java]
+----
+@Inject
+@ConfigProperty(name = "hello", defaultValue = "Hello")
+String helloWord;
+
+@GET
+public String sayHello(@QueryParam("name") @DefaultValue("World") String name) throws Exception {
+  String hello = String.format("%s, %s!", helloWord, name);
+  return FigletFont.convertOneLine(hello);
+}
+----
+
+We need to add the `import` statements for the new types used in our code:
+
+[source,java]
+----
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+----
+
+And, finally, we need to declare the dependencies that provides these new types.
+CDI was already declared (by the comment `//DEPS jakarta.enterprise:jakarta.enterprise.cdi-api`), so we only need to declare the dependency for the MicroProfile Config API:
+
+[source,java]
+----
+//DEPS org.eclipse.microprofile.config:microprofile-config-api
+----
+
+With all these changes, the Java file now looks like:
+
+.myapp.java
+[source,java]
+----
+///usr/bin/env jbang "$0" "$@" ; exit $?
+//DEPS com.github.lalyos:jfiglet:0.0.8
+//DEPS org.wildfly.bom:wildfly-expansion:35.0.1.Final@pom
+//DEPS jakarta.ws.rs:jakarta.ws.rs-api
+//DEPS jakarta.enterprise:jakarta.enterprise.cdi-api
+//DEPS org.eclipse.microprofile.config:microprofile-config-api
+//DEPS org.wildfly.glow:wildfly-glow:1.3.2.Final
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
+import com.github.lalyos.jfiglet.FigletFont;
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+@ApplicationPath("/")
+public class myapp extends Application {
+
+  @Path("/hello")
+  @ApplicationScoped
+  public static class Hello {
+
+      @Inject
+      @ConfigProperty(name = "hello", defaultValue = "Hello")
+      String helloWord;
+
+      @GET
+      public String sayHello(@QueryParam("name") @DefaultValue("World") String name) throws Exception {
+          String hello = String.format("%s, %s!", helloWord, name);
+          return FigletFont.convertOneLine(hello);
+
+      }
+  }
+}
+----
+
+We can now use the `HELLO` environment variable to change the value of the `helloWord` to something other than `Hello` (which is its default).
+
+For example, you can run a French version of this application with:
+
+[source,bash]
+----
+$ HELLO="Bonjour" jbang run myapp.java
+
+[jbang] Resolving dependencies...
+...]
+[jbang]    org.eclipse.microprofile.config:microprofile-config-api:3.1
+[jbang] Dependencies resolved
+[jbang] Building jar for myapp.java...
+[jbang] Post build with org.wildfly.glow.jbang.JBangIntegration
+...
+17:02:39,613 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 20) WFLYSRV0010: Deployed "myapp.war" (runtime-name : "myapp.war")
+...
+17:11:19,525 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly 35.0.1.Final (WildFly Core 27.0.1.Final) started in 2326ms - Started 192 of 196 services (35 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml - Minimum feature stability level: community
+----
+
+When you access the Web application, it will now greet the user in French:
+
+[%nowrap]
+----
+$ curl "http://localhost:8080/myapp/hello?name=Alice" 
+
+  ____                      _                                   _      _   _                 _
+ | __ )    ___    _ __     (_)   ___    _   _   _ __           / \    | | (_)   ___    ___  | |
+ |  _ \   / _ \  | '_ \    | |  / _ \  | | | | | '__|         / _ \   | | | |  / __|  / _ \ | |
+ | |_) | | (_) | | | | |   | | | (_) | | |_| | | |     _     / ___ \  | | | | | (__  |  __/ |_|
+ |____/   \___/  |_| |_|  _/ |  \___/   \__,_| |_|    ( )   /_/   \_\ |_| |_|  \___|  \___| (_)
+                         |__/                         |/
+
+
+----
+
+== Export the application
+
+If you want to publish or share your Web application, you can _export_ it with JBang with the command:
+
+[source,bash]
+----
+jbang export portable myapp.java
+----
+
+It will create a `myapp.jar` file that is actually a https://docs.wildfly.org/bootablejar/[WildFly Bootable Jar].
+
+You can then directly execute this Jar file to run your Web application:
+
+[source,bash]
+----
+$ java -jar myapp.jar
+...
+09:00:48,890 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 20) WFLYSRV0010: Deployed "myapp.war" (runtime-name : "myapp.war")
+...
+09:00:48,909 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly 35.0.1.Final (WildFly Core 27.0.1.Final) started in 2243ms - Started 192 of 196 services (35 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml - Minimum feature stability level: community
+----
+
+== What's next?
+
+This guide has shown how you can use JBang to quickly prototype WildFly applications from a single Java source file without having to create a full-fledged Maven project.
+
+The example was a simple Web application that showed how to use dependencies provided by WildFly as well as 3rd-party libraries.
+
+It is possible to further customize the WildFly server by using `//GLOW` comments as described in the https://docs.wildfly.org/wildfly-glow/#_glow_arguments[WildFly Glow documentation].
+
+https://www.jbang.dev/documentation/guide/latest/index.html[JBang documentation] also provides information to organize your files, specify which version of Java to run the program, etc.
+
+For a deeper dive into prototyping WildFly applications with JBang (including writing a Simple AI Chat bot model), you can watch the presentation done during the March 2024 WildFly Mini Conference:
+
+.Prototype WildFly applications with JBang
+++++
+<center style="overflow:hidden; padding-bottom:56.25%; position:relative; height:0;">
+<iframe style="left:0;top:0; height:100%;width:100%;position:absolute;" src="https://www.youtube.com/embed/d8IExBP7rxw?si=wCBxPpMbnpmZOPYO&amp;start=557" title="Prototype WildFly applications with JBang" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></center>
+++++
+
+[[references]]
+== References
+
+* https://www.jbang.dev[JBang Home Page]
+* https://docs.wildfly.org/wildfly-glow/#jbang[WildFly Glow documentation to run WildFly with JBang]
