@@ -40,4 +40,23 @@ layout: base
             <a href="mailto:security@wildfly.org">security@wildfly.org</a>
         </p>
     </div>
+    <div class="grid__item width-12-12 sec-title-red">
+        <h2>CVE Reporting</h2>
+        {% for cve in site.data.cve_data %}
+        <div class="cve-entry">
+            <h3>CVE: {{ cve.CVE }}</h3>
+            <p>Link: <a href="{{ cve.Link }}">{{ cve.Link }}</a></p>
+            <p>Status: {{ cve.Status }}</p>
+            <p>JIRA Link: <a href="{{ cve.JIRA_Link }}">{{ cve.JIRA_Link }}</a></p>
+            <p>Fix Versions:</p>
+            <ul>
+                {% for version in cve.Fix_Versions %}
+                <li>{{ version }}</li>
+                {% endfor %}
+            </ul>
+            <p>Notes:</p>
+            <p>{{ cve.Notes | newline_to_br }}</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
