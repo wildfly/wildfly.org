@@ -3,6 +3,27 @@ layout: base
 ---
 <div class="events grid-wrapper">
   <div class="grid__item width-12-12">
+    <h1>Wild<strong>Fly</strong> Calendar</h1>
+    <h2 class="page-subtitle">
+      We provide a calendar for the community that contains all the important dates relating to Wild<strong>Fly</strong>.
+    </h2>
+    <div id="wildfly-org-calendar-container" style="margin: 3em 0"></div>
+    <script type="text/javascript">
+      const options = {
+        src: 'wildflyorg%40gmail.com',
+        ctz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        showCalendars: '0' // it's only one calendar, so hide the calendar selector
+      };
+      let query = Object.entries(options).map(([key, value]) => `${key}=${value}`).join('&');
+      const url = `https://calendar.google.com/calendar/embed?${query}`;
+      const style = 'display:block;border:none;width:100%;';
+      const attributes = 'width="100%" height="600"';
+      const iframe = `<iframe src="${url}" style="${style}" ${attributes}></iframe>`;
+      document.getElementById('wildfly-org-calendar-container').innerHTML = iframe;
+    </script>
+  </div>
+
+  <div class="grid__item width-12-12">
     <h1>Wild<strong>Fly</strong> Conferences</h1>
     <h2 class="page-subtitle">
       We host regular conferences for the community with topics related to Wild<strong>Fly</strong>.
