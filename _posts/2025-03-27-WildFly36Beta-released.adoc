@@ -19,7 +19,7 @@ As can be seen from the https://github.com/wildfly/wildfly/releases/tag/36.0.0.B
 * [https://issues.redhat.com/browse/WFLY-20476[WFLY-20476]] -- Promote ajp-listener AJP_ALLOWED_REQUEST_ATTRIBUTES_PATTERN to community stability
 * [https://issues.redhat.com/browse/WFLY-20477[WFLY-20477]] -- Promote undertow subsystem's reuse-x-forwarded and rewrite-host header configurability to community stability
 
-Within the WildFly Preview distribution we also https://issues.redhat.com/browse/WFLY-19397[upgraded to a beta of Hibernate ORM 7 and an alpha of Hibernate Search 8].
+Within the WildFly Preview distribution we also https://github.com/wildfly/wildfly/pull/18706[upgraded to a beta of Hibernate ORM 7 and an alpha of Hibernate Search 8].
 
 We've also enhanced https://docs.wildfly.org/wildfly-glow/[WildFly Glow], so it is now possible to https://github.com/wildfly/wildfly-proposals/issues/688[run a source-only WildFly application] using https://www.jbang.dev/[JBang]! 
 

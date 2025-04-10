@@ -1,0 +1,109 @@
+---
+layout: post
+title:  "New WildFly 36 Final release"
+date:   2025-04-10
+tags:   announcement release
+author: bstansberry
+description: WildFly 36 Final is now available for download.
+---
+
+= WildFly 36 is released!
+
+I'm pleased to announce that the new WildFly and WildFly Preview 36.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature packs for WildFly 36 are available in Maven.
+
+[[new_and_notable]]
+== New and Notable
+
+This quarter we had some exciting innovation outside the main appserver itself:
+
+* You can now link:https://docs.wildfly.org/wildfly-proposals/user-experience/jbang.html[run a WildFly application from JBang, window=_blank]. To learn more about this feature, please read the link:https://docs.wildfly.org/wildfly-glow/#jbang[JBang integration section, window=_blank] in the WildGly Glow documentation. This feature is provided at the link:https://docs.wildfly.org/36/Admin_Guide.html#Feature_stability_levels[`experimental` stability level, window=_blank].
+* The link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank] evolved rapidly during the quarter. Learn more by checking out Emmanuel Hugonnet's talks at last month's link:https://www.wildfly.org/events/wmc-202503.html[WildFly Mini Conference, window=_blank] or at link:https://www.youtube.com/watch?v=eeNxNVeQaS0[JDConf, window=_blank]. This feature pack is currently link:https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[incubating, window=_blank] and will likely continue to change rapidly.
+
+Of course, there's new stuff in the main appserver as well:
+
+* The `micrometer` extension has been modified to link:https://docs.wildfly.org/wildfly-proposals/observability/WFLY-18582_add-prometheus-endpoint-to-micrometer-extension.html[add support for the Prometheus Registry, window=_blank], allowing for pull-based scraping of metrics information for deployments, if that is preferred. This much-requested feature is provided at the link:https://docs.wildfly.org/36/Admin_Guide.html#Feature_stability_levels[`community` stability level, window=_blank].
+* The JBoss EJB Client library and the `ejb3` subsystem now support https://docs.wildfly.org/wildfly-proposals/ejb/WFLY-13828-remote+tls-is-not-supported-by-EJBClient-and-remote-outbound-connection.html[use of the `remote+tls` protocol] for remote EJB invocations.
+* When configuring WildFly to act as a reverse proxy, the `undertow` subsystem now supports configuring the reverse proxy handler to https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-20477_reuse-x-forwarded_rewrite-host_community.html[reuse and append to any `X-Forwarded` HTTP headers and to rewrite the `Host` header]. This feature is provided at the link:https://docs.wildfly.org/36/Admin_Guide.html#Feature_stability_levels[`community` stability level, window=_blank]. Previously this had been supported at `preview` stability. The promotion to `community` stability means this feature is now available out of the box in standard WildFly.
+* The `undertow` subsystem now allows https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-20476_ajp-listener_allowed_attr_pattern_community.html[configuring the AJP listener to accept custom AJP request headers]. This feature is provided at the link:https://docs.wildfly.org/36/Admin_Guide.html#Feature_stability_levels[`community` stability level, window=_blank]. Previously this had been supported at `preview` stability. The promotion to `community` stability means this feature is now available out of the box in standard WildFly.
+* Within the WildFly Preview distribution we also https://github.com/wildfly/wildfly/pull/18706[upgraded to a beta of Hibernate ORM 7 and an alpha of Hibernate Search 8, window=_blank].
+
+Finally, we did some long overdue improvements to the link:https://docs.wildfly.org[main landing page for our docs, window=_blank]. We plan to continue improving there, particularly by giving greater emphasis to the growing ecosystem of Galleon feature packs that WildFly provides. Your feedback is very much wanted!
+
+== Supported Specifications
+
+=== Jakarta EE
+
+Standard WildFly 36 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications, window=_blank] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 10 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_36.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_36.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<|  Jakarta EE 10 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_36.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_36.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<| Jakarta EE 10 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_36.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_36.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+|=======================================================================
+
+
+=== MicroProfile
+
+Standard WildFly 36 supports https://microprofile.io/2024/08/22/microprofile-7-0-release/[MicroProfile Platform 7.0, window=_blank], along with several other MicroProfile specifications that are not part of MicroProfile Platform. The full listing is available in the link:https://docs.wildfly.org/36/Getting_Started_Guide.html[Getting Started Guide, window=_blank].
+
+link:https://github.com/wildfly/certifications/blob/MP7.0/WildFly_36.0.0.Final/microprofile-7.0/microprofile-7.0-full-certification.adoc[Compatibility evidence, window=_blank] for the specifications that are part of MicroProfile 7.0 can be found in the WildFly Certifications repository on GitHub.
+
+
+[[preview-ee11]]
+=== WildFly Preview and EE 11
+
+Since the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we are using WildFly Preview to provide a look at what we're doing for Jakarta EE 11 support.  The EE 11 Platform and Web Profile specifications won't go GA before later this year. But there are milestone, Release Candidate and Final releases of many EE 11 specs and implementations available, so we are providing those in WildFly Preview. This means for a number of EE APIs, WildFly Preview no longer provides an EE 10 compatible implementation.
+
+However, for a number of specifications that are planning changes for EE 11 we are still offering the EE 10 variant. In future releases we'll shift those to the EE 11 variants.
+
+The link:https://jakarta.ee/specifications/coreprofile/11/[EE 11 Core Profile specification, window=_blank] went GA last November and WildFly Preview 36 supports that profile.
+
+Full details on the EE specification versions provided by WildFly Preview can be found in https://docs.wildfly.org/36/WildFly_and_WildFly_Preview.html#ee-11-support-in-wildfly-preview[the WildFly 36 documentation, window=_blank].
+
+
+== Java SE Support
+
+Our recommendation is that you run WildFly 36 on Java SE 21, as that is the latest LTS JDK release where we have completed the full set of testing we like to do before recommending a particular SE version. WildFly 36 also is heavily tested and runs well on Java 17.
+
+Our recommendation of SE 21 over SE 17 is solely because as a general principle we recommend being on later LTS releases, not because of any problems with WildFly on SE 17.
+
+While we recommend using an LTS JDK release, I do believe WildFly runs well on SE 24. By runs well, I mean the main WildFly testsuite runs with no more than a few  link:https://issues.redhat.com/issues/?filter=12460273[failures in areas not expected to be commonly used, window=_blank]. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform. We've also had good results with tests on Linux of an EA release of SE 25 (Oracle 25-ea+10-1084).
+
+Please note that WildFly runs in classpath mode.
+
+//[[incompatibilities]]
+//== Incompatible Changes
+
+[[contributors]]
+== New and Noteworthy Contributors
+
+WildFly gets great contributions from so many people. I'm going to start using this section of the release announcement to thank a few of them.
+
+Andrew Golding reported an link:https://issues.redhat.com/browse/WFLY-20499[issue with how WildFly Glow dealt with Maven proxies,window=_blank] and link:https://github.com/wildfly/wildfly-glow/releases/tag/1.4.1.Final[provided the fix, window=_blank]. Thank you, Andrew!
+
+link:https://github.com/jasondlee[Jason Lee, window=_blank] slew the dragon of Prometheus support with Micrometer. Thank you, Jason!
+
+link:https://github.com/jmesnil[Jeff Mesnil, window=_blank] showed great innovative initiative by driving the new ability to https://github.com/wildfly/wildfly-proposals/issues/688[run a source-only WildFly application, window=_blank] using https://www.jbang.dev/[JBang, window=_blank]. Thank you, Jeff!
+
+Same for link:https://github.com/ehsavoie[Emmanuel Hugonnet, window=_blank], who is on fire with new improvements to the incubating link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank]. Go Emmanuel!
+
+== Release Notes
+
+The full WildFly 36 release notes are link:https://github.com/wildfly/wildfly/releases/tag/36.0.0.Final[available in GitHub, window=_blank].  Issues fixed in the underlying WildFly Core 28.0.0 release are listed in the link:https://issues.redhat.com/issues/?filter=12460275[WildFly Core JIRA, window=_blank].
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA, window=_blank].
+
+I hope you enjoy WildFly 36 as much as we've enjoyed bringing it to you!
+
+Best regards,
+
+Brian
