@@ -17,7 +17,24 @@ codes.forEach((code) => {
   code.before(div);
 
   countID++;
-}); 
+});
+
+const textElements = document.querySelectorAll(".copy-text");
+textElements.forEach((e) => {
+
+    e.setAttribute("id", "code" + countID);
+
+    const btn = document.createElement("button");
+    btn.classList.add("btn-copy", "fa", "fa-clipboard", "fa-lg");
+    btn.setAttribute("data-clipboard-action", "copy");
+    btn.setAttribute("data-clipboard-target", "#code" + countID++);
+    btn.setAttribute("title", "Copy to clipboard");
+
+    let span = document.createElement("span");
+    span.appendChild(btn);
+
+    e.appendChild(span);
+});
 
 let clipboard = new ClipboardJS('.btn-copy');
 clipboard.on('success', function(e) {

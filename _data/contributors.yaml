@@ -1,0 +1,11 @@
+- contributor: jperkins
+  name: "James R. Perkins"
+  bio: "James works at Red Hat on WildFly. He is the RESTEasy project lead and a committer on WildFly. He also contributes to the Jakarta RESTful Web Services specification, the Jakarta TCK 
+    and various other Jakarta related projects and specifications."
+  github: jamezp
+  signing:
+    - pgp:
+        id: rsa4096/39B3A8E7
+        key: 6D2AF456B8CB597387901C786F29F72839B3A8E7
+        link: https://keyserver.ubuntu.com/pks/lookup?search=6D2AF456B8CB597387901C786F29F72839B3A8E7&fingerprint=on&op=index
+        fingerprint: 6D2A F456 B8CB 5973 8790  1C78 6F29 F728 39B3 A8E7

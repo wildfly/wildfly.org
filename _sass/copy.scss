@@ -6,6 +6,16 @@
     float: right;
 }
 
+.copy-text {
+    .btn-copy {
+        background-color: transparent !important;
+        border: transparent !important;
+        color: $yellow;
+        cursor: pointer;
+        float: none !important;
+    }
+}
+
 .btn-copy:hover {
     color: $orange !important;
 }

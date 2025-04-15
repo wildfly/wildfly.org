@@ -1,0 +1,48 @@
+// This is a partial.
+// It lies in <source>/_sass, just waiting to be imported.
+// It does not contain the YAML front matter and has no corresponding output file in the built site.
+
+.wildfly-contributors {
+  h1 {
+    text-align: center;
+  }
+}
+
+.contributor-row {
+  background-color: $blue;
+  margin: 3rem 0;
+  padding: 1rem;
+
+  h2 {
+    display: inline;
+  }
+
+  .social-icons {
+    float: right;
+  }
+
+  .social-icons img {
+    padding-right: 5px;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  tr.separator:not(:first-of-type):not(:last-of-type) {
+    border-top: 1px solid $yellow;
+
+    td {
+      padding-top: 30px;
+    }
+  }
+
+  td.contributor-label {
+    font-weight: bold;
+  }
+
+  a > img {
+    height: 60px;
+    width: 60px;
+  }
+}
