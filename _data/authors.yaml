@@ -158,13 +158,13 @@ fabiobrz:
   location: "Italy"
   occupation: "Software Quality Engineer"
   bio: "Fabio is a senior software quality engineer at Red Hat. He works on MicroProfile integration, Bootable JAR and on application services interoperability in cloud contexts."
-cam-rod:
-  name: "Cameron Rodriguez"
+jessicarod7:
+  name: "Jessica Rodriguez"
   location: "Toronto, Canada"
   occupation: "Software Engineer"
-  bio: "Cameron is a Software Engineering Intern at Red Hat, working on the WildFly Elytron team."
+  bio: "Jessica is a Software Engineering Intern at Red Hat, working on the WildFly Elytron team."
   emailhash: "aba64bbfde66646d5b5bc40d23b7e0de"
-  twitter: "Racer_77"
+  #twitter: "Racer_77"
 pferraro:
   name: "Paul Ferraro"
   location: "Boston, USA"
