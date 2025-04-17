@@ -49,6 +49,61 @@ To write a News post:
 - All news posts should be written in [AsciiDoc format](https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/).
 - Create a pull request against the master branch.
 
+## Adding Signing Information
+
+To create information about your public keys used to sign commits and files, you need to update the `contributors.yaml`
+file with some information about your public keys. In the examples below we will use [GnuPG Privacy Guard](https://gnupg.org/).
+
+Generating your key and uploading your key to a remote server is beyond the scope of these instructions. 
+
+### Finding your key
+
+```bash
+gpg --list-key --keyid-format short
+```
+
+This will list your available keys.
+
+```
+/home/user/.gnupg/pubring.kbx
+---------------------------------
+pub   rsa4096/39B3A8E7 2021-02-16 [SC]
+      6D2AF456B8CB597387901C786F29F72839B3A8E7
+uid         [ultimate] James R. Perkins <jperkins@redhat.com>
+sub   rsa4096/382337E8 2021-02-16 [E]
+```
+
+You will also need your fingerprint which can be retrieved with:
+
+```bash
+gpg --list-key --fingerprint
+```
+
+This produces:
+```bash
+pub   rsa4096 2021-02-16 [SC]
+      6D2A F456 B8CB 5973 8790  1C78 6F29 F728 39B3 A8E7
+uid           [ultimate] James R. Perkins <jperkins@redhat.com>
+sub   rsa4096 2021-02-16 [E]
+```
+
+### Adding your information
+
+Below is the example YAML you would add to the `contributors.yaml` file associated with your bio.
+
+```yaml
+- contributor: jperkins
+  name: "James R. Perkins"
+  bio: "Example bio"
+  github: jamezp
+  signing:
+    - pgp:
+        id: rsa4096/39B3A8E7
+        key: 6D2AF456B8CB597387901C786F29F72839B3A8E7
+        link: https://keyserver.ubuntu.com/pks/lookup?search=6D2AF456B8CB597387901C786F29F72839B3A8E7&fingerprint=on&op=index
+        fingerprint: 6D2A F456 B8CB 5973 8790  1C78 6F29 F728 39B3 A8E7
+```
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](https://github.com/wildfly/wildfly.org/blob/master/contribute.md) for details on the process for submitting pull requests to us.
