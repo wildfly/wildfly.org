@@ -7,8 +7,6 @@ jgreene:
   twitter: "jtgreene"
 bstansberry:
   name: "Brian Stansberry"
-  bio: "Brian Stansberry is the current lead of the WildFly application server project. He is best known for the development of the administration and management capabilities in WildFly and JBoss EAP 6. Previously, he was the technical lead for the application server’s high availability clustering features.
-Brian’s background is in international business and East Asian studies, with a bachelor’s degree from Michigan State and a master’s degree from Stanford. Before getting bitten by the software bug, Brian had a successful career in corporate finance in the semiconductor industry. He started working on JBoss technologies in 2003 and joined the company in 2005."
   location: "Ballwin, MO"
   occupation: "WildFly Project Lead"
   avatar: bstansberry.jpg
