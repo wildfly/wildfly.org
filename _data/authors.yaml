@@ -88,7 +88,6 @@ jfdenise:
   name: "Jean-François Denise"
   location: "France"
   occupation: "Software Engineer"
-  bio: "Jean-François is a senior software engineer at Red Hat. He is the lead of the WildFly and Galleon command line tools and in charge of the WildFly S2I images."
   avatar: jfdenise.jpg
 kkhan:
   name: "Kabir Khan"
