@@ -35,6 +35,11 @@ jperkins:
   name: "James R. Perkins"
   avatar: jperkins.jpg
   twitter: "the_jamezp"
+jasondlee:
+  name: "Jason Lee"
+  avatar: jasondlee.jpg
+  twitter: "jasondlee"
+  location: "Oklahoma"
 sdouglas:
   name: "Stuart Douglas"
   location: "Australia"
