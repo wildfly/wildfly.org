@@ -1,5 +1,5 @@
 = {simple-microservice-part2}
-:summary: ONELINE EXPLANATION OF THE GUIDE
+:summary: Java Microservice using WildFly on Kubernetes
 :includedir: ../_includes
 include::{includedir}/_attributes.adoc[]
 include::./_includes/_titles.adoc[]
@@ -149,7 +149,8 @@ Hello 'pippo'.
 
 == What's next?
 
-link:simple-microservice-database-part1[{simple-microservice-database-part1}]
+* link:simple-microservice-database-part1[{simple-microservice-database-part1}]
+* link:https://www.wildfly.org/news/2025/03/06/testing-on-k8s-with-cube/[Testing WildFly applications on Kubernetes with Arquillian Cube]
 
 [[references]]
 == References
