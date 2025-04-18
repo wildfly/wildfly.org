@@ -30,3 +30,13 @@
         key: 6D2AF456B8CB597387901C786F29F72839B3A8E7
         link: https://keyserver.ubuntu.com/pks/lookup?search=6D2AF456B8CB597387901C786F29F72839B3A8E7&fingerprint=on&op=index
         fingerprint: 6D2A F456 B8CB 5973 8790  1C78 6F29 F728 39B3 A8E7
+- contributor: jasondlee
+  name: "Jason Lee"
+  bio: "Jason works at Red Hat on the WildFLy project. He maintains the observability libraries (Micrometer, OpenTelemetry, etc) and helps out with the Undertow project."
+  github: jasondlee
+  signing:
+    - pgp:
+        id: rsa4096/3E9BFEE1
+        key: 9B53ED5D2441059B1646122E1F56A2773E9BFEE1
+        link: https://keyserver.ubuntu.com/pks/lookup?search=9b53ed5d2441059b1646122e1f56a2773e9bfee1&fingerprint=on&op=index
+        fingerprint: 9B53 ED5D 2441 059B 1646  122E 1F56 A277 3E9B FEE1
