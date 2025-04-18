@@ -30,7 +30,10 @@ NOTE: See link:/get-started[Getting Started with WildFly, window="_blank"] for t
 
 We need to add some features that will be required when, in the next guide, we will run our application on link:https://kubernetes.io/[Kubernetes, window="_blank"]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/["Liveness, Readiness and Startup Probes", window="_blank"]; we can add these features thanks to the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"].
 
-Update the `pom.xml` file and add the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"] to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration like in the following:
+Thanks to the integration of link:https://github.com/wildfly/wildfly-glow[WildFly Glow, window="_blank"] in the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"], 
+the `wildfly-cloud-galleon-pack` will be automatically added to the Galleon provisioning configuration.
+
+Update the `pom.xml` file to add the `<context>cloud</context>` XML element to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration like in the following:
 
 [source,xml,subs="normal"]
 ----
@@ -39,17 +42,10 @@ Update the `pom.xml` file and add the link:https://github.com/wildfly-extras/wil
         <artifactId>wildfly-maven-plugin</artifactId>
         <version>{version-wildfly-maven-plugin}</version>
         <configuration>
-            <feature-packs>
-                <feature-pack>
-                    <location>org.wildfly:wildfly-galleon-pack:{version-wildfly-galleon-pack}</location>
-                </feature-pack>
-                <feature-pack>
-                    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
-                </feature-pack>
-            </feature-packs>
-            <layers>
-                <layer>cloud-server</layer>
-            </layers>
+            <discover-provisioning-info>
+              <version>${version.wildfly.bom}</version>
+              <context>cloud</context>
+            </discover-provisioning-info>
         </configuration>
         <executions>
             <execution>
