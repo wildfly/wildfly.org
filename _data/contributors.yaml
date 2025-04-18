@@ -8,6 +8,17 @@
         key: F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD
         link: https://keyserver.ubuntu.com/pks/lookup?search=F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD&fingerprint=on&op=index
         fingerprint: F2D3 77EC A269 8D0E 2E4C  42FE 47CB 96A7 DCA5 BDCD
+- contributor: jfdenise
+  name: "Jean-François Denise"
+  bio: "Jean-François is a software engineer at Red Hat. He is the lead of the WildFly and Galleon command line tools and in charge of the WildFly S2I images."
+  github: jfdenise
+  signing:
+    - pgp:
+        id: rsa3072/81CC32E6
+        key: F88F1E1773E7B59122B924E55EF1B82981CC32E6
+        link: https://keyserver.ubuntu.com/pks/lookup?search=F88F1E1773E7B59122B924E55EF1B82981CC32E6&fingerprint=on&op=index
+        fingerprint: F88F 1E17 73E7 B591 22B9  24E5 5EF1 B829 81CC 32E6
+
 - contributor: jperkins
   name: "James R. Perkins"
   bio: "James works at Red Hat on WildFly. He is the RESTEasy project lead and a committer on WildFly. He also contributes to the Jakarta RESTful Web Services specification, the Jakarta TCK 
