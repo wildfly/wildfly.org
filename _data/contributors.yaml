@@ -40,3 +40,13 @@
         key: 9B53ED5D2441059B1646122E1F56A2773E9BFEE1
         link: https://keyserver.ubuntu.com/pks/lookup?search=9b53ed5d2441059b1646122e1f56a2773e9bfee1&fingerprint=on&op=index
         fingerprint: 9B53 ED5D 2441 059B 1646  122E 1F56 A277 3E9B FEE1
+- contributor: yborgess
+  name: "Yeray Borges"
+  bio: "Yeray Borges works at Red Hat on the WildFLy project. He maintains WildFly Core and WildFly Operator."
+  github: yersan
+  signing:
+  - pgp:
+      id: rsa3072/B1D38A2DCD625601
+      key: 14F3D63B2CD5E055730DB060B1D38A2DCD625601
+      link: https://keyserver.ubuntu.com/pks/lookup?search=14f3d63b2cd5e055730db060b1d38a2dcd625601&fingerprint=on&op=index
+      fingerprint: 14F3 D63B 2CD5 E055 730D  B060 B1D3 8A2D CD62 5601
