@@ -1,0 +1,34 @@
+---
+layout: post
+title:  "WildFly joins Commonhaus"
+date:   2025-04-25
+tags:   announcement foundation commonhaus
+author: bstansberry
+description: WildFly has joined the Commonhaus Foundation as a member project.
+---
+
+= WildFly joins Commonhaus
+
+I'm pleased to announce that WildFly has joined the https://www.commonhaus.org/[Commonhaus Foundation] as a member project.
+
+WildFly is a well-established project that wishes to continue to grow and develop. We believe being associated with Commonhaus can help us:
+
+* Grow our contributor and user communities by associating the project with a vendor-neutral foundation.
+* Update our governance model to incorporate current open source best practices.
+* Continue to improve our openness when it comes to roadmaps, designs and solution discussions.
+
+We want to continue to evolve and improve, but we also have a lot of experience running a successful and very complex project. We believe Commonhaus’ guiding principles around honoring project and community identity and offering guidance instead of mandates, with its “community-first” governance model, make it an excellent fit for WildFly.
+
+For more on the thinking that led to us joining Commonhaus, you can have a look at the https://www.wildfly.org/news/2025/02/03/WildFly-in-a-Foundation/[February news post] about moving to a foundation, watch a https://www.youtube.com/live/d8IExBP7rxw?t=9009s[recording] of the WildFly Mini Conference session on this last month, or have a look at the https://www.wildfly.org/assets/conference/202503-wildfly-foundation.pdf[session slides].
+
+Moving a project to a foundation primarily consists of transferring intellectual property associated with the project (logos, trademarks, domain names, etc., currently owned by WildFly's sponsor, Red Hat) to the foundation, and adapting the project's governance and operations to the requirements of the foundation. We've begun the process of doing that -- what Commonhaus calls 'onboarding'. I expect this will take some time to complete. If you're interested in following this process, keep an eye on the https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/[wildfly-dev mail list], where I'm sure there will be many threads about this move.
+
+I don't expect most of the details of onboarding to be particularly impactful to end users of WildFly, or even to most WildFly developers. But definitely something that will be impactful will be updating WildFly's formal governance model from one based on sponsorship by Red Hat to one appropriate for a project in a vendor-neutral foundation. I expect over the coming weeks we'll have a number of discussions on the wildfly-dev list about what an updated governance model should look like. I'm really looking forward to those discussions and I encourage everyone in the WildFly community to participate.
+ 
+== Community Feedback
+
+We'd love to hear your thoughts on this. Let us know what you're thinking either on the link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/[developer mail list, window=_blank], in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank] or in link:https://wildfly.zulipchat.com/#narrow/channel/174184-wildfly-developers[Zulip, window=_blank].
+
+Best regards,
+
+Brian
