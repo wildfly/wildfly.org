@@ -1,9 +1,9 @@
 ---
 layout: base
 ---
-<div class="events grid-wrapper">
-  <div class="grid__item width-12-12">
-    <h1>Wild<strong>Fly</strong> Calendar</h1>
+<div class="grid-wrapper events">
+  <div class="grid__item width-10-12 width-12-12-m">
+    <h1 id="wildfly-calendar">Wild<strong>Fly</strong> Calendar</h1>
     <h2 class="page-subtitle">
       We provide a calendar for the community that contains all the important dates relating to Wild<strong>Fly</strong>.
     </h2>
@@ -23,15 +23,30 @@ layout: base
     </script>
   </div>
 
-  <div class="grid__item width-12-12">
-    <h1>Wild<strong>Fly</strong> Conferences</h1>
+  <div class="grid__item events-toc">
+    <h3>On this page</h3>
+    <ul>
+      <li><a href="#wildfly-calendar">WildFly Calendar</a></li>
+      <li>
+        <a href="#wildfly-conferences">WildFly Conferences</a>
+        <ul>
+          <li><a href="#next-events">Next Events</a></li>
+          <li><a href="#previous-events">Previous Events</a></li>
+        </ul>
+      </li>
+    </ul>
+    <hr/>
+  </div>
+
+  <div class="grid__item width-10-12 width-12-12-m">
+    <h1 id="wildfly-conferences">Wild<strong>Fly</strong> Conferences</h1>
     <h2 class="page-subtitle">
       We host regular conferences for the community with topics related to Wild<strong>Fly</strong>.
     </h2>
   </div>
 
-  <div class="grid__item width-12-12 sec-title-yellow">
-    <h2>Next Events</h2>
+  <div class="grid__item width-10-12 width-12-12-m sec-title-yellow">
+    <h2 id="next-events">Next Events</h2>
     {%- assign conferences-planning-or-preview = site.pages | where: "event-type", "wmc" -%}
     {%- for conference-page in conferences-planning-or-preview -%}
     {%- assign key = conference-page.data-key -%}
@@ -61,8 +76,8 @@ layout: base
     {%- endfor -%}
   </div>
 
-  <div class="grid__item width-12-12 sec-title-red">
-    <h2>Previous Events</h2>
+  <div class="grid__item width-10-12 width-12-12-m sec-title-red">
+    <h2 id="previous-events">Previous Events</h2>
     {%- assign conferences-done = site.pages | where: "event-type", "wmc" -%}
     {%- for conference-page in conferences-done reversed -%}
     {%- assign key = conference-page.data-key -%}
