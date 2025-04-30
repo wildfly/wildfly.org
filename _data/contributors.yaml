@@ -8,6 +8,16 @@
         key: F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD
         link: https://keyserver.ubuntu.com/pks/lookup?search=F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD&fingerprint=on&op=index
         fingerprint: F2D3 77EC A269 8D0E 2E4C  42FE 47CB 96A7 DCA5 BDCD
+- contributor: hpehl
+  name: "Harald Pehl"
+  bio: "Harald is a software engineer at Red Hat working on management capabilities of WildFly. He is currently leading the management console (HAL)."
+  github: hpehl
+  signing:
+    - pgp:
+        id: rsa2048/2A79C898
+        key: 0D68DE5E4B91E5DAE74D9B634A5939FF2A79C898
+        link: https://keyserver.ubuntu.com/pks/lookup?search=0D68DE5E4B91E5DAE74D9B634A5939FF2A79C898&fingerprint=on&op=index
+        fingerprint: 0D68 DE5E 4B91 E5DA E74D  9B63 4A59 39FF 2A79 C898
 - contributor: jfdenise
   name: "Jean-François Denise"
   bio: "Jean-François is a software engineer at Red Hat. He is the lead of the WildFly and Galleon command line tools and in charge of the WildFly S2I images."
