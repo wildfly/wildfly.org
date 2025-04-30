@@ -54,6 +54,12 @@ categories:
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part2
           - description: Propagate Authentication and Authorization
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part3
+      - title: Jakarta REST service invoking an LLM using LangChain4J
+        guides:
+          - description: Build the Container Image
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1
+          - description: Run the Container Image on Kubernetes
+            url: /guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part2
   - category: Datasources
     cat-id: datasources
     guides:
