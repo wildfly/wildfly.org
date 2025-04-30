@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "WildFly joins Commonhaus"
-date:   2025-04-25
+date:   2025-04-30
 tags:   announcement foundation commonhaus
 author: bstansberry
 description: WildFly has joined the Commonhaus Foundation as a member project.
