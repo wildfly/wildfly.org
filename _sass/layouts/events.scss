@@ -1,15 +1,18 @@
 .events {
   padding-bottom: 3rem;
+
   .page-subtitle {
     color: $teal;
     border-top: 2px solid $teal;
     border-bottom: 2px solid $teal;
     padding: 2rem 0;
     margin: 4rem 0 0 0;
+
     strong {
       color: $teal;
     }
   }
+
   .sec-title-teal,
   .sec-title-yellow,
   .sec-title-red,
@@ -18,66 +21,102 @@
       text-align: center;
     }
   }
+}
 
-  .event {
+.events-toc {
+  grid-column: span 2;
+  order: unset;
+  padding-left: 2rem;
+  @media screen and (max-width: 768px) {
+    padding-left: 0;
+    grid-column: span 12;
+    order: -1;
+  }
+
+  h3 {
+    font-size: larger;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  li > a {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  hr {
+    display: none;
+    @media screen and (max-width: 768px) {
+      display: block;
+      border-width: 1px;
+      margin: 2rem 0 0 0;
+    }
+  }
+}
+
+.event {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin-top: 3rem;
+  gap: 3rem;
+  align-items: flex-start;
+
+  @media screen and (max-width: 1024px) {
+    margin-top: 2rem;
+    gap: 2rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    gap: 0;
+    align-items: normal;
+  }
+
+  .event-video {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    margin-top: 3rem;
-    gap: 3rem;
-    align-items: flex-start;
+    flex-basis: 400px;
+    flex-shrink: 0;
+    order: 1;
 
     @media screen and (max-width: 1024px) {
-      margin-top: 2rem;
-      gap: 2rem;
+      flex-basis: 300px;
     }
 
     @media screen and (max-width: 768px) {
-      flex-direction: column;
-      gap: 0;
-      align-items: normal;
+      order: 2;
+    }
+  }
+
+  .event-details {
+    order: 2;
+
+    @media screen and (max-width: 768px) {
+      order: 1;
     }
 
-    .event-video {
-      display: flex;
-      flex-basis: 400px;
-      flex-shrink: 0;
-      order: 1;
+    h3 {
+      margin: 0;
+      font-weight: 400;
 
       @media screen and (max-width: 1024px) {
-        flex-basis: 300px;
+        font-size: 1.5rem;
       }
-
       @media screen and (max-width: 768px) {
-        order: 2;
+        font-size: 1.2rem;
       }
     }
 
-    .event-details {
-      order: 2;
+    ul {
+      margin: 2rem 0;
+    }
 
-      @media screen and (max-width: 768px) {
-        order: 1;
-      }
-
-      h3 {
-        margin: 0;
-        font-weight: 400;
-
-        @media screen and (max-width: 1024px) {
-          font-size: 1.5rem;
-        }
-        @media screen and (max-width: 768px) {
-          font-size: 1.2rem;
-        }
-      }
-      ul {
-        margin: 2rem 0;
-      }
-      li {
-        line-height: 1.5rem;
-      }
-
+    li {
+      line-height: 1.5rem;
     }
   }
 }

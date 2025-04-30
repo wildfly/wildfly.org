@@ -1,16 +1,51 @@
 ---
 layout: base
 ---
-<div class="events grid-wrapper">
-  <div class="grid__item width-12-12">
-    <h1>Wild<strong>Fly</strong> Conferences</h1>
+<div class="grid-wrapper events">
+  <div class="grid__item width-10-12 width-12-12-m">
+    <h1>Wild<strong>Fly</strong> Events</h1>
     <h2 class="page-subtitle">
-      We host regular conferences for the community with topics related to Wild<strong>Fly</strong>.
+      This page will show the upcoming events of note for Wild<strong>Fly</strong>.
+      You will find here that we are sharing a team calendar and some details related to Wild<strong>Fly</strong> conferences.
     </h2>
+    <h2 id="calendar">Wild<strong>Fly</strong> Calendar</h2>
+    <div id="wildfly-org-calendar-container" style="margin: 3em 0"></div>
+    <script type="text/javascript">
+      const options = {
+        src: 'wildflyorg%40gmail.com',
+        ctz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        showCalendars: '0' // it's only one calendar, so hide the calendar selector
+      };
+      let query = Object.entries(options).map(([key, value]) => `${key}=${value}`).join('&');
+      const url = `https://calendar.google.com/calendar/embed?${query}`;
+      const style = 'display:block;border:none;width:100%;';
+      const attributes = 'width="100%" height="600"';
+      const iframe = `<iframe src="${url}" style="${style}" ${attributes}></iframe>`;
+      document.getElementById('wildfly-org-calendar-container').innerHTML = iframe;
+    </script>
   </div>
 
-  <div class="grid__item width-12-12 sec-title-yellow">
-    <h2>Next Events</h2>
+  <div class="grid__item events-toc">
+    <h3>On this page</h3>
+    <ul>
+      <li><a href="#calendar">WildFly Calendar</a></li>
+      <li>
+        <a href="#conferences">WildFly Conferences</a>
+        <ul>
+          <li><a href="#next-events">Upcoming</a></li>
+          <li><a href="#previous-events">Previous</a></li>
+        </ul>
+      </li>
+    </ul>
+    <hr/>
+  </div>
+
+  <div class="grid__item width-10-12 width-12-12-m">
+    <h2 id="conferences">Wild<strong>Fly</strong> Conferences</h2>
+  </div>
+
+  <div class="grid__item width-10-12 width-12-12-m sec-title-yellow">
+    <h2 id="next-events" style="margin-top: 0">Next Events</h2>
     {%- assign conferences-planning-or-preview = site.pages | where: "event-type", "wmc" -%}
     {%- for conference-page in conferences-planning-or-preview -%}
     {%- assign key = conference-page.data-key -%}
@@ -40,8 +75,8 @@ layout: base
     {%- endfor -%}
   </div>
 
-  <div class="grid__item width-12-12 sec-title-red">
-    <h2>Previous Events</h2>
+  <div class="grid__item width-10-12 width-12-12-m sec-title-red">
+    <h2 id="previous-events" style="margin-top: 0">Previous Events</h2>
     {%- assign conferences-done = site.pages | where: "event-type", "wmc" -%}
     {%- for conference-page in conferences-done reversed -%}
     {%- assign key = conference-page.data-key -%}
