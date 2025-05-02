@@ -1,0 +1,91 @@
+---
+layout: post
+title: WildFly Bootable JAR 4.0 is released!
+aliases: [/news/2021/03/19/bootable-jar-4.0.Final-Released]
+date: 2021-03-19
+tags: wildfly galleon bootable jar bootable-jar
+synopsis: Bootable JAR Maven plugin 4 has been released.
+author: jfdenise
+---
+
+The 4.0.0.Final version of the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/[WildFly Bootable JAR Maven plugin] has been released.
+
+For people who are not familiar with the WildFly Bootable JAR, I strongly recommend that you read
+this link:https://www.wildfly.org/news/2020/10/19/bootable-jar-2.0-released/[blog post] that covers it in detail.
+
+## WildFly CLI script executed at startup time
+
+Starting with the recently link:https://www.wildfly.org/news/2021/03/11/WildFly23-Final-Released/[announced] WildFly 23, the bootable JAR runtime allows you to execute a WildFly CLI script when launching the bootable JAR. Although applying
+changes to the server configuration at build time is the preferred way (no impact on startup time), runtime execution gives you the flexibility
+to adjust the server configuration to the execution context.
+
+The link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/4.0.0.Final/examples/authentication[authentication] example has been evolved
+with a new 'runtime-config' Maven profile to disable CLI script execution at build time in favor of runtime execution.
+
+To execute a CLI script during boot: `java -jar app-bootable.jar --cli-script=<path to CLI script>`
+
+NOTE: This support is Tech Preview as the mechanism may change in later releases.
+
+## JBoss Modules module artifact upgrades
+
+Starting with WildFly 23, you can upgrade part of the server when building a bootable JAR.
+
+This offers you the ability to use a different version of an identified component of the server (eg: an Undertow artifact, a JDBC driver
+provided by a third party Galleon feature-pack, ...). Obviously the updated component must be compatible with the server in which it is provisioned...
+This is done at your own risk ;-).
+
+### WildFly Galleon feature-pack server artifact packaging
+
+The way the JBoss Modules module artifacts that compose a WildFly server are packaged inside a WildFly Galleon feature-pack
+allows you to override their version when building a Bootable JAR.
+
+Instead of packaging the artifact binaries inside Galleon feature-packs, the artifacts' Maven coordinates
+are packaged. The actual artifact files are resolved when a WildFly server is built using Galleon (or when building a bootable JAR).
+
+This way of packaging artifacts is not new; WildFly follows this design pattern since the first Galleon releases. (This is what allows you to provision
+a slim WildFly server or a link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/4.0.0.Final/examples/slim[slim WildFly bootable JAR]).
+
+If you design custom Galleon feature-packs for WildFly, we encourage you, when applicable (the artifacts must be released in an accessible Maven repository), to design your feature-packs by following this pattern.
+
+As an example, the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly datasources Galleon feature-pack] (that provides drivers and datasources
+for some major databases) pom file contains in its link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/1.2.3.Final/pom.xml#L49[dependencies]
+the driver artifacts that it can bring to the server.
+
+The JBoss Modules modules that contain the driver artifacts (e.g. https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/1.2.3.Final/src/main/resources/modules/org/postgresql/jdbc/main/module.xml#L4[the postgresql driver module])
+only reference the GroupId and ArtifactId of the artifact. The artifact versions are stored inside the feature-pack but outside of the JBoss Modules module.
+This separation between the GroupId, ArtifactId (optionally Classifier) and the Version is what makes it possible to upgrade when building a bootable JAR.
+
+### To learn more about artifact upgrades
+
+The link:https://docs.wildfly.org/bootablejar/#wildfly_jar_advanced_upgrade[WildFly bootable JAR documentation] contains more information about this capability.
+
+## MyFaces Galleon feature-pack
+
+I'm happy to take the opportunity of this blog post to mention a new community link:https://github.com/melloware/wildfly-myfaces-galleon-pack[project] that defines Galleon feature-packs
+that you can use with the WildFly 23 Galleon feature-pack (and "WildFly Preview" Galleon feature-pack) to build a
+Bootable JAR (or to provision a server using Galleon) containing a JSF implementation based on link:https://myfaces.apache.org[MyFaces].
+
+## Known issues
+
+### Incompatibility with Keycloak client adapter Galleon feature-pack
+
+[NOTE]
+====
+This issue is now solved when using keycloak adapter 13.0.1.
+====
+
+Due to some incompatible changes in the WildFly Galleon feature-pack (i.e. the removal of core and servlet Galleon feature-packs in the dependency chain)
+the Keycloak 12.0.x OIDC client adapter Galleon feature-pack can't be used with the WildFly 23 Galleon feature-pack.
+
+As a workaround, we have setup a link:https://github.com/jfdenise/wildfly-bootable-jar-keycloack-zipped-adapter[project] that highlights the workaround you need to follow to include the Keycloak 12.0.x OIDC client adapter inside a WildFly 23
+bootable JAR. In summary, we are including in the bootable JAR the content of the Keycloak zipped client adapter (that you can download from link:https://www.keycloak.org/downloads[Keycloak downloads]).
+In addition the WildFly server security is configured by the `adapter-elytron-install.cli` WildFly CLI script that is packaged in the zipped adapter.
+
+## To conclude
+
+Finally, we would really appreciate it if you would keep us posted with your feedback and new requirements. (You can log these as new
+link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/issues[project issues].) This will help us evolve the WildFly Bootable JAR experience in the right direction.
+
+Thank-you!
+
+JF Denise

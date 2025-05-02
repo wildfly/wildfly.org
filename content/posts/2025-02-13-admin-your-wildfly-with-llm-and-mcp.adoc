@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: Admin your WildFly with LLM and MCP'
+date:   2025-02-13
+tags:   wildfly ai management vlog
+synopsis: This video demonstrates using an MCP server to administer a WildFly installation with AI.
+author: smaestri
+external_link: https://www.youtube.com/watch?v=wg1hAdOoe2w
+---

@@ -1,0 +1,65 @@
+---
+layout: post
+title:  "WildFly 26 S2I images have been released on quay.io"
+aliases: [/news/2021/12/16/WildFly-s2i-26-Released]
+date:   2021-12-16
+tags:   wildfly galleon
+author: jfdenise
+---
+
+==  WildFly 26 S2I Docker images
+
+The WildFly S2I (Source-to-Image) builder and runtime Docker images for WildFly 26
+have been released on link:https://quay.io/organization/wildfly[quay.io/wildfly].
+
+For complete documentation on how to use these images using S2I, OpenShift and Docker,
+refer to the WildFly S2I link:https://github.com/wildfly/wildfly-s2i/blob/master/README.md[README].
+
+== Anticipating a future set of WildFly images
+
+The `quay.io/wildfly/wildfly-centos7` and `quay.io/wildfly/wildfly-runtime-centos7` are now deprecated. When building or running the server, a
+deprecation notice is displayed in the console. We are planning to stop evolving these images in a future release.
+
+We are now starting our migration to the new WildFly S2I images. The new architecture is based on the
+link:https://github.com/wildfly/wildfly-maven-plugin/[WildFly Maven plugin 3.0] and a new pair of docker images.
+A link:https://www.wildfly.org/news/2021/10/29/wildfly-s2i-v2-overview/[recent post] has provided the details of this new approach.
+
+We are expecting that these new artifacts will become final by the next WildFly release.
+
+=== New vs current S2I workflow
+
+The main difference with the current WildFly S2I image is that no more WildFly server is installed in the S2I builder image. A Galleon provisioning of the server
+is required during the S2I build phase.
+
+If you are evolving the pom.xml of your application to use the WildFly Maven Plugin to package the server and your application,
+the provisioned server and  deployment are automatically installed in the generated image.
+
+Although we strongly encourage you to evolve your pom file, the builder image offers a mode that allows you to build and deploy existing application
+with the new builder image. In order to initiate Galleon provisioning of the server during S2I build phase you need to set
+the following environment variables:
+
+* `GALLEON_PROVISION_FEATURE_PACKS`=<WildFly Galleon feature-pack GAV[,additional Galleon feature-packs GAV]>.
+The WildFly Galleon feature-pack to provision a WildFly server (`org.wildfly:wildfly-galleon-pack:26.0.0.Final`) must be the first
+feature-pack in the list. Then additional feature-packs can be provided. The feature-packs of interest in a cloud context (non exhaustive list) are:
+
+** link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[org.wildfly.cloud:wildfly-cloud-galleon-pack:1.0.0.Beta1]:
+To provision the additional cloud content (mainly server configuration based on env variables).
+** link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[org.wildfly:wildfly-datasources-galleon-pack:2.0.6.Final]:
+To provision drivers and datasources.
+
+* `GALLEON_PROVISION_LAYERS`=<comma separated list of Galleon layers>.
+The set of link:https://docs.wildfly.org/26/Galleon_Guide.html#wildfly_layers[WildFly Galleon layers] or Galleon layers
+provided by listed additional Galleon feature-packs.
+
+These environment variables are not new, they are already used to initiate the provisioning of a custom WildFly server.
+With the new S2I builder image, if you are not using the WildFly Maven plugin, they must be set.
+
+## To conclude
+
+While we are progressing to complete the transition (mainly documentation and release of final artifacts),
+we would really appreciate your feedback. (You can log these as new link:https://github.com/wildfly/wildfly-s2i/issues[project issues]).
+This will help us evolve the WildFly S2I experience in the right direction.
+
+Thank-you!
+
+JF Denise

@@ -1,0 +1,11 @@
+---
+layout: post
+title: "Configuring The WildFly To Use The JBeret JDBC Job Repository (Part 2)"
+date: 2024-09-02
+tags: wildfly jberet jdbc batch
+synopsis: "In the previous blog post on this topic, I have introduced how to manually edit the configuration file of WildFly to configure the batch-jberet module to use the JDBC repository. In this article, I'd like to introduce how to use the CLI Command Tool and the Admin Console to do the task."
+author: liweinan
+external_link: https://jberet.org/configure-jberet-wildfly-jdbc-job-repo-2/
+---
+
+In the previous blog post on this topic, I have introduced how to manually edit the configuration file of WildFly to configure the batch-jberet module to use the JDBC repository. In this article, I'd like to introduce how to use the CLI Command Tool and the Admin Console to do the task.

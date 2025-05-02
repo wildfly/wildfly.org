@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Automatic Self-Signed Certificate Generation with Elytron'
+date: 2021-01-14
+tags: elytron wildfly
+synopsis: WildFly 22 adds the ability to automatically generate a self-signed certificate the first time WildFly receives an HTTPS request when WildFly is being secured using Elytron. This is useful for development or testing environments. This blog post gives an introduction to this new feature.
+author: fjuma
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/auto-self-signed-certificate-generation/
+---

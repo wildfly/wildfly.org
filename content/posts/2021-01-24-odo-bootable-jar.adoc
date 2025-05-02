@@ -1,0 +1,240 @@
+---
+layout: post
+title: 'Developing on OpenShift with WildFly bootable jar'
+aliases: [/news/2021/01/24/odo-bootable-jar]
+date: 2021-01-24
+tags: openshift cloud wildfly odo bootable-jar
+synopsis: Using odo it becomes very easy to develop on OpenShift with the bootable jar feature.
+author: ehsavoie
+---
+With the bootable jar feature of WildFly it is now easier to build applications for the cloud. You can trim the server to reduce its footprint which makes this a perfect candidate to build microservices on the cloud. Let's discover how to combine this feature to build and deploy applications on OpenShift.
+
+== Using odo
+
+https://odo.dev/[odo] is a fast, iterative, and straightforward CLI tool for developers who write, build, and deploy applications on Kubernetes and OpenShift. odo abstracts away complex Kubernetes and OpenShift concepts for the developer.
+
+=== Installing odo
+
+Download the binary from https://mirror.openshift.com/pub/openshift-v4/clients/odo/[odo download site] according to your target environment and follow the instructions from https://odo.dev/docs/installing-odo/[odo website]. Please note that you need at least the version 2.0.3 to use the devfile we will be using in the rest of this article.
+
+=== Preparing our cloud environement
+
+During this article we will use the 'free' OpenShift https://developers.redhat.com/developer-sandbox[developer-sandbox] that you can have with your account on https://developers.redhat.com/[Red Hat Developer] website.
+Once you have your cloud environment we need to connect to it from odo.
+[source,options="nowrap"]
+----
+odo login https://api.sandbox.x8i5.p1.openshiftapps.com:6443 --token=sha256~#################################
+Connecting to the OpenShift cluster
+
+Logged into "https://api.sandbox.x8i5.p1.openshiftapps.com:6443" as "ehugonne1" using the token provided.
+
+You have access to the following projects and can switch between them with 'odo project set <project-name>':
+
+  * ehugonne1-code
+    ehugonne1-dev
+    ehugonne1-stage
+
+Using project "ehugonne1-code".
+----
+
+=== Creating the new project
+
+First we need to create a namespace in OpenShift:
+[source,options="nowrap"]
+----
+odo project create microprofile-config
+----
+
+Now we can create our project using the *microprofile-config* quickstart sample project.
+[source,options="nowrap"]
+----
+mkdir odo-demo
+cd odo-demo
+odo create java-wildfly-bootable-jar --starter=microprofile-config
+Validation
+ ✓  Checking devfile existence [19047ns]
+ ✓  Creating a devfile component from registry: DefaultDevfileRegistry [31878ns]
+ ✓  Validating devfile component [153099ns]
+
+Starter Project
+ ✓  Downloading starter project microprofile-config from https://github.com/wildfly/quickstart.git [1m]
+
+Please use `odo push` command to create the component with source deployed
+----
+
+This will create the *microprofile-config* quickstart Apache Maven project with a *devfile.yaml* that describe how the project will be built and run on OpenShift.
+This devfile is the entry point of our whole project, you may think of it as the pom.xml for the cloud. They are fully described on https://docs.devfile.io/devfile/2.0.0/user-guide/index.html[Devfile User Guide 2.0.0].
+Let's take a quick look at the devfile and their main entry points. I'll pass the `starterProjects` which are the quickstarts you can select when creating your initial project.
+First we can see that it defines two components:
+
+ * a *jaeger* component that will provide an OpenTracing compatible server so that  Eclipse MicroProfile OpenTracing applications can send traces to.
+ * a *wildfly* component which is a simple Java image with Apache Maven where the application will be built and run. It exposes only the *8080* port for HTTP.
+ * a *m2-repository* component which is a persistent volume that we will be using to avoid losing all the downloaded artefacts between each restart of the *wildfly* container.
+
+Then we have the list of commands available to build, debug and run our application:
+
+  * *build*: this will compile and build a bootable jar from the sources.
+  * *run*: this will start and run the bootable jar.
+  * *debug*: this will start and run the bootable jar in debug mode.
+  * *dev-build*: this will compile and build a bootable jar from the sources so that it can be used in developper mode which means the server won't get rebuilt nor restarted when the application is modified.
+  * *dev-run*: this will start and run the bootable jar in developper mode which means the server won't get rebuilt nor restarted when the application is modified.
+  * *dev-debug*: this will start and run the bootable jar in debug developper mode which means the server won't get rebuilt nor restarted when the application is modified.
+  * *watch-build*: this will do nothing except print a nice message.
+  * *watch-run*: this will start the bootable jar in watch mode.
+  * *watch-debug*: this will start the bootable jar in watch mode with debug on.
+
+=== Building and running the application
+
+So let's just build and start our application
+[source,options="nowrap"]
+----
+odo push
+
+Validation
+ ✓  Validating the devfile [290197ns]
+
+Creating Kubernetes resources for component java-wildfly-bootable-jar
+ ✓  Waiting for component to start [29s]
+
+Applying URL changes
+ ✓  URL tracing-ui: http://tracing-ui-java-wildfly-bootable-jar-ehugonne1-code.apps.sandbox.x8i5.p1.openshiftapps.com/ created
+ ✓  URL http: http://http-java-wildfly-bootable-jar-ehugonne1-code.apps.sandbox.x8i5.p1.openshiftapps.com/ created
+
+Syncing to component java-wildfly-bootable-jar
+ ✓  Checking files for pushing [1ms]
+ ✓  Syncing files to the component [4s]
+
+Executing devfile commands for component java-wildfly-bootable-jar
+ ✓  Executing watch-build command "echo 'It's watcher mode Baby !!!''" [2s]
+ ✓  Executing watch-run command "mvn ${MVN_ARGS_APPEND} -Dwildfly.bootable.arguments=\"-b=0.0.0.0\" org.wildfly.plugins:wildfly-jar-maven-plugin:dev-watch -e -DskipTests", if not running [2s]
+
+Pushing devfile component java-wildfly-bootable-jar
+ ✓  Changes successfully pushed to component
+----
+
+You can get the url to access your application with
+[source,options="nowrap"]
+----
+oc get route java-wildfly-bootable-jar
+----
+
+Now we can access the application on this URL.
+
+=== Building and debugging the application in developper mode
+
+To develop our application we provide a set of commands in to get feedbacks more quickly than with the default commands.
+
+[IMPORTANT]
+====
+The developper mode will only provision the server on the first build. That means that if you want to change the layers or the configuration of the server you will need to delete your application and push it again.
+====
+
+So let's start our server in developper mode with debug enabled.
+
+[source,options="nowrap"]
+----
+odo push --debug --build-command dev-build --debug-command dev-debug
+
+Validation
+ ✓  Validating the devfile [165733ns]
+
+Creating Kubernetes resources for component java-jboss-eap-xp-bootable-jar
+ ✓  Waiting for component to start [15s]
+
+Applying URL changes
+ ✓  URL tracing-ui: http://tracing-ui-java-jboss-eap-xp-bootable-jar-microprofile-config.apps-crc.testing/ created
+ ✓  URL http: http://http-java-jboss-eap-xp-bootable-jar-microprofile-config.apps-crc.testing/ created
+
+Syncing to component java-jboss-eap-xp-bootable-jar
+ ✓  Checking files for pushing [2ms]
+ ✓  Syncing files to the component [825ms]
+
+Executing devfile commands for component java-jboss-eap-xp-bootable-jar
+ ✓  Executing dev-build command "mvn -Pbootable-jar -Dinsecure.repositories=WARN -Dmaven.repo.local=/home/jboss/.m2/repository -Dmaven.test.skip=true -Ddev package" [11m]
+ ✓  Executing dev-debug command "mvn -Pbootable-jar -Dinsecure.repositories=WARN -Dwildfly.bootable.arguments=\"-b=0.0.0.0\" -Dwildfly.bootable.jvmArguments=\"-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:${DEBUG_PORT},server=y,suspend=n\" -Dmaven.repo.local=/home/jboss/.m2/repository wildfly-jar:dev", if not running [1s]
+
+Pushing devfile component java-jboss-eap-xp-bootable-jar
+ ✓  Changes successfully pushed to component
+----
+If we edit the source code and push our changes you can see that the deployment is quicker.
+
+Now let's try to debug our application.
+First we need to create a tunnel to access the listening debug port on our application, so in a new terminal we need to execute:
+[source,options="nowrap"]
+----
+odo debug port-forward -l 8787
+Started port forwarding at ports - 8787:5858
+----
+Now we can connect to debug our application on port 8787 with our IDE and debug as usual. Quite simple is'nt it ?
+
+=== Using the watch mode
+
+Now that we managed to build, run and debug our application on OpenShift we still need to execute commands to push our changes to the cloud. It would be nice to just have things updated automatically.
+odo provides a nice watch command that will push changes to OpenShift. But the bootable maven plugin offers also a watch mode that will have it recompile the application and redeploy it automatically when the code change.
+So let's take advantage of those two modes.
+First we need to start our application in debug and watch mode:
+[source,options="nowrap"]
+----
+odo push --debug --build-command watch-build --debug-command watch-debug
+
+Validation
+ ✓  Validating the devfile [34305ns]
+
+Creating Kubernetes resources for component java-wildfly-bootable-jar
+ ✓  Waiting for component to start [21s]
+
+Applying URL changes
+ ✓  URLs are synced with the cluster, no changes are required.
+
+Syncing to component java-wildfly-bootable-jar
+ ✓  Checking file changes for pushing [1ms]
+ ✓  Syncing files to the component [4s]
+
+Executing devfile commands for component java-wildfly-bootable-jar
+ ✓  Executing watch-build command "echo 'It's watcher mode Baby !!!''" [812ms]
+ ✓  Executing watch-debug command "mvn ${MVN_ARGS_APPEND} -Dwildfly.bootable.arguments=\"-b=0.0.0.0\" -Dwildfly.bootable.jvmArguments=\"-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:${DEBUG_PORT},server=y,suspend=n\" org.wildfly.plugins:wildfly-jar-maven-plugin:dev-watch -e", if not running [2s]
+
+Pushing devfile component java-wildfly-bootable-jar
+ ✓  Changes successfully pushed to component
+----
+
+Now we can set odo in watch mode too:
+[source,options="nowrap"]
+----
+odo watch
+Component is running in debug mode
+Please start port-forwarding in a different terminal
+Waiting for something to change in /home/ehsavoie/tmp/test
+----
+When you edit a file like `src/main/resources/META-INF/microprofile-config.properties`, you can see the following on the console:
+[source,options="nowrap"]
+----
+File /home/ehsavoie/tmp/test/src/main/resources/META-INF/microprofile-config.properties changed
+Pushing files...
+
+Validation
+ ✓  Validating the devfile [145787ns]
+
+Creating Kubernetes resources for component java-wildfly-bootable-jar
+ ✓  Waiting for component to start [132ms]
+
+Applying URL changes
+ ✓  URLs are synced with the cluster, no changes are required.
+
+Syncing to component java-wildfly-bootable-jar
+ ✓  Checking file changes for pushing [1ms]
+ ✓  Syncing files to the component [994ms]
+
+Executing devfile commands for component java-wildfly-bootable-jar
+ ✓  Executing watch-build command "echo 'It's watcher mode Baby !!!''" [808ms]
+ ✓  Executing watch-debug command "mvn ${MVN_ARGS_APPEND} -Dwildfly.bootable.arguments=\"-b=0.0.0.0\" -Dwildfly.bootable.jvmArguments=\"-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:${DEBUG_PORT},server=y,suspend=n\" org.wildfly.plugins:wildfly-jar-maven-plugin:dev-watch -e", if not running [851ms]
+Component is running in debug mode
+Please start port-forwarding in a different terminal
+Waiting for something to change in /home/ehsavoie/tmp/test
+----
+
+And of course since we used a debug command, you can connect your IDE on port 8787 and debug as usual.
+
+
+So as we have seen, developping on OpenShift is now very easy and simple and almost as slick as local development.
+All the more so as you can add several containers on your pod. In the sample devfile that is provided you have a Jaeger Server that is running. Connecting to its web interface (exposed throught a route too), you can see the traces produced by our application.
