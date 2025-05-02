@@ -1,0 +1,134 @@
+---
+layout: post
+title: Helm Chart for WildFly in OpenShift Developer Console
+aliases: [/news/2021/07/13/helm-chart-with-openshift-dev-console]
+date: 2021-07-13
+tags: wildfly openshift helm
+synopsis: You can build and deploy WildFly application using Helm Chart from the OpenShift Developer Console directly.
+author: jmesnil
+---
+
+We have recently released a Helm Chart for WildFly and wrote link:/news/2021/05/05/helm-charts-for-wildfly/[an article about it].
+Since that article, we have submitted this Helm Chart to the OpenShift Developer Console.
+
+It is now possible to build and deploy a WildFly application in OpenShift directly from its Developer Console.
+In this article, we will show the steps to do so.
+
+We will use Red Hat https://developers.redhat.com/developer-sandbox/[Developer Sandbox for Red Hat OpenShift] as our OpenShift cluster.
+
+For this article, we will use the same `microprofile-config` quickstart for WildFly that we used in our initial article about the Helm Chart.
+
+## Install a Helm Release
+
+Once you have logged in your OpenShift Developer Sandbox, the steps to install a WildFly application are:
+
+* Go to the OpenShift Developer Console (in the `</> Developer` perspective in the left hand menu)
+* Click on `+Add`, then `Helm Chart`, then `WildFly` (at the time of this writing, the exact version is `WildFly v1.4.0`)
+* Click on the `Install Helm Chart` button
+
+At this point, we need to configure the chart to be able to build and deploy the `microprofile-config` quickstart.
+
+* First, we will change the name of the release to `my-wildfly-app` in the `Release Name` text field instead of the default `wildfly` name.
+* We can configure the Helm Chart either using a `Form View` or a `YAML View`. We will use the `YAML View` by checking the button in the `Configure via` box.
+* Then, we will change the YAML content to configure the Helm Chart by copying the following content in the `YAML view` instead of the existing content:
+
+[source,yaml,nowrap]
+----
+build:
+  uri: https://github.com/wildfly/quickstart.git
+  ref: 24.0.0.SP1
+  mode: bootable-jar
+  env:
+  - name: ARTIFACT_DIR
+    value: microprofile-config/target
+  - name: MAVEN_ARGS_APPEND
+    # Use the bootable-jar-openshift profile to ensure that the application
+    # can be deployed on OpenShift but disable JKube as the image will be 
+    # built and deployed by this chart.
+    value: -am -pl microprofile-config -Pbootable-jar-openshift -Djkube.skip=true
+  - name: MAVEN_OPTS
+    value: '-XX:MetaspaceSize=251m -XX:MaxMetaspaceSize=256m'
+deploy:
+  replicas: 1
+  env:
+  - name: CONFIG_PROP
+    value: Hello from OpenShift
+----
+
+This is the https://raw.githubusercontent.com/wildfly/wildfly-charts/main/examples/microprofile-config/microprofile-config-app.yaml[same YAML content] that we used in the inital article when we install the Helm Chart from the command line.
+
+* Finally, we click on the `Install` button to finish the installation. This will open the `Topology` view with a graphical represenation of the Helm realease (named `my-widlfly-app`) and its associated resources:
+
+[#img-helm-release-toplogy-openshift] 
+.Helm Release of the application displayed in OpenShift Topology view 
+image::2021-07-helm-release-toplogy-openshift.png[Helm Release of the application displayed in OpenShift Topology view ]
+
+The Helm Release (abbreviated `HR`) is named `my-wildlfy-app` and uses the WildFly icon to shows that this release is managed by the Helm Chart for WildFly. It includes a `Deployment` resource (abbreviated `D`) also named `my-wildlfy-app`.
+
+When build is finished (the bottom-left icon will display a green check) and the application is deployed (the circle outline is in dark blue), you can go the the URL (using the top-right icon) from the route associated to the deployment, append `/config/value` and you will see the message:
+
+[source]
+----
+Hello from OpenShift
+----
+
+This message corresponds to the `CONFIG_PROP` environment variable defined in the Helm Chart YAML file.
+
+Congratulations, you have built and deployed your first Java application with WildFly on OpenShift!
+
+## Upgrade the Helm Release
+
+It is possible to upgrade the Helm Release to change its configuration from the OpenShift Developer Console.
+
+* Click on the `Helm` in the left hand menu
+* Click on the `my-wildfly-app` link to open the page specific to our Helm release.
+* Click on the `Actions` menu in the right of the page and select `Upgrade`. This will show the `Upgrade Helm Release` page.
+
+The YAML View in that page contains some additional content compared to what was initially pasted. The OpenShift developer console aggregates some of the chart's default values with the YAML content we provided.
+
+Let's say we want to modify the message returned by our application. We will change the value of the `CONFIG_PROP` environement variable to `Bonjour depuis OpenShift` (instead of `Hello from Openshift`)
+
+[source,yaml]
+----
+deploy:
+  ...
+  env:
+    - name: CONFIG_PROP
+      value: Bonjour depuis OpenShift
+----
+
+At this point, we click on `Upgrade` to upgrade the Helm release.
+
+As we have only modified the `deploy` section of the Helm release, we will reuse the existing application image and redeploy it with the new environment variable.
+Once the application is redeployed, if we click on the Route button and append `/config/value`, we see that the application has correctly been upgraded:
+
+[source]
+----
+Bonjour depuis OpenShift
+----
+
+[WARNING]
+====
+Prior to OpenShift 4.8, there was a bug preventing to directly upgrade the Helm Release.
+
+To workaround that error, we had to reload the initial Chart version and apply our changes.
+
+1. Copy the modified content of the `YAML view`.
+2. Change the "Chart version" in the right hand corner from `1.4.0 / App Version 24.0` to `1.4.0 / App Version 24.0 (Provided by Red Hat Helm Charts)`. A confirmation window will open, click on `Proceed` to accept the change
+3. Paste the YAML content that was just copied back in the `YAML view`
+
+We can now click on the `Upgrade` button to finally upgrade the Helm release.
+====
+
+## Conclusion
+
+Now that the Helm Chart for WildFly is included by default in OpenShift Developer console, it is straightforward to build and deploy WildFly application in an OpenShift cluster.
+
+It is also possible to upgrade the Helm release so that it remains the source of any configuration from the application, although we need to reset the Chart version every time we want to apply such an upgrade.
+
+## More information
+
+* link:/news/2021/05/05/helm-charts-for-wildfly/[Initial Article about the Helm Chart for WildFly]
+* https://github.com/wildfly/wildfly-charts[wildfly-charts Project Page]
+* https://github.com/wildfly/wildfly-charts/blob/main/charts/wildfly/README.md[`wildfly` Chart documentation]
+* https://developers.redhat.com/developer-sandbox[Developer Sandbox for Red Hat OpenShift]

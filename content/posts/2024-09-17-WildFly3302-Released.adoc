@@ -1,0 +1,42 @@
+---
+layout: post
+title:  "WildFly 33.0.2 is released!"
+aliases: [/news/2024/09/17/WildFly3302-Released]
+date:   2024-09-17
+tags:   announcement release
+author: darranl
+description: WildFly 33.0.2.Final is now available for download.
+---
+
+WildFly 33.0.2.Final is now available link:https://wildfly.org/downloads[for download].
+
+Typically after a major release of WildFly we follow up with one small bug fix release in the coming weeks before moving
+on to the next major release, however due to the nature of the issues fixed in this release we have decided to release
+one more release so I am pleased to confirm WildFly 33.0.2.Final is now available.
+
+
+The following issues were resolved in 33.0.2:
+
+
+== Component Upgrade
+
+* [https://issues.redhat.com/browse/WFLY-19705[WFLY-19705]] - Upgrade WildFly Core to 25.0.2.Final
+* [https://issues.redhat.com/browse/WFLY-19730[WFLY-19730]] - CVE-2024-8391 Upgrade Vert.x to 4.5.10
+
+
+Issues resolved in the WildFly Core update included with WildFly 33.0.2 were:
+
+== Component Upgrade
+
+* [https://issues.redhat.com/browse/WFCORE-6968[WFCORE-6968]] - Upgrade WildFly Elytron to 2.5.2.Final
+* [https://issues.redhat.com/browse/WFCORE-6973[WFCORE-6973]] - CVE-2024-7885 Upgrade Undertow to 2.3.17.Final
+
+
+Issues resolved in the WildFly Elytron upgrade were:
+
+== Bug
+
+* [https://issues.redhat.com/browse/ELY-2797[ELY-2797]]- NullPointerException in OidcClientConfiguration.resolveUrls if parameter &quot;request_parameter_supported&quot; is not present in openid-configuration.
+
+Enjoy!
+

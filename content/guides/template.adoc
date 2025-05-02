@@ -1,0 +1,41 @@
+---
+layout: guide
+---
+= TITLE OF THE GUIDE
+:summary: ONELINE EXPLANATION OF THE GUIDE
+:includedir: _includes
+{#include partials/guides/attributes.adoc /}
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 10
+
+TODO: Add a summary of what you achieve in this guide.
+Something like:
+
+In this guide, you will learn how to setup and use Eclipse MicroProfile Config in your application.
+
+{#include partials/guides/prerequisites.adoc /}
+* Any additional prerequisites specific to this guide (eg you have completed a previous guide)
+
+{|
+== A section
+
+Lorem ipsum
+
+== Another section
+
+
+// Always keep a what's next? section to let the user know what could be achieved next
+== What's next?
+
+Something like:
+
+MicroProfile Config provides multiple options to read the configuration from various sources (System properties, environment variables, ConfigMaps and Secrets from Kubernetes), you can learn more by reading WildFly's https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration Guide] or reading the specification at https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config website].
+
+// Always add this section last to link to any relevant content
+[[references]]
+== References
+
+* https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config]
+* https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration]
+|}

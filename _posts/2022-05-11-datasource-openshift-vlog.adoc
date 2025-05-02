@@ -1,9 +1,0 @@
----
-layout: post
-title:  'Vlog: WildFly Datasource configuration on OpenShift'
-date:   2022-05-11
-tags:   dataources management openshift vlog
-synopsis: This video demonstrates how you can configure and deploy a Jakarta EE application that connects to a PostgreSQL database on OpenShift.
-author: yborgess
-link: https://www.youtube.com/watch?v=4acHNgSdwFk
----

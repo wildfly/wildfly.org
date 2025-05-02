@@ -1,0 +1,10 @@
+---
+layout: guide-getting-started
+---
+= \{get-enterprise-ready}
+{#include partials/guides/titles.adoc /}
+
+
+Back to Guides
+
+< link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
