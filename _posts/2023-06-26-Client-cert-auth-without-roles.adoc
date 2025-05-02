@@ -1,9 +1,0 @@
----
-layout: post
-title: 'Using Certificate Based Authentication with Mutual TLS without Roles'
-date: 2023-06-26
-tags: #authentication #client-cert #tls 
-synopsis: How to secure a web application deployed to WildFly with mutual TLS and the CLIENT_CERT HTTP authentication mechanism.
-author: prarthonapaul
-link: https://wildfly-security.github.io/wildfly-elytron/blog/Client-cert-auth-without-roles/
----

@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Configuring the Digest Mechanism to Make Use of Additional Algorithms'
+date: 2023-05-16
+tags: authentication mechanism algorithm digest sha-256 sha-512-256
+synopsis: An overview of how to configure the SHA-256 and SHA-512-256 algorithms for the HTTP Digest authentication mechanism.
+author: dvilkola
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/specify-http-digest-algorithms/
+---

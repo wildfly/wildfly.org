@@ -1,0 +1,35 @@
+---
+layout: post
+title:  "WildFly MicroProfile Reactive Specifications Feature Pack 1.0.0.Final Released!"
+aliases: [/news/2020/11/05/WildFly-MicroProfile-Reactive-specifications-feature-pack-1.0]
+date:   2020-11-05 12:00:00 -0000
+tags:   wildfly galleon microprofile reactive
+author: kkhan
+description: WildFly MicroProfile Reactive Specifications Feature Pack 1.0.0.Final Released!
+---
+
+I am happy to announce the 1.0.0.Final release of the MicroProfile Reactive specifications feature pack for WildFly. It is tested against both WildFly 20 and 21.
+
+The main changes since 1.0.0.Beta1 are essentially upgrades to the latest SmallRye implementations of all the MicroProfile Reactive specifications, and fixing problems related to memory leaks and redeployments. The MicroProfile Reactive specifications are:
+
+* link:https://github.com/eclipse/microprofile-reactive-messaging/releases[MicroProfile Reactive Messaging 1.0] - this is a framework for building event-driven, data streaming and event sourcing applications using CDI. The streams, or channels, can be backed by a variety of messaging technologies. We currently ship connectors for: Apache Kafka, AMQP and MQTT.
+* link:https://github.com/eclipse/microprofile-reactive-streams-operators/releases[MicroProfile Reactive Streams Operators 1.0] - Reactive Messaging is built on Reactive Streams. RSO gives you a way to manipulate and handle those streams.
+* link:https://github.com/eclipse/microprofile-context-propagation/releases[MicroProfile Context Propagation 1.0] - The traditional way of propagating state using ThreadLocals does not work well in the reactive world. Async/reactive code often creates a 'pipeline' of code blocks that get executed 'later' - in practice after the method defining them has returned. MicroProfile Context Propagation is there to help you deal with this, so that your deferred code can still for example latch onto the transaction initiated by the calling method.
+
+We have also renamed the layers (mainly by prefixing `microprofile-` to their names) to bring them in line with the upcoming work to eventually bring
+this into WildFly. As mentioned in the link:https://www.wildfly.org/news/2020/06/18/Introducing-the-WildFly-MicroProfile-Reactive-specifications-feature-pack/[original 1.0.0.Beta1 announcement] this feature pack is an incubator for WildFly.
+
+The 1.0.0.Beta1 announcement also contains some background information about the specifications, as well as how to install and use the feature pack, so be sure to read that first if you are not familiar with this feature pack. Also, the link:https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/tree/1.0.0.Final[feature pack README] contains more detailed information about how to provision servers with this feature pack. We will not announce every single bug fix release here, so please make sure to check for the latest release on the link:https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/releases[releases page] (links to the tags with an up-to-date `README` are just to the left of each release in the list).
+
+== What is coming up?
+We plan to provide Reactive Messaging in WildFly for either WildFly 22 or 23. The initial focus for WildFly will be on MicroProfile Reactive Messaging 1.0 with support for Kafka. This means that MicroProfile Reactive Messaging, MicroProfile Reactive Streams Operators and the Kafka connector will be moved over to WildFly.
+That WIP currently lives in the https://github.com/kabir/wildfly/tree/reactive-port branch. MicroProfile Context Propagations which we don't see as immediately useful for the use-cases provided by MicroProfile Reactive Messaging 1.0 will remain in the feature pack. Also the AMQP and MQTT connectors will remain in the feature pack for now.
+
+In short WildFly will eventually contain parts of what the feature pack currently contains, while the remainder remains in a trimmed version of the feature pack.
+
+The feature pack link:https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/tree/master[master] branch will still be where we cut the stable releases from if we need to fix something for the current incarnation of the feature pack. For example if we find some bugs, or if we don't make the cutoff for WildFly 22.
+
+The reorganisation of the feature pack to deal with the partial migration of the MicroProfile Reactive specifications to WildFly will happen in the feature pack https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/tree/development[development] branch.
+
+== Feedback
+We're keen to hear your feedback! Please raise any issues found at https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/issues.

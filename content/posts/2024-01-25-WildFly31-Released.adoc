@@ -1,0 +1,171 @@
+---
+layout: post
+title:  "WildFly 31 is released!"
+aliases: [/news/2024/01/25/WildFly31-Released]
+date:   2024-01-25
+tags:   announcement release
+author: bstansberry
+description: WildFly 31 Final is now available for download.
+---
+
+
+I'm pleased to announce that the new WildFly and WildFly Preview 31.0.0.Final releases are available for download at https://wildfly.org/downloads.
+
+== New and Notable
+
+This quarter there's a lot to talk about beyond new things in the core server itself, but I'll start with what's new in the server.
+
+=== Application Server Features
+
+* **MicroProfile updates** -- We've updated our link:https://microprofile.io[MicroProfile] subsystems to the versions in MicroProfile 6.1. (We don't support MicroProfile Metrics, so we are not a compatible MicroProfile 6.1 Platform implementation, but otherwise we do aim to keep up with the platform).
+* **Hibernate** -- I always hear a lot of community demand for updates to our Hibernate integration, so I'm pleased that in WildFly 31 we were able to move from Hibernate ORM 6.2 up to the 6.4.2 release, the latest available ORM version. Along with that we were able to move to Hibernate Search 7.0.
+* **Jakarta MVC 2.1** -- In link:https://docs.wildfly.org/31/WildFly_and_WildFly_Preview.html[WildFly Preview] we added support for link:https://www.mvc-spec.org/[Jakarta MVC], using the implementation provided by the link:https://projects.eclipse.org/projects/ee4j.krazo[Eclipse Krazo] project. WildFly Preview provides a new `mvc-krazo` subsystem, along with a new `mvc-krazo` Galleon layer that you can add to your provisioning configuration. Please try it out and give us feedback. We hope to bring this subsystem to standard WildFly later this year.
+* **AMQP and Reactive Messaging** -- The MicroProfile Reactive Messaging subsystem link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-15405_microprofile_reactive_messaging_amqp.html[now allows] exchanging of messages with an AMQP broker via version 1.0 of the AMQP protocol.
+* **Subsystem authoring** -- WildFly Core 23 now includes two new Maven modules, `subsystem` and `service`. Both of these aim to make developing and maintaining WildFly extensions easier and more productive. The link:https://github.com/wildfly/wildfly-core/tree/23.0.1.Final/subsystem[subsystem module] library assists you in writing a proper subsystem configuration model and management API, while the link:https://github.com/wildfly/wildfly-core/tree/23.0.1.Final/service[service module] helps you properly integrate your subsystem with WildFly's link:https://jboss-msc.github.io/jboss-msc/manual/[service container].
+* **Stability levels** -- WildFly 31 introduces the notion of server functionality having four different link:https://docs.wildfly.org/31/Admin_Guide.html#Feature_stability_levels[stability levels] (`experimental`, `preview`, `community`, `default`), with users having the ability when starting WildFly to opt into making less stable features available, or to restrict WildFly to only providing the most stable features. This is part of the overall feature development strategy I outlined link:https://www.wildfly.org/news/2023/11/22/WildFly_Feature_Development_Process/[last November]. In WildFly 31 we're just getting started with this -- introducing the core capability to the server and adding one new feature at the `community` stability level....
+* **Configuration export** -- That `community` level feature allows you to use the CLI to link:https://docs.wildfly.org/wildfly-proposals/core/WFCORE-4758_Simple_config_export_for_a_server_as_an_attachment_for_standalone_or_domain_mode.html[export a WildFly server's configuration to a file] that can then be used for another server. WildFly has long allowed you to read the server configuration in the CLI, but the presentation format was not well suited to taking the information and using it elsewhere. This has been enhanced. A particular use case for this would be exporting a domain-mode server's configuration, where the resulting file can be used to run an equivalent standalone server.
+
+Moving on from what's new in the server itself, we come to...
+
+=== WildFly Glow
+
+Ever since the introduction of link:https://docs.wildfly.org/galleon/[Galleon] several years back, a major WildFly focus has been tooling to improve our users' ability to easily provision an optimal WildFly installation, on-premise and particularly for the cloud. I'm very excited to announce Beta availability of a major advance in this area -- the set of provisioning tools we call link:https://github.com/wildfly/wildfly-glow/blob/main/README.md[WildFly Glow].
+
+The WildFly Glow tools (a CLI application and a Maven plugin) will analyze your application artifact, determine what WildFly feature-packs and Galleon layers are needed to run your application, and make suggestions about other features (e.g. TSL support) that you may want to include in your optimized WildFly installation. You can take the information WildFly Glow provides and use it in your own provisioning configuration, or you can have WildFly Glow provision a server, bootable jar or Docker image for you.
+
+The link:https://docs.wildfly.org/wildfly-glow[WildFly Glow documentation] gives you a good sense of what WildFly Glow is about. But to really help you understand WildFly Glow's benefits, Jean Francois Denise has several excellent news posts about WildFly Glow and WildFly provisioning in general that will begin appearing here early next week. So be sure to keep an eye out for those, and be sure to try it out!
+
+=== Easier Learning
+
+Making it easier to use WildFly was a major focus for the WildFly developer community last year, and during the WildFly 31 cycle those efforts bore a lot of fruit.
+
+==== Getting Started
+
+For WildFly 30 we introduced a new link:https://github.com/wildfly/wildfly-archetypes/tree/31.0.0.Final/wildfly-getting-started-archetype[Getting Started maven archetype], and for WildFly 31 we've made use of that archetype in a new link:https://www.wildfly.org/get-started/[Get Started page] on wildfly.org.
+
+The guide on that page was an initial step in an effort to improve WildFly documentation by going beyond reference material with the addition of focused, task-oriented...
+
+==== User Guides
+
+This section is a bit of a "preview of coming attractions". The "Get Started with WildFly" guide I just mentioned is the first in a set of user guides that we'll be publishing shortly in a new "Guides" section of this site. The first batch will focus on logging, security, MicroProfile Config, and Ansible, with more to come. Each guide will show the steps to accomplish a specific, focused task, with links to guides showing any prerequisites and to guides for related tasks. This is something WildFly has long needed, and we're very excited to see it happening!
+
+==== Quickstart Enhancements
+
+There are a number of new things in the link:https://github.com/wildfly/quickstart/tree/31.0.0.Final[WildFly Quickstarts].
+
+* **Common enhancements** -- Eduardo Martins led a massive effort to improve our dozens of quickstarts:
+** All quickstarts demonstrate provisioning a WildFly server or bootable jar with the quickstart deployment included, as an alternative to the traditional method of deploying the quickstart to an externally managed WildFly instance. The quickstart README files use consistent instructions for how to do this.
+** For any quickstart where it is technically possible (i.e the large majority), the quickstart is able to run on OpenShift, using a Helm chart to deploy. The quickstart README files also use consistent instructions for how to do this.
+** Quickstarts all include basic smoke and quickstart-specific tests, with the tests able to run against an externally managed WildFly server, against the server or bootable jar provisioned by the quickstart, and against the quickstart application + server deployed on OpenShift.
+* **New Quickstarts** -- We've also introduced two new quickstarts:
+** link:https://github.com/wildfly/quickstart/tree/31.0.0.Final/micrometer[Micrometer]
+** link:https://github.com/wildfly/quickstart/tree/31.0.0.Final/microprofile-lra[MicroProfile LRA]
+* **Browsable Quickstarts** -- The traditional expected use of quickstarts is the user clones the link:https://github.com/wildfly/quickstart/tree/31.0.0.Final[Quickstart git repository], builds the quickstarts and then explores them locally. However, users may also want to browse the quickstart documents and source code online. Browsing the quickstart GitHub repo is not very friendly for that, as it shows raw adoc files, not the rendered html. So, beginning with WildFly 31 we now publish the rendered documentation for the latest releases quickstarts on the link:https://docs.wildfly.org/quickstart/[WildFly documentation site]. You can easily read the quickstart instructions and browse into the quickstart source code. This portion of the documentation site will be updated with each .Final release of the quickstarts.
+* **Easy Quickstart Download** -- Another old school way of consuming quickstarts is to download a zip with all the quickstart source, unzipping and going from there. Beginning with WildFly 31 we'll make this easier by including a link to a downloadable quickstart zip in each release's section on link:https://wildfly.org/downloads[the downloads page].
+
+==== Feature Analyses
+
+For a long time now the WildFly developers have been writing analysis documents whenever we introduce new features. You may have seen links to the documents in previous release announcements, as I often link to them when discussing new features. They are meant to provide a feature overview and discuss use cases, clearly enumerate requirements, and provide various other high-level information about the feature.
+
+There's a lot of good information in these documents, so we've begun publishing them on the WildFly documentation site. Have link:https://docs.wildfly.org/wildfly-proposals/[a look] and you may learn something new about your favorite WildFly feature!
+
+What's displayed there are the analyses for merged features; if you're interested in following what may be coming in the future, keep an eye on the link:https://github.com/wildfly/wildfly-proposals/pulls[wildfly-proposals] GitHub repo.
+
+
+== Supported Specifications
+
+=== Jakarta EE
+
+WildFly 31 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on both Java SE 11 and Java SE 17. WildFly is also a compatible EE 10 Core Profile implementation when running on SE 21.
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 10 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_31.0.0.Final/jakarta-full-platform-jdk11.adoc#tck-results[SE 11]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_31.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17]
+.2+.<|  Jakarta EE 10 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_31.0.0.Final/jakarta-web-profile-jdk11.adoc#tck-results[SE 11]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_31.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17]
+.3+.<| Jakarta EE 10 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_31.0.0.Final/jakarta-core-jdk11.adoc#jakarta-core-profile-1001-tck-java-se-11-results[SE 11]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_31.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_31.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21]
+|=======================================================================
+
+
+=== MicroProfile
+
+WildFly supports numerous MicroProfile specifications. Because we no longer support MicroProfile Metrics, WildFly 31 cannot claim to be a compatible implementation of the MicroProfile 6.1 specification. However, WildFly's MicroProfile support includes implementations of the following specifications in our "full" (e.g. `standalone-full.xml`) and "default" (e.g `standalone.xml`) configurations as well as our "microprofile" configurations (e.g. `standalone-microprofile.xml`):
+
+[cols=",,",options="header"]
+|=======================================================================
+|MicroProfile Technology |WildFly Full/Default Configurations |WildFly MicroProfile Configuration
+
+|MicroProfile Config 3.1 |X |X
+
+|MicroProfile Fault Tolerance 4.0 |-- |X
+
+|MicroProfile Health 4.0 |-- |X
+
+|MicroProfile JWT Authentication 2.1 |X |X
+
+|MicroProfile LRA 2.0 |-- |X
+
+|MicroProfile OpenAPI 3.1 |-- |X
+
+|MicroProfile Reactive Messaging 3.0 |-- |--
+
+|MicroProfile Reactive Streams Operators 3.0 |-- |--
+
+|MicroProfile Rest Client 3.0|X |X
+
+|MicroProfile Telemetry 1.1|-- |X
+|=======================================================================
+
+link:https://github.com/wildfly/certifications/blob/MP6.1/WildFly_31.0.0.Final/microprofile-6.1-selected-specifications/microprofile-6.1-selected-specifications-certification.adoc[Compatibility evidence] for the above specifications that are part of MicroProfile 6.1 can be found in the WildFly Certifications repository on GitHub.
+
+
+== Java SE Support
+
+=== Recommended SE Versions
+
+Our recommendation is that you run WildFly 31 on Java SE 17, as that is the latest LTS JDK release where we have completed the full set of testing we like to do before recommending a particular SE version. WildFly 31 also is heavily tested and runs well on Java 11.
+
+One reason to use later SE versions is because it gets you ahead of the curve as WildFly and other projects begin to move on from supporting older SE releases.
+
+In the link:https://www.wildfly.org/news/2023/10/18/WildFly30-Released/[WildFly 30 release announcement] I indicated that WildFly 30 would likely be the last feature release to support SE 11. Obviously, that is not the case as we still support SE 11. We're continuing to evaluate our plans around SE 11 support, and I'll be sure to post here as we make decisions. I do encourage WildFly users to prepare now for any eventual change move off of SE 11.
+
+Please note that WildFly runs in classpath mode.
+
+=== Java SE 21
+
+WildFly 31 also runs well on SE 21, the latest LTS release. By "runs well" I mean that we get the same results on SE 21 when running WildFly's and WildFly Core's own extensive test suites as we do when running SE 17 or SE 11.
+
+As noted above, we also pass the Jakarta EE 10 Core Profile TCK when running on SE 21, as well as the MicroProfile TCKs for the various specifications we support.
+
+We do not yet include SE 21 in the preceding "Recommended SE Versions" section because:
+
+ * We have not completed our program of seeing how WildFly on SE 21 does on the Jakarta EE Full Platform and Web Profile TCKs.
+ * We need to do further investigation into how the projects producing the various libraries we integrate are testing on SE 21.
+
+We made good progress on these points during the WildFly 31 development cycle, and continuing to do so is a major priority for the WildFly project in 2024.
+
+If you are trying to evaluate what SE 21 means for your applications, I encourage you to look to WildFly as your evaluation platform.
+
+== WildFly Mini-Conference!!!
+
+We are busy at work on preparations for a WildFly online mini-conference in the coming weeks. We'd love to see you there! Keep an eye on this space, link:https://twitter.com/WildFlyAS[@WildFlyAS on X] or link:https://fosstodon.org/@wildflyas[@wildflyas on fosstodon] for information about dates and the conference agenda!
+
+== Release Notes
+
+The full WildFly 31 release notes are link:https://github.com/wildfly/wildfly/releases/tag/31.0.0.Final[available in GitHub].  Issues fixed in the underlying link:https://issues.redhat.com/issues/?filter=12429094[WildFly Core 23] releases are listed in the WildFly Core JIRA.
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA].
+
+Meanwhile, we're busy at work on WildFly 32!
+
+Best regards,
+
+Brian

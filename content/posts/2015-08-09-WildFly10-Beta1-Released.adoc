@@ -1,0 +1,25 @@
+---
+layout: post
+title:  "WildFly 10 Beta is released!"
+aliases: [/news/2015/08/09/WildFly10-Beta1-Released]
+date:   2015-08-09 14:50:00 -0600
+tags:   announcement releas
+author: jgreene
+---
+
+The WildFly 10.0.0.Beta1 release is now available link:/downloads[for download]!
+
+Notable highlights include:
+
+- Continued Java EE7 Support
+- Java 8+ Required
+- ActiveMQ Artemis
+- link:/news/2015/08/10/Javascript-Support-In-Wildfly/[JavaScript Support with Hot Reloading]
+- Offline CLI Support For Domain Mode
+- HA Singleton Deployments
+- Migration Operations for Legacy Subsystems
+- Capabilities and Requirements
+- Hibernate 5
+- Infinispan 8
+
+These are covered in more detail on the link:https://developer.jboss.org/wiki/WildFly1000Beta1ReleaseNotes[official 10.0.0.Beta1 Release Notes wiki page]

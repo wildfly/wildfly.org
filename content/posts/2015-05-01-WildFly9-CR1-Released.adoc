@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "WildFly 9 CR1 is released!"
+aliases: [/news/2015/05/01/WildFly9-CR1-Released]
+date:   2015-05-01 13:10:00 -0600
+tags:   announcement release
+author: jgreene
+---
+
+I'm happy to announce link:/downloads/[WildFly 9.0.0.CR1]! WildFly 9 builds off of WildFly 8's Java EE7 support, and adds many new capabilities, including intelligent load balancing, HTTP/2 support, a new offline CLI mode, graceful single node shutdown, and a new Servlet-only distribution. For more details, check out the link:https://developer.jboss.org/wiki/WildFly900CR1ReleaseNotes[full release notes].
+
+Provided no major issues are discovered, we plan to move to Final fairly quickly, sometime in May.
+
+Enjoy!
