@@ -1,11 +1,4 @@
-_site
-.sass-cache
-.jekyll-cache
-.jekyll-metadata
-
-## Bundler
-vendor/
-.bundle/
+target
 
 ## IDE
 .settings

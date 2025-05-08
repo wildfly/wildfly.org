@@ -1,0 +1,11 @@
+---
+layout: post
+title: 'Trying Out An Upcoming Security Feature for WildFly on OpenShift'
+date: 2024-03-13
+tags: oidc openshift authentication scopes
+synopsis: How to deploy a WildFly app on OpenShift using an upcoming feature that introduces the ability to add additional scope values when securing applications using OpenID Connect.
+author: prarthonapaul
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/in-progress-wildfly-feature-on-openshift/
+---
+
+A future release of WildFly will include the ability to add additional scope values when securing applications using OpenID Connect (OIDC). This blog post demonstrates how to secure a WildFly application using OpenID Connect and configure scope values to request additional claims using an in-progress version of the feature. This feature adds the ability to specify additional scope values in the authentication request for applications secured using OIDC. For updates on the status of the feature, please keep an eye on https://issues.redhat.com/browse/WFLY-16532[WFLY-16532]. We will also walk through how to deploy this feature on the cloud using https://developers.redhat.com/developer-sandbox[OpenShift].

@@ -1,0 +1,62 @@
+---
+layout: post
+title:  "WildFly Impact of the Apache Log4j Security Vulnerabilities"
+aliases: [/news/2021/12/13/Log4j-CVEs]
+date:   2021-12-13
+tags:   security CVE
+author: bstansberry
+description: WildFly Impact of the Apache Log4j Security Vulnerabilities
+---
+
+WildFly users are of course interested in the impact of the recently disclosed security vulnerabilities related to Apache Log4j. On Friday the @WildFlyAS Twitter account https://twitter.com/WildFlyAS/status/1469362190536818688[tweeted a tl;dr; summary of how the critical impact CVE-2021-44228 vulnerability affects WildFly]. In this post I want to provide further details, information on how users who package the log4j-core artifact in their WildFly application deployments can mitigate the risk, and provide information on how the https://access.redhat.com/security/cve/CVE-2021-4104[recently disclosed moderate Log4j 1 vulnerability] affects WildFly.
+
+== CVE-2021-44228
+
+https://nvd.nist.gov/vuln/detail/CVE-2021-44228[CVE-2021-44228] is a critical impact zero-day vulnerability in the Apache Log4j log4j-core library whereby a remote attacker who can control log messages or log message parameters can execute arbitrary code on a server via a JNDI lookup.
+
+I won't get into the technical details of the exploit here; instead I refer you to https://www.lunasec.io/docs/blog/log4j-zero-day/[this nice writeup on it].
+
+This vulnerability is in code in the Log4j 2 `org.apache.logging.log4j:log4j-core` artifact.  *The WildFly application server project does not ship this artifact, and it never has.* So, the only way an application running on WildFly would be vulnerable to the CVE-2021-44228 vulnerability is if the log4j-core artifact has been added to the server installation, either via a user-provided JBoss Modules module, or more likely by packaging log4j-core in an application deployment artifact.
+
+Note that since WildFly 22, WildFly does ship the Log4j 2 `org.apache.logging.log4j:log4j-api` artifact, and up to WildFly 26.0.0.Beta1 the version of that artifact matches the CVE-2021-44228 CPE. However, _the log4j-api artifact does not contain the vulnerable code._. Note that even though the artifact on WildFly 26.0.0.Beta1 does not have the vulnerability, to help avoid confusion the upcoming 26.0.0.Final release will move to the 2.15.0 version of the artifact, which does not match the CVE-2021-44228 CPE.
+
+=== Mitigation Strategies
+
+If your application does include the log4j-core artifact, the following are steps you can take to mitigate any vulnerability:
+
+==== Set `formatMsgNoLookups=true`
+
+Since its 2.10 release, Log4j provides a configuration option that lets you turn off the JNDI lookup behavior that results in the vulnerability.
+
+To use this, update the `$WILDFLY_HOME/bin/standalone.conf` or `$WILDFLY_HOME/bin/domain.conf` file (or, for Windows users, the `.bat` or `.ps1` variants of those) to add `-Dlog4j2.formatMsgNoLookups=true` to the value of the `JAVA_OPTS` environment variable. (Which file you update depends on whether you are running a standalone server or a domain mode host.)
+
+Note that if you are using a version of log4j-core prior to 2.10 this will have no effect.
+
+If you're on a recent enough log4j-core version setting this is the quickest mitigation, but whether you can use it or not as soon as you can you should also...
+
+==== Upgrade log4j-core to the 2.15.0 or later release
+
+The Apache Log4j project has https://logging.apache.org/log4j/2.x/download.html[released a 2.15.0 version] that fixes the flaw. If you are packaging log4j-core in your application we recommend updating your deployment artifact to 2.15.0 or later as soon as possible.
+
+Note that I've seen user reports that upgrading to 2.15.0 in a deployment is problematic when the container is providing an earlier release of the log4j-api artifact. This should not be a problem if you are following the https://docs.wildfly.org/25/Admin_Guide.html#how-do-i-log4j2[documentation for how to incorporate log4j-core in your application]. If you are packaging log4j-core, you should exclude any module dependency on the log4-api provided by WildFly and instead package log4j-api in your deployment.
+
+
+== CVE-2021-4104
+
+Recently Red Hat https://access.redhat.com/security/cve/CVE-2021-4104[reported another security vulnerability affecting Apache Log4j], in this case Log4j 1. They rated the impact of this vulnerability as "Moderate impact", unlike their https://access.redhat.com/security/cve/CVE-2021-44228[view of CVE-2021-44228] which was rated as "Critical impact". (For more on the difference between "Critical" and "Moderate", see https://access.redhat.com/security/updates/classification/[Red Hat's severity ratings documentation].)
+
+CVE-2021-4104 has some surface similarity to CVE-2021-44228, in that both relate to a logging library doing a JNDI lookup, with a risk that that library could be fooled into doing a lookup and deserialization of content from an untrustworthy source. In the CVE-2021-4104 case the lookups can be performed by the `org.apache.log4j.net.JMSAppender` class, a class that is used if an application configures a log appender meant to write to an external JMS topic. The `JMSAppender` lookup is quite different from the CVE-2021-44228 one though, in that the name being looked up is meant to be of a string provided as part of the appender's configuration, not one that is incorporated in a log message. It is significantly easier to get a server to inject a malicious string into a log message than it is to inject one into the container configuration. The latter would typically require some sort of privileged access to the server. This increased difficulty of exploit is one of the https://access.redhat.com/security/updates/classification/[factors that Red Hat uses] when deciding the severity of a vulnerability.
+
+WildFly does not ship Apache Log4j 1 itself, but the `org.jboss.logmanager:log4j-jboss-logmanager` artifact we ship shades the Log4j 1 classes, including `JMSAppender`. `JMSAppender` has been present in WildFly or JBoss AS at least as far back as JBoss AS 7.1, and probably much farther.
+
+However, our attempts to configure WildFly to use the JMSAppender have been unsuccessful, failing before the JMSAppender code reaches a point where it does any JNDI lookup. This is because the JBoss Modules module that packages `org.jboss.logmanager:log4j-jboss-logmanager` does not include a dependency on the module that provides the `javax.naming` package, resulting in a ClassNotFoundException if the class is used. So at this point we don't see an exploit involving normal modular use of the `org.jboss.logmanager:log4j-jboss-logmanager` artifact we ship. Exploits would likely require the use of reflection.
+
+If you package Apache Log4j 1 in your application, be careful not to expose to untrusted callers any mechanism that would allow them to access the `JMSAppender` class or configure instances of it. Which is the right thing to do in general! Running with the JVM security manager enabled is another way to defend against attacks based on getting your application to make unexpected calls to external systems.
+
+
+If you have any questions about any of the above, I encourage you to ask on the https://groups.google.com/g/wildfly[WildFly forums].
+
+
+Best regards,
+
+Brian

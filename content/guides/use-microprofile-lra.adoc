@@ -1,0 +1,171 @@
+---
+layout: guide
+---
+= Using MicroProfile LRA
+:summary: Learn how to use MicroProfile LRA With WildFly.
+:includedir: _includes
+{#include partials/guides/attributes.adoc /}
+
+In this guide, you will learn how to setup and use Eclipse MicroProfile LRA in your application.
+
+{#include partials/guides/prerequisites.adoc /}
+
+{|
+== Introduction
+
+https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html[MicroProfile Long Running
+Actions (LRA)] is a specification that defines the protocol and an API for distributed transactions based on the
+saga pattern and user-defined compensations. In WildFly 28.0.0.Final, we introduced the integration of
+https://narayana.io/[Narayana LRA] which implements this specification. In this guide, we look into how you can enable
+LRA in your WildFly installation and how you can use LRA in your applications.
+
+== Overview of the LRA protocol
+
+We provide only a high-level overview of the LRA protocol in this post. The full overview of the protocol is available
+at https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html.
+
+In LRA, the specification API utilizes annotations from the `org.eclipse.microprofile.lra.annotation` package. The main
+annotation is `@LRA` which controls the life cycle of the long running action. It's use might seem similar to the use of
+`@Transactional` annotation from JTA, however, the transaction characteristics differ greatly. If you are interested in
+the comparison of the saga pattern to the ACID transactions, you can find an explanation in this talk from DevoxxUK -
+https://www.youtube.com/watch?v=7DI4xXv1xGU.
+
+The Narayana implementation utilizes the coordinator orchestration of the LRAs. The LRA coordinator is a standalone
+service that is responsible for the management operations of the LRAs started in the system. When any LRA participant
+(user service) wants to start a new LRA, it contacts the LRA coordinator that in turn returns the LRA ID of the newly
+started LRA that can be propagated by the LRA participant to any other services. When an LRA-aware service receives the
+LRA ID, it can optionally enlist within the same LRA, which is again done by the enlistment call to the coordinator. When
+the LRA finishes (success or failure), the LRA coordinator is responsible for invocations of the completions or the
+compensations callbacks of all enlisted LRA participants.
+
+== Enabling the MicroProfile LRA subsystems
+
+The integration of the LRA specification is included in two separate subsystems:
+
+- `microprofile-lra-coordinator` - The LRA coordinator responsible for starting, managing, and recovery of the LRAs.
+
+- `microprofile-lra-participant` - The client library utilized in user deployments to participate in distributed LRAs and define compensation and completition callbacks.
+
+=== Required extensions and subsystems configuration
+
+The LRA extensions are not included in the standard configurations included with the WildFly application server. They need
+to be explicitly enabled either in the configuration XML or by using CLI operations:
+
+[source,bash]
+----
+[standalone@localhost:9990 /] /extension=org.wildfly.extension.microprofile.lra-coordinator:add
+{"outcome" => "success"}
+
+[standalone@localhost:9990 /] /subsystem=microprofile-lra-coordinator:add
+{
+    "outcome" => "success",
+    "response-headers" => {
+        "operation-requires-reload" => true,
+        "process-state" => "reload-required"
+    }
+}
+
+[standalone@localhost:9990 /] /extension=org.wildfly.extension.microprofile.lra-participant:add
+{"outcome" => "success"}
+
+[standalone@localhost:9990 /] /subsystem=microprofile-lra-participant:add
+{
+    "outcome" => "success",
+    "response-headers" => {
+        "operation-requires-reload" => true,
+        "process-state" => "reload-required"
+    }
+}
+
+[standalone@localhost:9990 /] reload
+----
+
+== Running the LRA coordinator in a Docker container
+
+The LRA coordinator is also provided as a standalone Docker image that you can simply run with the following command:
+
+[source,bash]
+----
+$ docker run -p 8080:8080 quay.io/jbosstm/lra-coordinator
+----
+
+== Using LRA in user deployments
+
+The `@LRA` annotation can be placed on any JAX-RS method to declare that the LRA should be started before the method is
+entered and closed (finished successfully) when the method ends. By default, if the JAX-RS method returns any of the 4xx
+or 5xx error HTTP status codes the LRA will be cancelled instead.
+
+[source,java]
+----
+@LRA
+@GET
+@Path("/doInLRA")
+public Response doInLRA(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
+    LOG.info("Work LRA ID = " + lraId);
+    ...
+----
+
+When LRA closes successfully, the LRA coordinator calls the completion callback if the participant defined it:
+
+[source,java]
+----
+@Complete
+@PUT
+@Path("/complete")
+public Response complete(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
+    LOG.info("Complete ID = " + lraId);
+    ...
+----
+
+Or, in the case of LRA cancel, the compensation callback will be invoked instead:
+
+[source,java]
+----
+@Compensate
+@PUT
+@Path("/compensate")
+public Response compensate(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
+    LOG.info("Compensate ID = " + lraId);
+    ...
+----
+
+The full example is available at https://github.com/xstefank/lra-wildfly-example.
+
+If you deploy this application to WildFly (28.0.0+) with both microprofile-lra-coordinator and
+microprofile-lra-participant subsystems enabled, you can make the following HTTP invocation to see how the coordinator
+invokes the complete callbacks or the compensation callbacks of the two defined participants:
+
+[source,bash]
+----
+$ curl localhost:8080/lra-participant/lra-participant-1/doInLRA
+
+# in WFLY console log
+15:14:50,128 INFO  [io.xstefank.LRAParticipant1] (default task-1) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+15:14:50,158 INFO  [io.xstefank.LRAParticipant2] (default task-2) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+15:14:50,183 INFO  [io.xstefank.LRAParticipant1] (default task-3) Complete ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+15:14:50,191 INFO  [io.xstefank.LRAParticipant2] (default task-3) Complete ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_14
+
+
+$ curl "localhost:8080/lra-participant/lra-participant-1/doInLRA?fail=true"
+
+# in WFLY console log
+15:15:33,516 INFO  [io.xstefank.LRAParticipant1] (default task-1) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c
+15:15:33,531 INFO  [io.xstefank.LRAParticipant2] (default task-2) Work LRA ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c
+15:15:33,543 INFO  [io.xstefank.LRAParticipant1] (default task-3) Compensate ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c
+15:15:33,550 INFO  [io.xstefank.LRAParticipant2] (default task-3) Compensate ID = http://localhost:8080/lra-coordinator/lra-coordinator/0_ffff0aca8851_-3330598e_646cbc18_1c
+----
+
+You can also always check the currently active LRAs with a direct call to the coordinator API:
+
+[source,bash]
+----
+$ curl localhost:8080/lra-coordinator/lra-coordinator
+[]%
+----
+
+== What's next?
+
+In this guide, we showed you how to configure and use the MicroProfile LRA specification in your WildFly applications.
+LRA provides a very broad feature set which we can't cover here. If you are interested in learning more, you can find
+the full specification at https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html.
+|}
