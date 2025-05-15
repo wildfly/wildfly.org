@@ -1,0 +1,50 @@
+---
+layout: post
+title:  "WildFly 36.0.1 is released!"
+date:   2025-05-15
+tags:   announcement release
+author: kkhan
+description: WildFly 36.0.1.Final is now available for download.
+---
+
+WildFly 36.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+I am pleased to announce that the WildFly 36.0.1.Final release is now available for download.
+
+The following issues were resolved in 36.0.1:
+
+== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-19970[WFLY-19970]] - Jakarta MVC from Wildfly 34 built with Galleon on stability level preview cannot find custom template engines in an EAR
+* [https://issues.redhat.com/browse/WFLY-20564[WFLY-20564]] - Deploying postgresql-42.7.5.jar causes NPE when upgrading from wildfly 35->36
+* [https://issues.redhat.com/browse/WFLY-20617[WFLY-20617]] - Deployment fails due to NullPointerException in ExpirationMetaData.getLastAccessTime()
+
+
+== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-20584[WFLY-20584]] - Upgrade SmallRye Fault Tolerance from 6.9.0 to 6.9.1
+* [https://issues.redhat.com/browse/WFLY-20596[WFLY-20596]] - Upgrade Velocity Engine to 2.4.1
+* [https://issues.redhat.com/browse/WFLY-20604[WFLY-20604]] - Upgrade wildfly-clustering to 6.0.4.Final
+* [https://issues.redhat.com/browse/WFLY-20608[WFLY-20608]] - [36.0.1.Final] Upgrade HAL to 3.7.11.Final
+* [https://issues.redhat.com/browse/WFLY-20619[WFLY-20619]] - Upgrade WildFly Core to 28.0.1.Final
+
+== Tasks
+
+* [https://issues.redhat.com/browse/WFLY-20606[WFLY-20606]] - Correct the release version to 36.0.1.Final-SNAPSHOT in various pom.xml
+
+The following issues were also resolved in the version of WildFly Core contained within this release:
+
+== Bugs
+
+* [WFCORE-7210] - Unescaped characters throw a NPE although allowed in settings
+
+== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFCORE-7218[WFCORE-7218]] - Upgrade WildFly Elytron to 2.6.3.Final
+* [https://issues.redhat.com/browse/WFCORE-7219[WFCORE-7219]] - Upgrade Elytron Web to 4.1.2.Final
+* [https://issues.redhat.com/browse/WFCORE-7248[WFCORE-7248]] - Upgrade WildFly Elytron to 2.6.4.Final
+
+
+
+Enjoy!
+
