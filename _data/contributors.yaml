@@ -79,3 +79,13 @@
       key: 14F3D63B2CD5E055730DB060B1D38A2DCD625601
       link: https://keyserver.ubuntu.com/pks/lookup?search=14f3d63b2cd5e055730db060b1d38a2dcd625601&fingerprint=on&op=index
       fingerprint: 14F3 D63B 2CD5 E055 730D  B060 B1D3 8A2D CD62 5601
+- contributor:
+  name: "Jan Kašík"
+  bio: "Jan Kašík works at Red Hat. He maintains some auxiliary WildFly projects."
+  github: honza-kasik
+  signing:
+    - pgp:
+        id: ed25519/3FC239F5FC312325
+        key: 0EB27E1BCDB2C21682F8DFC33FC239F5FC312325
+        link: https://keys.openpgp.org/vks/v1/by-fingerprint/0EB27E1BCDB2C21682F8DFC33FC239F5FC312325
+        fingerprint: 0EB2 7E1B CDB2 C216 82F8  DFC3 3FC2 39F5 FC31 2325
