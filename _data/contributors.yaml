@@ -8,6 +8,16 @@
         key: F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD
         link: https://keyserver.ubuntu.com/pks/lookup?search=F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD&fingerprint=on&op=index
         fingerprint: F2D3 77EC A269 8D0E 2E4C  42FE 47CB 96A7 DCA5 BDCD
+- contributor: darranl
+  name: "Darran Lofthouse"
+  bio: "Darran is a software engineer working on the WildFly application server project, focusing on the security integration provided by the WildFly Elytron project."
+  github: darranl
+  signing:
+    - pgp:
+        id: ed25519/E85C11F6
+        key: 245404A11575A55D6A41107E2D52D4ACE85C11F6
+        link: https://keyserver.ubuntu.com/pks/lookup?search=245404A11575A55D6A41107E2D52D4ACE85C11F6&fingerprint=on&op=index
+        fingerprint: 2454 04A1 1575 A55D 6A41  107E 2D52 D4AC E85C 11F6
 - contributor: hpehl
   name: "Harald Pehl"
   bio: "Harald is a software engineer at Red Hat working on management capabilities of WildFly. He is currently leading the management console (HAL)."
