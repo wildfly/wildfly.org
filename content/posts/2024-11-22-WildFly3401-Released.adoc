@@ -1,0 +1,30 @@
+---
+layout: post
+title:  "WildFly 34.0.1 is released!"
+aliases: [/news/2024/11/22/WildFly3401-Released]
+date:   2024-11-22
+tags:   announcement release
+author: pferraro
+description: WildFly 34.0.1.Final is now available for download.
+---
+
+WildFly 34.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+It's been about a month since the WildFly 34 release, so we have done a small bug fix update, WildFly 34.0.1. This includes an update to WildFly Preview.
+
+The following issues were resolved in 34.0.1:
+
+== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-19891[WFLY-19891]] - ISPN000299: Unable to acquire lock... when cancelling a persistent timer in @PostConstruct on a suspended node
+* [https://issues.redhat.com/browse/WFLY-19909[WFLY-19909]] - Wrong routing of EJB calls in cluster
+
+== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-19927[WFLY-19927]] - Upgrade RESTEasy to 6.2.11.Final
+* [https://issues.redhat.com/browse/WFLY-19928[WFLY-19928]] - Upgrade RESTEasy to 7.0.0.Alpha4 (WF preview)
+* [https://issues.redhat.com/browse/WFLY-19964[WFLY-19964]] - Upgrade Netty to 4.1.115.Final
+* [https://issues.redhat.com/browse/WFLY-19977[WFLY-19977]] - Upgrade wildfly-clustering to 1.1.3.Final
+
+Enjoy!
+
