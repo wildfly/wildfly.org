@@ -1,0 +1,85 @@
+---
+layout: post
+title:  "Introduction to working on/with Jakarta EE Specifications for WildFly users"
+aliases: [/news/2022/11/10/wildfly-jakartaee]
+date:   2022-11-10
+tags:   jakartaee
+author: scottmarlow
+description: Reasons to get involved with the Jakarta EE Specification teams
+---
+
+== Reasons to get involved with the Jakarta EE Specification teams
+
+You are a developer that uses the WildFly (Jakarta EE) application server to create/update applications that meet
+your users needs.  Reason #1 is to participate in developing future Jakarta EE releases.  From adding a new feature to
+a specification, to implementing that new feature.  You can also help by adding TCK tests for new features as well.
+
+Whether you contribute a small or large amount of time, every contribution helps!
+
+The more that you participate in the Jakarta EE communities, the more you will understand how Jakarta EE releases are done.
+
+Sign the link:https://www.eclipse.org/legal/ECA.php[Eclipse contribution agreement (ECA)] when you are ready to contribute a pull request.
+You will want to sign the ECA with the same email address as the one associated with your github account that you use
+for creating Jakarta EE pull requests.
+
+== Browsing/joining the various Jakarta EE mailing lists
+
+=== Why join the various Jakarta EE specification mailing lists?
+[start=1]
+.  Participate in discussions about each of the specifications.
+.  Learn of opportunities to contribute changes to the next Jakarta EE release.
+.  Be ready to ask questions on the subscribed email lists.
+
+
+* link:https://jakarta.ee/connect/mailing-lists/#list-of-mailing-lists[Jakarta EE Mailing Lists] lists all of the mailing lists.  Note that each mailing list is archived in a web browsable format.
+* link:https://accounts.eclipse.org/mailing-list/jakarta.ee-community[Join the Jakarta EE Community list.]
+* link:https://accounts.eclipse.org/mailing-list/jakartaee-platform-dev[Join the Platform which discusses the overall Jakarta EE Platform specifications that brings all of the individual EE technologies together for each EE release.]
+* link:https://accounts.eclipse.org/mailing-list/jaf-dev[Join the Activation specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/ca-dev[Join the Annotations specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jaspic-dev[Join the Authentication specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jacc-dev[Join the Authorization specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jakartabatch-dev[Join the Batch specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/bean-validation-dev[Join the Bean Validation specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/cu-dev[Join the Concurrency specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jca-dev[Join the Connectors specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/cdi-dev[Join the Context and Dependency Injection specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/ejb-dev[Join the Enterprise Beans specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/el-dev[Join the Expression Language specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/interceptors-dev[Join the Interceptors specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jsonb-dev[Join the JSON Binding specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jsonp-dev[Join the JSON Processing specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/mail-dev[Join the Mail specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/messaging-dev[Join the Messaging specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jpa-dev[Join the Persistence specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/rest-dev[Join the RESTful Web Services specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/es-dev[Join the Security specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/faces-dev[Join the Faces specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/servlet-dev[Join the Servlet specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jstl-dev[Join the Standard Tag Library specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jta-dev[Join the Transactions specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/websocket-dev[Join the Websocket specification discussions.]
+* link:https://accounts.eclipse.org/mailing-list/jakartaee-tck-dev[Join the Platform TCK discussions and help add/update tests.]
+
+== Accessing the specification documents (PDF/HTML) for various specifications
+
+=== Browse the link:https://jakarta.ee[jakarta.ee] page.
+The link:https://jakarta.ee[jakarta.ee] page contains many useful subpages, such as the link:https://jakarta.ee/specifications[specification]
+with all the technology specifications (html/pdf document that describes the specification, javadoc).
+For example link:https://jakarta.ee/specifications/persistence/3.1[https://jakarta.ee/specifications/persistence/3.1 contains the Jakarta Persistence 3.1 specification documents, JavaDoc, Schema documents, Test Compatibility Kit, Maven coordinates.]
+
+Another example, link:https://jakarta.ee/specifications/restful-ws[Jakarta RESTful Web Services] shows the various
+releases of Jakarta RESTful Web Services but also note the link:https://projects.eclipse.org/projects/ee4j.jaxrs[project button link]
+which shows you interesting information about that project such as link:https://projects.eclipse.org/projects/ee4j.rest/who[the list of committers and who leads the project].  The project committers are responsible for reviewing/merging pull requests (e.g. changes) to the Specification repository.
+
+Another important page to note is the link:https://projects.eclipse.org/projects/ee4j.rest/developer[Developer Resources page]
+which has the link:https://github.com/jakartaee/rest[Specification github repository link].
+
+You should `fork` a few of the various Jakarta EE Specification repositories such as link:https://github.com/jakartaee/rest[github.com/jakartaee/rest]
+which contain the source for the Jakarta RESTful Web Services API and SPEC documents.  Forking a repository on https://github.com/[https://github.com/YOUR_NAME] means creating a copy of a repo in your personal github account.  You can make EE Specification improvements with your fork and create a pull request for the upstream (original) repo that you forked.
+
+The next blog will give more details about contributing to Jakarta EE and how that can help WildFly + you.
+
+We’d love to hear feedback from you at the
+link:https://groups.google.com/g/wildfly[WildFly forum], the next blog in this series will try to answer
+any questions you post in response.
+

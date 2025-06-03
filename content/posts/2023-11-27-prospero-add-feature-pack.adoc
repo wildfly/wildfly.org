@@ -1,0 +1,273 @@
+---
+layout: post
+title:  "Installing additional feature packs in WildFly"
+aliases: [/news/2023/11/27/prospero-add-feature-pack]
+date:   2023-11-27
+tags:   prospero galleon wildfly
+author: spyrkob
+description: Using Prospero to install additional feature packs in existing WildFly servers.
+---
+
+== Introduction
+
+In a https://www.wildfly.org/news/2023/04/05/prospero/[previous article], you learnt how to install 
+and use https://github.com/wildfly-extras/prospero[Prospero] to provision a WildFly server. In this article, you will learn how to use 
+Prospero to modify an existing server and extends its capabilities by adding a MariaDB datasource.
+
+For the purpose of this article, we assume the existing server has been installed from a downloaded WildFly zip archive. However the process works 
+for servers installed using Prospero. In such case, simply skip the <<Registering WildFly server with Prospero>> section and start with 
+<<Creating feature pack channel>> section.
+
+== Additional feature packs for WildFly
+
+Galleon feature packs provide a mechanism to extend WildFly server capabilities. An example of feature packs contributed by the WildFly community are 
+https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack], and
+https://github.com/wildfly-extras/wildfly-myfaces-feature-pack[wildfly-myfaces-galleon-pack]. The first one can be used to add support for a database, 
+while the latter can replace default JSF implementation with MyFaces.
+
+The additional feature packs can be installed in existing servers either using https://docs.wildfly.org/galleon/[Galleon] or 
+https://github.com/wildfly-extras/prospero[Prospero] tools.
+
+== Prerequisites
+
+1. Download WildFly 30.0.0.Final and unzip it in `/tmp` folder:
++
+[source]
+----
+cd /tmp
+wget https://github.com/wildfly/wildfly/releases/download/30.0.0.Final/wildfly-30.0.0.Final.zip
+unzip -q wildfly-30.0.0.Final.zip
+----
+2. Download and unzip Prospero in `/tmp` folder
++
+[source]
+----
+cd /tmp
+wget https://github.com/wildfly-extras/prospero/releases/download/1.2.0.Final/prospero-1.2.0.Final.zip
+unzip -q prospero-1.2.0.Final.zip
+cd /tmp/prospero-1.2.0.Final
+----
+
+== Registering WildFly server with Prospero
+
+The first step to install additional feature packs in an existing WildFly server, is to subscribe the server to WildFly channels.
+This allows Prospero to apply updates for WildFly and modify the installation.
+
+[,bash]
+----
+./bin/prospero.sh update subscribe \
+  --dir /tmp/wildfly-30.0.0.Final \
+  --product wildfly \
+  --version 30.0.0.Final
+----
+
+The `update subscribe` command generates a manifest based on selected version of WildFly server and registers the server to a channel using this manifest:
+
+[,bash]
+----
+./bin/prospero.sh channel list --dir /tmp/wildfly-30.0.0.Final
+----
+
+The command will output the channels that the server is subscribed to:
+
+[source]
+----
+Server /tmp/wildfly-30.0.0.Final is subscribed to following channels:
+
+ ----
+# wildfly
+  manifest: file:/tmp/wildfly-30.0.0.Final/.installation/manifest-wildfly-30.0.0.Final.yaml
+  repositories:
+    id: central
+    url: https://repo1.maven.org/maven2/
+    id: jboss-public
+    url: https://repository.jboss.org/nexus/content/groups/public/
+    id: mrrc
+    url: https://maven.repository.redhat.com/ga/
+----
+
+== Creating feature pack channel
+
+All additional feature packs installed on top of WildFly have to be registered in a channel. We're going to create a new manifest for this.
+
+[,bash]
+----
+echo "schemaVersion: 1.0.0
+streams:
+  - groupId: org.wildfly
+    artifactId: wildfly-datasources-galleon-pack
+    version: 6.0.0.Final
+" > /tmp/datasources-manifest.yaml
+----
+
+Then we can register WildFly to receive updates from a new channel:
+
+[,bash]
+----
+./bin/prospero.sh channel add \
+ --channel-name datasources \
+ --manifest /tmp/datasources-manifest.yaml \
+ --repositories central::https://repo1.maven.org/maven2 \
+ --dir /tmp/wildfly-30.0.0.Final
+----
+
+== Install wildfly-datasource-galleon-pack
+
+Finally to install the MariaDB database driver from wildfly-datasource-galleon-pack:
+
+[,bash]
+----
+./bin/prospero.sh feature-pack add \
+  --fpl org.wildfly:wildfly-datasources-galleon-pack \
+  --layers mariadb-datasource \
+  --dir /tmp/wildfly-30.0.0.Final
+----
+
+After running the command, you will be asked to confirm the changes, and the feature pack will be downloaded and installed.
+
+[source]
+----
+Installing feature pack `org.wildfly:wildfly-datasources-galleon-pack` in server `/tmp/wildfly-30.0.0.Final`
+Continue adding the feature pack? [y/N]:y
+Applying changes
+
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+JBoss examples installed.
+Operation completed in 19.62 seconds.
+----
+
+After running this command, a new module `org.mariadb.jdbc:main` will be created in the server modules directory and the `standalone/configuration/standalone.xml` 
+will be updated with a new driver and datasource configuration.
+
+== Updating mariadb driver version
+
+Steps above installed a default version of MariaDB driver, but using prospero and WildFly channels we are able to update that.
+
+First, let's add the desired version of the driver to the datasources manifest:
+
+[,bash]
+----
+echo "
+  - groupId: org.mariadb.jdbc
+    artifactId: mariadb-java-client
+    version: 3.3.0
+" >> /tmp/datasources-manifest.yaml
+----
+
+Next, we just need to let prospero perform an update:
+
+[,bash]
+----
+./bin/prospero.sh update perform --dir /tmp/wildfly-30.0.0.Final
+----
+
+The command will report available updates - in this case showing the changed mariadb driver - and ask you to confirm the changes.
+
+[source]
+----
+Updates found:
+  org.mariadb.jdbc:mariadb-java-client                  3.2.0                ==>  3.3.0
+Continue with update [y/N]: y
+Building updates
+
+Feature-packs resolved.
+Packages installed.
+Downloaded artifacts.
+JBoss modules installed.
+Configurations generated.
+JBoss examples installed.
+
+Build update complete!
+Applying updates
+Update complete!
+Operation completed in 25.48 seconds.
+----
+
+Now we can check that the `org.mariadb.jdbc:main` module:
+
+[,bash]
+----
+ls /tmp/wildfly-30.0.0.Final/modules/org/mariadb/jdbc/main
+----
+
+and see the updated driver:
+
+[source]
+----
+mariadb-java-client-3.3.0.jar  module.xml
+----
+
+== Starting the server
+
+Before starting the server with the new datasource, we need to provide the MariaDB connection information. Those can either be 
+added to the server configuration as WildFly system properties, or as OS environment variables. For the purpose of this article, we will assume that 
+the MariaDB database called `testdb` is available on `localhost:3306` and is secured using `test/password` credentials.
+
+The detailed description of available configuration options can be found in the datasource feature pack documentation, 
+eg. https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/main/doc/mariadb/README.md#required-configuration[MariaDB configuration].
+Managing WildFly system properties is described in the https://docs.wildfly.org/30/Admin_Guide.html#properties[WildFly Admin Guide]
+
+Let's try to set the required configuration using environment variables and start the server:
+
+[source]
+----
+export MARIADB_USER=test
+export MARIADB_PASSWORD=password
+export MARIADB_DATABASE=testdb
+
+/tmp/wildfly-30.0.0.Final/bin/standalone.sh
+----
+
+Note that for this example, we are using a MariaDB database available at the default address `localhost:3306`. If your environment is different, 
+you can change those values using `MARIADB_HOST` and `MARIADB_PORT` environment variables.
+
+Looking at the startup logs, we can see that `mariadb` driver and a new data source `java:jboss/datasources/MariaDBDS` are made available.
+
+[source]
+----
+=========================================================================
+
+  JBoss Bootstrap Environment
+
+  JBOSS_HOME: /tmp/wildfly-30.0.0.Final
+
+  JAVA: /opt/java/jdk-11.0.20.jdk/Contents/Home/bin/java
+
+  JAVA_OPTS:  -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true  --add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldaps=ALL-UNNAMED --add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED
+
+=========================================================================
+
+12:24:22,095 INFO  [org.jboss.modules] (main) JBoss Modules version 2.1.2.Final
+12:24:22,300 INFO  [org.jboss.msc] (main) JBoss MSC version 1.5.2.Final
+12:24:22,303 INFO  [org.jboss.threads] (main) JBoss Threads version 2.4.0.Final
+12:24:22,348 INFO  [org.jboss.as] (MSC service thread 1-1) WFLYSRV0049: WildFly Full 30.0.0.Final (WildFly Core 22.0.1.Final) starting
+[...]
+12:24:22,909 INFO  [org.jboss.as.connector.subsystems.datasources] (ServerService Thread Pool -- 44) WFLYJCA0004: Deploying JDBC-compliant driver class org.mariadb.jdbc.Driver (version 3.3)
+12:24:22,915 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-6) WFLYJCA0018: Started Driver service with driver-name = mariadb
+[...]
+12:24:23,067 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-7) WFLYJCA0001: Bound data source [java:jboss/datasources/MariaDBDS]
+[...]
+12:24:23,161 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 30.0.0.Final (WildFly Core 22.0.1.Final) started in 1201ms - Started 288 of 530 services (318 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+
+== Conclusion
+
+In this article, we learned how to use Prospero to extend WildFly server with additional capabilities using feature packs.
+
+In particular we used https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] to install 
+and update a MariaDB datasource, but the same technique can be used to install other feature packs contributed by the community.
+
+If you want to learn more about Prospero or available feature packs, please take a look at the GitHub projects below:
+
+* https://github.com/wildfly-extras/prospero
+* https://github.com/wildfly-extras/wildfly-datasources-galleon-pack
+* https://github.com/wildfly-extras/wildfly-myfaces-feature-pack
+
+If you would like to learn more about extending WildFly using feature packs, please take a looke at:
+
+* https://docs.wildfly.org/galleon-plugins/#_building_a_custom_feature_pack_example
+* https://docs.wildfly.org/galleon/ 

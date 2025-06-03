@@ -1,0 +1,16 @@
+---
+layout: post
+title:  "WildFly 10 CR5 is released!"
+aliases: [/news/2015/12/23/WildFly10-CR5-Released]
+date:   2015-12-23 00:00:00 -0600
+tags:   announcement release
+author: jgreene
+---
+
+The fifth release candidate for WildFly 10 (10.0.0.CR5) is now available link:/downloads[for download]!
+
+For details, see the link:https://developer.jboss.org/wiki/WildFly1000CR5ReleaseNotes[official 10.0.0.CR5 Release Notes wiki page].
+
+Give it a try over the holidays, and let us know what you think! Provided there are no showstoppers, this will become the final 10 release.
+
+Enjoy!
