@@ -1,0 +1,775 @@
+---
+layout: post
+title: Testing WildFly applications on OpenShift with Arquillian Cube
+date: 2025-07-02
+tags: wildfly openshift arquillian cube containers
+synopsis: Arquillian Cube is an Arquillian extension that provides an easy way to test containerized applications and
+  services on Docker, Kubernetes and OpenShift
+author: fabiobrz
+---
+
+Recently we blogged about testing WildFly on Kubernetes effectively and easily, thanks to Arquillian Cube,
+now it's time to see how it can be done on OpenShift!
+
+In the https://www.wildfly.org/news/2025/03/06/testing-on-k8s-with-cube/[Testing WildFly applications on Kubernetes with Arquillian Cube]
+article we saw how an Arquillian Cube test can be implemented to set up an automated integration test for a WildFly
+application that should be run on Kubernetes.
+
+We'll now see how a modern WildFly Bootable JAR application can be tested on OpenShift, with Arquillian Cube taking
+care of all the aspects, starting from the resources creation to the application image build and deployment, and
+finally to the test lifecycle management.
+
+== Use case
+A simple WildFly Jakarta REST based Bootable JAR application that exposes an endpoint for greeting the user will be our
+starting point, and our goal is to have a test class that will deploy it on OpenShift and then verify that it's up
+and running.
+
+== Steps
+
+=== Create the _getting-started_ application
+As usual, we'll assume that Java and Maven are available already in our local configuration.
+Then `cd` to a directory of your choice and create the example application with the following command:
+
+[source,shell]
+----
+mvn archetype:generate -DarchetypeGroupId=org.wildfly.archetype -DarchetypeArtifactId=wildfly-getting-started-archetype
+----
+
+You'll be prompted for either entering or accepting the default values for the application configuration, let's hit the
+`Enter` key, in order to use the defaults:
+
+[source,shell]
+----
+Confirm properties configuration:
+defaultClassPrefix: GettingStarted
+groupId: org.wildfly.examples
+artifactId: getting-started
+package: org.wildfly.examples
+version: 1.0.0-SNAPSHOT
+ Y:
+----
+
+Once done, a new `getting-started` directory is created, with the following contents:
+[source,shell]
+----
+$ ls -l
+total 16
+-rw-r--r--. 1 fburzigo fburzigo 10469 May 23 13:51 pom.xml
+-rw-r--r--. 1 fburzigo fburzigo  1045 May 23 13:51 README.adoc
+drwxr-xr-x. 1 fburzigo fburzigo    16 May 23 13:51 src
+----
+
+This is all we need for now, feel free to inspect the POM and see how the WildFly Maven Archetype provided a ready-to-use
+configuration which will allow for us to leverage Jakarta EE components, like for instance the Jakarta REST API implementation:
+
+[source,xml]
+----
+<dependencyManagement>
+        <dependencies>
+            <!-- JBoss distributes a complete set of Jakarta EE APIs including
+                a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
+                a collection) of artifacts. We use this here so that we always get the correct
+                versions of artifacts (you can read this as the WildFly stack of the Jakarta EE APIs,
+                with some extras tools for your project, such as Arquillian for testing) -->
+            <dependency>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>wildfly-ee-with-tools</artifactId>
+                <version>${version.wildfly.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--Define the JUnit5 bom. WildFly BOM still contains JUnit4, so we have to declare a version here -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${version.junit5}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+
+        <!-- Import the CDI API, we use provided scope as the API is included in WildFly -->
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Import the Jakarta REST API, we use provided scope as the API is included in WildFly -->
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        <dependency>
+----
+
+Also, we can see that the `src` directory contains already the required classes that implement JAX-RS based application
+
+[source,shell]
+----
+$ tree src
+src
+├── main
+│   ├── java
+│   │   └── org
+│   │       └── wildfly
+│   │           └── examples
+│   │               ├── GettingStartedApplication.java
+│   │               ├── GettingStartedEndpoint.java
+│   │               └── GettingStartedService.java
+...
+└── test
+    ├── java
+    │   └── org
+    │       └── wildfly
+    │           └── examples
+    │               ├── GettingStartedApplicationIT.java
+    │               └── GettingStartedServiceIT.java
+    └── resources
+        └── arquillian.xml
+----
+
+As you can see `test` sources have been generated as well, and an _arquillian.xml_ file is provided, which includes
+the configuration for starting an Arquillian WildFly container and run tests _locally_.
+
+Let's see how everything works with no changes by running the following command:
+
+[source,shell]
+----
+mvn clean install
+----
+
+The above command will:
+
+1. Build the application and generate a WAR deployment
+2. Start the WildFly Arquillian container which will run the server locally and deploy the application
+3. Execute the tests against it
+
+As a final result we should see a build success, with 2 tests passing:
+
+[source,shell]
+----
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- failsafe:3.5.3:verify (default) @ getting-started ---
+[INFO]
+[INFO] --- install:3.1.2:install (default-install) @ getting-started ---
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-xml/3.0.0/plexus-xml-3.0.0.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-xml/3.0.0/plexus-xml-3.0.0.jar (93 kB at 1.2 MB/s)
+[INFO] Installing /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/pom.xml to /home/fburzigo/.m2/repository/org/wildfly/examples/getting-started/1.0.0-SNAPSHOT/getting-started-1.0.0-SNAPSHOT.pom
+[INFO] Installing /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/ROOT.war to /home/fburzigo/.m2/repository/org/wildfly/examples/getting-started/1.0.0-SNAPSHOT/getting-started-1.0.0-SNAPSHOT.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:49 min
+[INFO] Finished at: 2025-05-23T14:35:11+02:00
+[INFO] ------------------------------------------------------------------------
+----
+
+Enough for running the tests locally, now let's see how to use Arquillian Cube and make some changes to automate
+the deployment of the same application to OpenShift, and have a test which will run against a cloud native version of
+the example application.
+
+=== Generate a WildFly Bootable JAR for OpenShift
+
+Let's start by adding a set of properties to our project POM, which will be used in the new configuration:
+
+[source,xml]
+----
+<properties>
+    <!-- ... -->
+    <arquillian-cube.version>2.1.0.Alpha2</arquillian-cube.version>
+    <wildfly-jar-maven-plugin.version>12.0.0.Final</wildfly-jar-maven-plugin.version>
+    <jkube-openshift-maven-plugin.version>1.18.1</jkube-openshift-maven-plugin.version>
+</properties>
+----
+
+For OpenShift, we'd need a Bootable JAR, since Arquillian Cube will use the internal JKube OpenShift Maven plugin
+integration, which includes a default _generator_, that in turn works by default with Bootable JAR.
+
+Nothing really difficult, we just need to *replace* the `wildfly-maven-plugin` declaration and the related configuration
+with a very similar one for the `wildfly-jar-maven-plugin`:
+
+[source,xml]
+----
+<!-- The WildFly JAR Maven plugin creates a runnable JAR that contains the server and the deployed application -->
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>${wildfly-jar-maven-plugin.version}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:${version.wildfly.bom}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <!-- layers may be used to customize the server to provision-->
+            <layer>cloud-server</layer>
+        </layers>
+        <excluded-layers>
+            <layer>deployment-scanner</layer>
+        </excluded-layers>
+        <cloud/>
+        <plugin-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </plugin-options>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+As you can see we added something, compared to the original example `wildfly-maven-plugin` configuration:
+
+1. We added an _excluded layer_, i.e. the `deployment-scanner` layer, since that is not needed by a Bootable JAR application
+2. We added the `<cloud/>` element, which is responsible for configuring the generated Bootable JAR application for the
+Cloud, e.g.: it will enrich the deployment with health probes configuration
+3. We set the `jboss-fork-embedded` plugin option to `true` to avoid conflicts with the `wildfly-maven-plugin`
+execution
+
+Then we'll remove the JUnit5 bom declaration from the `<dependencyManagment>` section
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.junit</groupId>
+    <artifactId>junit-bom</artifactId>
+    <version>${version.junit5}</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+----
+
+and the following test dependencies, too:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.jboss.arquillian.junit5</groupId>
+    <artifactId>arquillian-junit5-container</artifactId>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.wildfly.arquillian</groupId>
+    <artifactId>wildfly-arquillian-container-managed</artifactId>
+    <scope>test</scope>
+</dependency>
+<!-- ... -->
+<dependency>
+    <groupId>org.jboss.logging</groupId>
+    <artifactId>commons-logging-jboss-logging</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+The `resteasy-client` test dependency must be kept since it provides the APIs implementation for the test class to
+perform an HTTP client call to the WildFly application
+
+After that, we can add our Arquillian Cube bom to the `<dependencyManagement>` section:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.cube</groupId>
+    <artifactId>arquillian-cube-bom</artifactId>
+    <version>${arquillian-cube.version}</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+----
+
+and finally the required test dependencies:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.cube</groupId>
+    <artifactId>arquillian-cube-openshift-starter</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.arquillian.cube</groupId>
+    <artifactId>arquillian-cube-openshift</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.jboss.arquillian.junit</groupId>
+    <artifactId>arquillian-junit-core</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+=== Introducing the JKube OpenShift Maven plugin
+
+We'll add a JKube OpenShift Maven plugin declaration in order to have some configuration in place, and then
+we'll have Arquillian Cube drive its execution when running the tests, thanks to the internal integration:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.eclipse.jkube</groupId>
+    <artifactId>openshift-maven-plugin</artifactId>
+    <version>${jkube-openshift-maven-plugin.version}</version>
+    <executions>
+        <!--
+            Do not execute when packaging.
+            The Arquillian Cube/JKube OpenShift Maven plugin integration will handle that in the integration-tests
+            phase, see the Maven Failsafe plugin configuration below.
+
+        <execution>
+          <goals>
+            <goal>resource</goal>
+            <goal>build</goal>
+          </goals>
+        </execution>
+        -->
+    </executions>
+    <configuration>
+        <enricher>
+            <config>
+                <jkube-service>
+                    <name>hello-world-svc</name>
+                </jkube-service>
+            </config>
+        </enricher>
+    </configuration>
+</plugin>
+----
+
+As said we've commented out executions because we'll let Arquillian Cube do the job for us, but we've provided a
+configuration for adding a named `Service` - i.e. `hello-world-svc` - which can be injected and referenced by our test
+class.
+
+Time to add what's needed to kick Arquillian Cube tests off.
+
+=== Configuring Arquillian Cube execution for OpenShift
+
+The first thing we'll need to do is to edot the _arquillian.xml_ file, and replace its contents with the following
+configuration:
+
+[source,xml]
+----
+<?xml version="1.0"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://jboss.org/schema/arquillian"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian
+    http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <extension qualifier="openshift">
+        <property name="enableImageStreamDetection">false</property>
+    </extension>
+
+</arquillian>
+----
+
+As you can see we've configured the `openshift` extension and set the only one property, i.e.:
+`enableImageStreamDetection` to `false`, because we don't want the creation of the application image stream which is
+produced by the OpenShift build to block Arquillian Cube from replacing it.
+
+And now the last bit, let's configure the Maven Failsafe plugin to provide properties that will drive the JKube
+OpenShift Maven plugin execution:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <configuration>
+        <systemPropertyVariables>
+            <version.cube>${arquillian-cube.version}</version.cube>
+            <cube.fmp.build>true</cube.fmp.build>
+            <cube.fmp.debug.output>false</cube.fmp.debug.output>
+            <cube.fmp.logs>true</cube.fmp.logs>
+            <cube.fmp.system.properties>jkube.docker.push.registry,image-registry.openshift-image-registry.svc:5000,jkube.docker.pull.registry,image-registry.openshift-image-registry.svc:5000</cube.fmp.system.properties>
+            <cube.fmp.local.maven>true</cube.fmp.local.maven>
+        </systemPropertyVariables>
+    </configuration>
+</plugin>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <configuration>
+        <skip>true</skip>
+    </configuration>
+</plugin>
+----
+
+In the above configuration we also skip the Maven Surefire plugin execution, since we just want for Failsafe to run.
+
+Let's explain the system properties that we're setting for the test execution:
+
+- `version.cube` - Set the Arquillian Cube version, as it's used by the JKube OpenShift Maven Plugin internal integration
+- `cube.fmp.build` - Whether to drive the JKube OpenShift Maven plugin execution to build required resources
+- `cube.fmp.debug.output` - Whether to produce verbose output
+- `cube.fmp.logs` - Whether to stream the OpenShift operations logs
+- `cube.fmp.system.properties` - System properties to be passed to the JKube OpenShift Maven plugin execution, here we
+specifically set the docker registry for pulling and pushing images to the OpenShift internal registry
+- `cube.fmp.local.maven` - Whether to let the JKube OpenShift Maven plugin use a local Maven binary to perform the build.
+
+That should be all about the configuration, now it's time to add a specific test class - i.e.
+_GettingStartedOpenShiftApplicationIT.java_ - with the following contents:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.Response;
+import org.apache.http.HttpStatus;
+import org.arquillian.cube.openshift.impl.enricher.RouteURL;
+import org.arquillian.cube.requirement.ArquillianConditionalRunner;
+import org.awaitility.Awaitility;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.net.URI;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@RunWith(ArquillianConditionalRunner.class)
+public class GettingStartedOpenShiftApplicationIT {
+
+    @RouteURL("hello-world-svc")
+    private URL url;
+
+    @Test
+    public void helloEndpointShouldReplyWithHttp200() {
+        // The OpenShift Route resource for the application to be available outside the cluster will take some time to be ready
+        Awaitility.await()
+                .atMost(60, TimeUnit.SECONDS)
+                .until( () -> {
+                    Response statusResponse = RestAssured.given()
+                            .when()
+                            .get(serviceUrl);
+                    return statusResponse.statusCode() == HttpStatus.SC_OK;
+                } );
+
+        try (Client client = ClientBuilder.newClient()) {
+            jakarta.ws.rs.core.Response response = client
+                    .target(URI.create(url.toString()))
+                    .path("/hello/World")
+                    .request()
+                    .get();
+
+            assertEquals(200, response.getStatus());
+            assertEquals("Hello 'World'.", response.readEntity(String.class));
+
+        }
+    }
+}
+----
+
+And... Done!
+
+Don't forget to remove the original example test classes (_GettingStartedServiceIT.java_ and
+_GettingStartedApplicationIT.java_), since those won't compile with the updated configuration.
+
+=== Run the test
+
+You'll need an OpenShift cluster at hand to run the tests, or try one of the following options in case you don't:
+
+- https://developers.redhat.com/products/openshift-local/overview[Red Hat OpenShift Local (formerly Red Hat CodeReady Containers)]
+- https://developers.redhat.com/developer-sandbox[Red Hat Developer Sandbox]
+
+Once you have an OpenShift cluster up and running, make sure you log in into it, with something like:
+
+[source,shell]
+----
+oc login --token=<YOUR_OCP_TOKEN> --server=https://api.my-cluster.com:6443
+----
+
+Finally, in order to run integration tests to verify the application, issue the following command:
+
+[source,text]
+----
+mvn clean package verify -Dmaven.home=$(which mvn)
+----
+
+*Note*:
+
+_The `-Dmaven.home=$(which mvn)` property is required by the JKube OpenShift Maven plugin, in order to run
+the build with a local Maven binary, rather than downloading one from the Internet, which can randomly cause some issues._
+
+Arquillian Cube will use the internal JKube OpenShift Maven plugin integration to generate resources and stream the
+application binaries to OpenShift, for an s2i build to generate the application image,
+which in turn will be executed as a cluster workload and exposed externally via a `Route`.
+
+Tests are run against the remote WildFly application service which is orchestrated by OpenShift:
+
+[source,shell]
+----
+...
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running org.wildfly.examples.GettingStartedOpenShiftApplicationIT
+Jun 19, 2025 3:41:00 PM org.arquillian.cube.openshift.impl.CubeOpenshiftExtension register
+INFO: Registering CubeOpenshiftExtension...
+...
+CubeKubernetesConfiguration:
+  namespace = itest-3abe449b
+  namespace.lazy.enabled = true
+  namespace.cleanup.enabled = true
+  namespace.cleanup.timeout = 0
+  namespace.cleanup.confirm.enabled = false
+  namespace.destroy.enabled = true
+  namespace.destroy.confirm.enabled = false
+  namespace.destroy.timeout = 0
+  wait.enabled = true
+  wait.timeout = 480000
+  wait.poll.interval = 5000
+  ansi.logger.enabled = true
+  env.init.enabled = true
+  logs.copy = false
+  cube.api.version = v1
+  cube.trust.certs = true
+  cube.fmp.build = true
+  cube.fmp.build.disable.for.mvn = false
+  cube.fmp.pom.path = pom.xml
+  cube.fmp.debug.output = false
+  cube.fmp.logs = true
+  cube.fmp.system.properties = [jkube.docker.push.registry, image-registry.openshift-image-registry.svc:5000, jkube.docker.pull.registry, image-registry.openshift-image-registry.svc:5000]
+  cube.fmp.build.options =
+
+CubeOpenShiftConfiguration:
+  keepAliveGitServer = false
+  autoStartContainers = []
+  portForwardBindAddress = 127.0.0.1
+  openshiftRouterHttpPort = 80
+  openshiftRouterHttpsPort = 443
+  enableImageStreamDetection = false
+  routerSniPort = 443
+  templateProcess = true
+  startupTimeout = 600
+  httpClientTimeout = 120
+  awaitRouteRepetitions = 1
+
+Initializing Session:3abe449b
+...
+Creating project: itest-3abe449b
+To switch to the new project: oc project itest-3abe449b
+=================================================================
+===   Embedded Maven build started: getting-started/pom.xml   ===
+=================================================================
+[DEBUG] Using maven.home of: '/home/fburzigo/.sdkman/candidates/maven/current'.
+[DEBUG] Executing: /bin/sh -c cd '/home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started' && '/home/fburzigo/.sdkman/candidates/maven/3.9.6/bin/mvn' '-D' 'jkube.docker.push.registry=image-registry.openshift-image-registry.svc:5000' '-D' 'jkube.docker.pull.registry=image-registry.openshift-image-registry.svc:5000' '-D' 'jkube.namespace=itest-3abe449b' '-D' 'skipTests=true' 'package' 'oc:build' 'oc:resource'
+[WARN] Maven will be executed in interactive mode, but no input stream has been configured for this MavenInvoker instance.
+-> [INFO] Scanning for projects...
+-> [INFO]
+-> [INFO] -------< org.wildfly.examples:wildfly-getting-started-cube-ocp >--------
+-> [INFO] Building getting-started 1.0.0-SNAPSHOT
+-> [INFO]   from pom.xml
+-> [INFO] --------------------------------[ war ]---------------------------------
+-> [INFO]
+-> [INFO] --- resources:3.3.1:resources (default-resources) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] skip non existing resourceDirectory /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/src/main/resources
+-> [INFO]
+-> [INFO] --- compiler:3.14.0:compile (default-compile) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] Nothing to compile - all classes are up to date.
+-> [INFO]
+-> [INFO] --- resources:3.3.1:testResources (default-testResources) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] Copying 1 resource from src/test/resources to target/test-classes
+-> [INFO]
+-> [INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] Nothing to compile - all classes are up to date.
+-> [INFO]
+-> [INFO] --- surefire:3.2.2:test (default-test) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] Tests are skipped.
+-> [INFO]
+-> [INFO] --- war:3.4.0:war (default-war) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] Packaging webapp
+-> [INFO] Assembling webapp [wildfly-getting-started-cube-ocp] in [/home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/ROOT]
+-> [INFO] Processing war project
+-> [INFO] Copying webapp resources [/home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/src/main/webapp]
+-> [INFO] Building war: /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/ROOT.war
+-> [INFO]
+-> [INFO] --- wildfly-jar:12.0.0.Final:package (default) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] Cloud support is enabled
+-> [INFO] Provisioning server configuration based on the set of configured layers
+-> [INFO] Building server based on [[org.wildfly:wildfly-galleon-pack:36.0.1.Final inherit-packages=false inheritConfigs=false]] galleon feature-packs
+-> [INFO] Resolving feature-packs
+-> [INFO] Installing packages
+-> [INFO] Resolving artifacts
+-> [INFO] Generating configurations
+-> [INFO] Delayed generation, waiting...
+-> [INFO] CLI executions are done in forked process
+-> [INFO] Executing CLI, Server configuration
+-> [INFO] CLI scripts execution done.
+-> [INFO] Stored CLI script executed to update server configuration in /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/bootable-jar-build-artifacts/generated-cli-script.txt file.
+-> [INFO]
+-> [INFO] --- oc:1.18.1:build (default-cli) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] oc: Using OpenShift build with strategy S2I
+-> [INFO] oc: Running generator wildfly-jar
+-> [INFO] oc: wildfly-jar: Using Docker image quay.io/jkube/jkube-java:0.0.26 as base / builder
+-> [INFO] oc: [wildfly-getting-started-cube-ocp:latest] "wildfly-jar": Created docker source tar /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/docker/wildfly-getting-started-cube-ocp/latest/tmp/docker-build.tar
+-> [INFO] oc: Creating BuildServiceConfig wildfly-getting-started-cube-ocp-s2i for Source build
+-> [INFO] oc: Creating ImageStream wildfly-getting-started-cube-ocp
+-> [INFO] oc: Starting Build wildfly-getting-started-cube-ocp-s2i
+-> [INFO] oc: Waiting for build wildfly-getting-started-cube-ocp-s2i-1 to complete...
+-> [INFO] oc: Adding cluster TLS certificate authority to trust store
+-> [INFO] oc: Receiving source from STDIN as archive ...
+-> [INFO] oc: Adding cluster TLS certificate authority to trust store
+-> [INFO] oc: Adding cluster TLS certificate authority to trust store
+-> [INFO] oc: time="2025-06-19T13:43:09Z" level=info msg="Not using native diff for overlay, this may cause degraded performance for building images: kernel has CONFIG_OVERLAY_FS_REDIRECT_DIR enabled"
+-> [INFO] oc: I0619 13:43:09.645235       1 defaults.go:112] Defaulting to storage driver "overlay" with options [mountopt=metacopy=on].
+-> [INFO] oc: Caching blobs under "/var/cache/blobs".
+-> [INFO] oc: Trying to pull quay.io/jkube/jkube-java:0.0.26...
+-> [INFO] oc: Getting image source signatures
+-> [INFO] oc: Copying blob sha256:4995ccf10f8a18910697bc957f9f00998673074f8cb24c70992f4e380beafecb
+-> [INFO] oc: Copying blob sha256:5871471db7a8c7f61bce8c90a4927db327c29ba060adddfaa216635cb8ecc2f2
+-> [INFO] oc: Copying blob sha256:273b281ad871b855285c711b480ad49a5f5c47d8397599dd44e43ed390112f4f
+-> [INFO] oc: Copying config sha256:36aa194b45654bd4fe53853924d7e5968f13e30658ad40f241467c1d3bbde85a
+-> [INFO] oc: Writing manifest to image destination
+-> [INFO] oc: Generating dockerfile with builder image quay.io/jkube/jkube-java:0.0.26
+-> [INFO] oc: Adding transient rw bind mount for /run/secrets/rhsm
+-> [INFO] oc: STEP 1/9: FROM quay.io/jkube/jkube-java:0.0.26
+-> [INFO] oc: STEP 2/9: LABEL "io.openshift.build.image"="quay.io/jkube/jkube-java:0.0.26"       "io.openshift.build.source-location"="/tmp/build/inputs"       "io.openshift.s2i.destination"="/tmp"
+-> [INFO] oc: STEP 3/9: ENV AB_PROMETHEUS_OFF="true"     AB_JOLOKIA_OFF="true"     JAVA_OPTIONS="-Djava.net.preferIPv4Stack=true"     AB_OFF="true"     JAVA_APP_DIR="/deployments"     OPENSHIFT_BUILD_NAME="wildfly-getting-started-cube-ocp-s2i-1"     OPENSHIFT_BUILD_NAMESPACE="itest-3abe449b"
+-> [INFO] oc: STEP 4/9: USER root
+-> [INFO] oc: STEP 5/9: COPY upload/src /tmp/src
+-> [INFO] oc: STEP 6/9: RUN chown -R 1000:0 /tmp/src
+-> [INFO] oc: STEP 7/9: USER 1000
+-> [INFO] oc: STEP 8/9: RUN /usr/local/s2i/assemble
+-> [INFO] oc: INFO S2I source build with plain binaries detected
+-> [INFO] oc: INFO S2I binary build from fabric8-maven-plugin detected
+-> [INFO] oc: INFO Copying binaries from /tmp/src/deployments to /deployments ...
+-> [INFO] oc: ROOT-bootable.jar
+-> [INFO] oc: INFO Copying deployments from deployments to /deployments...
+-> [INFO] oc: '/tmp/src/deployments/ROOT-bootable.jar' -> '/deployments/ROOT-bootable.jar'
+-> [INFO] oc: INFO Cleaning up source directory (/tmp/src)
+-> [INFO] oc: STEP 9/9: CMD /usr/local/s2i/run
+-> [INFO] oc: COMMIT temp.builder.openshift.io/itest-3abe449b/wildfly-getting-started-cube-ocp-s2i-1:438a56ec
+-> [INFO] oc: Getting image source signatures
+-> [INFO] oc: Copying blob sha256:f78d563114cad564510fe57424fa8f01903eb28721f5dd564d2605650391372e
+-> [INFO] oc: Copying blob sha256:0a2281db0c787d2736209eba769e6ae4ba1576c4406518d37801af9cb9a3c52a
+-> [INFO] oc: Copying blob sha256:1855389a719d5af60cf16c74123e25ef78c6d1a42faf549d1ebbded8ddbc506a
+-> [INFO] oc: Copying blob sha256:597b46961ff45b828ca25ee0d3618d6079f324790b8a8a4bf69c74f2144293ee
+-> [INFO] oc: Copying config sha256:0868f1c3f111137b05829094ea128d01ca810eb1f1de66c7ed18a5d20f60f245
+-> [INFO] oc: Writing manifest to image destination
+-> [INFO] oc: --> 0868f1c3f111
+-> [INFO] oc: Successfully tagged temp.builder.openshift.io/itest-3abe449b/wildfly-getting-started-cube-ocp-s2i-1:438a56ec
+-> [INFO] oc: 0868f1c3f111137b05829094ea128d01ca810eb1f1de66c7ed18a5d20f60f245
+-> [INFO] oc:
+-> [INFO] oc: Pushing image image-registry.openshift-image-registry.svc:5000/itest-3abe449b/wildfly-getting-started-cube-ocp:latest ...
+-> [INFO] oc: Getting image source signatures
+-> [INFO] oc: Copying blob sha256:597b46961ff45b828ca25ee0d3618d6079f324790b8a8a4bf69c74f2144293ee
+-> [INFO] oc: Copying blob sha256:5871471db7a8c7f61bce8c90a4927db327c29ba060adddfaa216635cb8ecc2f2
+-> [INFO] oc: Copying blob sha256:273b281ad871b855285c711b480ad49a5f5c47d8397599dd44e43ed390112f4f
+-> [INFO] oc: Copying blob sha256:4995ccf10f8a18910697bc957f9f00998673074f8cb24c70992f4e380beafecb
+-> [INFO] oc: Copying config sha256:0868f1c3f111137b05829094ea128d01ca810eb1f1de66c7ed18a5d20f60f245
+-> [INFO] oc: Writing manifest to image destination
+-> [INFO] oc: Successfully pushed image-registry.openshift-image-registry.svc:5000/itest-3abe449b/wildfly-getting-started-cube-ocp@sha256:78807e57be5c95ce875ba819f169334a1e1b2fe6a9b4dae460d5c372d249562b
+-> [INFO] oc: Push successful
+-> [INFO] oc: Build wildfly-getting-started-cube-ocp-s2i-1 in status Complete
+-> [INFO] oc: Found tag on ImageStream wildfly-getting-started-cube-ocp tag: sha256:78807e57be5c95ce875ba819f169334a1e1b2fe6a9b4dae460d5c372d249562b
+-> [INFO] oc: ImageStream wildfly-getting-started-cube-ocp written to /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/wildfly-getting-started-cube-ocp-is.yml
+-> [INFO]
+-> [INFO] --- oc:1.18.1:resource (default-cli) @ wildfly-getting-started-cube-ocp ---
+-> [INFO] oc: Using container image name of namespace: itest-3abe449b
+-> [INFO] oc: Running generator wildfly-jar
+-> [INFO] oc: wildfly-jar: Using Docker image quay.io/jkube/jkube-java:0.0.26 as base / builder
+-> [INFO] oc: Using resource templates from /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/src/main/jkube
+-> [INFO] oc: jkube-controller: Adding a default Deployment
+-> [INFO] oc: jkube-service: Adding a default service 'hello-world-svc' with ports [8080]
+-> [INFO] oc: jkube-healthcheck-wildfly-jar: Adding readiness probe on port 9990, path='/health/ready', scheme='HTTP', with initial delay 10 seconds, with period 10 seconds
+-> [INFO] oc: jkube-healthcheck-wildfly-jar: Adding liveness probe on port 9990, path='/health/live', scheme='HTTP', with initial delay 60 seconds, with period 10 seconds
+-> [INFO] oc: jkube-openshift-deploymentconfig: Converting Deployment to DeploymentConfig
+-> [INFO] oc: jkube-service-discovery: Using first mentioned service port '8080'
+-> [INFO] oc: jkube-service-discovery: Using first mentioned service port '8080'
+-> [INFO] oc: jkube-service-discovery: Using first mentioned service port '8080'
+-> [INFO] oc: jkube-revision-history: Adding revision history limit to 2
+-> [INFO] oc: validating /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/classes/META-INF/jkube/openshift/hello-world-svc-service.yml resource
+-> [WARNING] Unknown keyword serializer - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+-> [WARNING] Unknown keyword deserializer - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+-> [INFO] oc: validating /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/classes/META-INF/jkube/openshift/wildfly-getting-started-cube-ocp-deploymentconfig.yml resource
+-> [INFO] oc: validating /home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/classes/META-INF/jkube/openshift/hello-world-svc-route.yml resource
+-> [INFO] ------------------------------------------------------------------------
+-> [INFO] BUILD SUCCESS
+-> [INFO] ------------------------------------------------------------------------
+-> [INFO] Total time:  02:21 min
+-> [INFO] Finished at: 2025-06-19T15:43:26+02:00
+-> [INFO] ------------------------------------------------------------------------
+=================================================================
+===   Embedded Maven build stopped: getting-started/pom.xml   ===
+=================================================================
+Applying kubernetes configuration from: file:/home/fburzigo/projects/git/fabiobrz/testing-wfly-on-ocp-with-cube/getting-started/target/classes/META-INF/jkube/openshift.yml
+Processing template. No parameters file has been specified, processing without external parameters!
+Replication controller: [wildfly-getting-started-cube-ocp-1]
+Pod: [wildfly-getting-started-cube-ocp-s2i-1-build] Status: [Succeeded]
+Service: [hello-world-svc] IP: [172.122.251.63] Ports: [ 8080 ]
+Jun 19, 2025 3:43:32 PM org.arquillian.cube.openshift.impl.CEEnvironmentProcessor createEnvironment
+INFO: Creating environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT
+Jun 19, 2025 3:43:32 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier applyKubernetesResourcesAtClassScope
+INFO: Creating environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT
+Jun 19, 2025 3:43:32 PM org.arquillian.cube.openshift.impl.CEEnvironmentProcessor createOpenShiftResource
+INFO: Creating environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT method public void org.wildfly.examples.GettingStartedOpenShiftApplicationIT.helloEndpointShouldReplyWithHttp200()
+Jun 19, 2025 3:43:32 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier applyKubernetesResourcesAtMethodScope
+INFO: Creating environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT method helloEndpointShouldReplyWithHttp200
+Jun 19, 2025 3:43:48 PM org.arquillian.cube.openshift.impl.CEEnvironmentProcessor deleteOpenShiftResource
+INFO: Deleting environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT method helloEndpointShouldReplyWithHttp200
+Jun 19, 2025 3:43:48 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier removeKubernetesResourcesAtMethodScope
+INFO: Deleting environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT method helloEndpointShouldReplyWithHttp200
+Jun 19, 2025 3:43:48 PM org.arquillian.cube.openshift.impl.resources.OpenShiftResourceFactory deleteEnvironment
+INFO: Deleting environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT
+Jun 19, 2025 3:43:49 PM org.arquillian.cube.kubernetes.impl.resources.KubernetesResourcesApplier removeKubernetesResourcesAtClassScope
+INFO: Deleting environment for org.wildfly.examples.GettingStartedOpenShiftApplicationIT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 169.2 s -- in org.wildfly.examples.GettingStartedOpenShiftApplicationIT
+Deleting project: itest-3abe449b...
+Project: itest-3abe449b, successfully deleted
+Destroying Session:3abe449b
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- failsafe:3.5.3:verify (default) @ wildfly-getting-started-cube-ocp ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  03:22 min
+[INFO] Finished at: 2025-06-19T15:43:50+02:00
+[INFO] ------------------------------------------------------------------------
+----
+
+== In conclusion
+
+Testing a WildFly application directly on OpenShift will make the test more effective, and will allow prototyping and
+make debugging easier.
+
+Arquillian Cube provides an easy and effective way to test on OpenShift, with almost no configuration and instrumentation
+changes with respect to existing Arquillian based tests.
+
+The code for the example application which is described in this article is available here:
+https://github.com/fabiobrz/wildfly-getting-started-cube-ocp
+
+Fabio Burzigotti
