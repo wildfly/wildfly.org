@@ -7,6 +7,8 @@ include::./_includes/_titles.adoc[]
 
 In this guide, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] implemented using WildFly.
 
+In the following guide link:simple-microservice-part2[{simple-microservice-part2}], you will see how to run the same link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] on link:https://kubernetes.io/[Kubernetes];
+
 include::{includedir}/_prerequisites.adoc[]
 
 * Install link:https://www.docker.com/[Docker, window="_blank"] or link:https://podman.io/[Podman, window="_blank"]
@@ -172,9 +174,9 @@ e1ab6e80ed20c3619a7e859f03c71f33b79a4d292f971ed83e7484f4779121d8
 
 NOTE: As you can see, we used link:https://podman.io/[Podman, window="_blank"], but you can also use link:https://www.docker.com/[Docker, window="_blank"], depending on your preference and on which one you have installed on your PC; to switch to Docker, replace *podman* with *docker* in the previous command (and in the ones that will follow).
 
-NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build (have a look at the `image` profile in {source-code-git-repository}/simple-microservice/pom.xml["simple-microservice/pom.xml", window="_blank"] for a complete example).
 
-NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+NOTE: Have a look at link:https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[Testing WildFly applications on Docker with Arquillian Cube] to see how to automate the image build and execution.
 
 === Run the Docker Image
 
@@ -231,7 +233,8 @@ link:simple-microservice-part2[{simple-microservice-part2}]
 [[references]]
 == References
 
-* https://docs.wildfly.org/wildfly-maven-plugin
-* Source code for this guide: {source-code-git-repository}/simple-microservice
+* link:https://docs.wildfly.org/wildfly-maven-plugin["wildfly-maven-plugin", window="_blank"]
+* Source code for this guide: {source-code-git-repository}/simple-microservice["simple-microservice", window="_blank"]
+* link:https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/["Testing WildFly applications on Docker with Arquillian Cube", window="_blank"]
 
 < link:../get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
