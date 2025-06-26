@@ -32,7 +32,7 @@ layout: base
                 <table>
                     {% for signing in contributor.signing %}
                     <tr class="separator">
-                        <td class="contributor-label">Public Key Id</td>
+                        <td class="contributor-label" id="{{ signing.pgp.id }}">Public Key Id</td>
                         <td class="copy-text">{{ signing.pgp.id }}</td>
                     </tr>
                     <tr>

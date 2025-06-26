@@ -10,7 +10,7 @@ layout: base
       <div class="download-ctas">
         <a href="https://github.com/wildfly/wildfly/releases/download/{{latestRelease.version}}/wildfly-{{latestRelease.version}}.zip" class="button-cta">Download the zip</a>
         <a href="https://github.com/wildfly/wildfly/releases/download/{{latestRelease.version}}/wildfly-{{latestRelease.version}}.tar.gz" class="button-cta">Download the tgz</a>
-      </div> 
+      </div>
       <div class="page-eap">
         <h4>The technology behind Wild<strong>Fly</strong> is also available in <a href="https://www.redhat.com/en/technologies/jboss-middleware/application-platform" target="_blank">JBoss Enterprise Application Platform</a>. JBoss EAP is a hardened enterprise subscription with Red Hat’s world-class support, long multi-year maintenance cycles, and exclusive content. <a href="https://developers.redhat.com/register" target="_blank">Sign-up with Red Hat</a> to download a no-cost 1-year development license.</h4>
         <a href="https://developers.redhat.com/products/eap/download/" class="button-cta secondary" target="_blank">Download Red Hat JBoss EAP</a>
@@ -36,11 +36,19 @@ layout: base
                   <!--<td class="licence">{{releaseItem.licence}}</td>-->
                   <td class="links">
                     {% for releaseFormat in releaseItem.items %}
-                    <a href="{{releaseFormat.url}}">{{releaseFormat.format}}</a>{% if releaseFormat.checksum %} | <a href="{{releaseFormat.checksum_url}}">{{releaseFormat.checksum}}</a>{% endif %}<br/>
+                    <a href="{{releaseFormat.url}}">{{releaseFormat.format}}</a>{% if releaseFormat.checksum %} | <a href="{{releaseFormat.checksum_url}}">{{releaseFormat.checksum}}</a>{% endif %}{% if releaseFormat.signature %} | <a href="{{releaseFormat.signature_url}}">{{releaseFormat.signature}}</a>{% endif %}<br/>
                     {% endfor %}
                   </td>
                 </tr>
                 {% endfor %}
+                {% if versionId.gpg_key %}
+                <tr>
+                  <td class="description">Signed Using GPG Key</td>
+                  <td class="links">
+                    <a href="{{site.baseurl}}/contributors/pgp#{{versionId.gpg_key}}">{{versionId.gpg_key}}</a>
+                  </td>
+                </tr>
+                {% endif %}
               </table>
             </div>
           </div>
