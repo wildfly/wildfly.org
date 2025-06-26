@@ -59,7 +59,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12449162
+          url: https://wildfly.org/news/2025/06/26/WildFly37Beta-released/
 - version: 36.0.1.Final
   version_shortname: 36.0.1.Final
   date: 2025-05-15
