@@ -1,0 +1,113 @@
+---
+layout: post
+title:  "WildFly 29 is released!"
+aliases: [/news/2023/07/21/WildFly29-Released]
+date:   2023-07-21
+tags:   announcement release
+author: bstansberry
+description: WildFly 29 Final is now available for download.
+---
+
+I'm pleased to announce that the new WildFly and WildFly Preview 29.0.0.Final releases are available for download at https://wildfly.org/downloads.
+
+== New and Notable
+
+During the WildFly 29 development cycle the WildFly contributors were heavily focused on bug fixing, plus a lot internal housekeeping that needed doing after all the recent work toward Jakarta EE 10. But we do have some new goodies:
+
+
+* It is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFLY-15260_oidc_management_console.adoc#wfly-15260-securing-the-management-console-with-oidc[secure the management console with WildFly's native support for OpenID Connect].
+* You can use Galleon to link:https://docs.wildfly.org/29/WildFly_Elytron_Security.html#Keycloak_SAML_Integration[add Keycloak's SAML adapter to your WildFly installation] using the new Keycloak SAML Adapter feature pack.
+* You can use Galleon to link:https://docs.wildfly.org/29/Admin_Guide.html#installing-a-new-jsf-implementation-via-feature-pack[add MyFaces 4 support to your WildFly installation] using the 1.0.0.*Beta1* release of the new link:https://github.com/wildfly-extras/wildfly-myfaces-feature-pack[WildFly MyFaces feature pack]. (Note that the feature pack is still a Beta.)
+* The `elytron` subsystem's new Distributed Realm attribute `ignore-unavailable-realms` enables a user to link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFCORE-5740-ability-to-ignore-unavailable-realms-for-a-distributed-realm.adoc#wfcore-5740-add-the-ability-to-ignore-unavailable-realms-for-a-distributed-realm[switch to ignoring unavailable realms during search and continue searching in subsequent realms].
+
+
+== Supported Specifications
+
+=== Jakarta EE
+
+WildFly 29 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile]. WildFly is EE 10 compatible when running on both Java SE 11 and Java SE 17.
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 10 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_29.0.0.Final/jakarta-full-platform-jdk11.adoc#tck-results[SE 11]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_29.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17]
+.2+.<|  Jakarta EE 10 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_29.0.0.Final/jakarta-web-profile-jdk11.adoc#tck-results[SE 11]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_29.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17]
+.2+.<| Jakarta EE 10 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_29.0.0.Final/jakarta-core-jdk11.adoc#jakarta-core-profile-1001-tck-java-se-11-results[SE 11]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_29.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17]
+|=======================================================================
+
+
+=== MicroProfile
+
+WildFly supports numerous MicroProfile specifications. Because we no longer support MicroProfile Metrics, WildFly 28 cannot claim to be a compatible implementation of the MicroProfile 6.0 specification. However, WildFly's MicroProfile support includes implementations of the following specifications in our "full" (e.g. `standalone-full.xml`) and "default" (e.g `standalone.xml`) configurations as well as our "microprofile" configurations (e.g. `standalone-microprofile.xml`):
+
+[cols=",,",options="header"]
+|=======================================================================
+|MicroProfile Technology |WildFly Full/Default Configurations |WildFly MicroProfile Configuration
+
+|MicroProfile Config 3.0 |X |X
+
+|MicroProfile Fault Tolerance 4.0 |-- |X
+
+|MicroProfile Health 4.0 |-- |X
+
+|MicroProfile JWT Authentication 2.1 |X |X
+
+|MicroProfile LRA 2.0 |-- |X
+
+|MicroProfile OpenAPI 3.1 |-- |X
+
+|MicroProfile Open Telemetry 1.0|-- |X
+
+|MicroProfile Reactive Messaging 3.0 |-- |--
+
+|MicroProfile Reactive Streams Operators 3.0 |-- |--
+
+|MicroProfile Rest Client 3.0|X |X
+|=======================================================================
+
+link:https://github.com/wildfly/certifications/blob/MP6.0/WildFly_29.0.0.Final/microprofile-6.0-selected-specifications/microprofile-6.0-selected-specifications-certification.adoc[Compatibility evidence] for the above specifications that are part of MicroProfile 6.0 can be found in the WildFly Certifications repository on GitHub.
+
+== Java SE Support
+
+Our recommendation is that you run WildFly on the most recent long-term support Java SE release, i.e. on SE 17 for WildFly 29. While we do do some testing of WildFly on JDK 20, we do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 11 or 17.
+
+WildFly 29 also is heavily tested and runs well on Java 11. We anticipate continuing to support Java 11 at least through WildFly 30, and perhaps beyond. We do, however, anticipate removing support for SE 11 sometime in the next 12 to 18 months.
+
+While we recommend using an LTS JDK release, I do believe WildFly runs well on JDK 20. By runs well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform.
+
+Please note that WildFly runs in classpath mode.
+
+== Migration Issues
+
+In this section of these release announcements I'll note issues users may experience when migrating from a previous version of WildFly.
+
+=== Galleon Tooling
+
+We've added additional metadata to the files link:https://docs.wildfly.org/29/Galleon_Guide.html#wildfly_galleon_layers[WildFly's Galleon layers] provide to the Galleon tooling, with the aim of providing exciting new provisioning capabilities. (Keep an eye out for more on those new capabilities in a future WildFly release.) This addition, however necessitates that in order to provision WildFly 29 users must update the versions of Galleon-related tooling they use.
+
+* For those who use the link:https://docs.wildfly.org/galleon/#_galleon_cli_tool[Galleon CLI tool] to provision WildFly,  link:https://github.com/wildfly/galleon/releases/tag/5.2.0.Final[version 5.2.0.Final] or later is required.
+** link:https://mvnrepository.com/artifact/org.jboss.galleon/galleon-maven-plugin/5.2.0.Final[Version 5.2.0.Final] or later is also required for users of the link:https://docs.wildfly.org/galleon/#_maven_plugin[Galleon Maven Plugin]
+* For those who use the link:https://docs.wildfly.org/wildfly-maven-plugin/releases/4.2/[WildFly Maven Plugin] to provision WildFly, link:https://mvnrepository.com/artifact/org.wildfly.plugins/wildfly-maven-plugin/4.2.0.Final[version 4.2.0.Final] or later is required.
+* For users who use the link:https://docs.wildfly.org/bootablejar/[WildFly JAR Maven Plugin] to produce a bootable jar: link:https://mvnrepository.com/artifact/org.wildfly.plugins/wildfly-jar-maven-plugin/10.0.0.Final[version 10.0.0.Final] or later is required.
+
+We are working to add improved forward compatibility to our tooling to help reduce the likelihood that future improvements will require users to update their tooling versions in order to work with newer releases of WildFly.
+
+
+== Release Notes
+
+The full release notes for the release are in the link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12410347[WildFly JIRA].  Issues fixed in the  underlying link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12410310[WildFly Core 21.0.0] release are listed in the WildFly Core JIRA.
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA].
+
+Meanwhile, we're busy at work on WildFly 30!
+
+Best regards,
+
+Brian

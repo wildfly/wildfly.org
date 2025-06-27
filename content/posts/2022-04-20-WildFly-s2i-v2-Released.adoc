@@ -1,0 +1,232 @@
+---
+layout: post
+title:  "New WildFly on the cloud architecture"
+aliases: [/news/2022/04/20/WildFly-s2i-v2-Released]
+date:   2022-04-20
+tags:   wildfly galleon cloud wildfly-s2i openshift
+author: jfdenise
+---
+
+We have released the new components that make for a completely redesigned WildFly cloud experience.
+This redesign allows for more flexibility, simpler workflows and smaller application images.
+
+Our new cloud architecture is composed of 5 main components:
+
+* New WildFly Source-to-Image (S2I) builder images (link:https://quay.io/repository/wildfly/wildfly-s2i-jdk11[JDK11] and link:https://quay.io/repository/wildfly/wildfly-s2i-jdk17[JDK17])
+* New WildFly runtime images (link:https://quay.io/repository/wildfly/wildfly-runtime-jdk11[JDK11] and link:https://quay.io/repository/wildfly/wildfly-runtime-jdk17[JDK17])
+* New link:https://github.com/wildfly/wildfly-maven-plugin/[WildFly Maven plugin 3.0.0.Final]
+* New link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[WildFly cloud Galleon feature-pack 1.0.0.Final]
+* New link:https://github.com/wildfly/wildfly-charts[Helm Chart for WildFly 2.0]
+
+The new S2I workfow can be summarized as:
+
+* Configure the WildFly Maven plugin to deploy your application in the WildFly server of your choice, finely tuned according to your needs (link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/jsf-ejb-jpa/pom.xml[an example])!
+* Make your application sources available in a GIT repository (link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[an example]).
+* Define a Helm Chart for WildFly yaml file (link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql/helm.yaml[an example]).
+* Install your Helm file into OpenShift (link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/jsf-ejb-jpa/README.md#example-steps[an example]). You are done!
+
+To get you familiar with the various components you can directly jump to these link:https://github.com/wildfly/wildfly-s2i/tree/main/examples[examples].
+They will drive you through various use-cases from source to deployment on OpenShift (for immediate access to an OpenShift cluster, you can use link:https://developers.redhat.com/developer-sandbox[OpenShift sandbox]).
+
+== Legacy WildFly S2I and runtime centos7 images
+
+We have released the legacy images for WildFly 26.1.0.Final in link:https://quay.io/organization/wildfly[quay.io/wildfly].
+We are not planning to release any centos7 images starting WildFly 27.
+
+[NOTE]
+====
+When using the legacy S2I images for WildFly, you must stay on the `1.x` version of the Helm Chart for WildFly:
+```
+helm install my-legacy-app -f helm.yaml wildfly/wildfly --version ^1.x
+```
+====
+
+== New WildFly S2I and runtime images
+
+We have released our new link:https://catalog.redhat.com/software/containers/ubi8/ubi-minimal/5c359a62bed8bd75a2c3fba8[UBI8 minimal] based images:
+
+* link:https://quay.io/repository/wildfly/wildfly-s2i-jdk11[quay.io/wildfly/wildfly-s2i-jdk11] S2I builder image.
+
+* link:https://quay.io/repository/wildfly/wildfly-s2i-jdk17[quay.io/wildfly/wildfly-s2i-jdk17] S2I builder image.
+
+* link:https://quay.io/repository/wildfly/wildfly-runtime-jdk11[quay.io/wildfly/wildfly-runtime-jdk11] runtime image.
+
+* link:https://quay.io/repository/wildfly/wildfly-runtime-jdk17[quay.io/wildfly/wildfly-runtime-jdk17] runtime image.
+
+S2I builder images and runtime images, although directly usable from docker build (an example of docker image built
+from a WildFly runtime image can be found
+link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/docker-build/README.md[here]) or link:https://github.com/openshift/source-to-image[S2I] tooling,
+are best used when using Helm Chart for WildFly. Helm Chart create smart chained builds in order to output lightweight
+application images running on the runtime of your choice (JDK11 or JDK17).
+
+Detailed documentation can be found link:https://github.com/wildfly/wildfly-s2i/blob/main/README.md[there].
+
+=== Universal Base Image 8 Minimal
+
+Our new images are based on link:https://hub.docker.com/r/redhat/ubi8[Universal Base Image].
+The UBI8 image has been designed and engineered to be the base layer for containerized applications.
+The Minimal flavor is a stripped down image.
+
+=== Relationship with the openjdk S2I images
+
+Our new images are sharing the Java VM configuration link:https://github.com/jboss-container-images/openjdk/blob/develop/modules/jvm/api/module.yaml[API] with the link:https://github.com/jboss-container-images/openjdk[openjdk images].
+This has multiple benefits:
+
+* JDK alignement. Benefit from latest updates.
+* JVM configuration alignment. Benefit from the same automatic tuning and configuration of Java VM.
+
+In the end you are getting an homogeneous user experience whatever the kind of WildFly server packaging you have chosen:
+WildFly Bootable JAR that runs on the openjdk images or WildFly that runs on our new images.
+
+=== An S2I builder image decoupled from WildFly server
+
+S2I builder images are generic and can be used to deploy application for any WildFly server version.
+
+Builder images have no dependency on a WildFly server release (as opposed to the legacy centos7 WildFly images that are bound to a given server version).
+
+You can even run Jakarta EE8 or Jakarta EE9-based application from these images.
+The link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql/README.md[PostgreSQL example] and
+link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql-jakarta/README.md[PostgreSQL Jakarta EE9 example]
+are identical applications deployed on different kind of WildFly server. Just a matter of choosing the right Galleon feature-packs to assemble the right server.
+
+=== Release of the new images
+
+Images release cadence is now decoupled from the WildFly server release cadence. Images have their own lifecycle. New releases will be done to address fixes and new features.
+Released images are deployed in the link:http://quay.io/wildfly[quay.io/wildfly organization]
+For the one that love to be on the bleeding edge we are constantly deploying images under development to the link:http://quay.io/wildfly-snapshots[quay.io/wildfly-snapshots organization].
+
+=== Using the JDK 17 S2I builder image
+
+Applications are built and run similarly on JDK11 and JDK17. For JDK17 just make sure to have your maven
+projects to use `3.3.2` version for the link:https://maven.apache.org/plugins/maven-war-plugin/[Maven war plugin].
+This link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql-jakarta/README.md[example] shows how to configure the Maven war plugin version.
+
+[NOTE]
+====
+When using JDK17 images of a version < 1.0.2, you need to set the following env variable to workaround link:https://issues.redhat.com/browse/WFCORE-5835[WFCORE-5835]:
+```
+JAVA_OPTS_APPEND=--add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED
+```
+The latest JDK17 images have been fixed.
+====
+
+=== Multiarch images preview
+
+We have released preview of Multiarch images (linux/amd64 and linux/arm64). Longer term we plan
+to make our official images multi arch and stop releasing the preview images, but we are not yet there.
+
+Multi arch preview images:
+
+* link:https://quay.io/repository/wildfly-snapshots/wildfly-s2i-jdk11-multi-arch[https://quay.io/repository/wildfly-snapshots/wildfly-s2i-jdk11-multi-arch] preview multi arch JDK11 S2I builder image.
+
+* link:https://quay.io/repository/wildfly-snapshots/wildfly-s2i-jdk17-multi-arch[https://quay.io/repository/wildfly-snapshots/wildfly-s2i-jdk17-multi-arch] preview multi arch JDK17 S2I builder image.
+
+* link:https://quay.io/repository/wildfly-snapshots/wildfly-runtime-jdk11-multi-arch[https://quay.io/repository/wildfly-snapshots/wildfly-runtime-jdk11-multi-arch] preview JDK11 multi arch runtime image.
+
+* link:https://quay.io/repository/wildfly-snapshots/wildfly-runtime-jdk17-multi-arch[https://quay.io/repository/wildfly-snapshots/wildfly-runtime-jdk17-multi-arch] preview JDK17 multi arch runtime image.
+
+== New s2i build workflow
+
+In order to create a server to be installed into the WildFly image we are relying on the
+link:https://github.com/wildfly/wildfly-maven-plugin/[WildFly Maven plugin 3.0.0.Final] that can now provision a fully configured server containing your deployment.
+The WildFly Maven plugin `3.0.0.Final` has been evolved with some new goals to provision, configure, and package the server and the deployment in one step.
+When designing your application pom file, add an execution of the WildFly Maven plugin `package` goal, configure it with the link:https://docs.wildfly.org/26.1/Galleon_Guide.html#wildfly-galleon-feature-packs[WildFly Galleon feature-pack]
+and link:https://docs.wildfly.org/26.1/Galleon_Guide.html#wildfly_layers[Galleon layer(s)], and optionally reference WildFly CLI scripts to be executed and
+content to be copied inside the server. At the end of the build you will get (by default in the `target/server` directory)
+a server with your app deployed, ready to be installed in the image.
+
+In order to allow for a smooth transition to the new images, we are still supporting (in a deprecated way) the legacy workflow.
+Your existing application would work, but you are now required to specify the Galleon feature-pack(s) and layer(s)
+(`GALLEON_PROVISION_FEATURE_PACKS` and `GALLEON_PROVISION_LAYERS` env variables)
+you want to provision during the S2I build.
+
+== Execution time server configuration
+
+Application images built from the WildFly S2I builder or runtime images both expose
+the same API allowing you to fine tune the server execution.
+This API is exposed by means of environment variables to be set when configuring your deployment.
+
+=== JVM configuration API
+
+The JVM link:https://github.com/jboss-container-images/openjdk/blob/develop/modules/jvm/api/module.yaml[env variables]
+that are used today with WildFly s2i images are still supported. They are a nice way to tune the JVM.
+
+=== WildFly server startup configuration API
+
+The new server startup configuration API is described in this
+link:https://github.com/wildfly/wildfly-cekit-modules/blob/main/jboss/container/wildfly/run/api/module.yaml[documentation].
+This API comes with default values that should cover the main use-cases. 2 env variables open-up new possibilities:
+
+* `SERVER_ARGS` allows you to pass WildFly server arguments when starting the server.
+
+* `CLI_LAUNCH_SCRIPT` allows you to provide a path (relative to `JBOSS_HOME` or absolute) to a CLI script to be executed at startup time. Although CLI scripts
+should be executed at build time from the WildFly Maven plugin, in some cases it can be useful to adjust the configuration at execution time. You can package
+a set of CLI scripts inside your server at build time, then reference one of these CLI scripts to be executed at runtime.
+
+=== WildFly server subsystems configuration API
+
+If you are using WildFly s2i images you are perhaps asking yourself where are the env variables you have been using
+to configure the elytron subsystem, to add datasources, to configure logging or the microprofile-config subsystem,...
+They are provided by means of a new link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[WildFly cloud Galleon feature-pack]
+that you can combine with the WildFly Galleon feature-pack at build time to produce a server supporting these env variables.
+
+* If you only provision `org.wildfly:wildfly-galleon-pack:26.1.0.Final` you will get a "vanilla" WildFly server that
+will get lightly adjusted by the image entrypoint to properly execute on OpenShift.
+
+* If you provision `org.wildfly:wildfly-galleon-pack:26.1.0.Final` and `org.wildfly.cloud:wildfly-cloud-galleon-pack:1.0.0.Final`
+you will get a WildFly server link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack/blob/main/doc/layers.md[pre configured] for cloud execution ready to be configured thanks to
+the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack/blob/main/doc/launch.md[environment variables] the cloud feature-pack exposes.
+
+2 variants exist of the cloud feature-pack:
+
+* `org.wildfly.cloud:wildfly-cloud-galleon-pack` to be used with `org.wildfly:wildfly-galleon-pack` to provision an EE8 server
+as shown in this link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql/README.md[example].
+* `org.wildfly.cloud:wildfly-preview-cloud-galleon-pack` to be used with `org.wildfly:wildfly-preview-feature-pack` to provision a Jakarta EE9 server
+as shown in this link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql-jakarta/README.md[example].
+
+Detailed documentation can be found link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack/blob/main/README.md[there].
+
+== Examples
+
+We have defined a set of link:https://github.com/wildfly/wildfly-s2i/tree/main/examples[examples] to help
+you get started. They cover different use-cases that highlight the new capabilities.
+
+The examples rely on link:https://github.com/wildfly/wildfly-charts[Helm Chart for WildFly]
+to automate the build and deployment on OpenShift.
+
+In order to deploy the examples onto OpenShift, you can log in to the
+link:https://developers.redhat.com/developer-sandbox/[Developer Sandbox for Red Hat OpenShift].
+
+The use cases covered are:
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/cloud-default-config/README.md[Cloud default configuration], an application that interacts with a
+`postgresql` database. The projects shows how to provision a server configured in a way that is similar to the default WildFly server presents in the legacy WildFly cento7 image.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/docker-build/README.md[Docker build], highlights the steps needed to build a docker image
+that contains the server and your application.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/jsf-ejb-jpa/README.md[JSF, EJB application], simple application.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/elytron-oidc-client/README.md[Keycloak integration]. Use WildFly `elytron-oidc-client`
+to interact with a Keycloak server. Also highlights the ability to provide server arguments at launch time.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/logging/README.md[Logging]. We all need to enable logging at some point.
+With a simple CLI script executed at server boot time, enable logging and redirect all traces to the CONSOLE.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql/README.md[PostgreSQL]. Create a WildFly application with support for postgreSQL database.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/postgresql-jakarta/README.md[PostgreSQL Jakarta EE9].
+Create a WildFly application with support for postgreSQL database. The running server and application are both compliant with Jakarta EE9.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/main/examples/web-clustering/README.md[Clustering]. A cluster of PODS
+that share web sessions. This example benefits from the WildFly cloud feature-pack and Helm Chart for WildFly capabilities
+to automatically enable the `dns.DNS_PING` JGroups protocol and generate the ping service.
+
+## Enjoy!
+
+and...keep us posted with your feedback. (You can log these as new
+link:https://github.com/wildfly/wildfly-s2i/issues[project issues].)
+
+Thank-you!
+
+JF Denise

@@ -1,0 +1,22 @@
+---
+layout: post
+title:  "WildFly Guides"
+date:   2024-01-26
+tags:   announcement documentation
+author: hpehl
+description: The WildFly website now has a section for guides.
+---
+
+We have recently published a first collection of guides on the WildFly homepage. You can find the guides in the top-level navigation under link:https://www.wildfly.org/guides/[Guides]. They are divided into different categories. Currently, we have guides for "Get Started", "Observability", "Security", "MicroProfile", and "Automation".
+
+== What to expect
+
+The guides address one topic of a specific use case in more detail. Unlike the https://docs.wildfly.org[reference documentation,window=_blank], the guides describe step by step how a specific task can be approached and solved. All guidelines have a common structure, clearly list the prerequisites and provide an estimate of the time required for completing the task.
+
+== We need your feedback
+
+We would liek to get your feedback about the guides. Please use the link:https://groups.google.com/forum/#!forum/wildfly[forum] or the link:https://wildfly.zulipchat.com/[chat] and let us know how you like them.
+
+== What's next?
+
+Expect more guides to come in the next months. If you're missing a topic or even would like to contribute to the guides, please let us know!

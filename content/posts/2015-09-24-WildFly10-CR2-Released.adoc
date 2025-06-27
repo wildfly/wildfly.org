@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "WildFly 10 CR2 is released!"
+aliases: [/news/2015/09/25/WildFly10-CR2-Released]
+date:   2015-09-24 22:31:00 -0600
+tags:   announcement release
+author: jgreene
+---
+
+The second release candidate for WildFly 10 (10.0.0.CR2) is now available link:/downloads[for download]!
+
+For details, see the link:https://developer.jboss.org/wiki/WildFly1000CR2ReleaseNotes[official 10.0.0.CR2 Release Notes wiki page].
+
+Give it a try and let us know what you think.

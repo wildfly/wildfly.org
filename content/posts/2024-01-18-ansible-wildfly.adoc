@@ -1,0 +1,705 @@
+---
+layout: post
+title:  "Deploying a WildFly 30.0.1.Final cluster using Ansible"
+aliases: [/news/2024/01/18/ansible-wildfly]
+date:   2024-01-18
+tags:   ansible cluster
+author: rpelisse
+description: A quick overview on how to use the Ansible collection for WildFly to automate a cluster deployment
+---
+
+In this brief demonstration, we’ll set up and run three instances of WildFly on the same machine (localhost). Together they will form a cluster. It’s a rather classic setup, where the appservers needs to synchronize the content of their application’s session to ensure fail over if one of the instances fails. This configuration guarantees that, if one instance fails while processing a request, another one can pick up the work without any data loss. Note that we’ll use a multicast to discover the members of the cluster and ensure that the cluster’s formation is fully automated and dynamic.
+
+
+== Install Ansible and its collection for WildFly
+
+On a Linux system using a package manager, installing Ansible is pretty straightforward:
+
+[source,bash]
+----
+$ sudo dnf install ansible-core
+----
+
+Please refer to the documentation available online for installation on other operating system. Note that this demonstration assumes you are running both the Ansible controller and the target (same machine in our case) on a Linux system. However, it should work on any other operating system with a few adjustements.
+
+Before going further, double check that you are running a recent enough version of Ansible (2.14 or above will do, but 2.9 is the bare minimum):
+
+[source,bash]
+----
+ansible [core 2.15.3]
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/root/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3.11/site-packages/ansible
+  ansible collection location = /root/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/bin/ansible
+  python version = 3.11.2 (main, Jun  6 2023, 07:39:01) [GCC 8.5.0 20210514 (Red Hat 8.5.0-18)] (/usr/bin/python3.11)
+  jinja version = 3.1.2
+  libyaml = True
+----
+
+The next, and last, step to ready your Ansible environment is to install the Ansible collection for WildFly on the controller (the machine that will run Ansible):
+
+[source,bash]
+----
+# ansible-galaxy collection install middleware_automation.wildfly
+Starting galaxy collection install process
+Process install dependency map
+Starting collection install process
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/middleware_automation-wildfly-1.4.3.tar.gz to /root/.ansible/tmp/ansible-local-355dkk9kf5/tmpc2qtag11/middleware_automation-wildfly-1.4.3-9propr_x
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/ansible-posix-1.5.4.tar.gz to /root/.ansible/tmp/ansible-local-355dkk9kf5/tmpc2qtag11/ansible-posix-1.5.4-pq0cq2mn
+Installing 'middleware_automation.wildfly:1.4.3' to '/root/.ansible/collections/ansible_collections/middleware_automation/wildfly'
+middleware_automation.wildfly:1.4.3 was installed successfully
+Installing 'ansible.posix:1.5.4' to '/root/.ansible/collections/ansible_collections/ansible/posix'
+Downloading https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/artifacts/middleware_automation-common-1.1.4.tar.gz to /root/.ansible/tmp/ansible-local-355dkk9kf5/tmpc2qtag11/middleware_automation-common-1.1.4-nks7pvy7
+ansible.posix:1.5.4 was installed successfully
+Installing 'middleware_automation.common:1.1.4' to '/root/.ansible/collections/ansible_collections/middleware_automation/common'
+middleware_automation.common:1.1.4 was installed successfully
+----
+
+== Set up the WildFly cluster
+
+For simplicity’s sake and to allow you to reproduce this demonstration on a single machine (physical or virtual) or even a container, we opted to deploy our three instances on one target. We chose localhost as a target, so that the demonstration can even be performed without a remote host.
+
+There are essentially two steps to set up the WildFly cluster:
+
+. Install WildFly on the targeted hosts (here just localhost). This means downloading the archive from this website and decompressing the archive in the appropriate directory (JBOSS_HOME). These tasks are handled by the wildfly_install role supplied by Ansible collection for WildFly.
+. Create the configuration files to run several instances of WildFly. Because we’re running multiple instances on a single host, you also need to ensure that each instance has its own subdirectories and set of ports, so that the instances can coexist and communicate. Fortunately, this functionality is provided by a role within the Ansible collection called wildfly_systemd.
+
+=== Ansible playbook to install WildFly
+
+Here is the playbook we'll use to deploy our clusters. Its content is relatively self-explanitory, at least if you are somewhat familiar with the Ansible syntax.
+
+[source, yml]
+----
+- name: "WildFly installation and configuration"
+  hosts: "{{ hosts_group_name | default('localhost') }}"
+  become: yes
+  vars:
+    wildfly_install_workdir: '/opt/'
+    wildfly_config_base: standalone-ha.xml
+    wildfly_version: 30.0.1.Final
+    wildfly_java_package_name: java-11-openjdk-headless.x86_64
+    wildfly_home: "/opt/wildfly-{{ wildfly_version }}"
+
+    instance_http_ports:
+      - 8080
+      - 8180
+      - 8280
+    app:
+      name: 'info-1.2.war'
+      url: 'https://drive.google.com/uc?export=download&id=13K7RCqccgH4zAU1RfOjYMehNaHB0A3Iq'
+  collections:
+    - middleware_automation.wildfly
+  roles:
+    - role: wildfly_install
+  tasks:
+
+    - name: "Set up for WildFly instance \{{ item }}."
+      ansible.builtin.include_role:
+        name: wildfly_systemd
+      vars:
+        wildfly_config_base: 'standalone-ha.xml'
+        wildfly_instance_id: "{{ item }}"
+        instance_name: "wildfly-{{ wildfly_instance_id }}"
+        wildfly_config_name: "{{ instance_name }}.xml"
+        wildfly_basedir_prefix: "/opt/{{ instance_name }}"
+        service_systemd_env_file: "/etc/wildfly-{{ item }}.conf"
+        service_systemd_conf_file: "/usr/lib/systemd/system/wildfly-{{ item }}.service"
+      loop: "{{ range(0,3) | list }}"
+
+    - name: "Wait for each instance HTTP ports to become available."
+      ansible.builtin.wait_for:
+        port: "{{ item }}"
+      loop: "{{ instance_http_ports }}"
+
+    - name: "Checks that WildFly server is running and accessible."
+      ansible.builtin.get_url:
+        url: "http://localhost:{{ port }}/"
+        dest: "/opt/{{ port }}"
+      loop: "{{ instance_http_ports }}"
+      loop_control:
+        loop_var: port
+----
+
+In short, this playbook uses the Ansible collection for WildFly to, first, install the appserver by using the wildfly_install role. This will download all the artifacts, create the required system groups and users, install dependency (unzip) and so on. At the end of its execution, all the tidbits required to run WildFly on the target host are installed, but the server is not yet running. That’s what happening in the next step.
+
+In the tasks section of the playbook, we then call on another role provided by the collection: wildfly_systemd. This role will take care of integrating WildFly, as a regular system service, into the service manager. Here, we use a loop to ensure that we create not one, but three different services. Each one will have the same configuration (standalone-ha.xml) but runs on different ports, using a different set of directories to store its data.
+
+=== Run the playbook!
+
+Now, let’s run our Ansible playbook and observe its output:
+
+[source, bash]
+----
+$ ansible-playbook -i inventory playbook.yml
+
+PLAY [WildFly installation and configuration] **********************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validating arguments against arg spec 'main'] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure prerequirements are fullfilled.] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/prereqs.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate credentials] ****
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate existing zipfiles wildfly-30.0.1.Final.zip for offline installs] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate patch version for offline installs] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate existing additional zipfiles \{{ eap_archive_filename }} for offline installs] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check that required packages list has been provided.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Prepare packages list] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Add JDK package java-11-openjdk-headless.x86_64 to packages list] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Install required packages (5)] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure required local user exists.] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/user.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set wildfly group] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure group wildfly exists.] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure user wildfly exists.] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure workdir /opt/ exists.] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure archive_dir /opt/ exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure server is installed] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/install.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check local download archive path] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set download paths] ******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check target archive: /opt//wildfly-30.0.1.Final.zip] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Retrieve archive from website: https://github.com/wildfly/wildfly/releases/download] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_install/tasks/install/web.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Download zipfile from https://github.com/wildfly/wildfly/releases/download/30.0.1.Final/wildfly-30.0.1.Final.zip into /work/wildfly-30.0.1.Final.zip] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Retrieve archive from RHN] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Install server using RPM] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check downloaded archive] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Copy archive to target nodes] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check target archive: /opt//wildfly-30.0.1.Final.zip] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Verify target archive state: /opt//wildfly-30.0.1.Final.zip] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Read target directory information: /opt/wildfly-30.0.1.Final] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Extract files from /opt//wildfly-30.0.1.Final.zip into /opt/.] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Note: decompression was not executed] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Read information on server home directory: /opt/wildfly-30.0.1.Final] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check state of server home directory: /opt/wildfly-30.0.1.Final] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set instance name] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Deploy custom configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Deploy configuration] ****
+changed: [localhost]
+
+TASK [Apply latest cumulative patch] *******************************************
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure required parameters for elytron adapter are provided.] ***
+skipping: [localhost]
+
+TASK [Install elytron adapter] *************************************************
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Install server using Prospero] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Check wildfly install directory state] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Validate conditions] *****
+ok: [localhost]
+
+TASK [Ensure firewalld configuration allows server port (if enabled).] *********
+skipping: [localhost]
+
+TASK [Set up for WildFly instance \{{ item }}.] *********************************
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Validating arguments against arg spec 'main'] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check current EAP patch installed] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments for yaml configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check if YAML configuration extension is supported in WildFly] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check if YAML configuration extension is supported in EAP] ***
+skipping: [localhost]
+
+TASK [Ensure required local user and group exists.] ****************************
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set wildfly group] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure group wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure user wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set destination directory for configuration] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance destination directory for configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set base directory for instance] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost] => \{
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance name] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance name] *******
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set bind address] ********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create basedir /opt/wildfly-00 for instance: wildfly-0] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create deployment directories for instance: wildfly-0] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy custom configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy configuration] ****
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Include YAML configuration extension] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check YAML configuration is disabled] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set systemd envfile destination] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set systemd unit file destination] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy service instance configuration: /etc/wildfly-0.conf] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy Systemd configuration for service: /usr/lib/systemd/system/wildfly-0.service] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Perform daemon-reload to ensure the changes are picked up] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure service is started] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_systemd/tasks/service.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance wildfly-0 state to started] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Validating arguments against arg spec 'main'] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check current EAP patch installed] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments for yaml configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check if YAML configuration extension is supported in WildFly] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check if YAML configuration extension is supported in EAP] ***
+skipping: [localhost]
+
+TASK [Ensure required local user and group exists.] ****************************
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set wildfly group] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure group wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure user wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set destination directory for configuration] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance destination directory for configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set base directory for instance] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost] => \{
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance name] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance name] *******
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set bind address] ********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create basedir /opt/wildfly-11 for instance: wildfly-1] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create deployment directories for instance: wildfly-1] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy custom configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy configuration] ****
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Include YAML configuration extension] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check YAML configuration is disabled] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set systemd envfile destination] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set systemd unit file destination] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy service instance configuration: /etc/wildfly-1.conf] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy Systemd configuration for service: /usr/lib/systemd/system/wildfly-1.service] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Perform daemon-reload to ensure the changes are picked up] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure service is started] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_systemd/tasks/service.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance wildfly-1 state to started] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Validating arguments against arg spec 'main'] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check current EAP patch installed] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments for yaml configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check if YAML configuration extension is supported in WildFly] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check if YAML configuration extension is supported in EAP] ***
+skipping: [localhost]
+
+TASK [Ensure required local user and group exists.] ****************************
+
+TASK [middleware_automation.wildfly.wildfly_install : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Set wildfly group] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure group wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_install : Ensure user wildfly exists.] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set destination directory for configuration] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance destination directory for configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set base directory for instance] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost] => \{
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance name] *******
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance name] *******
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set bind address] ********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create basedir /opt/wildfly-22 for instance: wildfly-2] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Create deployment directories for instance: wildfly-2] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy custom configuration] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy configuration] ****
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Include YAML configuration extension] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check YAML configuration is disabled] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set systemd envfile destination] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Determine JAVA_HOME for selected JVM] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set systemd unit file destination] ***
+skipping: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy service instance configuration: /etc/wildfly-2.conf] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Deploy Systemd configuration for service: /usr/lib/systemd/system/wildfly-2.service] ***
+changed: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Perform daemon-reload to ensure the changes are picked up] ***
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Ensure service is started] ***
+included: /root/.ansible/collections/ansible_collections/middleware_automation/wildfly/roles/wildfly_systemd/tasks/service.yml for localhost
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
+ok: [localhost]
+
+TASK [middleware_automation.wildfly.wildfly_systemd : Set instance wildfly-2 state to started] ***
+changed: [localhost]
+
+TASK [Wait for each instance HTTP ports to become available.] ******************
+ok: [localhost] => (item=8080)
+ok: [localhost] => (item=8180)
+ok: [localhost] => (item=8280)
+
+TASK [Checks that WildFly server is running and accessible.] *******************
+changed: [localhost] => (item=8080)
+changed: [localhost] => (item=8180)
+changed: [localhost] => (item=8280)
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=105  changed=26   unreachable=0    failed=0    skipped=46   rescued=0    ignored=0
+----
+
+Note that the playbook is not that long, but it does a lot for us. It performs almost 100 different tasks! Starting by automatically installing the dependencies, including the JVM required by WildFly, along with downloading its binaries. And the wildfly_systemd role does even more, effortlessly setting up three distinct services, each with its own set of ports and directory layout to store instance-specific data.
+
+Even better, the WildFly installation is NOT duplicated. All of the binaries live under the /opt/wildfly-27.0.1 directory, but all the data files of each instance are stored in separate folders. This means that we just need to update the binaries, once, and then restart the instances, to deploy a patch or upgrade to a new version of WildFly.
+
+On top of everything, we configured the instances to use the standalone-ha.xml configuration as the baseline, so they are already set up for clustering.
+
+=== Check that everything worked as expected
+
+The easiest way to confirm that the playbook did indeed install WildFly and started three instances of the appserver is to use the systemctl command to check the associate services state:
+
+[source, bash]
+----
+# systemctl status wildfly-0
+● wildfly-0.service - JBoss EAP (standalone mode)
+   Loaded: loaded (/usr/lib/systemd/system/wildfly-0.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2024-01-18 07:01:44 UTC; 5min ago
+ Main PID: 884 (standalone.sh)
+    Tasks: 89 (limit: 1638)
+   Memory: 456.3M
+   CGroup: /system.slice/wildfly-0.service
+           ├─ 884 /bin/sh /opt/wildfly-30.0.1.Final/bin/standalone.sh -c wildfly-0.xml -b 0.0.0.0 -bmanagement 127.0.0.1 -Djboss.bind.address.private=127.0.0.1 -Djboss.default.multicast.address=230.0.0.4 -Djboss.server.config.dir=/opt/wildfly-30.0.1.Final/standalone/configuration/ -Djboss.server.base.dir=/opt/wildfly-00 -Djboss.tx.node.id=wildfly-0 -Djboss.socket.binding.port-offset=0 -Djboss.node.name=wildfly-0 -Dwildfly.statistics-enabled=false
+           └─1044 /etc/alternatives/jre_11/bin/java -D[Standalone] -Djdk.serialFilter=maxbytes=10485760;maxdepth=128;maxarray=100000;maxrefs=300000 -Xmx1024M -Xms512M --add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldaps=ALL-UNNAMED --add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED --add-opens=java.base/com.sun.net.ssl.internal.ssl=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED -Dorg.jboss.boot.log.file=/opt/wildfly-00/log/server.log -Dlogging.configuration=file:/opt/wildfly-30.0.1.Final/standalone/configuration/logging.properties -jar /opt/wildfly-30.0.1.Final/jboss-modules.jar -mp /opt/wildfly-30.0.1.Final/modules org.jboss.as.standalone -Djboss.home.dir=/opt/wildfly-30.0.1.Final -Djboss.server.base.dir=/opt/wildfly-00 -c wildfly-0.xml -b 0.0.0.0 -bmanagement 127.0.0.1 -Djboss.bind.address.private=127.0.0.1 -Djboss.default.multicast.address=230.0.0.4 -Djboss.server.config.dir=/opt/wildfly-30.0.1.Final/standalone/configuration/ -Djboss.server.base.dir=/opt/wildfly-00 -Djboss.tx.node.id=wildfly-0 -Djboss.socket.binding.port-offset=0 -Djboss.node.name=wildfly-0 -Dwildfly.statistics-enabled=false
+
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,090 INFO  [org.jboss.modcluster] (ServerService Thread Pool -- 84) MODCLUSTER000032: Listening to proxy advertisements on /224.0.1.105:23364
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,148 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-4) WFLYUT0006: Undertow HTTPS listener https listening on [0:0:0:0:0:0:0:0]:8443
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,149 INFO  [org.jboss.as.ejb3] (MSC service thread 1-3) WFLYEJB0493: Jakarta Enterprise Beans subsystem suspension complete
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,183 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-2) WFLYJCA0001: Bound data source [java:jboss/datasources/ExampleDS]
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,246 INFO  [org.jboss.as.server.deployment.scanner] (MSC service thread 1-2) WFLYDS0013: Started FileSystemDeploymentService for directory /opt/wildfly-00/deployments
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,285 INFO  [org.jboss.ws.common.management] (MSC service thread 1-5) JBWS022052: Starting JBossWS 7.0.0.Final (Apache CXF 4.0.0)
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,383 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,388 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,388 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+Jan 18 07:01:47 7c4a5dd056d1 standalone.sh[1044]: 07:01:47,390 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 30.0.1.Final (WildFly Core 22.0.2.Final) started in 2699ms - Started 311 of 708 services (497 services are lazy, passive or on-demand) - Server configuration file in use: wildfly-0.xml
+----
+
+=== Deploy an application to the Wildlfy cluster
+
+Now, our three WildFly are running, but the cluster has yet to form. Indeed, with no apps there is no reason for the cluster to exist. Let's modify our Ansible playbook to deploy a simple application to all instances; this will allow us to check that the cluster is working as expected. To achieve this, we'll leverage another role provided by the WildFly collection: wildfly_utils.
+
+In our case, we will use the jboss_cli.yml task file, which encapsulates the running of JBoss command-line interface (CLI) queries:
+
+[source, yaml]
+----
+…
+  post_tasks:
+      - name: "Ensures webapp \{{ app.name }} has been retrieved from \{{ app.url }}."
+        ansible.builtin.get_url:
+          url: "{{ app.url }}"
+          dest: "{{ wildfly_install_workdir }}/{{ app.name }}"
+
+      - name: "Deploy webapp"
+        ansible.builtin.include_role:
+          name: wildfly_utils
+          tasks_from: jboss_cli.yml
+        vars:
+          jboss_home: "{{ wildfly_home }}"
+          query: "'deploy --force \{{ wildfly_install_workdir }}/{{ app.name }}'"
+          jboss_cli_controller_port: "{{ item }}"
+        loop:
+          - 9990
+          - 10090
+          - 10190
+----
+
+Now, we will once again execute our playbook so that the web application is deployed on all instances. Once the automation completes successfully, the deployment will trigger the formation of the cluster.
+
+=== Verify that the WildFly cluster is running  and the app is deployed
+
+You can verify the cluster formation by looking at the log files of any of the three instances:
+
+[source, bash]
+----
+…
+
+2022-12-23 15:02:08,252 INFO  [org.infinispan.CLUSTER] (thread-7,ejb,jboss-eap-0) ISPN000094: Received new cluster view for channel ejb: [jboss-eap-0] (3) [jboss-eap-0, jboss-eap-1, jboss-eap-2]
+…
+----
+
+=== Using the Ansible collection as an installer for Wildfly
+
+Last remark: while the collection is designed to be used inside a playbook, you can also use the provided playbook to directly install Wildfly:
+
+[source, bash]
+----
+$ ansible-playbook -i inventory middleware_automation.wildfly.playbook
+----
+
+=== Conclusion
+
+Here you go, with a short and simple playbook, we have fully automated the deployment of a WildFly cluster! This playbook can now be used against one, two, three remote machine or even hundreds of them! I hope this will post will have been informative and that it'll have convinced you to use Ansible to set up your own WildFly servers!

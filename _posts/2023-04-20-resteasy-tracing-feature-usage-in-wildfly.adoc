@@ -1,9 +1,0 @@
----
-layout: post
-title: "Using The RESTEasy Tracing Feature In WildFly"
-date: 2023-04-20
-tags: resteasy tracing wildfly
-synopsis: The RESTEasy tracing feature has been integrated into WildFly since its version 28.
-author: liweinan
-link: https://resteasy.dev/2023/04/19/tracing-feature-in-wildfly/
----
