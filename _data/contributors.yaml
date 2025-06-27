@@ -99,3 +99,14 @@
         key: 0EB27E1BCDB2C21682F8DFC33FC239F5FC312325
         link: https://keys.openpgp.org/vks/v1/by-fingerprint/0EB27E1BCDB2C21682F8DFC33FC239F5FC312325
         fingerprint: 0EB2 7E1B CDB2 C216 82F8  DFC3 3FC2 39F5 FC31 2325
+- contributor:
+  name: "Alessio Soldano"
+  bio: "Alessio Soldano works at Red Hat. He contributed to the WebServices and REST subsystems."
+  github: asoldano
+  signing:
+    - pgp:
+        id: eddsa263/de29c9e8063d635c6c00b8fa7b2e5a9fa517708b
+        key: DE29C9E8063D635C6C00B8FA7B2E5A9FA517708B
+        link: https://keyserver.ubuntu.com/pks/lookup?search=0xde29c9e8063d635c6c00b8fa7b2e5a9fa517708b&fingerprint=on&op=index
+        fingerprint: DE29 C9E8 063D 635C 6C00 B8FA 7B2E 5A9F A517 708B 
+
