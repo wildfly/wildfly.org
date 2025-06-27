@@ -1,0 +1,123 @@
+---
+layout: post
+title: New Bootable JAR example - Persistent clustered EJB timers
+aliases: [/news/2022/04/22/bootable-jar-new-example-persistent-clustered-ejb-timers]
+date: 2022-04-22
+tags: wildfly galleon bootable jar bootable-jar ejb timers
+synopsis: A new Bootable JAR Maven plugin example is available - Persistent clustered EJB timers
+author: fabiobrz
+---
+
+The new release of the WildFly Bootable JAR Maven plugin (7.0.1.Final) contains a
+https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/7.0.1.Final/examples/ejb-persistent-clustered-timers[new example]
+to demonstrate how to build an application that employs clustered EJB timers, which currently rely on a JDBC based
+persistence storage.
+
+All examples in WildFly Bootable JAR Maven plugin 7.0.1.Final have been updated to use 26.1.0.Final.
+
+## Use case
+The example use case is related to automatic timers in clustered environments. In such a scenario all the running
+application instances will execute the scheduled method, i.e. each timer would be executed multiple times, thus
+breaking the application logic.
+
+Persistent timers can be used in the above case to avoid such behavior in clustered environments, since the WildFly
+timer service implementation allows for the user to configure a JDBC based persistent storage for EJB timers.
+
+This is a mean for timer executors to synchronize so that a given timer execution is performed by exactly one of the
+running application instances.
+
+Such capabilities are provided by the related https://docs.wildfly.org/26.1/Bootable_Guide.html#gal.ejb[EJB Galleon layer]
+and require specific configuration, which is included in the example.
+
+## Persisting timers to a database service
+
+The example application defines an automatic timer which is executed every 10 seconds. It requires for one Postgresql
+instance and two replicas of the example application to be deployed on OpenShift.
+
+In order to achieve the behavior described above, a database service needs to be deployed beforehand - see the
+https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/7.0.1.Final/examples/ejb-persistent-clustered-timers#example-steps[example instructions] -
+and the following two configuration aspects must be taken into account.
+
+### Connecting to a JDBC based persistence storage
+
+Similar to the https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/main/examples/postgresql[Postgresql example],
+this is achieved by adding the `postgresql-datasource` Galleon layer to the Bootable JAR application
+https://github.com/wildfly-extras/wildfly-jar-maven-plugin/blob/7.0.1.Final/examples/ejb-persistent-clustered-timers/pom.xml#L46[configuration].
+
+```xml
+<!-- ... -->
+<feature-packs>
+    <feature-pack>
+        <location>wildfly@maven(org.jboss.universe:community-universe)#${version.wildfly}</location>
+    </feature-pack>
+    <feature-pack>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-datasources-galleon-pack</artifactId>
+        <version>${version.wildfly.datasources.galleon-pack}</version>
+    </feature-pack>
+</feature-packs>
+<layers>
+    <layer>cloud-server</layer>
+    <layer>ejb</layer>
+    <layer>postgresql-datasource</layer>
+</layers>
+<!-- ... -->
+```
+
+This layer provides the application with all the bits needed to connect a Postgresql data source, including a default
+JNDI entry.
+
+The application must as well include a
+https://github.com/wildfly-extras/wildfly-jar-maven-plugin/blob/7.0.1.Final/examples/ejb-persistent-clustered-timers/src/main/resources/META-INF/persistence.xml[JPA persistence unit definition]
+, in order to define the data source connection properties:
+
+```xml
+<persistence-unit name="primary">
+    <jta-data-source>java:jboss/datasources/PostgreSQLDS</jta-data-source>
+    <properties>
+        <!-- Properties for Hibernate -->
+        <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        <!-- ... -->
+    </properties>
+</persistence-unit>
+```
+
+### Setting the EJB timer service store
+
+The `ejb3` subsystem must be configured so that timers can be persisted to Postgresql, since the default behavior
+would use a local, file system based, storage.
+
+This is achieved by configuring the bootable JAR through a
+https://github.com/wildfly-extras/wildfly-jar-maven-plugin/blob/7.0.1.Final/examples/scripts/ejb-persistent-clustered-timers.cli[CLI script].
+
+The script will do the following:
+
+* add a new `database-data-store` resource, which is referencing the datasource JNDI entry installed by the
+`posgresql-datasource` Galleon layer, to the `ejb3` subsystem `timer-service`:
+```
+/subsystem=ejb3/service=timer-service/database-data-store=ejb-timers-ds:add(datasource-jndi-name=java:jboss/datasources/PostgreSQLDS, database=postgresql, partition=ejb-timers-ds-part)
+```
+
+* set the `ejb3` subsystem `timer-service` resource `default-data-store` attribute to the name of the newly created
+datasource:
+```
+/subsystem=ejb3/service=timer-service:write-attribute(name=default-data-store, value=ejb-timers-ds)
+```
+
+## Building and deploying on Openshift via Helm Chart for WildFly
+
+The new example also shows how to deploy the application on OpenShift by using https://helm.sh/[Helm] and the
+https://docs.wildfly.org/wildfly-charts/[Helm Chart for WildFly].
+
+A cluster of the example Bootable JAR application instances is created on OpenShift, according to the
+https://github.com/wildfly-extras/wildfly-jar-maven-plugin/blob/7.0.1.Final/examples/ejb-persistent-clustered-timers/helm.yaml[helm.yaml]
+definition. Here is where we define the environment variables needed to connect to a database service, so that Helm will
+add them to the final deployment.
+
+## In conclusion
+
+EJB timers are a popular feature, and their usage in clustered architectures has some peculiar configuration and
+execution aspects. The new example demonstrates how to configure a WildFly Bootable JAR application in order to
+allow for unique timer execution in a clustered environment.
+
+Fabio Burzigotti

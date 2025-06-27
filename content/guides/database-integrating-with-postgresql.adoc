@@ -1,0 +1,762 @@
+---
+layout: guide
+---
+= Integrating with a PostgreSQL database
+:summary: Learn how to configure a datasource to connect a PostgreSQL database
+:includedir: _includes
+{#include partials/guides/attributes.adoc /}
+:prerequisites-time: 20
+:postgre-sql-user: postgres
+:postgre-sql-password: admin
+:postgre-sql-port: 5432
+:postgre-sql-host: localhost
+:postgre-sql-database: bookstore_db
+:postgre-docker-image: docker.io/library/postgres
+:postgre-sql-kubernetes-service-name: postgres-service
+
+In this guide, you will learn how to configure WildFly to connect to a PostgreSQL database. You will create a simple Book Store API application to manage books stored in the database using https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Services (Jakarta REST), window=_blank].
+
+{#include partials/guides/prerequisites.adoc /}
+
+* Docker or any Open Container Initiative engine installed. This guide uses https://podman.io/[Podman, window=_blank].
+
+== Database
+
+=== PostgreSQL
+
+We will use PostgreSQL as the database server in its containerized version: see https://hub.docker.com/_/postgres[PostgreSQL Official Image, window=_blank].
+
+Start PostgreSQL database in a container with:
+
+{|
+[source,bash,subs="normal"]
+----
+podman run --rm --name bookstore \
+  -p {postgre-sql-port}:{postgre-sql-port} \
+  -e POSTGRES_PASSWORD={postgre-sql-password} \
+  -e POSTGRES_USER={postgre-sql-user} \
+  -e POSTGRES_DB={postgre-sql-database} \
+  {postgre-docker-image}
+----
+|}
+
+NOTE: we started the container with the `--rm` flag so it can be disposed of automatically when we stop it.
+
+
+== Application
+
+=== Create a new Maven project
+
+We are going to use the https://github.com/wildfly/wildfly-archetypes/tree/main/wildfly-getting-started-archetype[WildFly Getting Started Archetype, window=_blank] to create the base structure of our Book Store API application.
+
+Open a new terminal window and create a new project using the WildFly Getting Started Archetype:
+
+[source,bash,subs="normal"]
+----
+mvn archetype:generate \
+    -DarchetypeGroupId=org.wildfly.archetype \
+    -DarchetypeArtifactId=wildfly-getting-started-archetype \
+    -DdefaultClassPrefix=BookStore \
+    -DartifactId=bookstore \
+    -Dversion=1.0.0 \
+    -DinteractiveMode=false
+----
+Remove the following files from the base project since we are not going to use them:
+
+[source,bash]
+----
+cd bookstore
+rm src/main/java/org/wildfly/examples/BookStoreService.java
+rm src/main/java/org/wildfly/examples/BookStoreEndpoint.java
+rm src/test/java/org/wildfly/examples/BookStoreApplicationIT.java
+rm src/test/java/org/wildfly/examples/BookStoreServiceIT.java
+----
+
+=== pom.xml
+
+==== Jakarta EE dependencies:
+
+Add the following dependencies to the `pom.xml` file:
+
+[source,xml]
+----
+<dependency>
+    <groupId>jakarta.persistence</groupId>
+    <artifactId>jakarta.persistence-api</artifactId>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>jakarta.transaction</groupId>
+    <artifactId>jakarta.transaction-api</artifactId>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>jakarta.validation</groupId>
+    <artifactId>jakarta.validation-api</artifactId>
+    <scope>provided</scope>
+</dependency>
+----
+
+==== Configure WildFly Datasource and trimming server capabilities:
+To connect to the database we need to configure the https://docs.wildfly.org/32/Admin_Guide.html#DataSource[WildFly Datasource Subsystem,window=_blank] and install the PostgreSQL driver into the WildFly server. The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack, window=_blank] contains a set of https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/main/doc/postgresql/README.md[Galleon Layers, window=_blank] that provide *JDBC drivers* and *WildFly Datasource Subsystem* configurations for various databases. For this guide, we will use the `postgresql-default-datasource` Galleon layer that will configure a PostgreSQL datasource as the default datasource for the server.
+
+In addition to the Galleon Layers to configure the datasource and install the drivers, we also want to trim the WildFly server to remove any unnecessary subsystems and features we don't need. That will reduce the server footprint and the security attack surface. This task can be done by selecting the appropriate https://docs.wildfly.org/32/Galleon_Guide.html#wildfly_galleon_layers[Galleon Layers, window=_blank] shipped with any WildFly distribution. However, instead of adding a static list of Galleon Layers, we are going to configure the `wildfly-maven-plugin` plugin to discover the required layers automatically for us.
+
+Replace the current `wildfly-maven-plugin` configuration in the `pom.xml` file provided by the getting started guide with the following one:
+
+{|
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <discover-provisioning-info>
+            <addOns>
+                <addOn>postgresql:default</addOn>
+            </addOns>
+        </discover-provisioning-info>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+|}
+In the above configuration, behind the scenes the `wildfly-maven-plugin` is using https://docs.wildfly.org/wildfly-glow/[WildFly Glow, window=_blank] to discover automatically the required Galleon Layers for our application. The `discover-provisioning-info` configuration tells the plugin to discover the required layers by inspecting our application code. By using the `postgresql:default` addon, we are specifying we want to use a PostgreSQL database, and we want to configure it as the default datasource for the server.
+
+=== persistence.xml
+This file is used to configure the Jakarta Persistence persistence unit and its database schema generation strategy. In this guide, we are using the `drop-and-create` strategy to drop the existing schema and create a new one every time the application starts. For a production environment, you should use a more appropriate strategy to avoid data loss.
+
+Create the following `persistence.xml` file in the `src/main/resources/META-INF` directory:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+    <persistence-unit name="bookstore-PU">
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+----
+NOTE: We don't need to specify the name of the Datasource by using `<jta-data-source>`. In absence of this property, Jakarta Persistence will use the default datasource configured in the server.
+
+=== Configure the Jakarta RESTful Web Services application
+
+The `BookStoreApplication` class acts as a configuration class for the Jakarta REST application. It essentially tells the WildFly runtime that this is a Jakarta REST application and provides the base path for the application's RESTful web services.
+
+Modify it as follows to specify `/api` as the base URL for our Jakarta REST Web Service:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+
+@ApplicationPath("/api")
+public class BookStoreApplication extends Application \{
+}
+----
+
+=== Book Entity
+The `Book` entity represents a book record in the database.
+
+Create a new class `Book` in the `src/main/java/org/wildfly/examples/books` directory with the following content:
+
+{|
+[source,java]
+----
+package org.wildfly.examples.books;
+
+import java.util.Objects;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+
+@Entity
+@Table(name = "books")
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String title;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String author;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String isbn;
+
+    @PositiveOrZero
+    @Column
+    private double price;
+
+    public Book() {
+    }
+
+    public Book(String title, String author, String isbn, double price) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.price = price;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Double.compare(price, book.price) == 0 && Objects.equals(id, book.id) && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(isbn, book.isbn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, author, isbn, price);
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", price=" + price +
+                '}';
+    }
+}
+----
+|}
+
+=== BookResource
+The `BookResource` is the web service that exposes the book records as JSON objects.
+
+Create a new class `BookResource` in the `src/main/java/org/wildfly/examples/books` directory with the following content:
+
+{|
+[source,java]
+----
+package org.wildfly.examples.books;
+
+import java.net.URI;
+import java.util.List;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+
+@Path("/books")
+@RequestScoped
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class BookResource {
+
+    @PersistenceContext
+    EntityManager em;
+
+    @Context
+    UriInfo uriInfo;
+
+    @GET
+    public Response getAll() {
+        List<Book> all = em.createQuery("SELECT b FROM Book b", Book.class)
+                .getResultList();
+
+        return Response.ok()
+                .entity(all)
+                .build();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response getById(@PathParam("id") Long id) {
+        Book book = em.find(Book.class, id);
+        if (book == null) {
+            throw new NotFoundException("Book with id " + id + " not found");
+        }
+
+        return Response.ok()
+                .entity(book)
+                .build();
+    }
+
+    @POST
+    @Transactional
+    public Response create(@Valid Book book) {
+        em.persist(book);
+
+        final URI location = uriInfo.getBaseUriBuilder()
+                .path(BookResource.class)
+                .path(book.getId().toString())
+                .build();
+
+        return Response.created(location)
+                .entity(book)
+                .build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Transactional
+    public Response update(@PathParam("id") Long id, @Valid Book book) {
+        Book existing = em.find(Book.class, id);
+        if (existing == null) {
+            throw new NotFoundException("Book with id " + id + " not found");
+        }
+        existing.setAuthor(book.getAuthor());
+        existing.setTitle(book.getTitle());
+        existing.setIsbn(book.getIsbn());
+        existing.setPrice(book.getPrice());
+
+        return Response.ok()
+                .entity(existing)
+                .build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Transactional
+    public Response delete(@PathParam("id") Long id) {
+        Book book = em.find(Book.class, id);
+        if (book == null) {
+            throw new NotFoundException("Book with id " + id + " not found");
+        }
+        em.remove(book);
+
+        return Response.noContent()
+                .build();
+    }
+}
+----
+|}
+
+== Start the application
+
+Now we should be ready to start our application and interact with the database. First, build the application using Maven:
+
+[source,bash,subs="normal"]
+----
+mvn clean package
+----
+
+Notice how WildFly Glow gives us information about the feature packs and Galleon layers discovered. It also provides some hints about required environment variables:
+
+[source,bash]
+----
+[INFO] --- wildfly:5.0.0.Final:package (default) @ bookstore ---
+[INFO] Glow is scanning...
+[INFO] Glow scanning DONE.
+[INFO] context: bare-metal
+[INFO] enabled profile: none
+[INFO] galleon discovery
+[INFO] - feature-packs
+   org.wildfly:wildfly-galleon-pack:32.0.1.Final
+   org.wildfly:wildfly-datasources-galleon-pack:8.0.0.Final
+- layers
+   ee-core-profile-server
+   jaxrs
+   jpa
+   postgresql-default-datasource
+
+[INFO] enabled add-ons
+[INFO] - postgresql : Documentation in https://github.com/wildfly-extras/wildfly-datasources-galleon-pack
+- postgresql:default : Documentation in https://github.com/wildfly-extras/wildfly-datasources-galleon-pack
+
+[INFO] identified fixes
+[INFO] * no default datasource found error is fixed
+  - add-on postgresql:default fixes the problem but you need to set the strongly suggested configuration.
+
+[WARNING] strongly suggested configuration at runtime
+[WARNING]
+postgresql-datasource environment variables:
+ - POSTGRESQL_DATABASE=Defines the database name to be used in the datasource’s `connection-url` property.
+ - POSTGRESQL_PASSWORD=Defines the password for the datasource.
+ - POSTGRESQL_USER=Defines the username for the datasource.
+[WARNING]
+postgresql-default-datasource environment variables:
+ - POSTGRESQL_DATABASE=Defines the database name to be used in the datasource’s `connection-url` property.
+ - POSTGRESQL_PASSWORD=Defines the password for the datasource.
+ - POSTGRESQL_USER=Defines the username for the datasource.
+----
+
+Now create the required *environment variables* used by WildFly to connect to the PostgreSQL database and start the server:
+
+{|
+[source,bash,subs="normal"]
+----
+export POSTGRESQL_USER={postgre-sql-user}
+export POSTGRESQL_PASSWORD={postgre-sql-password}
+export POSTGRESQL_DATABASE={postgre-sql-database}
+
+./target/server/bin/standalone.sh
+...
+11:34:49,242 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 32.0.1.Final (WildFly Core 24.0.1.Final) started in 2118ms - Started 295 of 366 services (139 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+|}
+
+== Check the application
+
+We have our application running at http://localhost:8080/. Let's now interact with it using the following endpoints to Create, Read, Update and Delete books. We will use the `curl` utility to interact with the application.
+
+=== Create a book
+To create a new book, execute a POST request to the `/api/books` endpoint with the book information:
+
+{|
+[source,bash]
+----
+$ curl -v -X POST http://localhost:8080/api/books -H "Content-Type: application/json" -d '
+{
+"author": "Jules Verne",
+"isbn": "10-0760765197",
+"price": 9.99,
+"title": "From the Earth to the Moon"
+}'
+----
+|}
+
+If you inspect the response, you will see the URL of the newly created book gets returned under the location header:
+
+[source,bash]
+----
+Location: http://localhost:8080/api/books/1
+----
+
+You can use the location to check the book you have just created:
+
+{|
+[source,bash]
+----
+$ curl http://localhost:8080/api/books/1
+----
+[source,json]
+----
+{
+  "author": "Jules Verne",
+  "id": 1,
+  "isbn": "10-0760765197",
+  "price": 9.99,
+  "title": "From the Earth to the Moon"
+}
+----
+|}
+
+=== Read all the books
+To list all the books, execute a GET request to the `/api/books` endpoint:
+
+[source,bash]
+----
+$ curl http://localhost:8080/api/books
+----
+
+It will return the list of books of our database:
+
+{|
+[source,json]
+----
+[
+  {
+    "author": "Jules Verne",
+    "id": 1,
+    "isbn": "10-0760765197",
+    "price": 9.99,
+    "title": "From the Earth to the Moon"
+  }
+]
+----
+|}
+
+=== Update a book
+To update a book, execute a PUT request to the `/api/books/\{id}` endpoint with the book information you want. For example to change the price of the recent book we have recently created, execute the following:
+
+{|
+[source,bash]
+----
+$ curl -X PUT http://localhost:8080/api/books/1 -H "Content-Type: application/json" -d '
+{
+"author": "Jules Verne",
+"isbn": "10-0760765197",
+"price": 10.99,
+"title": "From the Earth to the Moon"
+}'
+----
+|}
+
+=== Delete a book
+To delete a book, execute a DELETE request to the `/api/books/\{id}` endpoint with the book id you want to delete. For example, to delete the book we have recently created:
+
+[source,bash]
+----
+$ curl -X DELETE http://localhost:8080/api/books/1
+----
+
+==== Stop the application
+
+To stop the application, press `Ctrl+C` in the terminal where the server is running.
+
+
+== Test Cases
+
+Until now, we have verified the application manually. The following steps will guide you with the required changes to test our application using the Arquillian framework.
+
+=== pom.xml
+We need to have a JSON provider available on the test classpath to convert Book objects to JSON and vice versa.
+
+Add the following dependency to the `pom.xml` file:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-jackson2-provider</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+=== Book Resource test case
+
+Create a new class `BookResourceIT` in the `src/test/java/org/wildfly/examples/books` directory with the following content:
+
+{|
+[source,java]
+----
+package org.wildfly.examples.books;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.net.URI;
+import java.util.List;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+@RunAsClient
+@ExtendWith(ArquillianExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class BookResourceIT {
+
+    @Test
+    @Order(1)
+    public void testHelloEndpoint() {
+        try (Client client = ClientBuilder.newClient()) {
+            Response response = client
+                    .target(URI.create("http://localhost:8080/"))
+                    .path("/")
+                    .request()
+                    .get();
+
+            assertEquals(200, response.getStatus());
+        }
+    }
+
+    @Test
+    @Order(2)
+    public void create() {
+        try (Client client = ClientBuilder.newClient()) {
+            Book book = new Book("Test Book title", "Test Book author", "Test Book isbn", 10.0);
+
+            Response response = client
+                    .target(URI.create("http://localhost:8080/"))
+                    .path("/api/books")
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.entity(book, MediaType.APPLICATION_JSON));
+
+            assertEquals(201, response.getStatus());
+            assertEquals("http://localhost:8080/api/books/1", response.getLocation().toString());
+        }
+    }
+
+    @Test
+    @Order(3)
+    public void list() {
+        try (Client client = ClientBuilder.newClient()) {
+            Response response = client
+                    .target(URI.create("http://localhost:8080/"))
+                    .path("/api/books")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+
+            assertEquals(200, response.getStatus());
+
+            List<Book> books = response.readEntity(new GenericType<>() {
+            });
+            assertEquals(1, books.size());
+
+            Book book = books.get(0);
+            assertEquals("Test Book title", book.getTitle());
+            assertEquals("Test Book author", book.getAuthor());
+            assertEquals("Test Book isbn", book.getIsbn());
+            assertEquals(10.0, book.getPrice());
+        }
+    }
+
+    @Test
+    @Order(4)
+    public void update() {
+        try (Client client = ClientBuilder.newClient()) {
+            Book book = new Book("Test Book title updated", "Test Book author updated", "Test Book isbn updated", 99.9);
+
+            Response response = client
+                    .target(URI.create("http://localhost:8080/"))
+                    .path("/api/books/1")
+                    .request(MediaType.APPLICATION_JSON)
+                    .put(Entity.entity(book, MediaType.APPLICATION_JSON));
+
+            assertEquals(200, response.getStatus());
+
+            response = client
+                    .target(URI.create("http://localhost:8080/"))
+                    .path("/api/books/1")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+
+            Book updated = response.readEntity(new GenericType<>() {
+            });
+
+            assertEquals("Test Book title updated", updated.getTitle());
+            assertEquals("Test Book author updated", updated.getAuthor());
+            assertEquals("Test Book isbn updated", updated.getIsbn());
+            assertEquals(99.9, updated.getPrice());
+        }
+    }
+
+    @Test
+    @Order(5)
+    public void delete() {
+        try (Client client = ClientBuilder.newClient()) {
+            Response response = client
+                    .target(URI.create("http://localhost:8080/"))
+                    .path("/api/books/1")
+                    .request(MediaType.APPLICATION_JSON)
+                    .delete();
+
+            assertEquals(204, response.getStatus());
+
+            response = client
+                    .target(URI.create("http://localhost:8080/"))
+                    .path("/api/books/1")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+
+            assertEquals(404, response.getStatus());
+        }
+    }
+}
+----
+
+=== Run the tests
+You can run the tests using the following command:
+
+[source,bash,subs="normal"]
+----
+export POSTGRESQL_USER={postgre-sql-user}
+export POSTGRESQL_PASSWORD={postgre-sql-password}
+export POSTGRESQL_DATABASE={postgre-sql-database}
+
+mvn clean verify
+----
+|}
+
+In this guide we have reused the same database instance for running the application and for the test cases. If you want to use a different instance for test cases, you have to adapt the values of the environment variables accordingly.
+
+=== Stop the database
+
+Finally, to stop the PostgreSQL database, press `Ctrl+C` in the terminal where the container is running.
+
+
+// Always keep a what's next? section to let the user know what could be achieved next
+== What's next?
+
+In this guide we have learned how to configure a WildFly server to access to a PostgreSQL database and how to easily trim the server capabilities using WildFly Glow. Seamlessly, you can adapt the same application to use other databases by changing the Galleon Layers used by the WildFly server.
+You can learn more about how to configure WildFly for other databases by looking at the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack] documentation and https://docs.wildfly.org/32/Glow_Guide.html[WildFly Glow Guide].
+
+// Always add this section last to link to any relevant content
+[[references]]
+== References
+
+* https://docs.wildfly.org/32/Admin_Guide.html#DataSource[WildFly Datasource Subsystem]
+* https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack]
+* https://docs.wildfly.org/32/Glow_Guide.html[WildFly Glow Guide].

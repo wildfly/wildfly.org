@@ -1,0 +1,27 @@
+---
+layout: post
+title:  "Save the Date: WildFly Mini Conference on Nov 20th"
+aliases: [/news/2024/10/28/WildFly-mini-conference-save-the-date]
+date:   2024-10-28
+tags:   wildfly announcement conference wildfly-mini-conference
+author: frainone
+description: Save the Date -- WildFly Mini Conference Nov 20th
+---
+
+Hello, WildFly Community!
+
+We are happy to announce that the next WildFly Mini Conference is scheduled for November 20th, 2024! Building on the success of our previous mini conference event, we are eager to bring together our community for another day of insightful discussions and online networking.
+
+As you know, a few weeks ago we sent a link:http://wildfly.org/news/2024/10/07/WildFly-mini-conference-session-form[request for feedback, window=_blank]. Based on the  feedback we received, the most voted topics were:
+
+* Jakarta EE11: Dive deep into the latest advancements and explore how Jakarta EE11 is shaping the future of enterprise Java.
+* Latest News on WildFly: Stay updated with the latest news on WildFly
+* DevOps Related Topics: Discover best practices and innovative approaches to integrating WildFly within your DevOps pipelines.
+
+We are committed to not only covering these popular topics but also addressing the suggestions submitted by our community. Your input is invaluable, and we're dedicated to crafting a conference agenda that reflects your interests and needs.
+
+Stay tuned for upcoming announcements regarding the detailed schedule and our lineup of expert speakers. We are looking forward to another successful event and can't wait to connect with all of you on November 20th!
+
+Best regards,
+
+Flavia

@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'A kubectl plugin to run WildFly management operations on Kubernetes'
+date: 2024-12-12
+tags: kubernetes
+synopsis: In this article, Jeff Mesnil presents a kubectl plugin to run WildFly management operations on Kubernetes.
+author: jmesnil
+external_link: https://jmesnil.net/weblog/2024/12/11/a-kubectl-plugin-for-wildfly-jboss-cli/
+---

@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Upcoming client side default SSL context provider'
+date: 2021-12-17
+tags: ssl tls ssl-context client client-config
+synopsis:  An overview of the upcoming Elytron client default SSL context provider.
+author: dvilkola
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/client-side-jvm-wide-default-sslcontext/
+---
+

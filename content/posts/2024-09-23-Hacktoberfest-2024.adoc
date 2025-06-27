@@ -1,0 +1,70 @@
+---
+layout: post
+title:  "Hacktoberfest 2024"
+date:   2024-09-23
+tags:   Hacktoberfest
+author: rchakrab
+description: Article about Hacktoberfest participation and small descriptions about the participating projects and how to contribute in it.
+---
+
+image::hacktoberfest/hacktoberfest2024.png[Content Browser]
+
+https://hacktoberfest.com/[Hacktoberfest] is back, offering the perfect opportunity to showcase your Open Source expertise. This annual event brings together developers at all levels—from seasoned professionals to eager newcomers—in a unified effort to contribute to Open Source projects and foster collaboration within the global software community. Join us for this month-long celebration of innovation and teamwork, as we work together to make meaningful contributions, one pull request at a time.
+
+== What is Hacktoberfest?
+
+Hacktoberfest is a month-long event in October that encourages Open Source contributors and developers worldwide to give back to the global tech community. It's a fantastic opportunity for the contributors to showcase their skills and get to know about other Open Source communities.
+
+To participate you simply need to:
+
+
+* *Register:* https://hacktoberfest.com/auth/[Sign up] on the official Hacktoberfest website, anytime between September 23rd and October 31st to get started.
+* *Discover Projects:* Explore the Hacktoberfest website to find a project that sparks your interest. You can also check out the curated list of projects we've prepared for you.
+* *Follow the Project guidelines:* Read the respective Contributing Guide, Code of Conduct, and follow best practices like forking the repository, creating a new branch, and making a meaningful contribution.
+* *Contribute:* Select an issue that matches your interest and start working on it. Choose an issue that aligns with your interests and begin contributing. Your goal is to submit four well-crafted pull or merge requests between October 1st and October 31st. For these to count toward your total, they must be accepted by the project maintainers.
+* *Rewards:* Upon registering for Hacktoberfest, you’ll earn a digital badge, which will be upgraded as you complete and have four of your pull or merge requests accepted throughout the event.
+
+== Get started with our projects
+
+
+This list features an exciting variety of projects under the WildFly umbrella, just waiting for your contributions. Whether your expertise lies in Java, Docker, or Ansible, there's a project here for everyone to dive into and make an impact.
+
+. *WildFly:* WildFly is a powerful, modular, and lightweight application server that empowers you to build amazing applications.
+* Here are the https://github.com/wildfly/wildfly[GitHub repository], https://github.com/wildfly/wildfly/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421535[Hacktoberfest Issues link].
+
+. *WildFly Elytron:* WildFly Elytron is a set of APIs and SPIs for application server security and client side security. Within the WildFly server, WildFly Elytron is used to secure applications deployed to the server as well as management access to the server. It is a standalone library that can also be used in other Java server environments.
+* Here are the https://github.com/wildfly-security/wildfly-elytron[GitHub repository], https://github.com/wildfly-security/wildfly-elytron/blob/2.x/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12364234[Hacktoberfest Issues link].
+* For more details, check out WildFly Elytron's Hacktoberfest https://wildfly-security.github.io/wildfly-elytron/hacktoberfest/[page].
+
+. *Ansible Middleware:* Ansible Middleware is a suite of supported content that combines the power of Ansible automation with Red Hat's Middleware portfolio. It allows organizations to meet their business demands and automate the installation, configuration, and management of Enterprise Middleware.
+* Here are the https://github.com/ansible-middleware[GitHub repositories], https://github.com/ansible-middleware/keycloak/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/search?q=org%3Aansible-middleware+state%3Aopen+label%3Ahacktoberfest&type=issues[Hacktoberfest Issues link].
+
+. *Undertow:* Undertow is a versatile and high-performance web server that provides both blocking and non-blocking APIs based on NIO. Its modular architecture allows you to build a web server tailored to your needs, from a full Java EE servlet container to a low-level non-blocking handler.
+* Here are the https://github.com/undertow-io/undertow[GitHub repository], https://github.com/undertow-io/undertow/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12422070[Hacktoberfest Issues link].
+
+. *WildFly Core:* WildFly Core provides the core runtime that is used by the WildFly application server. This includes modular class loading, unified management including domain mode, basic deployment architecture, and a CLI for management.
+* Here are the https://github.com/wildfly/wildfly-core[GitHub repository], https://github.com/wildfly/wildfly-core/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421536[Hacktoberfest Issues link].
+
+. *Narayana:* Narayana is a transactions toolkit that provides support for applications using various standards-based transaction protocols. It's an essential component of the WildFly application server and continues to be developed as a standalone transaction manager.
+* Here are the https://github.com/jbosstm/narayana[GitHub repository], https://github.com/jbosstm/narayana/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421681[Hacktoberfest Issues link].
+
+. *Intersmash:* Intersmash is a Java library that makes it easy to automate the provisioning and execution of tests in cloud-native environments. It helps the user prototype and test complex interoperability scenarios on kubernetes compliant cloud-native environments and platforms, most notably OpenShift. (Other Kubernetes implementations will be supported in the future.)
+* Here are the https://github.com/Intersmash/intersmash[GitHub repository], https://github.com/Intersmash/intersmash/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/Intersmash/intersmash/issues?q=is%3Aopen+is%3Aissue+label%3Ahacktoberfest[Hacktoberfest Issues link].
+
+. *PatternFly Java:* PatternFly Java is a 💯 Java implementation of PatternFly without any JavaScript dependencies. Its goal is to provide an easy-to-use, elegant, and efficient API to build complex web applications with PatternFly in Java. PatternFly Java works with both GWT and J2CL. PatternFly Java is used for the next-gen WildFly management console.
+* Here are the https://github.com/patternfly-java/patternfly-java[GitHub repository], https://github.com/patternfly-java/patternfly-java/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/patternfly-java/patternfly-java/issues?q=is%3Aopen+is%3Aissue+label%3Agood-first-issue[Hacktoberfest Issues link].
+
+. *WildFly GitHub Bot:* WildFly GitHub Bot is a small easy-to-start application that we utilize to manage the workflow of WildFly's Pull Requests. It, for instance, requires reviews from relevant reviewers or sets labels based on the PR's state. We have a lot of ideas that you can start implementing.
+* Here are the https://github.com/wildfly/wildfly-github-bot[GitHub repository], https://github.com/wildfly/wildfly-github-bot/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/wildfly/wildfly-github-bot/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22[Hacktoberfest Issues link].
+
+. *WildFly Docker Images:* The WildFly Docker project provides Docker images for running the WildFly application server with support for various JDK versions. It allows easy customization of server configurations, application deployment, and management in both standalone and domain modes.
+* Here are the https://github.com/jboss-dockerfiles/wildfly[GitHub repository], https://github.com/jboss-dockerfiles/wildfly/blob/master/CONTRIBUTING.adoc[Contributing Guide], and https://github.com/jboss-dockerfiles/wildfly/issues[Hacktoberfest Issues link].
+
+. *Berg:* Berg is a test-suite for the HAL Management Console based on Cypress UI test automation.
+* Here are the https://github.com/hal/berg[GitHub repository], https://github.com/hal/berg/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/hal/berg/issues?q=is%3Aissue+is%3Aopen+label%3Ahacktoberfest[Hacktoberfest Issues link].
+
+== How to reach out to us for Hacktoberfest related queries?
+
+Please join our https://wildfly.zulipchat.com/#narrow/stream/Hacktoberfest[Hacktoberfest Zulip chatroom] and reach out to us if you have any queries or need assistance. We’re here to ensure a smooth journey for you.
+
+Let’s make Hacktoberfest 2024 the most exciting and impactful one yet! Every contribution counts, and together, we can create something truly meaningful.
