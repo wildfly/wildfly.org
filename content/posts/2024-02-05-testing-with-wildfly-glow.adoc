@@ -1,0 +1,203 @@
+---
+layout: post
+title:  "WildFly testing with WildFly Glow"
+aliases: [/news/2024/02/05/testing-with-wildfly-glow]
+date:   2024-02-05
+tags: galleon provisioning wildfly-glow arquillian test wildfly-maven-plugin wildfly
+author: jfdenise
+description: WildFly testing with WildFly Glow.
+---
+
+This blog post provides information on how to use https://github.com/wildfly/wildfly-glow[WildFly Glow] to produce a 
+WildFly server in order to test the applications you are developing for WildFly.
+
+[NOTE]
+====
+Reading this https://www.wildfly.org/news/2024/01/29/wildfly-glow/[blog post] that provides detailed information on WildFly provisioning in general and WildFly Glow in particular is 
+a good pre-requisite to this blog post.
+====
+
+The main goal of the WildFly Glow project is to help you produce a trimmed server that will properly execute your deployments.
+
+The trimmed WildFly server can be produced to run your tests or execute your final deployments. This blog post focuses on the testing phase.
+
+== Provisioning approaches for your tests
+
+To install a server to execute your tests, you can:
+
+* https://www.wildfly.org/downloads/[Download] and install a WildFly distribution. 
+This approach is outside the scope of executing tests with a trimmed server. This would apply when executing your applications inside a full 
+WildFly server.
+
+* Provisioning a WildFly server using the WildFly Maven Plugin (with WildFly Glow support enabled) during test execution. 
+This approaches addresses simple applications composed of a single deployment. 
+
+* Use the https://github.com/wildfly/wildfly-arquillian[WildFly Arquillian Adapter] and WildFly Glow to provision a server to 
+test more complex use-cases.
+
+[IMPORTANT]
+====
+The server used by the tests should contain the same content as the one used in production (with some configuration adjustments 
+to cope with each context). So testing with a full WildFly distribution and then using a trimmed server in production will hide issues. 
+We strongly advise that you use provisioning in the first place and execute tests with a trimmed server.
+====
+
+Ok, so you are ready to provision a trimmed server, but what is the provisioning configuration you need 
+to provide to the provisioning tooling to produce a WildFly server that will properly execute your tests?
+
+== Testing using the WildFly Maven Plugin to provision a server
+
+This is the simplest approach that applies to a single application deployed into WildFly. The WildFly quickstarts 
+cover this approach with the `provisioned-server` profile. Each quickstart defines this profile as you can find in the quickstarts https://github.com/wildfly/quickstart[source code].
+
+The WildFly quickstarts have been ported to rely on WildFly Glow. 
+You can clone the following quickstart https://github.com/wildfly/quickstart/tree/glow-preview[branch] and play with the quickstarts of your choice.
+
+The `package` goal of the https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin] scans the application, 
+discovers the provisioning configuration then provisions the server and deploy the application. 
+The server is started (`wildfly:start` goal) then the tests are executed to interact with the application deployed in the server.
+
+For example:
+
+[source,bash]
+----
+cd helloworld
+mvn clean package -Pprovisioned-server
+mvn wildfly:start
+mvn verify -Pintegration-testing -Dserver.host=http://localhost:8080 
+mvn wildfly:shutdown
+----
+
+In some cases you need to run tests from inside the server or you want to tests multiple deployments, 
+that is where the WildFly Arquillian Adapter is needed.
+
+== Testing using the WildFly Arquillian Adapter
+
+=== Arquillian deployments
+
+When using Arquillian, the deployments to be deployed to the WildFly server are created by static Java methods 
+annotated with the `@org.jboss.arquillian.container.test.api.Deployment` annotation. 
+These deployments are created and deployed during test execution by Arquillian.
+
+=== WildFly Glow Arquillian Maven Plugin
+
+Details on how to use and configure the plugin can be found in the https://docs.wildfly.org/wildfly-glow/#_wildfly_glow_arquillian_maven_plugin[plugin documentation]. 
+In this blog post we are introducing its usage.
+
+The WildFly Glow Arquillian Maven plugin scans all the `@Deployment` 
+annotated static methods, and invokes them to obtain each deployment. 
+It then scans these deployments to discover the required Galleon layers.
+
+A provisioning.xml file containing the discovered layers and feature-packs is generated. 
+This Galleon configuration file is then used by the actual provisioning tooling (https://docs.wildfly.org/galleon/[Galleon Maven Plugin], 
+https://github.com/wildfly/wildfly-maven-plugin[WildFly Maven Plugin], 
+https://github.com/wildfly-extras/wildfly-jar-maven-plugin[WildFly JAR Maven Plugin]) 
+to provision the test server.
+
+In order to validate that what the scanning has discovered is what you are expecting, you can configure the `wildfly-glow-arquillian-plugin`
+maven plugin to contain the element `<expected-discovery>`.
+
+For example:
+
+----
+<expected-discovery>[cdi, ee-integration, ejb, ejb-lite, elytron-oidc-client, naming, servlet]==>ee-core-profile-server,ejb,elytron-oidc-client</expected-discovery>
+----
+
+The left part of the arrow contains the list of the discovered layers according to the scanning. 
+The right part is what will get provisioned. Composed of a base layer (always `ee-core-profile-server`) and 
+a list of the discovered layers not contained in the base layer.
+
+During plugin execution, the discovered layers are printed. If that is valid with respect to your tests, 
+you can copy and paste this output as the `<expected-discovery>` value.
+
+If that is not valid (e.g.: some layers should not be present), you can enable `<verbose>true</verbose>` to see why a layer was selected.
+
+WildFly Glow is based on rules contained in the Wildfy Galleon layers. If a rule matches, the layer is included. The set of rules 
+contained in WildFly layers is documented in this http://docs.wildfly.org/wildfly-galleon-feature-packs/[documentation].
+
+An example of output:
+
+----
+...
+layers inclusion rules
+* ee-core-profile-server
+  - BASE_LAYER
+* ee-concurrency
+  - JAVA_TYPE: [jakarta.enterprise.concurrent.*]
+* undertow-https
+  - ADD_ON
+...
+----
+
+This output means:
+
+* `ee-core-profile-server` is a base layer (always included).
+* `ee-concurrency` layer is included because a Java class located in the java package `jakarta.enterprise.concurrent` has been found.
+* `undertow-https` is included because it is bound to an included add-on (in this case `ssl`).
+
+BTW: The link:https://github.com/wildfly/wildfly/tree/main/testsuite/integration[WildFly integration tests] contain 
+a lot of examples of WildFly Glow scanning executions that you could use as a starting-point.
+
+=== Simple pom.xml example
+
+In this example, both the `wildfly-glow-arquillian-plugin` and `wildfly-maven-plugin` are bound to the 
+`test-compile` phase (run after the test classes have been compiled).
+
+The `wildfly-glow-arquillian-plugin` execution produces the file `target/glow-scan/provisioning.xml` that is then consumed by 
+the `wildfly-maven-plugin` to provision the server (in the directory `target/server`).
+
+[source,xml,subs=attributes+]
+----
+...
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.wildfly.glow</groupId>
+            <artifactId>wildfly-glow-arquillian-plugin</artifactId>
+            <version>1.0.0.Beta7</version>
+            <executions>
+                <execution>
+                    <id>scan</id>
+                    <goals>
+                        <goal>scan</goal>
+                    </goals>
+                    <phase>test-compile</phase>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-maven-plugin</artifactId>
+            <version>5.0.0.Beta2</version>
+            <configuration>
+                <provisioning-file>${project.build.directory}/glow-scan/provisioning.xml</provisioning-file>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>test-provisioning</id>
+                    <goals>
+                        <goal>provision</goal>
+                    </goals>
+                    <phase>test-compile</phase>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+----
+
+The provisioned server is then started by Arquillian and tests are executed. As you can see the provisioning aspects are fully handled by 
+the tooling, allowing you to focus on the testing.
+
+For more advanced usage (e.g.: selecting a WildFly version, an execution profile, adding `add-ons`, 
+selecting specific surefire executions to provision multiple servers) you should check the 
+WildFly Glow https://docs.wildfly.org/wildfly-glow[documentation].
+
+
+We hope that you will see how useful WildFly Glow can be for your WildFly application testing.
+Your feedback would be very valuable to evolve WildFly Glow in the right direction.
+Feel free to log issues in the https://github.com/wildfly/wildfly-glow/issues[project].
+
+Thank-you!
+
+Jean-Francois Denise

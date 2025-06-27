@@ -1,0 +1,536 @@
+---
+layout: post
+title:  "An introduction to use the domain mode of the current release of WildFly"
+aliases: [/news/2025/02/12/wildfly-domain-usage]
+date:   2025-02-12
+tags:   wildfly domain
+author: liweinan
+description: An introduction to use the domain mode of the current release of WildFly with the instructions on configuring the Elytron subsystem.
+---
+
+I recently tried to play with the domain mode in the current release of WildFly, version 35, while writing this blog post.
+
+According to the blog post written by Brian Stansberryfootnote:[https://www.wildfly.org/news/2021/10/05/WildFly25-Final-Released/[WildFly 25 is released!]], there are some breaking backward-compatibility changes in the security configuration part related to Elytron since WildFly 25:
+
+____
+A key focus in WildFly 25 has been completing our migration away from the legacy security layer that dates back to JBoss AS and onto the https://wildfly-security.github.io/wildfly-elytron/[WildFly Elytron] based https://docs.wildfly.org/24/WildFly_Elytron_Security.html[security layer] introduced in WildFly 11. SE 17 does not provide packages that legacy security heavily relies upon, so the time has come to complete the transition off of legacy security.
+____
+
+Nevertheless, the resources I could find are mostly outdated or don't contain the step-by-step walkthrough about the minimal configuration to be done for using the domain mode of WildFly. I have written a book before, explaining the domain mode usage of WildFlyfootnote:[https://www.packtpub.com/en-us/product/jboss-eap6-high-availability-9781783282449?srsltid=AfmBOooUR6olUaY8qVHB6U70wb2oe_nAk8OloSeJAtkbn6AGgoQ7-OM9[JBoss EAP6 High Availability | Programming | eBook]]. There is also a relative document about the domain mode setupfootnote:[https://docs.wildfly.org/35/Admin_Guide.html#Domain_Setup[https://docs.wildfly.org/35/Admin_Guide.html#Domain_Setup]]. All these materials are outdated on the domain configuration topic, so I'd like to update the knowledge on this topic in this blog post, showing how to configure the domain mode for the most recent version of WildFly server, which is version 35 when I'm writing this blog post. I won’t cover all the detail usages of the domain mode in this blog post, but it will be a good start to follow the instructions in this blog posts for the further studies.
+
+Here is my local environment setup to use the domain mode of the WildFly server:
+
+image:/assets/img/news/2025-01-wildfly-domain/01.png[image]
+
+As the deployment diagram shows above, I used two machines to run the WildFly server in domain mode. In the above setup, the WildFly server running on Machine A acts as a domain controller, and the WildFly server on Machine B will be connected to Machine A accepting the management from the domain server.
+
+The host name of the WildFly server running on Machine A will be configured to `primary`(this will be defined in the `name` property in the `host.xml`), and the host name of the WildFly server running on Machine B will be configured to `secondary`.
+
+Both WildFly servers, running on two different machines, will be configured to run a managed server (defined in the server section of the `host.xml`) within the same server group, named `other-server-group`.
+
+The Primary Host Controller will define a `server-three` managed server, while the Secondary Host Controller will define a `server-two` managed server, both belonging to the `other-server-group` server group.
+
+In this way, the Domain Controller can manage the server group and deploy user applications to the managed servers within it, even though the managed servers are running on different hosts.
+
+The first step is to download the current version of WildFly. I will use version `35.0.0.Final` version in this blog post which is the newest final version when I’m writing this blog post. Here is the release page:
+
+* https://github.com/wildfly/wildfly/releases/tag/35.0.0.Final[Release 35.0.0.Final · wildfly/wildfly]
+
+[source,bash]
+----
+❯ wget https://github.com/wildfly/wildfly/releases/download/35.0.0.Final/wildfly-35.0.0.Final.zip
+----
+
+After the WildFly server zip file is downloaded and extracted into both machines, I can do the configuration work. The extracted WildFly server directory has some of the configuration files out-of-box. Here are the domain configurations provided:
+
+[source,bash]
+----
+❯ ls wildfly-35.0.0.Final/domain/configuration/
+application-roles.properties            host-secondary.xml
+application-users.properties            host.xml
+default-server-logging.properties       logging.properties
+domain.xml                              mgmt-groups.properties
+host-primary.xml                        mgmt-users.properties
+----
+
+From the above command output, we can see in the `wildfly-35.0.0.Final/domain/configuration/` directory, it contains `host-primary.xml` and `host-secondary.xml` files. I will use `host-secondary.xml` with some modifications in Machine B. However, I’ll use the `host.xml` instead of `host-primary.xml` in Machine A, because `host-primary.xml` has removed all the `servers` configuration, but we need these `servers` configuration in our setup. However, I still need to configure a Managed Server in Machine A for demonstration purposes.
+
+First, let’s check the `host.xml` on Machine A to fit the requirement. In `host.xml`, the host name is set to `primary` by default:
+
+[source,xml]
+----
+<host xmlns="urn:jboss:domain:community:20.0" name="primary">
+----
+
+This is what I expect, so I don’t need to change it.
+
+Instead of directly editing the configuration file, we can use the `jboss-cli.sh` to connect to the server to edit the configuration file in a more controllable way. To do this, we can first run the `jboss-cli.sh`:
+
+[source,bash]
+----
+❯ pwd
+/Users/weli/works/wildfly-35.0.0.Final/bin
+weli@192 ~/works/wildfly-35.0.0.Final/bin
+❯ ./jboss-cli.sh
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.
+[disconnected /]
+----
+
+After entering the CLI, run the following command to connect to the host controller:
+
+[source,bash]
+----
+[disconnected /] embed-host-controller
+[domain@embedded /]
+----
+
+The above command will run the domain server in offline-mode(To learn about the detailed usages of the above command, you can read this blog postfootnote:[https://www.wildfly.org/news/2017/10/10/Embedded-Host-Controller/[Running an Embedded WildFly Host Controller in the CLI]]). And we can now configure the server in the CLI, and all the changes will be persisted into the host controller configuration file(by default it’s `host.xml`).
+
+Now we can use the CLI to read the host name:
+
+[source,bash]
+----
+[domain@embedded /] /:read-attribute(name=local-host-name)
+{
+    "outcome" => "success",
+    "result" => "primary"
+}
+----
+
+It's preferred to use CLI command instead of directly operating on the host controller configuration file. In the rest of this blog post, I'll introduce both the content of the host controller file, and the way to use the CLI command to modify it.
+
+Now we can see the `host.xml` file has two servers settings by default:
+
+[source,xml]
+----
+<server name="server-one" group="main-server-group"/>
+<server name="server-two" group="main-server-group" auto-start="true">
+    <jvm name="default"/>
+    <socket-bindings port-offset="150"/>
+</server>
+<server name="server-three" group="other-server-group" auto-start="false">
+    <jvm name="default"/>
+    <socket-bindings port-offset="250"/>
+</server>
+----
+
+I’ll use only `server-three` in this blog post, so I comment out the `server-one` and the `server-two` definitions and only leave the `server-three` definition here.
+
+Here are the commands to disable the `server-one` and `server-two` from auto-starting:
+
+[source,bash]
+----
+[domain@embedded /] /host=primary/server-config=server-one:write-attribute(name=auto-start, value=false)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined
+}
+
+[domain@embedded /] /host=primary/server-config=server-two:write-attribute(name=auto-start, value=false)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined
+}
+
+[domain@embedded /]
+----
+
+Alternatively, you can use these commands to remove the `server-one` and `server-two` directly:
+
+[source,bash]
+----
+/host=primary/server-config=server-one:remove
+/host=primary/server-config=server-two:remove
+----
+
+In addition, there are several interface properties defined in the `host.xml` file that we need to override during runtime. Here is the `interfaces` section in the `host.xml`:
+
+[source,xml]
+----
+<interfaces>
+    <interface name="management">
+        <inet-address value="$\{jboss.bind.address.management:127.0.0.1}"/>
+    </interface>
+    <interface name="public">
+        <inet-address value="$\{jboss.bind.address:127.0.0.1}"/>
+    </interface>
+</interfaces>
+----
+
+I checked my IP address of Machine A, and it’s `192.168.0.115`, so I started the WildFly Server on Machine A by running the following commands in the `bin` directory of WildFly:
+
+[source,bash]
+----
+$ pwd
+/wildfly-35.0.0.Final/bin
+----
+
+[source,bash]
+----
+$ ./domain.sh --host-config=host.xml -Djboss.bind.address.management=192.168.0.115 -Djboss.bind.address=192.168.0.115 -Djboss.domain.primary.address=192.168.0.115
+----
+
+Please note that the `host.xml` is the default value for the `--host-config` argument. So in this specific case we don’t have to add it.
+
+And I can see the server is started and here is the server log output of the above command:
+
+[source,bash]
+----
+=========================================================================
+
+JBoss Bootstrap Environment
+
+JBOSS_HOME: /wildfly-35.0.0.Final
+
+JAVA: .sdkman/candidates/java/current/bin/java
+
+JAVA_OPTS: -Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true -Djdk.serialFilter="maxbytes=10485760;maxdepth=128;maxarray=100000;maxrefs=300000"  --add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldaps=ALL-UNNAMED --add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED -Djava.security.manager=allow
+
+=========================================================================
+
+17:06:49,064 INFO  [org.jboss.modules] (main) JBoss Modules version 2.1.6.Final
+17:06:49,405 INFO  [org.jboss.threads] (main) JBoss Threads version 2.4.0.Final
+17:06:49,428 INFO  [org.jboss.as.process.Host Controller.status] (main) WFLYPC0018: Starting process 'Host Controller'
+17:06:49,896 INFO  [org.jboss.as.process.Host Controller.system.stdout] (stdout for Host Controller) [Host Controller] 17:06:49,875 INFO  [org.jboss.modules] (main) JBoss Modules version 2.1.6.Final
+[Host Controller] 17:06:50,385 INFO  [org.jboss.msc] (main) JBoss MSC version 1.5.5.Final
+[Host Controller] 17:06:50,393 INFO  [org.jboss.threads] (main) JBoss Threads version 2.4.0.Final
+[Host Controller] 17:06:50,441 INFO  [org.jboss.as] (MSC service thread 1-2) WFLYSRV0049: WildFly 35.0.0.Final (WildFly Core 27.0.0.Final) starting
+[Host Controller] 17:06:50,806 INFO  [org.wildfly.security] (Controller Boot Thread) ELY00001: WildFly Elytron version 2.6.0.Final
+[Host Controller] 17:06:51,088 INFO  [org.jboss.as.host.controller] (Controller Boot Thread) WFLYHC0003: Creating http management service using network interface (management) port (9990) securePort (-1)
+[Host Controller] 17:06:51,099 INFO  [org.xnio] (MSC service thread 1-3) XNIO version 3.8.16.Final
+[Host Controller] 17:06:51,103 INFO  [org.xnio.nio] (MSC service thread 1-3) XNIO NIO Implementation Version 3.8.16.Final
+[Host Controller] 17:06:51,139 INFO  [org.jboss.remoting] (MSC service thread 1-7) JBoss Remoting version 5.0.30.Final
+[Host Controller] 17:06:52,510 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0062: Http management interface listening on http://192.168.0.115:9990/management and https://192.168.0.115:-1/management
+[Host Controller] 17:06:52,510 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0053: Admin console listening on http://192.168.0.115:9990 and https://192.168.0.115:-1
+[Host Controller] 17:06:52,546 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly 35.0.0.Final (WildFly Core 27.0.0.Final) (Host Controller) started in 3066ms - Started 70 of 71 services (14 services are lazy, passive or on-demand) - Host Controller configuration files in use: domain.xml, host.xml - Minimum feature stability level: community
+----
+
+From the above server log output, I can see the server-bound address is `192.168.0.115` instead of the default `127.0.0.1`. Then I opened another terminal window and ran the following command in the `bin` directory of the WildFly server:
+
+[source,bash]
+----
+$ ./add-user.sh -u admin -p 123
+Added user 'admin' to file '/wildfly-35.0.0.Final/standalone/configuration/mgmt-users.properties'
+Added user 'admin' to file '/wildfly-35.0.0.Final/domain/configuration/mgmt-users.properties'
+----
+
+From the above command output, we can see the `admin` user is added and its password is `123`. This added user will be used on the Secondary Host Controller to connect to the Primary Host controller.
+
+Please note that the above command didn't generate a secret value related to the generated `admin` user as described you may find in the other online materials, which is already deprecated since WildFly 25. So the following `secret` configuration on the Secondary Host Controller is already deprecated:
+
+[source,xml]
+----
+<server-identities>
+  <secret value="..." />
+</server-identities>
+----
+
+As the Primary Host Controller is started on Machine A, now we can check the WildFly server configuration on Machine B. As planned, the Host Controller is named `secondary`, and it will be connected to the Primary Host Controller on Machine A, which acts as the domain controller.
+
+Now we can check the configuration on the Secondary Host Controller. The Secondary Host Controller on Machine B will use the `host-secondary.xml` file as its configuration file. Please note that to edit the `host-secondary.xml` file in CLI, you should use this command to connect to the embedded server and use the correct host controller file:
+
+[source,bash]
+----
+[disconnected /] embed-host-controller --host-config=host-secondary.xml
+[domain@embedded /]
+----
+
+We need to make some modifications to this file. First I need to add the `name` property to the `host` section:
+
+[source,xml]
+----
+<host xmlns="urn:jboss:domain:community:20.0" name="secondary">
+----
+
+Here is the method to use the CLI command to modify the host controller name:
+
+[source,bash]
+----
+$ ./wildfly-35.0.0.Final/bin/jboss-cli.sh
+You are disconnected at the moment. Type 'connect' to connect to the server or 'help' for the list of supported commands.
+[disconnected /] embed-host-controller --host-config=host-secondary.xml
+[domain@embedded /] /host=unknown-host.unknown-domain:write-attribute(name=name,value=secondary)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined,
+    "response-headers" => \{"process-state" => "reload-required"}
+}
+----
+
+[source,bash]
+----
+[domain@embedded /] /host=unknown-host.unknown-domain:reload(admin-only=true)
+{"outcome" => "success"}
+----
+
+Please note that if you use tab complete, it should autocomplete your default host name. Giving the host a name can help to analyze the server log output later.
+
+So I need to define this `authentication-context` in the `elytron` subsystem. This configuration is different from the legacy authentication. Here are the details:
+
+[source,xml]
+----
+<profile>
+    <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
+    <subsystem xmlns="urn:wildfly:elytron:community:18.0" final-providers="combined-providers"
+               disallowed-providers="OracleUcrypto" register-jaspi-factory="false">
+        <authentication-client>
+            <authentication-configuration sasl-mechanism-selector="DIGEST-MD5" name="myConfig"
+                                          authentication-name="admin" realm="ManagementRealm">
+                <credential-reference clear-text="123"/>
+            </authentication-configuration>
+            <authentication-context name="myCtx">
+                <match-rule match-host="$\{jboss.domain.primary.address}" authentication-configuration="myConfig"/>
+            </authentication-context>
+        </authentication-client>
+        ...
+    </subsystem>
+    ...
+</profile>
+----
+
+Here is the equivalent CLI command to do the configuration:
+
+[source,bash]
+----
+[domain@embedded /] /host=secondary/subsystem=elytron/authentication-configuration=myConfig:add(sasl-mechanism-selector=DIGEST-MD5, authentication-name=admin, realm=ManagementRealm, credential-reference=\{clear-text="123"})
+{"outcome" => "success"}
+----
+
+[source,bash]
+----
+[domain@embedded /] /host=secondary/subsystem=elytron/authentication-context=myCtx:add(match-rules=[{match-host="$\{jboss.domain.primary.address}", authentication-configuration=myConfig}])
+{"outcome" => "success"}
+----
+
+The above configuration shows how to configure the `elytron` subsystem to provide user `admin` and its password `123` for usage. The `authentication-configuration` section is added, and the authentication context `myCtx` is using this configuration. Please note this is only one way to provide `username` and `password` via the Elytron subsystem, and you can avoid using `clear-text` to provide the password. I won’t dig into more details on how to use Elytron in this blog post, but you can always refer to its document to learn its usagefootnote:[https://docs.wildfly.org/35/WildFly_Elytron_Security.html[WildFly Elytron Security]].
+
+Then I need to add modify configuration of the `domain-controller`:
+
+[source,xml]
+----
+<domain-controller>
+    <remote authentication-context="myCtx">
+        <discovery-options>
+            <static-discovery name="primary" protocol="$\{jboss.domain.primary.protocol:remote+http}"
+                              host="$\{jboss.domain.primary.address}" port="$\{jboss.domain.primary.port:9990}"/>
+        </discovery-options>
+    </remote>
+</domain-controller>
+----
+
+As the configuration is shown above, I defined the `authentication-context` to be used as `myCtx`. Here is the equivalent CLI command to do the configuration:
+
+[source,bash]
+----
+/host=secondary:write-attribute(name=domain-controller.remote.authentication-context, value=myCtx)
+{
+    "outcome" => "success",
+    "result" => undefined,
+    "server-groups" => undefined,
+    "response-headers" => \{"process-state" => "reload-required"}
+}
+----
+
+After configuring the authentication part in the `host-secondary.xml` file on Machine B, the last thing is that I disabled the `server-one` and left only `server-two` in the configuration:
+
+[source,xml]
+----
+<servers>
+    <!-- <server name="server-one" group="main-server-group"/> -->
+    <server name="server-two" group="other-server-group">
+        <socket-bindings port-offset="150"/>
+    </server>
+</servers>
+----
+
+Again it's better to use the CLI command to do the configuration:
+
+[source,bash]
+----
+/host=secondary/server-config=server-one:remove
+----
+
+Until now all the configurations are done, and then I can start the WildFly server on Machine B with the following command:
+
+[source,bash]
+----
+❯ ./domain.sh --host-config=host-secondary.xml -Djboss.bind.address.management=192.168.0.113 -Djboss.bind.address=192.168.0.113 -Djboss.domain.primary.address=192.168.0.115
+----
+
+In the above command, I assign the value `host-secondary.xml` to the `host-config` property, and I assign values of `jboss.bind.address.management` and `jboss.bind.address` as `192.168.0.113`, which is the IP address of Machine B itself. I assigned the value of `jboss.domain.primary.address` as `192.168.0.115`, which is the IP address of Machine A. On Machine A, there is a WildFly server running as a domain controller as described above. Now we can see the server log output of the above command from Machine B:
+
+[source,bash]
+----
+=========================================================================
+
+JBoss Bootstrap Environment
+
+JBOSS_HOME: /wildfly-35.0.0.Final
+
+JAVA: .sdkman/candidates/java/current/bin/java
+
+JAVA_OPTS: -Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true -Djdk.serialFilter="maxbytes=10485760;maxdepth=128;maxarray=100000;maxrefs=300000"  --add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldaps=ALL-UNNAMED --add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED -Djava.security.manager=allow
+
+=========================================================================
+
+17:17:30,558 INFO  [org.jboss.modules] (main) JBoss Modules version 2.1.6.Final
+17:17:30,668 INFO  [org.jboss.threads] (main) JBoss Threads version 2.4.0.Final
+17:17:30,677 INFO  [org.jboss.as.process.Host Controller.status] (main) WFLYPC0018: Starting process 'Host Controller'
+17:17:30,855 INFO  [org.jboss.as.process.Host Controller.system.stdout] (stdout for Host Controller) [Host Controller] 17:17:30,847 INFO  [org.jboss.modules] (main) JBoss Modules version 2.1.6.Final
+[Host Controller] 17:17:31,008 INFO  [org.jboss.msc] (main) JBoss MSC version 1.5.5.Final
+[Host Controller] 17:17:31,010 INFO  [org.jboss.threads] (main) JBoss Threads version 2.4.0.Final
+[Host Controller] 17:17:31,026 INFO  [org.jboss.as] (MSC service thread 1-1) WFLYSRV0049: WildFly 35.0.0.Final (WildFly Core 27.0.0.Final) starting
+[Host Controller] 17:17:31,158 INFO  [org.wildfly.security] (Controller Boot Thread) ELY00001: WildFly Elytron version 2.6.0.Final
+[Host Controller] 17:17:31,270 INFO  [org.jboss.as.host.controller] (Controller Boot Thread) WFLYHC0003: Creating http management service using network interface (management) port (9990) securePort (-1)
+[Host Controller] 17:17:31,275 INFO  [org.xnio] (MSC service thread 1-7) XNIO version 3.8.16.Final
+[Host Controller] 17:17:31,278 INFO  [org.xnio.nio] (MSC service thread 1-7) XNIO NIO Implementation Version 3.8.16.Final
+[Host Controller] 17:17:31,289 INFO  [org.jboss.remoting] (MSC service thread 1-7) JBoss Remoting version 5.0.30.Final
+[Host Controller] 17:17:32,666 INFO  [org.jboss.as.host.controller] (Controller Boot Thread) WFLYHC0148: Connected to the domain controller at remote+http://192.168.0.115:9990
+[Host Controller] 17:17:32,692 INFO  [org.jboss.as.host.controller] (Controller Boot Thread) WFLYHC0023: Starting server server-two
+17:17:32,800 INFO  [org.jboss.as.process.Server:server-two.status] (ProcessController-threads - 3) WFLYPC0018: Starting process 'Server:server-two'
+[Host Controller] 17:17:33,442 INFO  [org.jboss.as.host.controller] (management task-1) WFLYHC0021: Server [Server:server-two] connected using connection [Channel ID 20a1192c (inbound) of Remoting connection 79a44d09 to 192.168.0.113/192.168.0.113:61942 of endpoint "secondary:MANAGEMENT" <6894739b>]
+[Host Controller] 17:17:33,452 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0062: Http management interface listening on http://192.168.0.113:9990/management and https://192.168.0.113:-1/management
+[Host Controller] 17:17:33,452 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
+[Host Controller] 17:17:33,453 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly 35.0.0.Final (WildFly Core 27.0.0.Final) (Host Controller) started in 2754ms - Started 70 of 71 services (14 services are lazy, passive or on-demand) - Host Controller configuration file in use: host-secondary.xml - Minimum feature stability level: community
+[Host Controller] 17:17:33,453 INFO  [org.jboss.as.host.controller] (server-registration-threads - 1) WFLYHC0020: Registering server server-two
+----
+
+From the above server log output on Machine B, we can see the WildFly server is started and `server-two` is started. In addition, it’s connected to the Domain Controller on Machine A. Here is the server log output from the WildFly server on Machine A:
+
+[source,bash]
+----
+[Host Controller] 17:17:32,549 INFO  [org.jboss.as.domain.controller] (Host Controller Service Threads - 23) WFLYHC0019: Registered remote secondary host "secondary", JBoss WildFly 35.0.0.Final (WildFly 27.0.0.Final)
+----
+
+From the above Primary Host Controller log output, I can see the secondary host is connected, so it starts to accept the management of Primary Host Controller, which acts as the domain controller. Now I can open the web browser on Machine A to access the WildFly server admin console: http://192.168.0.115:9990
+
+Please note that I can’t use the IP address `127.0.0.1` here, because the WildFly server is listening to the public IP address of Machine A, which we have assigned to the `jboss.bind.address.management` property during the server startup process. Here is the screenshot of the admin page of the WildFly server:
+
+image:/assets/img/news/2025-01-wildfly-domain/02.png[image]
+
+We need to enter `admin` as the username and `123` as the password, which is the user we added as the management user above. And then we can enter the admin page of the server:
+
+image:/assets/img/news/2025-01-wildfly-domain/03.png[image]
+
+As we have entered the WildFly admin page, we can try to deploy an example application. There is a `helloworld` project in the WildFly Quickstart project:
+
+* https://github.com/wildfly/quickstart/tree/35.0.0.Final/helloworld[https://github.com/wildfly/quickstart/tree/35.0.0.Final/helloworld]
+
+The above project is a simple application that just contains a servlet that will respond with the text `<h1>Hello World!</h1>` to the request. So I cloned the WildFly Quickstart project into my local environment and then built the `helloworld` project to generate the `helloworld.war`:
+
+[source,bash]
+----
+$ pwd
+/wildfly-quickstart/helloworld
+----
+
+[source,bash]
+----
+$ mvn install
+...
+[INFO] BUILD SUCCESS
+...
+----
+
+[source,bash]
+----
+❯ ls target/*.war
+target/helloworld.war
+----
+
+As the project is built, I can deploy the above WAR file into the WildFly server group. So I go back to the WildFly admin page, and then I can click the `Deployments` on the top menu and click the `Upload Deployment`:
+
+image:/assets/img/news/2025-01-wildfly-domain/04.png[image]
+
+From the above screenshot, you can see that I tried to deploy the sample project into the `other-server-group`. I use this server group because I have configured servers on both Primary Host Controller and Secondary Host Controller hosts into this server group. Here is the deployment diagram for the server group:
+
+image:/assets/img/news/2025-01-wildfly-domain/05.png[image]
+
+As the diagram shown above, I will use the domain controller’s admin page to deploy `helloworld.war` into the `other-server-group`, so the project will be deployed to `server-two` and `server-three`, because they both belong to `other-server-group`. Coming back to the WildFly admin page, I drag and drop the `helloworld.war` into the deployment page:
+
+image:/assets/img/news/2025-01-wildfly-domain/06.png[image]
+
+Then I clicked `Next` and left the deployment configuration fields as default:
+
+image:/assets/img/news/2025-01-wildfly-domain/07.png[image]
+
+Then I clicked `Finished` and reached the `Deployment successful` page:
+
+image:/assets/img/news/2025-01-wildfly-domain/08.png[image]
+
+Now the `helloworld.war` is deployed to all the managed servers in the `other-server-group`. Now I click the `Deployments` on the top menu of the admin page, and then click the `other-server-group`, we can see that the `helloworld.war` is deployed into the server group:
+
+image:/assets/img/news/2025-01-wildfly-domain/09.png[image]
+
+As the `helloworld` project is deployed, we can check the statuses of the two Host Controllers. I clicked the `Runtime` on top of the menu of the admin page, and then clicked the `primary` host tab, then I saw that `server-three` has not started yet:
+
+image:/assets/img/news/2025-01-wildfly-domain/10.png[image]
+
+This is because the `auto-start` property is configured to `false` in the `host.xml` of the primary host:
+
+[source,xml]
+----
+<server name="server-three" group="other-server-group" auto-start="false">
+    <jvm name="default"/>
+    <socket-bindings port-offset="250"/>
+</server>
+----
+
+So I need to click the `Start` button of the `server-three`:
+
+image:/assets/img/news/2025-01-wildfly-domain/11.png[image]
+
+After a while the `server-three` is started:
+
+image:/assets/img/news/2025-01-wildfly-domain/12.png[image]
+
+Because we didn’t configure the `auto-start` to `false` on the
+Secondary Host Controller, so it’s already started:
+
+image:/assets/img/news/2025-01-wildfly-domain/13.png[image]
+
+From the above screenshots, we can see that the URL of `server-two` is http://192.168.0.113:8230, and the URL of `server-three` is http://192.168.0.115:8330. Their ports are different because the `port-offset` property settings are different. For `server-three`, the `port-offset` is configured like this:
+
+[source,xml]
+----
+<server name="server-three" group="other-server-group" auto-start="false">
+    <jvm name="default"/>
+    <socket-bindings port-offset="250"/>
+</server>
+----
+
+Because the `port-offset` is set to `250` for `server-three`, and the default HTTP port setting is `8080`, so `8080+250=8330`. For `server-two`, the configuration is like this:
+
+[source,bash]
+----
+<server name="server-two" group="other-server-group">
+    <socket-bindings port-offset="150"/>
+</server>
+----
+
+As the `port-offset` setting is `150`, the calculated HTTP port is `8080+150=8330`, which is expected. Now we can use the `curl` command to do the requests to both the Machine A and the Machine B to see if the `helloworld` project is deployed on two both of the machines:
+
+[source,bash]
+----
+❯ curl http://192.168.0.115:8330/helloworld/HelloWorld
+<html><head><title>helloworld</title></head><body>
+<h1>Hello World!</h1>
+</body></html>
+----
+
+[source,bash]
+----
+❯ curl http://192.168.0.113:8230/helloworld/HelloWorld
+<html><head><title>helloworld</title></head><body>
+<h1>Hello World!</h1>
+</body></html>
+----
+
+From the above command output, we can see that the `helloworld` project is deployed two both hosts. Though they are running on two different machines, because these two hosts are in the same `other-server-group` and they are managed by the domain controller, so the project is deployed to both hosts.
+
+I hope this blog post can be helpful to update your knowledge base to see how to use the domain mode in the most current WildFly release. For convenience, I have put the `host.xml` of the Primary Host Controller and the `host-secondary.xml` of the Secondary Host Controller online for referencefootnote:[https://gist.github.com/liweinan/6cca8f88203e5aa76d3c1516d1758421[WildFly Domain Mode Configuration Files]].
+
+=== References

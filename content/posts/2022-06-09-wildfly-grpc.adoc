@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: WildFly gRPC'
+date:   2022-06-09
+tags:   grpc vlog
+synopsis: This video introduces support for gRPC in WildFly.
+author: hpehl
+external_link: https://www.youtube.com/watch?v=UYSNM9Dy5M4
+---

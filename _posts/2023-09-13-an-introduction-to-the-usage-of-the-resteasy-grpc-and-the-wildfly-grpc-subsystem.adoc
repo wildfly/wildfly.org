@@ -1,9 +1,0 @@
----
-layout: post
-title: "Using the resteasy-grpc feature together with the WildFly gRPC subsystem"
-date: 2023-09-13
-tags: resteasy grpc wildfly
-synopsis: "An introduction to the usage of the resteasy-grpc and the WildFly gRPC subsystem"
-author: liweinan
-link: https://resteasy.dev/2023/09/12/resteasy-grpc/
----

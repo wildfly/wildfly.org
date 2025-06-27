@@ -1,0 +1,111 @@
+---
+layout: post
+title:  "WildFly 25 is released!"
+aliases: [/news/2021/10/05/WildFly25-Final-Released]
+date:   2021-10-05
+tags:   announcement release microprofile jakartaee
+author: bstansberry
+description: WildFly 25.0.0.Final is now available for download
+---
+
+I'm pleased to announce that the WildFly 25 Final zip is now available link:https://wildfly.org/downloads[for download].
+
+The big focus during the WildFly 25 development cycle has been on support for Java SE 17 and on the related transition away from our legacy security layer and to a purely  link:https://wildfly-security.github.io/wildfly-elytron/[WildFly Elytron]-based link:https://docs.wildfly.org/24/WildFly_Elytron_Security.html[security layer].  More about those later, but first let's look at new features in WildFly 25.
+
+== New Features
+
+* A new subsystem has been added that provides link:https://github.com/wildfly/wildfly-proposals/blob/main/observability/WFLY-14854_add_opentelemetry_support.adoc[support for the tracing aspects of the OpenTelemetry spec], allowing for the injection of the `OpenTelemetry` and `Tracer` objects from the specification, as well as implicit tracing of Jakarta REST endpoints. WildFly still provides MicroProfile OpenTracing as an alternative, but I encourage users to switch to the new OpenTelemetry subsystem.
+* A new subsystem has been added that link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFCORE-5178_native-support-for-oidc.adoc[provides the ability to secure deployments using OpenID Connect], without needing to make use of the Keycloak client adapter. It is now possible to make use of other OpenID Connect providers in addition to Keycloak.
+* MicroProfile Health support has been updated to link:https://github.com/eclipse/microprofile-health/releases/tag/3.1[MicroProfile Health 3.1], a new backwards compatible release of the specification. MicroProfile Health 3.1 adds support for Kubernetes startup probes in form of a new `@Startup` CDI qualifier, with WildFly exposing this check at the `:9990/health/started` endpoint.
+* We've shipped an link:https://github.com/wildfly/wildfly-proposals/blob/main/microprofile/WFLY-14798-upgrade-reactive-messaging-2.0.adoc[update of the MicroProfile Reactive Messaging subsystem to version 2.0 of the spec]. This now integrates with MicroProfile Health for messages sent, and facilitates user-initiated code to push data to, and, to some extent, receive data from, Reactive Messaging streams.
+* The MicroProfile Reactive Messaging subsystem now supports link:https://github.com/wildfly/wildfly-proposals/blob/main/microprofile/WFLY-14932_mp_reactive_messaging_kafka_api.adoc[additional configuration of messages sent to Kafka], and provides means of getting information from Kafka on the receiving end.
+* You can now connect to a secure Kafka instance using the MicroProfile Reactive Messaging functionality of WildFly. For cases where you are using self-signed certificates, link:https://github.com/wildfly/wildfly-proposals/blob/main/microprofile/WFLY-14987_reactive_messaging-ssl-context-kafka-connector.adoc[the truststore can be specified in an SSLContext provided by the Elytron subsystem].
+* WildFly now supports link:https://github.com/wildfly/wildfly-proposals/blob/main/management/WFCORE-5464_Check_Env_Vars_On_Expression_Resolution.adoc[checking environment variables, in addition to system properties, when resolving expressions used in the server configuration]. If a system property value can be found, that is returned as has happened until now. If no system property is found, the name is converted to environment property format and the value of the environment variable is checked. The conversion happens by replacing each character that is neither alphanumeric nor underscore with underscore, and then converting the name to upper case (i.e. com.acme-size becomes COM_ACME_SIZE). This feature makes it easier to reuse configuration in different deployment enviroments, particularly in cloud environments where environment variables are more readily used than system properties.
+* Logging related to discovery of failed JCA connections during validation link:https://issues.redhat.com/browse/WFLY-15189[can now be disabled].
+
+== Security Layer Changes
+
+A key focus in WildFly 25 has been completing our migration away from the legacy security layer that dates back to JBoss AS and onto the link:https://wildfly-security.github.io/wildfly-elytron/[WildFly Elytron]-based link:https://docs.wildfly.org/24/WildFly_Elytron_Security.html[security layer] introduced in WildFly 11. SE 17 does not provide packages that legacy security heavily relies upon, so the time has come to complete the transition off of legacy security.
+
+We deprecated the use of legacy security long ago and in the WildFly 25 release we have removed support for it.
+
+As part of this change you will see a number of significant changes in WildFly 25:
+
+* Our standard configuration files no longer include legacy security realms. These are the 'security-realm' elements found under the 'management' element in a standalone.xml or host.xml file, administered via the CLI at '/core-service=management/security-realm=*' addresses.  The xml parsers no longer support these elements and the management API no longer provides resources at these addresses. Elytron subsystem resources are now used.
+* Use of the Picketbox-based security vault is no longer supported. Elytron credential stores should be used instead.
+* The 'org.jboss.as.security' extension and the 'security' subsystem it provides are no longer supported on servers not running in 'admin-only' mode. The extension and subystem can still be used on a WildFly 25 Domain Controller to allow it to manage hosts running earlier versions of WildFly.
+* The 'org.wildlfy.extension.picketlink' extension and the 'picketlink-federation' and 'picketlink-idm' subsystems it provides are no longer supported on servers not running in 'admin-only' mode. They can still be used on a WildFly 25 Domain Controller to allow it to manage hosts running earlier versions of WildFly.
+
+Note that the reason use of the legacy security and picketlink extensions is allowed on an 'admin-only' server is to allow a server with a configuration using those to boot so an administrator can then use the CLI to alter the server configuration to use Elytron.
+
+I very much encourage any of you still using legacy security in your configuration to start experimenting with WildFly 25.
+
+== WildFly Preview
+
+As I link:https://www.wildfly.org/news/2020/11/12/Jakarta-EE-9-with-WildFly-Preview/[announced last November] when we released WildFly 22 Alpha1, along with our traditional Jakarta EE 8 distribution we want to give our users a preview of what will be coming in WildFly as we move on to EE 9 and later. We call this distribution "WildFly Preview". The WildFly 25.0.0.Final release includes an update to WildFly Preview. _Even though this is coming from a .Final tag of the WildFly codebase, WildFly Preview should always be regarded as a tech-preview/beta distribution._
+
+To learn more about WildFly Preview, see the link:https://docs.wildfly.org/25/WildFly_and_WildFly_Preview.html[WildFly and WildFly Preview doc page].
+
+== Java SE 17 Support
+
+I'm extremely pleased to be able to say that we can recommend you run WildFly 25 or WildFly Preview 25 on any of the long-term support Java SE releases, *including Java SE 17*. We've tested WildFly heavily on Java SE 8, Java SE 11 and Java SE 17. Our testing included testing WildFly Preview on SE 17 with the massive Jakarta EE 9.1 TCK. (More on that in the 'Standards Support' section below.)
+
+The most heavily tested SE options for WildFly are still SE 11 and SE 8, because both WildFly and its component library projects have so many years of testing on those versions.
+
+As I noted in my recent link:https://www.wildfly.org/news/2021/09/27/WildFly-Changes/[Changes are coming to WildFly post], it is likely that WildFly will drop support for SE 8 in one of the next few quarterly releases. Eventually the transition to Jakarta EE 10 support and the expected minimum requirement for SE 11 by some of its API projects will drive WildFly to only support SE 11 or later. As I described in that post, it's _possible_ this could happen as soon as WildFly 26, although I doubt that will happen and will work to avoid it.
+
+Please note that WildFly runs on Java 11 and later in classpath mode.
+
+=== Running WildFly 25 with SE 17
+
+One of the key differences in SE 17 versus the previous LTS SE 11 release is that the JVM will reject reflective access calls that SE 11 would only warn about, unless the JVM launch command includes JPMS configuration options to allow that access. WildFly does quite a bit of deep reflection, so part of our efforts in recent releases has been to identify the necessary JPMS settings. We have added those to our standard launch scripts, so WildFly should just work if you're using those. The manifest file in a WildFly bootable jar will also include these settings. But some users may not be using a bootable jar or using our launch scripts to launch WildFly. For example many users use IDEs to launch WildFly and count on the IDE to provide arguments to the JVM. And IDEs may not be using the necessary settings yet.
+
+If you are launching a WildFly instance on SE 17 and aren't using a bootable jar or our launch scripts, here are the JPMS settings you will need:
+
+* --add-exports=java.desktop/sun.awt=ALL-UNNAMED
+* --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED
+* --add-opens=java.base/java.lang=ALL-UNNAMED
+* --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+* --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+* --add-opens=java.base/java.io=ALL-UNNAMED
+* --add-opens=java.base/java.security=ALL-UNNAMED
+* --add-opens=java.base/java.util=ALL-UNNAMED
+* --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+* --add-opens=java.management/javax.management=ALL-UNNAMED
+* --add-opens=java.naming/javax.naming=ALL-UNNAMED
+
+Not all uses of the server will require all of those; the link:https://github.com/wildfly/wildfly-core/blob/17.0.1.Final/core-feature-pack/common/src/main/resources/content/bin/common.sh#L24-L48[launch script sections] that set those up include comments describing the main reason we've added each.
+
+It's possible your application may do something that requires additional JPMS settings; if so you can add those to the JVM launch command by editing the 'bin/standalone.conf` or 'bin/domain.conf' file or their .bat or .ps1 variants.
+
+== Standards Support
+
+The standard WildFly 25.0.0 distribution is a Jakarta EE 8 compatible implementation, compatible with both the Full Platform and the Web Profile. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_25.0.0.Final/jakarta-full-platform.adoc#tck-results[for the Full Platform] and link:https://github.com/wildfly/certifications/blob/EE8/WildFly_25.0.0.Final/jakarta-web-profile.adoc#tck-results[for the Web Profile].
+
+The standard WildFly 25 distribution is also a compliant implementation of the MicroProfile 4.1 platform specification.
+
+The WildFly Preview distribution released today is a compatible implementation of both the Jakarta EE 9.1 Web Profile and the Full Platform.  WildFly Preview has been able to demonstrate compatibility while running on both Java SE 11 and on Java SE 17! Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE9.1/WildFly_25.0.0.Final/jakarta-full-platform-jdk11.adoc#tck-results[for the Full Platform on SE 11],  link:https://github.com/wildfly/certifications/blob/EE9.1/WildFly_25.0.0.Final/jakarta-web-profile-jdk11.adoc#tck-results[for the Web Profile on SE 11],  link:https://github.com/wildfly/certifications/blob/EE9.1/WildFly_25.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[for the Full Platform on SE 17] and  link:https://github.com/wildfly/certifications/blob/EE9.1/WildFly_25.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[for the Web Profile on SE 17].
+
+Many thanks to the folks in the Jakarta EE community who worked hard to make it possible to run the EE 9.1 TCKs on Java SE 17! Implementations being able to demonstrate compliance using an SE version that came out after the EE release did is an important step forward for Jakarta EE.
+
+== Great Community
+
+I want to particularly thank a couple members of the WildFly community for their efforts during the WildFly 25 dev cycle. One is Darran Lofthouse, who coordinated the WildFly 25 Beta release, and did the biggest part of the very heavy lifting related to the removal of support for the legacy security layer. Another is Boris Unckel, who has been very active this year filing issues, mentoring new contributors and doing a lot of work helping to elevate WildFly's code quality.  Thank you Darran and Boris!
+
+I'd also like to invite participants in this month's link:https://hacktoberfest.digitalocean.com/[Hacktoberfest] to come say 'Hi' in the link:https://wildfly.zulipchat.com/#narrow/stream/174184-wildfly-developers/topic/Hacktoberfest[wildfly-developers chat] and find out about contributing to WildFly.
+
+== Upcoming Changes
+
+WildFly 25 was the first in a series of a few releases where we're expecting to make some big changes in the server. I encourage you to have a look at the link:https://www.wildfly.org/news/2021/09/27/WildFly-Changes/[Changes are coming to WildFly post] that I mentioned above.
+
+== Documentation
+
+The WildFly 25 documentation is available at the link:https://docs.wildfly.org/25/[docs.wildfly.org site]. The WildFly 25 management API documentation is in the link:https://docs.wildfly.org/25/wildscribe[wildscribe section of the WildFly 25 docs].
+
+== Jira Release Notes
+
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12374682[in the WFLY JIRA project]. Issues resolved in the WildFly Core 17 releases included with WildFly 25 are available link:https://issues.redhat.com/issues/?jql=statusCategory%20%3D%20done%20AND%20project%20%3D%2012315422%20AND%20fixVersion%20in%20(12374401%2C17.0.1.Final)%20ORDER%20BY%20priority%20DESC%2C%20key%20ASC[in the WFCORE JIRA project].
+
+== Enjoy!
+
+Thank you for your continued support of WildFly.  We'd love to hear your feedback at the link:https://groups.google.com/forum/#!forum/wildfly[WildFly forum].

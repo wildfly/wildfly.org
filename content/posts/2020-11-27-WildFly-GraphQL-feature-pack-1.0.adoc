@@ -1,0 +1,37 @@
+---
+layout: post
+title:  "WildFly MicroProfile GraphQL Feature Pack 1.0.0.Final Released!"
+aliases: [/news/2020/11/27/WildFly-GraphQL-feature-pack-1.0]
+date:   2020-11-27
+tags:   wildfly galleon microprofile graphql smallrye
+author: jmartisk
+description: WildFly MicroProfile GraphQL Feature Pack 1.0.0.Final Released!
+---
+
+I am happy to announce that the first Final build of the GraphQL feature pack has been released!
+It is fully compatible with MicroProfile GraphQL 1.0 and has been tested with WildFly 20 and 21, JDK 8 and 11.
+It bundles the latest available version of SmallRye GraphQL, and that is 1.0.17.
+
+== Client libraries
+The feature pack now contains the typesafe GraphQL client libraries. They are now installed as WildFly static modules,
+so deployments using the client libraries don't have to carry all the libraries within themselves, they just need to depend
+on the `io.smallrye.graphql.client` module.
+
+== Layer rename
+The `graphql` layer included in the feature pack was renamed to `microprofile-graphql` to align with other WildFly layers.
+
+== Multiple deployment support
+While MicroProfile specifications are generally designed to be used in microservice environments as opposed to
+application servers with multiple deployments, the GraphQL feature pack does support running with multiple deployments
+in one WildFly instance.
+There have been issues with it in the past, but since we now bundle `graphql-java` 16.1, multiple deployments should work.
+Note that this support is only on a best-effort basis, and there will probably still be some issues.
+
+== Future goodies to look forward to
+- SmallRye Mutiny support and better alignment with reactive programming in general
+- Managed federation (see link:https://www.apollographql.com/docs/federation/managed-federation/overview/[this article])
+- Other transport protocols apart from HTTP
+- And more!
+
+== Feedback
+We're keen to hear your feedback! Please raise any issues found at https://github.com/wildfly-extras/wildfly-graphql-feature-pack/issues.

@@ -1,0 +1,106 @@
+---
+layout: post
+title:  "Welcome to the new WildFly.ORG!"
+aliases: [/news/2013/11/15/Welcome-to-the-New-WildFly-ORG]
+date:   2013-11-15 14:24:00 -0600
+tags:   announcement website
+author: jgreene
+---
+
+Hello everyone. I recently revamped the WildFly.ORG website, and I hope
+you will find it to be a much more useful source of information about
+the WildFly project.
+
+Walkthrough
+--
+I'd like to take you through a short tour of what’s on the website. The website
+is based on the https://github.com/jbossorg/bootstrap-community[JBoss community bootstrap theme].
+So it should operate in a familiar manner to other JBoss community websites.
+
+Main Landing Page
+~~~~~~~~~~~~~~~~~
+The first page aims to keep you up to date with the latest WildFly news and
+events.
+
+The rotating banners in the center are clickable and will take you into an
+area that provides more information about the banner subject.
+
+Below the banners we have the latest WildFly news, which is a specialized blog
+that will contain articles that we think Wildfly users, such as yourself, will
+find interesting. If you click on the RSS looking icon in the "Latest News" title
+you will get an atom feed for the news.
+
+Clicking on the title links will take you into the article and display some information
+about the author. Aside from regular bloggers on the development team, we
+will post guest articles from community members with interesting WildFly experiences
+they would like to share. Let us know if you are interested!
+
+On the right bottom section, our WildFlyAS twitter account will post interesting tweets, and
+frequently retweet WildFly commenters. If you like to talk about WildFly on twitter,
+you will probably see your tweets pop up here from time to time.
+
+About Page
+~~~~~~~~~~
+If you click link:/about/[About] in the navigation bar, you'll find a list of compelling
+reasons to use WildFly for your next project. We are certainly proud of
+what it has become.
+
+News Page
+~~~~~~~~~
+The link:/news/[News] page displays a number of entries at once, so you can catch up quickly.
+
+Downloads
+~~~~~~~~~
+The link:/downloads/[Downloads] page displays a list of all WildFly releases since 8. For older
+releases you will need to visit the older
+http://jboss.org/projects/jbossas[JBoss AS Community] page. If you are interested
+in our commercial offering, JBoss EAP, those releases are also referenced on that page.
+
+All of the 8 binaries have multiple download options, so be sure to look carefully
+for the option and format you prefer.
+
+Finally, we highly recommend reviewing the release notes icon at the bottom of each
+download entry. We always announce important information about the release regarding compatibility
+and known issues.
+
+Documentation
+~~~~~~~~~~~~~
+The link:https://docs.jboss.org/author/display/WFLY8/Documentation[Documentation] link will take you into our official WildFly documentation,
+which is maintained in separate Confluence system. We allow comments, so if you
+have suggestions on how we can improve a particular page in the documentation,
+let us know!
+
+Source Code
+~~~~~~~~~~~
+This takes you to our GitHub repository. From here you can search, browse, and fork our code.
+
+Get Help
+~~~~~~~~
+The link:/gethelp/[Get Help] section covers the various options available to get in touch with the WildFly community.
+These include our web based forums, mailing lists, and IRC.
+
+Join Us
+~~~~~~~
+Since WildFly is a community project, we only exist because various developers around the world
+have decided to pitch in and help build a great application server. We are always looking
+for new volunteers, and the link:/joinus/[Join Us] page will expand on the many benefits of doing so. It also provides helpful information to new contributors.
+
+Governance
+~~~~~~~~~~
+On the bottom footer there is a link to a page describing how we link:/governance/[govern the WildFly project]. If
+you are evaluating the project, you might find it useful to understand how we plan and develop it.
+
+Special Thanks
+--
+To the various tools and people that helped.
+
+* Awestruct - a handy templating engine for generating nice static sites.
+* Asciidoctor - supports the best blog formatting language ever.
+* JBoss Bootstrap - a great starting template based on the awesome Twitter Bootstrap project.
+* Infinispan Website - a great bootstrap derived site I was able to reuse a few layouts and ideas from.
+* Arquillian Website - an awestruct derived site that had a nice little snippet of summary code I was able to reuse.
+* Blender - a really amazing OSS 3d ray tracing tool.
+* Gimp - a really amazing OSS 2d drawing program.
+* Brian, Marko, David & Tomaz - for testing the site on various mobile devices and providing general feedback.
+* James & Design Team - for the really nice logo.
+* Ruby - for reminding me why I _love_ Java.

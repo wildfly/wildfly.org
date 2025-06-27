@@ -1,0 +1,115 @@
+---
+layout: post
+title:  "WildFly Feature Development Process"
+aliases: [/news/2023/11/22/WildFly_Feature_Development_Process]
+date:   2023-11-22
+tags:   development
+author: bstansberry
+description: Discussion of how WildFly features are developed
+---
+
+Some of the developers of WildFly have been thinking about how to clarify and formalize some of the processes we use when developing WildFly, and I want to make the broader WildFly community aware of the discussion.
+
+This post basically duplicates one I recently made on the link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/JI5GX7Q2UPGXTDEMZG4F3PNF4BDQKB4A/[wildfly-dev mail list]. I'd love to hear your thoughts about this on that mail thread or in link:https://wildfly.zulipchat.com/#narrow/stream/174184-wildfly-developers[Zulip]
+
+== Overview
+
+The WildFly project has some pretty high standards around quality, stability and backwards compatibility, and those heavily influence how we go about bringing new features into WildFly. WildFly developers like me who also work on Red Hat JBoss EAP are aware of EAP's policies and processes for doing new feature development, and we bring those to how we do our work on WildFly, but WildFly has its own needs and would benefit from more formalized processes of its own.
+
+This thread and other related discussions are intended to drive creation of these kinds of policies, and to work through technical issues that stand in the way.  I’m hoping we can make good progress on this this month, and get something finalized by the end of Q1 next year.
+
+Goals of this effort include:
+
+* Making it clear to the WildFly developer community how to go about getting new features into WildFly.
+* Providing a path for getting 'bake' for new features by making them available to those interested in newer, less stable things, while not exposing them to other users who only want more stable features.
+* Encouraging new or less frequent contributors to consider proposing new features by making it possible to choose an acceptable tradeoff between how broadly their feature will be visible versue the level of effort that fits what they can offer.
+
+Skip ahead to the <<Developing the Process>> section if you’re not interested in background / context discussion.
+
+
+== Background
+
+WildFly is the upstream project from which Red Hat’s JBoss EAP product is derived. Like most software products, EAP has processes that are meant to govern how new functionality gets introduced into the product, in order to ensure the high quality and long-term supportability of the product. EAP is derived from WildFly, and a high percentage of the development work on WildFly is performed by Red Hat engineers who also work on EAP, so it’s natural that the EAP processes have affected how those engineers do their work on WildFly.
+
+This has brought a ton of benefit to WildFly, primarily because the EAP requirements help ensure that people other than the developer coding up a feature are involved in the identification of the use cases for and requirements of the feature, and also help ensure the feature is properly documented and tested. People with quality engineering and documentation expertise are involved in the development of the feature, which is very much a good thing.
+
+However, there are downsides to using EAP processes to guide a lot of WildFly development:
+
+* The EAP processes are meant for EAP and are not visible to the WildFly community. An open source software community should be able to see and understand how development work is done. A project with the scope and complexity of WildFly needs processes to ensure quality, but those processes should be WildFly’s own and should be publicly visible. Quasi-borrowing EAP processes doesn’t meet this goal.
+* The EAP processes can lead to an “all or nothing” effect. They require the involvement of people from different groups within Red Hat before a feature is merged. This is great in general but it can lead to situations where people not being able to prioritize a particular feature blocks it, even though the development of the feature has reached a point where it can offer real value to some WildFly users. If the feature is blocked, those users don’t benefit, and the WildFly developers don’t get the benefit of feedback on the feature from those users or other WildFly developers who would only encounter it once it's merged.
+
+== Developing the Process
+
+So, what are we doing about this?
+
+The goal is to define the various requirements for what constitutes a high quality feature, and to define a path people working on that feature can follow. The path should include a way for the feature to be made available to some users before it reaches its final form, without exposing it to users who only want finalized features.
+
+Note that the main focus of this post is on coming up with a suitable process, but there are technical tasks that need to be done to make it practical to expose features to some but not all users and to allow them to best control what they can use in their WildFly installation. A great example of that kind of thing link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/4JCTIWREUBBX4DVIJIUAFQ2FWDBN3AXW/[Paul Ferraro’s work on the management API].
+
+For the process itself, back in September I created a working document to try and capture some of the elements that would go into a possible process:
+
+link:https://docs.google.com/document/d/15_yKhW74-X9s2zUhs_ZUuZ3h-RlMfH5xWmHHsfYf1AA/edit[WildFly Feature Development Process working document]
+
+The gist of that document is the notion from Paul Ferraro’s work that features can be merged with different initial quality/stability/maturity levels (we plan to use 'stablity' as the formal term), as represented by columns in the table, with a given feature expected to be ‘promoted’ over time from columns to the left toward columns to the right.  The rows in the table represent different aspects of ensuring a feature is at a particular stability level. The cells in the table then are quick notes on what requirements would have to be met for a given aspect in order for the feature to be merged at a given stability level.
+
+What I’m hoping is discussion link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/JI5GX7Q2UPGXTDEMZG4F3PNF4BDQKB4A/[the wildfly-dev mail list] and on link:https://wildfly.zulipchat.com/#narrow/stream/174184-wildfly-developers[Zulip] about all this can help flesh out what’s in that document, rework it as necessary, and eventually lead to a more formal process document.
+
+Some details on the stability levels:
+
+* *Experimental* -- This level would be for real bleeding edge stuff. No WildFly distribution zip/tar would enable this level by default.
+* *Preview* -- This would be the level for features at a sufficient level to be available by default[1] in WildFly Preview, but not in standard WildFly.
+* *Community*-- This would be the level for features at a sufficient level to be available by default in standard WildFly.
+* *Default* -- Features at this level have gone through additional vetting to ensure they are suitable for the long-term compatibility expectations of the feature pack that provides them. (See <<Relationship to Feature Packs>> for more on this.)
+
+[1] Note that ‘available by default’ could but often wouldn’t mean ‘enabled by default’, i.e. turned on in a standard OOTB configuration. It just means a user could turn it on if they so choose using the current configuration mechanisms.
+
+Some details on the feature aspects:
+
+
+* *Feature Team* -- This aspect relates to what people need to be involved with the feature.
+* *Requirements Analysis* -- This relates to ensuring the user stories and technical requirements for the feature are thought through and written down. We’ve been doing these for a long time now via the link:https://docs.wildfly.org/wildfly-proposals[documents] in the https://github.com/wildfly/wildfly-proposals/pulls[wildfly-proposals repo].
+* *Implementation* -- The production code aspect of the feature.
+* *Domain transformation* -- A specialized production code aspect, related to allowing a current version Domain Controller to manage Host Controllers and servers running an earlier version.
+* *Test plan* -- Thinking about and writing down what needs to be tested and how.
+* *Test development* -- Writing the tests.
+* *Test verification* -- Test review, and verification that the test plan was implemented and that the tests pass.
+* *Documentation* -- Proper documentation of the feature.
+
+Note that it is likely that the set of rows in the table will need expansion, e.g. to capture requirements for things like the HAL web console, cloud images, tooling like WildFly Glow etc.
+
+== Relationship to Feature Packs
+
+The main WildFly code base produces three different feature packs, and the main reason there are three and not just one relates to some of the same stability/long-term compatibility concepts that are a key part of the feature development process I’m hoping we create. It’s important that we think carefully about how the feature development process relates to the feature packs, so to help with that I want to talk a bit about how feature packs are meant to work.
+
+Ideally for any feature pack, the documentation of that feature pack would include somewhere ‘lifecycle’ information that can help users decide if the feature pack is suitable for their needs. This would cover key elements like:
+
+* The basic scope of the feature pack.
+* A likely release cadence for the feature pack.
+* The expected long-term maintainability and compatibility for the feature pack.
+
+Different expectations for those key elements are prime reasons for creating a new feature pack versus adding functionality to an existing one, or for choosing one feature pack over another for a feature.
+
+Honestly, the WildFly project does a poor job of documenting these things for its feature packs, which is my fault, and is why I need to write some of this in this already looooong post! Anyway…
+
+WildFly produces three feature packs from its main repository. All share the same expected release cadence (currently a new feature release roughly quarterly and one bug fix release about a month after a feature release.) The scope of all three is similar and broad -- they provide functionality to run in, manage or act as a client to an application server process. Their primary differences relate to long-term maintainability and compatibility:
+
+* *wildfly-ee* -- We don’t talk about this feature pack a lot, often treating it as an internal detail and not producing any downloadable zip/tar built solely using it, but it’s an important piece of our ecosystem.  The defining characteristic of this feature pack is that it integrates technologies where we have the highest confidence in our ability to provide them in a largely compatible way for many years. We’re not perfect about this, we made some mistakes in the early iterations of this feature pack, and we can and will break compatibility if necessary. But we try not to and try to give advance warning if we will. For example, this feature pack provides the Elytron security layer, which was introduced as a replacement for the Picketbox security layer many years before we removed support for the Picketbox layer.
+* *wildfly* -- This feature pack depends upon wildfly-ee and adds functionality in addition to what’s in wildfly-ee. The traditional standard WildFly server zip is built using this feature pack. The primary reason we put things in this feature pack instead of wildfly-ee is because what we’re integrating is more likely to change in incompatible ways over a relatively short time period. For example, MicroProfile specifications are comfortable introducing breaking changes on an annual basis, making them not a great fit for wildfly-ee. The observability space, particularly metrics and tracing, is evolving rapidly, so our Micrometer and OpenTelemetry extensions are not in wildfly-ee.
+* *wildfly-preview* -- This feature pack is all about the fact that it provides no long term guarantees and can change significantly from release.
+
+We need to think more about how feature stability levels relate to this, but here are a few thoughts:
+
+* Just because a user wants to use a particular preview or experimental level feature doesn’t mean they want to use an entire preview level feature pack like wildfly-preview. In other words, there is a use case for preview or experimental features in standard WildFly.
+On the other hand, we can use WildFly Preview to showcase functionality whose scope is not tied to a particular reasonably scoped ‘feature’. Using it for EE 9 is an obvious example. Not having an embedded messaging broker in the OOTB configs is not a ‘feature’. IOW there is a use case for WildFly Preview even if standard WildFly has preview features.
+* What we mean by the ‘Community’ and ‘Default’ levels is “relative to” the generally expected long-term maintainability and compatibility level of the feature pack that provides it. In other words, just because a feature provided by the wildfly feature pack has been vetted as suitable for the ‘Default’ level doesn’t mean it comes with higher expectations than the feature pack as a whole. If we provide a specification, and we integrate it in a way that is highly stable and very well tested, but then the spec changes in a year in a significantly incompatible way, then we may have to as well.
+
+
+== Next Steps
+
+I’d love to hear your thoughts and questions, either on the https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/JI5GX7Q2UPGXTDEMZG4F3PNF4BDQKB4A/[wildfly-dev mail list thread], in link:https://wildfly.zulipchat.com/#narrow/stream/174184-wildfly-developers[Zulip] or in comments on the link:https://docs.google.com/document/d/15_yKhW74-X9s2zUhs_ZUuZ3h-RlMfH5xWmHHsfYf1AA/edit[WildFly Feature Development Process working document] I discussed above. I also encourage you to have a look into link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/4JCTIWREUBBX4DVIJIUAFQ2FWDBN3AXW/[Paul Ferraro’s work] I mentioned above, as well as other technical work that will likely be happening over the next six months.
+
+As I noted at the start, I’m hoping we can have a solid process written and published by the end of Q1 next year, and that we can nail down some of the key concepts over the next few weeks well enough that we can integrate Paul’s work.
+
+Best regards,
+
+Brian

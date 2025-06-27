@@ -1,0 +1,15 @@
+---
+layout: post
+title:  "Next WildFly Mini Conference"
+aliases: [/news/2024/11/12/WildFly-mini-conference]
+date:   2024-11-12
+tags:   announcement conference
+author: hpehl
+description: The WildFly team is hosting the next WildFly mini conference.
+---
+
+The WildFly team organizes the next WildFly mini conference. It will take place on *Wednesday, November 20, 2024*. It starts at *14:00 UTC* and includes *four sessions* with topics related to WildFly. All sessions will be streamed live on YouTube.
+
+For more information, please take a look at the conference page at https://www.wildfly.org/conference/
+
+We're looking forward to seeing you there!

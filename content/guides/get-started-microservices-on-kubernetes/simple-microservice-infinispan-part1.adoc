@@ -1,0 +1,270 @@
+---
+layout: guide-getting-started
+---
+= \{simple-microservice-infinispan-part1}
+:summary: Java Microservice using WildFly
+:includedir: ../_includes
+{#include partials/guides/attributes.adoc /}
+{#include partials/guides/titles.adoc /}
+:prerequisites-time: 10
+
+In this guide, we will extend the example created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}] and use a remote link:https://infinispan.org/[Infinispan Server, window="_blank"] to cache HTTP Session data.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}]
+
+{#include partials/guides/constants.adoc /}
+
+{|
+== Infinispan Server
+
+Infinispan is the most common solution used with WildFly when you want to cache some data outside WildFly.
+
+Using Infinispan, for example, you can avoid users losing their session in case WildFly is shut down and re-started.
+
+In this guide, we will use the containerized version of Infinispan: see link:https://quay.io/repository/infinispan/server?tab=tags&tag=latest[Infinispan Server, window="_blank"].
+
+=== Start Infinispan [[start_infinispan_container]]
+
+[source,bash,subs="normal"]
+----
+podman network create {podman-network-name}
+
+podman run --rm --network={podman-network-name} --name={infinispan-pod-name} \
+  -p {infinispan-port}:{infinispan-port} \
+  -e USER="{infinispan-user}" \
+  -e PASS="{infinispan-password}" \
+  {infinispan-server-docker-image}
+----
+
+NOTE: NOTE: We created the *{podman-network-name}* network and started the *{infinispan-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container.
+
+NOTE: you can check the container is running by opening http://localhost:{infinispan-port}/console/ in your browser and logging in as `{infinispan-user}` / `{infinispan-password}`
+
+== Maven Project
+
+=== web.xml
+
+Add the `<distributable/>` tag to the `src/main/webapp/WEB-INF/web.xml` file (if the `src/main/webapp/WEB-INF/web.xml` doesn't exist then    create it):
+
+.web.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+    <distributable/>
+</web-app>
+----
+
+=== Infinispan Connection
+
+Add a file named `infinispan.cli` to the root of the maven project:
+
+.infinispan.cli
+[source,text,subs="normal"]
+----
+/subsystem=jgroups/channel=ee:write-attribute(name=stack,value=tcp)
+/subsystem=transactions:write-attribute(name=node-identifier,value=${transactions.node-identifier:wildfly1})
+# add DNS_PING protocol to TCP stack
+/subsystem=jgroups/stack=tcp/protocol=dns.DNS_PING:add(add-index=1, properties={dns_query="_ping._tcp.jgroups-dns-ping.myproject.svc.cluster.local"})
+# connection to the remote infinispan server
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=remote-infinispan-server:add(host=${infinispan.server.host}, port=${infinispan.server.port:{infinispan-port}})
+batch
+# remote-cache-container
+/subsystem=infinispan/remote-cache-container=web-sessions:add(default-remote-cluster=infinispan-server-cluster, statistics-enabled=true, properties={infinispan.client.hotrod.auth_username=${infinispan.server.user:{infinispan-user}}, infinispan.client.hotrod.auth_password=${infinispan.server.password:{infinispan-password}}, infinispan.client.hotrod.sasl_mechanism=DIGEST-MD5})
+/subsystem=infinispan/remote-cache-container=web-sessions/remote-cluster=infinispan-server-cluster:add(socket-bindings=[remote-infinispan-server])
+# hotrod
+/subsystem=infinispan/remote-cache-container=web-sessions:write-attribute(name=modules,value=[org.wildfly.clustering.web.hotrod])
+# PROTOSTREAM
+/subsystem=infinispan/remote-cache-container=web-sessions:write-attribute(name=marshaller,value=PROTOSTREAM)
+# set as default for session management
+/subsystem=distributable-web/hotrod-session-management=remote-infinispan-session-management:add(remote-cache-container=web-sessions,granularity=SESSION)
+/subsystem=distributable-web/hotrod-session-management=remote-infinispan-session-management/affinity=local:add
+/subsystem=distributable-web:write-attribute(name=default-session-management,value=remote-infinispan-session-management)
+run-batch
+----
+
+=== pom.xml
+
+==== dependencies
+
+Add the following dependency to `dependencies` section:
+
+[source,xml,subs="normal"]
+----
+    <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+----
+
+==== wildfly-maven-plugin
+
+Add the following to the `wildfly-maven-plugin` configuration:
+
+* `packaging-scripts` pointing to the `infinispan.cli` file
+* `web-clustering` layer
+
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
+
+[source,xml,subs="normal"]
+----
+    <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>{version-wildfly-maven-plugin}</version>
+        <configuration>
+            <feature-packs>
+                <feature-pack>
+                    <location>org.wildfly:wildfly-galleon-pack:{version-wildfly-galleon-pack}</location>
+                </feature-pack>
+                <feature-pack>
+                    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
+                </feature-pack>
+            </feature-packs>
+            <layers>
+                <layer>cloud-server</layer>
+                <layer>web-clustering</layer>
+            </layers>
+            <packaging-scripts>
+                <packaging-script>
+                    <scripts>
+                        <script>infinispan.cli</script>
+                    </scripts>
+                </packaging-script>
+            </packaging-scripts>
+        </configuration>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>package</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+----
+
+=== Java Classes
+
+Modify the `GettingStartedService` class:
+
+.GettingStartedService.java
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+
+@ApplicationScoped
+public class GettingStartedService {
+
+    @Inject
+    private HttpServletRequest httpRequest;
+
+    public String hello(String name) {
+        String previousName = (String) httpRequest.getSession().getAttribute("NAME_PARAMETER");
+        httpRequest.getSession().setAttribute("NAME_PARAMETER", name);
+        return String.format("Hello '%s'." + (previousName == null ? "" : "(last time you were " + previousName + ")"), name);
+    }
+}
+----
+
+=== Build the application
+
+[source,bash]
+----
+$ mvn clean package
+...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.417 s
+[INFO] Finished at: 2024-05-30T16:32:46+02:00
+[INFO] ------------------------------------------------------------------------
+----
+
+== Docker Image
+
+=== Build the Docker Image
+
+Build the Docker Image with the following command:
+
+[source,bash,subs="normal"]
+----
+$ podman build -t my-jaxrs-app-infinispan:latest .
+STEP 1/3: FROM quay.io/wildfly/wildfly-runtime:latest
+STEP 2/3: COPY --chown=jboss:root target/server $JBOSS_HOME
+--> 5afd485c6552
+STEP 3/3: RUN chmod -R ug+rwX $JBOSS_HOME
+COMMIT my-jaxrs-app-infinispan:latest
+--> 625a63506dab
+Successfully tagged localhost/my-jaxrs-app-infinispan:latest
+625a63506dab171c4750f6be89e45c236591d40524b239307e32c716add01457
+----
+
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+
+=== Run the Docker Image
+
+Note that, when running the `{my-jaxrs-app-infinispan-docker-image-name}:latest` Docker Image, we specify some environment variables used by WildFly to connect to the PostgreSQL database:
+
+[source,bash,subs="normal"]
+----
+podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
+    -e INFINISPAN_SERVER_HOST={infinispan-pod-name} \
+    -e INFINISPAN_SERVER_PORT={infinispan-port} \
+    -e INFINISPAN_SERVER_USER={infinispan-user} \
+    -e INFINISPAN_SERVER_PASSWORD={infinispan-password} \
+    --name={my-jaxrs-app-infinispan-docker-image-name} \
+    {my-jaxrs-app-infinispan-docker-image-name}:latest
+----
+
+NOTE: NOTE: We started the *{my-jaxrs-app-infinispan-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{infinispan-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{infinispan-pod-name}* container from the *{my-jaxrs-app-infinispan-docker-image-name}* container using the *{infinispan-pod-name}* DNS name
+
+=== Check the application [[check_the_application]]
+
+Open link:http://localhost:8080/[http://localhost:8080/, window="_blank"] in your Browser, enter some name in the `Name` field (e.g. "*pippo*") and press `Say Hello`".
+
+Stop the application (press CTRL+C from the terminal where you started it).
+
+Start the application once again.
+
+Type a different name in the `Name` field and press `Say Hello` again: the page should display something like "*last time you were pippo*" and that means that the previous name was stored in the Infinispan Server.
+
+=== Stop the Docker containers
+
+Stop the running container:
+
+[source,bash,subs="normal"]
+----
+podman stop {my-jaxrs-app-infinispan-docker-image-name}
+podman stop {infinispan-pod-name}
+----
+
+
+== What's next?
+
+link:/guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part2[{simple-microservice-infinispan-part2}]
+
+[[references]]
+== References
+
+* Source code for this guide: {source-code-git-repository}/simple-microservice-infinispan
+* link:https://infinispan.org/[Infinispan, window="_blank"]
+* link:https://docs.wildfly.org/32/High_Availability_Guide.html#Distributable_Web_Applications[Distributable Web Applications, window="_blank"]
+* link:https://docs.wildfly.org/wildfly-proposals/management/WFCORE-5464_Check_Env_Vars_On_Expression_Resolution.html[Check Environment Variables When Resolving Expressions, window="_blank"]
+
+Back to Guides
+
+< link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
+|}

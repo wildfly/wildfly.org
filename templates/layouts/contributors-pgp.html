@@ -1,0 +1,63 @@
+---
+layout: base
+---
+
+<div class="news-page grid-wrapper">
+    <div class="grid__item width-10-12">
+        <h1 class="title">Contributor PGP Information</h1>
+    </div>
+
+    <div class="grid__item width-10-12 width-12-12-m">
+        {#for contributor in cdi:contributors.list}
+        {#let author = cdi:authors.byId(contributor.id)}
+        <div class="grid__item width-2-12 contributor-row">
+            <h2 id="{contributor.id}">
+                <a class="anchor" href="#{contributor.id}" style="text-decoration: none;">
+                    {#if author and author.avatar}
+                    <img class="avatar" src="/assets/img/authors/{author.avatar}"/>
+                    {#else}
+                    <img class="avatar" src="/assets/img/contribute/wildfly_icons_contribute-images.png"/>
+                    {/if}
+                </a>
+                {contributor.name}
+            </h2>
+            <div class="social-icons">
+                {#if contributor.github}
+                <a href="https://github.com/{contributor.github}">
+                    <img title="GitHub" src="/assets/img/homepage/wildfly_icons_home-github.png"/>
+                </a>
+                {/if}
+            </div>
+            <p>{contributor.bio}</p>
+            {#if contributor.signings}
+            <div>
+                <h4>Signing Details:</h4>
+                <table>
+                    {#for signing in contributor.signings}
+                    <tr class="separator">
+                        <td class="contributor-label" id="{signing.id}">Public Key Id</td>
+                        <td class="copy-text">{signing.id}</td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-label">Public Key</td>
+                        {#if signing.link}
+                        <td class="copy-text"><a href="{signing.link}" target="_blank">{signing.key}</a></td>
+                        {#else}
+                        <td>{signing.key}</td>
+                        {/if}
+                    </tr>
+                    <tr>
+                        <td class="contributor-label">Fingerprint</td>
+                        <td class="copy-text">{signing.fingerprint}</td>
+                    </tr>
+                    {/for}
+                </table>
+            </div>
+            {/if}
+        </div>
+        {/let}
+        {/for}
+    </div>
+
+    <div class="grid__item width-2-12"></div>
+</div>

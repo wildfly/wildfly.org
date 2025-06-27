@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "WildFly 10 CR1 is released!"
+aliases: [/news/2015/09/17/WildFly10-CR1-Released]
+date:   2015-09-17 00:31:00 -0600
+tags:   announcement release
+author: jgreene
+---
+
+The first candidate for release of WildFly 10 (10.0.0.CR1) is now available link:/downloads[for download]!
+
+For details, see the link:https://developer.jboss.org/wiki/WildFly1000CR1ReleaseNotes[official 10.0.0.CR1 Release Notes wiki page].
+
+Give it a try and let us know what you think.

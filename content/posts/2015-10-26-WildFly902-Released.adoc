@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "WildFly 9.0.2 is released!"
+aliases: [/news/2015/10/27/WildFly902-Released]
+date:   2015-10-26 23:00:00 -0600
+tags:   announcement release
+author: jgreene
+---
+
+WildFly 9.0.2 is now available link:/downloads[for download].
+
+This release includes a security update, bug fixes, and a few component updates.
+
+For more information, see the link:https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=12313721&version=12327709[JIRA release notes].

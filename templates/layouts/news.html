@@ -1,0 +1,64 @@
+---
+layout: base
+paginate:
+    collection: posts
+    size: 10
+    link: news/page/:page
+---
+{@io.quarkiverse.roq.frontmatter.runtime.model.NormalPage page}
+
+<div class="news-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Wild<strong>Fly</strong> Project News</h1>
+  </div>
+  <div class="grid__item width-2-12 rss-btn">
+    <a href="{site.url('feed.xml')}"><i class="fas fa-rss-square"></i></a>
+  </div>
+
+  <div class="grid__item width-10-12 width-12-12-m">
+    <a href="{site.url('releases')}" class="button-cta secondary">Release Announcements</a>
+  </div>
+
+
+  <div class="grid__item width-10-12 width-12-12-m">
+      {#for post in site.collections.posts.paginated(page.paginator)}
+      <div class="news-list-item grid-wrapper">
+        <div class="post-title grid__item width-12-12">
+          <h2><a href="{post.data.external_link ?: post.url}"
+                 {#if post.data.containsKey('external_link')}target="_blank"{/if}>{post.title}</a></h2>
+        </div>
+        <div class="grid__item width-6-12 width-12-12-m">
+          <p class="byline">By {cdi:authors.buildAuthorList(post).join(",")} | {post.date.format('LLLL d, YYYY')}</p>
+        </div>
+        <div class="grid__item width-6-12 width-12-12-m">{#include partials/share-page.html /}</div>
+        <div class="grid__item width-12-12">
+          {#if post.data.containsKey('synopsis')}
+          <p>{post.data.synopsis}</p>
+          {#else}
+          <p>{site.pageContent(post).stripHtml.wordLimit(75).raw}</p>
+          {/if}
+        </div>
+        <div class="grid__item width-12-12">
+            {#let pageUrl = post.data.external_link.or(post.url.path)}
+            <a href="{pageUrl}" {#if post.data.containsKey('external_link')}target="_blank"{/if}>
+            {#if pageUrl.contains('youtube')}Watch Video >{#else}Read More >{/if}</a>
+            {/let}
+        </div>
+      </div>
+      {/for}
+      {#if page.paginator}
+      <div class="paginator-btns">
+        {#if page.paginator.prev}
+        <a href="{page.paginator.previous}" class="button-cta secondary">Newer Posts</a>
+        {#else}
+        <a href="{page.paginator.previous}" class="button-cta secondary" style="visibility: hidden">Newer Posts</a>
+        {/if}
+        {#if page.paginator.next}
+        <a href="{page.paginator.next}" class="button-cta secondary">Older Posts</a>
+        {/if}
+      </div>
+      {/if}
+  </div>
+
+  <div class="grid__item width-2-12"></div>
+</div>

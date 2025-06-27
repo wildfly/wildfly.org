@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: Secure communication for WildFly microservices by using TLS on OpenShift'
+date:   2024-06-05
+tags:   wildfly security openshift vlog
+synopsis: This video demonstrates how to use TLS for WildFly microservices on OpenShift.
+author: yborgess
+external_link: https://www.youtube.com/watch?v=_DfSbtP8ZG4&t=32s
+---

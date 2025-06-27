@@ -1,0 +1,33 @@
+---
+layout: post
+title:  "Role Based Access Control in WildFly 8"
+date:   2013-11-07 12:39:25 -0600
+tags:   management rbac wildfly8 videos
+author: bstansberry
+---
+
+One of the big new features in WildFly 8 is the ability to enforce role-based access control on management operations. I recorded some videos that describe how you can use this powerful feature and also demonstrate it in action. Check them out!
+
+{nbsp}
+
++++
+<iframe class="blog-video-frame" src="//player.vimeo.com/video/78780176" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78780176">Role Based Access Control in WildFly 8 (Part 1 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
++++
+
+In the first part of the series, I walk through the basics of Role Based Access Control, and show how you can use standard roles within the WildFly Administration Console.
+
+{nbsp}
+
++++
+<iframe class="blog-video-frame" src="//player.vimeo.com/video/78785944" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78785944">Role Based Access Control in WildFly 8 (Part 2 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
++++
+
+In the second video, I show how you can configure roles and setup users which map to roles.
+
+{nbsp}
+
++++
+<iframe class="blog-video-frame" src="//player.vimeo.com/video/78786992" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/78786992">Role Based Access Control in WildFly 8 (Part 3 of 3)</a> from <a href="http://vimeo.com/user22464624">Brian Stansberry</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
++++
+
+In the final video, I show how you can configure constraints which allow you to tweak the behavior of roles.

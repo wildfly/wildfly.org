@@ -1,0 +1,10 @@
+---
+layout: post
+title: "Enabling Integrity on Filesystem realms"
+date: 2022-11-10
+tags: filesystem-realm integrity
+synopsis: An overview of the new support for filesystem realm integrity verification.
+author: araskar
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/filesystem-integrity/
+---
+

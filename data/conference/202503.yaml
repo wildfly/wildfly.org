@@ -1,0 +1,124 @@
+# Conference data structure documented in README.adoc
+# If you modify the data structure, please document the changes in README.adoc
+date: "2025-03-25"
+start: "14:00"
+end: "18:00"
+status: done
+video-id: "d8IExBP7rxw"
+video: "https://youtube.com/live/d8IExBP7rxw"
+rsvp: "https://forms.gle/GpNLNaU1H3y1vkXg8"
+feedback: "https://forms.gle/747ueCwGk37rEofV6"
+agenda:
+  - title: "Welcome and opening ceremony"
+    start: "14:00"
+    end: "14:10"
+    type: other
+  - title: "Quick prototyping with WildFly"
+    start: "14:10"
+    end: "14:40"
+    type: talk
+    abstract: >
+      JBang is a tool to create, edit and run self-contained source-only Java programs with unprecedented ease.
+
+      In this presentation, we will show how we can use JBang to prototype simple WildFly applications from a single Java source file. We start with a simple Web application and will integrate with a AI chat model in less than 15 minutes.
+    speaker:
+      - name: jmesnil
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=557s"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202503-jbang-prototyping.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Quick.20prototyping.20with.20WildFly/with/507327271"
+      - title: "Feedback"
+        url: "https://forms.gle/GgbBoPC4AYtnLiz87"
+  - title: Break
+    start: "14:40"
+    end: "14:55"
+    type: other
+  - title: "WildFly Day One operations with Ansible Automation"
+    start: "14:55"
+    end: "15:40"
+    type: talk
+    abstract: >
+      We'll discuss and demonstrate how to use Ansible to manage and make evolve, in fully automated fashion, our WildFly infrastructure. For instance, we'll see how to change the clustering configuration, smoothly and automatically, using Ansible. WildFly's cluster capabilities are some of the most powerful features of the app server. It’s ability to leverage multicast to form itself is also quite appreciated by developers, but sometimes creates problems in production, where ops teams prefer to forbid such network communication. With this context in mind, this presentation and demonstration will show how to use Ansible to both set up a cluster of WildFly instances, but also dynamically change the running cluster from using multicast to tcp, with just one playbook run.
+    speaker:
+      - name: rpelisse
+        bio: "Romain Pelisse has been working at Red Hat for over a decade. He started as a runtimes consultant, building on expertise on JBoss EAP (WildFly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=3324s"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202503-wildfly-day-one-ops.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20Day.20One.20operations.20with.20Ansible.20Automation/with/507327383"
+      - title: "Feedback"
+        url: "https://forms.gle/G98na7gMUG76hThn6"
+  - title: "Everything about Jakarta EE TCKs in twenty minutes"
+    start: "15:40"
+    end: "16:00"
+    type: talk
+    abstract: >
+      This talk will be a quick introduction to the Jakarta EE TCK projects like [https://github.com/jakartaee/platform-tck/](https://github.com/jakartaee/platform-tck/)
+    speaker:
+      - name: scottmarlow
+        bio: "Scott is a long time WildFly/JBoss developer (around 19 years), contributes to Jakarta EE and also is one of the Jakarta EE Platform TCK leads."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=6376s"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202503-ee-tck.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20Everything.20about.20Jakarta.20EE.20TCKs.20in.20twenty.20minutes/with/507327634"
+      - title: "Feedback"
+        url: "https://forms.gle/keqbSHeaACdM4rzx6"
+  - title: "Break"
+    start: "16:00"
+    end: "16:30"
+    type: other
+  - title: "WildFly in a Vendor-Neutral Foundation"
+    start: "16:30"
+    end: "17:00"
+    type: talk
+    abstract: >
+      This session will provide an update on the WildFly project's plan to transition to a vendor-neutral foundation. We'll cover the rationale for such a move and our current plans.
+    speaker:
+      - name: bstansberry
+        bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=9009s"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202503-wildfly-foundation.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20in.20a.20Vendor-Neutral.20Foundation/with/507327701"
+      - title: "Feedback"
+        url: "https://forms.gle/yuzMPgpLDyFYFWPy9"
+  - title: "WildFly AI Feature Pack: Deploying an MCP server"
+    start: "17:00"
+    end: "17:45"
+    type: talk
+    abstract: >
+      In this session we will show how to expose a Jakarta EE application as an MCP server. We will interact with WildFly servers using natural language to monitor and troubleshoot running instances.
+
+      The technology in use is defined by the [MCP protocol](https://modelcontextprotocol.io/introduction) and the [WildFly MCP server](https://github.com/wildfly-extras/wildfly-mcp-server) (incubating project)
+    speaker:
+      - name: ehsavoie
+        bio: "Emmanuel works at Red Hat on the messaging subsystem and on the developer experience."
+      - name: jfdenise
+        bio: "Jean-François Denise is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/live/d8IExBP7rxw?t=10904s"
+      - title: "Slides (WildFly MCP Server)"
+        url: "https://www.wildfly.org/assets/conference/202503-mcp-server.pdf"
+      - title: "Slides (WildFly AI Feature Pack)"
+        url: "https://www.wildfly.org/assets/conference/202503-ai-fp.pdf"
+      - title: "Chat"
+        url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20AI.20Feature.20Pack.3A.20deploying.20an.20.20MCP.20server/with/507327790"
+      - title: "Feedback"
+        url: "https://forms.gle/9ubP5Akxi7jrh56D8"
+  - title: "Feedback and closing ceremony"
+    start: "17:45"
+    end: "18:00"
+    type: other

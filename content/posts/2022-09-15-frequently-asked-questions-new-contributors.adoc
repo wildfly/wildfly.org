@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'FAQ for New Contributors'
+date: 2022-09-15
+tags: faq opensource
+synopsis: Answers to frequently asked questions from new contributors.
+author: fjuma
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/frequently-asked-questions-new-contributors/
+---
+

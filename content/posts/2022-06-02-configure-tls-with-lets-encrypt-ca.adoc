@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'Vlog: Configure TLS in WildFly using Let’s Encrypt certificate authority'
+date:   2022-06-02
+tags:   tls lets encrypt certificate authority cli vlog
+synopsis: This video demonstrates how you can configure TLS using the Let’s Encrypt certificate authority with the WildFly CLI.
+author: dvilkola
+external_link: https://www.youtube.com/watch?v=qK85F_2VAVo
+---

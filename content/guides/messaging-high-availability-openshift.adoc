@@ -1,0 +1,302 @@
+---
+layout: guide
+---
+= Deploying High-Availability Messaging with WildFly and AMQ 7 on OpenShift
+:summary: Discover how to configure WildFly with AMQ 7 (ActiveMQ Artemis) on OpenShift, using a clustered, high-availability topology for reliable messaging.
+:includedir: _includes
+{#include partials/guides/attributes.adoc /}
+:prerequisites-time: 20
+
+In this guide, you will learn how to configure a WildFly server connected to a remote AMQ 7 cluster on OpenShift using operators.
+
+{#include partials/guides/prerequisites.adoc /}
+
+* Access to an OpenShift cluster (consider using the 'Self-managed' variant for a local development environment, available for free at https://developers.redhat.com/products/openshift/download[Red Hat OpenShift, window=_blank])
+* https://docs.openshift.com/container-platform/\{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI, window=_blank] tool
+* link:https://podman.io/[Podman, window="_blank"] (link:https://www.docker.com/[Docker, window="_blank"] is also compatible with minor adjustments)
+
+// login to OpenShift cluster
+{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+
+{|
+== Install and deploy AMQ 7 using an operator
+
+To install the AMQ 7 Operator, follow the instructions in the Red Hat documentation: https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.12/html-single/deploying_amq_broker_on_openshift/index#proc-br-installing-operator-to-project-from-operatorhub_broker-ocp[Installing the Operator using OperatorHub, window=_blank]
+
+Next, create a file named `broker.yaml` with the following content to deploy the AMQ 7 cluster:
+[source, yaml, options="nowrap"]
+----
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  name: amq-broker
+  application: amq-broker-app
+spec:
+  acceptors:
+    - name: acceptor
+      protocols: core,amqp
+      port: 61616
+      sslEnabled: false
+      enabledProtocols: TLSv1,TLSv1.1,TLSv1.2
+      needClientAuth: true
+      wantClientAuth: true
+      verifyHost: true
+      sslProvider: JDK
+      sniHost: localhost
+      expose: true
+      anycastPrefix: jms.queue.
+      multicastPrefix: /topic/
+  console:
+    expose: true
+  deploymentPlan:
+    journalType: nio
+    messageMigration: true
+    persistenceEnabled: true
+    requireLogin: false
+    size: 2
+    storage:
+      size: "1Gi"
+  upgrades:
+    enabled: false
+    minor: false
+----
+
+This Custom Resource (CR) file configures an AMQ 7 cluster with two brokers deployed as a StatefulSet. This setup ensures
+high availability because, in the event of a pod failure, the StatefulSet will automatically restart the failed pod.
+However, to maintain data integrity, Persistent Volumes must be configured to store the messaging journal. Without them,
+messages will be lost during restarts.
+
+Additionally, the `messageMigration: true` setting enables the graceful scaling down of AMQ 7 pods. This ensures that messages
+from the scaled-down node are migrated to another node in the cluster, preventing data loss.
+
+Run following command to deploy AMQ 7 on OpenShift:
+[source, bash, options="nowrap"]
+----
+oc create -f broker.yaml
+----
+
+Check that AMQ 7 brokers are in `Running` state by checking running pods:
+
+[source, bash ,options="nowrap"]
+----
+$ oc get pods
+NAME                                            READY   STATUS      RESTARTS   AGE
+amq-broker-ss-0                                  1/1     Running   0          35m
+amq-broker-ss-1                                  1/1     Running   0          36m
+...
+----
+
+== Build WildFly with a messaging application image using the WildFly Maven Plugin
+
+We're going to use the https://github.com/wildfly/quickstart/tree/main/remote-helloworld-mdb[WildFly Quickstart: remote-helloworld-mdb, window=_blank]
+to demonstrate how to build a trimmed WildFly server with a deployed messaging application. This quickstart leverages the WildFly Maven plugin
+to create a trimmed WildFly server and deploy the `remote-helloworld-mdb.war` application. It then produces a new container image based on
+the https://quay.io/wildfly/wildfly-runtime:latest[WildFly Runtime Image, window=_blank], incorporating the application.
+
+This quickstart includes a `HelloWorldMDBServletClient` servlet, which sends messages to the `HELLOWORLDMDBQueue` queue,
+and a `HelloWorldQueueMDB` message-driven bean (MDB) that consumes messages from this queue.
+
+To build the https://github.com/wildfly/quickstart/tree/main/remote-helloworld-mdb[remote-helloworld-mdb, window=_blank] quickstart,
+execute the following commands:
+[source, bash, options="nowrap"]
+----
+git clone git@github.com:wildfly/quickstart.git
+cd quickstart/remote-helloworld-mdb
+mvn clean package wildfly:image -Popenshift
+----
+
+The `openshift` profile is used to provide additional configuration for the WildFly server to work correctly on the Openshift
+environment. The Maven goal `wildfly:image` instructs the WildFly Maven Plugin to build a container image.
+
+You can verify the newly built image by running:
+[source, bash, options="nowrap"]
+----
+$ podman images
+REPOSITORY                                                                                                                TAG             IMAGE ID      CREATED         SIZE
+localhost/remote-helloworld-mdb                                                                                           latest          cf9a174a5311  14 minutes ago  621 MB
+...
+----
+
+== Push WildFly image to the OpenShift registry
+
+We need to expose the created image in the registry, so it can later be referenced from the Custom Resource for the WildFly Operator.
+We can utilize the integrated OpenShift registry and push the image into it through the ImageStream. First create a new
+ImageStream in your namespace:
+[source, bash, options="nowrap"]
+----
+oc create imagestream remote-helloworld-mdb
+----
+
+Now push your image into the ImageStream:
+
+[source, bash, options="nowrap"]
+----
+export REGISTRY="$(oc get routes -n openshift-image-registry default-route -o=jsonpath='{.spec.host}')"
+podman login --tls-verify=false -u admin  -p $(oc whoami -t) $REGISTRY
+podman tag localhost/remote-helloworld-mdb  $REGISTRY/$(oc config view --minify -o jsonpath='{..namespace}')/remote-helloworld-mdb
+podman push --tls-verify=false $REGISTRY/$(oc config view --minify -o jsonpath='{..namespace}')/remote-helloworld-mdb
+----
+
+You can verify that the image was successfully pushed to the ImageStream by running:
+
+[source, bash, options="nowrap"]
+----
+$ oc get imagestream remote-helloworld-mdb
+NAME                    IMAGE REPOSITORY                                                                       TAGS     UPDATED
+remote-helloworld-mdb   default-route-openshift-image-registry.apps-crc.testing/mnovak/remote-helloworld-mdb   latest   17 minutes ago
+----
+
+== Install the WildFly Operator
+
+First we need to install the WildFly Operator to OpenShift cluster. Since the WildFly Operator is not included in the OpenShift
+OperatorHub by default, it must be added manually. Create the file `community-catalog-source.yaml` with content:
+[source, yaml, options="nowrap"]
+----
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: operatorhubio-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: Community Operators
+  grpcPodConfig:
+    securityContextConfig: restricted
+  image: quay.io/operatorhubio/catalog:latest
+  publisher: OperatorHub.io
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 60m
+
+----
+
+Execute the following command to add the community catalog to the OperatorHub:
+
+[source, bash, options="nowrap"]
+----
+oc apply -f community-catalog-source.yaml
+----
+
+You can now install the WildFly Operator using the `wildfly-operator.yml` file:
+
+[source, yaml, options="nowrap"]
+----
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: wildfly
+spec:
+  channel: alpha
+  installPlanApproval: Automatic
+  name: wildfly
+  source: operatorhubio-catalog
+  sourceNamespace: openshift-marketplace
+----
+
+and install it by:
+
+[source, bash, options="nowrap"]
+----
+oc apply -f wildfly-operator.yml
+----
+
+You can now verify the installed operator in your namespace by inspecting the pods:
+
+[source, bash ,options="nowrap"]
+----
+$ oc get pods
+NAME                                            READY   STATUS      RESTARTS   AGE
+wildfly-operator-d975cb47c-q9vgp                 1/1     Running   0          4m17s
+...
+----
+
+== Deploy the application image using the WildFly Operator
+
+Now, we will configure the WildFly Operator to deploy the WildFly image with the messaging application. To achieve this, we will
+create a new file, `wildfly-remote-messaging.yaml`. In this file, the location of the AMQ 7 broker must be specified by setting
+the environment variables `JBOSS_MESSAGING_CONNECTOR_HOST` and `JBOSS_MESSAGING_CONNECTOR_PORT`:
+
+
+[source, yaml, options="nowrap"]
+----
+apiVersion: wildfly.org/v1alpha1
+kind: WildFlyServer
+metadata:
+  name: wildfly-remote-activemq
+spec:
+  applicationImage: "remote-helloworld-mdb:latest"
+  replicas: 1
+  env:
+  - name: JBOSS_MESSAGING_CONNECTOR_HOST
+    value: amq-broker-acceptor-0-svc
+  - name: JBOSS_MESSAGING_CONNECTOR_PORT
+    value: '61616'
+----
+
+and deploy it by:
+
+[source, bash, options="nowrap"]
+----
+oc apply -f wildfly-remote-messaging.yaml
+----
+
+You can now verify the deployed wildfly in your namespace by inspecting the pods:
+
+[source, bash ,options="nowrap"]
+----
+$ oc get pods
+NAME                                            READY   STATUS      RESTARTS   AGE
+wildfly-remote-activemq-0                        1/1     Running   0          63s
+...
+----
+
+== Test the Application
+
+We're going to test the application by sending 5 messages to the `HELLOWORLDMDBQueue` to the AMQ 7 broker.
+Then we will check that the MDB consumed those messages from the queue:
+
+[source, bash, options="nowrap"]
+----
+curl http://$(oc get route wildfly-remote-activemq-route --template='{{ .spec.host }}')/remote-helloworld-mdb/HelloWorldMDBServletClient
+----
+
+This command invokes the `HelloWorldMDBServletClient` servlet deployed to WildFly to send messages. Check the server log
+to ensure they contain entries similar to the following:
+
+[source, bash, options="nowrap"]
+----
+$ oc logs wildfly-remote-activemq-0
+...
+13:39:27,846 INFO [class org.jboss.as.quickstarts.mdb.HelloWorldQueueMDB] (Thread-10 (ActiveMQ-client-global-threads)) Received Message from queue: This is message 1
+13:39:27,860 INFO [class org.jboss.as.quickstarts.mdb.HelloWorldQueueMDB] (Thread-12 (ActiveMQ-client-global-threads)) Received Message from queue: This is message 3
+13:39:27,863 INFO [class org.jboss.as.quickstarts.mdb.HelloWorldQueueMDB] (Thread-11 (ActiveMQ-client-global-threads)) Received Message from queue: This is message 2
+13:39:27,874 INFO [class org.jboss.as.quickstarts.mdb.HelloWorldQueueMDB] (Thread-10 (ActiveMQ-client-global-threads)) Received Message from queue: This is message 4
+13:39:27,878 INFO [class org.jboss.as.quickstarts.mdb.HelloWorldQueueMDB] (Thread-12 (ActiveMQ-client-global-threads)) Received Message from queue: This is message 5
+----
+
+The presence of these log entries in the server log confirms that the MDB successfully consumed messages from the `HELLOWORLDMDBQueue` from one of the clustered remote AMQ 7 broker.
+
+== What's Next?
+
+Now that you have deployed WildFly with a messaging application connected to AMQ 7, explore the following resources to enhance your understanding and further extend your deployment:
+
+- *Deploying AMQ Broker on OpenShift*: Dive deeper into deploying and managing AMQ Broker on OpenShift with detailed guides and best practices.
+https://docs.redhat.com/en/documentation/red_hat_amq/7.7/html-single/deploying_amq_broker_on_openshift/index[Deploying AMQ Broker on OpenShift, window=_blank]
+
+- *WildFly Operator Repository*: Learn more about the WildFly Operator, its features, and advanced configuration options directly from the official GitHub repository.
+https://github.com/wildfly/wildfly-operator[WildFly Operator GitHub, window=_blank]
+
+- *WildFly Maven Plugin Documentation*: Explore the WildFly Maven Plugin for automating deployment, configuration, and management of WildFly applications during your build process.
+https://docs.wildfly.org/wildfly-maven-plugin/releases/5.0/[WildFly Maven Plugin Documentation, window=_blank]
+
+These resources provide valuable insights and tools to optimize your WildFly and AMQ deployments, automate workflows, and build robust applications on OpenShift.
+
+[[references]]
+== References
+
+* https://github.com/wildfly/wildfly-operator[WildFly Operator GitHub, window=_blank]
+* https://docs.redhat.com/en/documentation/red_hat_amq_broker/7.12/html-single/deploying_amq_broker_on_openshift/index[Deploying AMQ Broker on OpenShift, window=_blank]
+* https://docs.wildfly.org/wildfly-maven-plugin/releases/5.0/[WildFly Maven Plugin Documentation, window=_blank]
+* https://activemq.apache.org/components/artemis/documentation/latest/clusters.html#overview[Apache ActiveMQ Artemis Documentation - Clusters, window=_blank]
+* https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/7.4/html-single/configuring_messaging/index#clusters_overview[EAP 7.4 Messaging Clusters Overview, window=_blank]
+|}

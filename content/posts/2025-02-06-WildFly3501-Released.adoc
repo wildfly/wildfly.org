@@ -1,0 +1,59 @@
+---
+layout: post
+title:  "WildFly 35.0.1 is released!"
+aliases: [/news/2025/02/06/WildFly3501-Released]
+date:   2025-02-06
+tags:   announcement release
+author: darranl
+description: WildFly 35.0.1.Final is now available for download.
+---
+
+WildFly 35.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+I am pleased to announce that the WildFly 35.0.1.Final release is now available for download.
+
+The following issues were resolved in 35.0.1:
+
+== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-20261[WFLY-20261]] - NPE in race condition between a thread committing a transaction and another thread performing recovery.
+* [https://issues.redhat.com/browse/WFLY-20290[WFLY-20290]] - CLI command &quot;server=name:import-journal&quot; for messaging subsystem throws &quot;NoClassDefFoundError:&quot; in Java 17
+* [https://issues.redhat.com/browse/WFLY-20329[WFLY-20329]] - Incorrect module identifier handling in WeldDeploymentProcessor
+
+== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-20303[WFLY-20303]] - Upgrade Arquillian from 1.9.2.Final to 1.9.3.Final
+* [https://issues.redhat.com/browse/WFLY-20306[WFLY-20306]] - Upgrade Wiremock to 3.10.0
+* [https://issues.redhat.com/browse/WFLY-20307[WFLY-20307]] - (WF 35) Upgrade HAL to 3.7.8.Final
+* [https://issues.redhat.com/browse/WFLY-20309[WFLY-20309]] - Upgrade RESTEasy MicroProfile 3.0.0.Final to 3.0.1.Final
+* [https://issues.redhat.com/browse/WFLY-20323[WFLY-20323]] - Upgrade openjdk-orb to 10.1.1.Final
+* [https://issues.redhat.com/browse/WFLY-20324[WFLY-20324]] - Upgrade Narayana to 7.2.0.Final
+* [https://issues.redhat.com/browse/WFLY-20341[WFLY-20341]] - Upgrade Apache Mime4j from 0.8.11 to 0.8.12
+* [https://issues.redhat.com/browse/WFLY-20355[WFLY-20355]] - Upgrade WildFly Core to 27.0.1.Final
+* [https://issues.redhat.com/browse/WFLY-20358[WFLY-20358]] - Upgrade Infinispan to 15.0.13.Final
+* [https://issues.redhat.com/browse/WFLY-20085[WFLY-20085]] - Upgrade cxf from 4.0.5 to 4.0.6
+
+== Tasks
+
+* [https://issues.redhat.com/browse/WFLY-20272[WFLY-20272]] - Update microprofile-certification.sh to reflect that WildFly is now MP 7 compatible
+* [https://issues.redhat.com/browse/WFLY-20273[WFLY-20273]] - Adapt microprofile-certification.sh to play nicely with the MicroProfile Telemetry TCK processing
+* [https://issues.redhat.com/browse/WFLY-20275[WFLY-20275]] - Remove XercesUsageTestCase
+* [https://issues.redhat.com/browse/WFLY-20339[WFLY-20339]] - Suppress CVE-2024-4109 as triaged as not a security vulnerability
+
+== Sub Tasks
+
+* [https://issues.redhat.com/browse/WFLY-20259[WFLY-20259]] - MP REST Client TCK is never run with the security manager
+
+
+The following issues were also resolved in the version of WildFly Core contained within this release:
+
+== Bugs
+
+* [https://issues.redhat.com/browse/WFCORE-7153[WFCORE-7153]] - CVE-2025-23367 org.wildfly.core/wildfly-server: Wildfly improper RBAC permission.
+
+== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFCORE-7131[WFCORE-7131]] - Upgrade JBoss Marshalling to 2.2.2.Final
+
+Enjoy!
+

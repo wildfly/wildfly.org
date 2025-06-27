@@ -1,0 +1,164 @@
+---
+layout: post
+title:  "WildFly Swarm Initial Release"
+aliases: [/news/2015/05/05/WildFly-Swarm-Released]
+date:   2015-05-05 16:16:16 -0500
+tags:   announcement release swarm
+author: bobmcwhirter
+---
+
+Happy Cinco De Mayo!
+
+Crack open a cold adult beverage and start retooling your JavaEE skills
+towards microservices.
+
+What is WildFly Swarm?
+----------------------
+
+link:https://github.com/wildfly-swarm/wildfly-swarm[WildFly Swarm] footnote:[never to be called just "Swarm", because Legal] is a
+new sidecar project supporting WildFly 9.x to enable
+deconstructing the WildFly AS and pasting just enough of it back together
+with your application to create a self-contained executable jar.
+
+JAX-RS is a microservice?
+--------------------------
+
+In the simplest case, you make small adjustments to your existing
+Maven `pom.xml` that generates a WAR file and you'll get another
+artifact with a name akin to `myproject-1.0-swarm.jar`.
+
+Simply add the `wildfly-swarm-plugin` to your `pom.xml`:
+
+[source,xml]
+<plugin>
+  <groupId>org.wildfly.swarm</groupId>
+  <artifactId>wildfly-swarm-plugin</artifactId>
+  <version>${version.wildfly-swarm}</version>
+  <executions>
+    <execution>
+      <phase>package</phase>
+      <goals>
+        <goal>create</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+
+Add a `<dependency>` block or two:
+
+[source,xml]
+<dependency>
+    <groupId>org.wildfly.swarm</groupId>
+    <artifactId>wildfly-swarm-jaxrs</artifactId>
+    <version>${version.wildfly-swarm}</version>
+    <scope>provided</scope>
+</dependency>
+
+Build your project:
+
+[source]
+mvn package
+
+And run that sucker:
+
+[source]
+java -jar ./target/myproject-1.0-swarm.jar
+
+Can I get fancier?
+------------------
+
+You betcha!
+
+Since WildFly Swarm is based upon WildFly 9.x, you have most of the power
+of WildFly available to you.  This includes subsystems such as:
+
+- Undertow (Servlets)
+- JAX-RS
+- Naming/JNDI
+- Transactions
+- Messaging
+- Datasources
+- Logging
+- Weld (CDI)
+- JBoss MSC
+- Security
+
+Additionally, if you want to provide your own `main(...)` method to
+instantiate the `Container`, configure some of the subsystems, and
+perform whatever deployments you need, that's possible also!
+
+[source,java]
+------------------------------
+public class Main \{
+
+    public static void main(String[] args) throws Exception \{
+        Container container = new Container();
+
+        container.subsystem(new MessagingFraction()
+                        .server(
+                                new MessagingServer()
+                                        .enableInVmConnector()
+                                        .topic("my-topic")
+                                        .queue("my-queue")
+                        )
+        );
+
+        // Start the container
+        container.start();
+
+        JaxRsDeployment appDeployment = new JaxRsDeployment();
+        appDeployment.addResource(MyResource.class);
+
+        // Deploy your JAX-RS app
+        container.deploy(appDeployment);
+
+        // Create an MSC deployment
+        ServiceDeployment deployment = new ServiceDeployment();
+        deployment.addService(new MyService("/jms/topic/my-topic" ) );
+
+        // Deploy the services
+        container.deploy( deployment );
+    }
+}
+------------------------------
+
+
+Can I use it in production?
+---------------------------
+
+We wouldn't recommend it.  We just released 1.0.0.Alpha1.  It's pretty
+new and we're sure there's some dark corners that we have not addressed.
+
+If you come across any issues or desire any improvements, file
+link:https://github.com/wildfly-swarm/wildfly-swarm/issues[an issue]
+over at GitHub, and we'll do our best to make you happy.
+
+Do you have more examples?
+--------------------------
+
+Yes indeed! We have a bunch of buildable and runnable examples
+at GitHub:
+
+- link:https://github.com/wildfly-swarm/example-servlet[Servlet WAR]
+- link:https://github.com/wildfly-swarm/example-jaxrs[JAX-RS WAR]
+- link:https://github.com/wildfly-swarm/example-jaxrs-shrinkwrap[JAX-RS with ShrinkWrap]
+- link:https://github.com/wildfly-swarm/example-jaxrs-shrinkwrap[JAX-RS with ShrinkWrap]
+- link:https://github.com/wildfly-swarm/example-datasource-subsystem[Datasource via Subsystem Config]
+- link:https://github.com/wildfly-swarm/example-datasource-deployment[Datasource via Deployment]
+- link:https://github.com/wildfly-swarm/example-msc[JBoss MSC Services]
+- link:https://github.com/wildfly-swarm/example-messaging[Messaging, JAX-RS and MSC]
+
+What do I download?
+-------------------
+
+There is no special download or installation instructions.  Simply start
+using `org.wildfly.swarm` artifacts in your `pom.xml`, throw in the plugin
+and continue doing your builds.  Everything is available through Maven Central.
+
+Stay in Touch
+-------------
+
+You can keep up with the project through the link:https://www.hipchat.com/gSW9XYz69[WildFly HipChat]
+room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
+link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].
+

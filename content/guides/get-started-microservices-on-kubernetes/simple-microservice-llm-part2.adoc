@@ -1,0 +1,269 @@
+---
+layout: guide-getting-started
+---
+
+= \{simple-microservice-llm-part2}
+:summary: Java Microservice using WildFly on Kubernetes that invokes an LLM
+:includedir: ../_includes
+{#include partials/guides/attributes.adoc /}
+{#include partials/guides/titles.adoc /}
+:prerequisites-time: 10
+
+In this guide, you will learn HOW-TO run the Docker Image we built in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1[\{simple-microservice-llm-part1}] on Kubernetes.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1[\{simple-microservice-llm-part1}]
+
+{#include partials/guides/constants.adoc /}
+
+{|
+== LLM
+
+We basically will repeat everything we did in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[{simple-microservice-part2}] with a few changes but, before that, we will deploy link:https://ollama.com/library/smollm2[`{ollama-llm}`, window="_blank"] on Kubernetes using the Ollama container.
+
+You can choose any LLM you like: we chose `{ollama-llm}` because it's small and there are fewer chances minikube complains about its size (more on this later on);
+
+=== Ollama + {ollama-llm}
+
+==== Ollama deployment
+
+Create a file named `ollama-deployment.yaml` with the following content:
+
+.ollama-deployment.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+spec:
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest
+        ports:
+        - name: http
+          containerPort: {ollama-port}
+          protocol: TCP
+----
+
+apply the Deployment configuration to Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f ollama-deployment.yaml
+----
+
+==== Ollama service
+
+Create a file named `ollama-service.yaml` with the following content:
+
+.ollama-service.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {ollama-kubernetes-service-name}
+  labels:
+    app: ollama
+spec:
+  ports:
+    - protocol: TCP
+      port: {ollama-port}
+      targetPort: {ollama-port}
+  selector:
+    app: ollama
+----
+
+apply the Service configuration to Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f ollama-service.yaml
+----
+
+==== {ollama-llm}
+
+Now find the name of your running Ollama POD:
+
+[source,bash,subs="normal"]
+----
+$ kubectl get pods
+NAME                                          READY   STATUS    RESTARTS   AGE
+ollama-777d6c546-hmsps                        1/1     Running   0          39s
+----
+
+and use it to get a shell to the running container and, once connected, pull `{ollama-llm}`:
+
+[source,bash,subs="normal"]
+----
+$ kubectl exec --stdin --tty ollama-777d6c546-hmsps -- /bin/bash
+root@ollama-777d6c546-hmsps:/# ollama pull {ollama-llm}
+pulling manifest
+pulling 4d2396b16114... 100% ▕██████████████████████████████████████████████████████████████████████████████████████████████████████▏ 1.8 GB
+pulling fbacade46b4d... 100% ▕██████████████████████████████████████████████████████████████████████████████████████████████████████▏   68 B
+pulling dfebd0343bdd... 100% ▕██████████████████████████████████████████████████████████████████████████████████████████████████████▏ 1.8 KB
+pulling 58d1e17ffe51... 100% ▕██████████████████████████████████████████████████████████████████████████████████████████████████████▏  11 KB
+pulling f02dd72bb242... 100% ▕██████████████████████████████████████████████████████████████████████████████████████████████████████▏   59 B
+pulling 6c6b9193c417... 100% ▕██████████████████████████████████████████████████████████████████████████████████████████████████████▏  559 B
+verifying sha256 digest
+writing manifest
+success
+----
+
+after `{ollama-llm}` has been pulled you can exit the shell;
+
+NOTE: if you are using link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"], and you want to test if Ollama + `{ollama-llm}` on Kubernetes is working, run `kubectl port-forward svc/{ollama-kubernetes-service-name} {ollama-port}:{ollama-port}`,  then open http://0.0.0.0:{ollama-port}/ in your browser and you should see "Ollama is running"
+
+== Image Registry
+
+To make the `{my-jaxrs-app-llm-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
+
+=== Quay.io
+
+There are many options to achieve this; in this guide, we will push the `{my-jaxrs-app-llm-docker-image-name}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
+
+Create a public repository named `{my-jaxrs-app-llm-docker-image-name}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-llm-docker-image-name}[https://quay.io/repository/{quay-io-account-name}/{my-jaxrs-app-llm-docker-image-name}, window="_blank"]).
+
+NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
+
+Tag the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman tag {my-jaxrs-app-llm-docker-image-name} quay.io/{quay-io-account-name}/{my-jaxrs-app-llm-docker-image-name}
+----
+
+Push the `{my-jaxrs-app-llm-docker-image-name}` Docker Image to it:
+
+[source,bash,subs="normal"]
+----
+podman push quay.io/{quay-io-account-name}/{my-jaxrs-app-llm-docker-image-name}
+----
+
+At this point, the `{my-jaxrs-app-llm-docker-image-name}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster; you can verify this by running:
+
+[source,bash,subs="normal"]
+----
+podman pull quay.io/{quay-io-account-name}/{my-jaxrs-app-llm-docker-image-name}
+----
+
+== Deploy to Kubernetes
+
+To deploy our `{my-jaxrs-app-llm-docker-image-name}` Docker Image on link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"], create a file named `deployment-{my-jaxrs-app-llm-docker-image-name}.yaml` (see link:https://kubernetes.io/docs/concepts/workloads/controllers/deployment/[kubernetes deployment, window="_blank"]) in the same directory as the `Dockerfile` and the `pom.xml` file, with the following content:
+
+.deployment-{my-jaxrs-app-llm-docker-image-name}.yaml
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {my-jaxrs-app-llm-docker-image-name}-deployment
+  labels:
+    app: {my-jaxrs-app-llm-docker-image-name}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {my-jaxrs-app-llm-docker-image-name}
+  template:
+    metadata:
+      labels:
+        app: {my-jaxrs-app-llm-docker-image-name}
+    spec:
+      containers:
+      - name: {my-jaxrs-app-llm-docker-image-name}
+        image: quay.io/{quay-io-account-name}/{my-jaxrs-app-llm-docker-image-name}
+        ports:
+        - containerPort: 8080
+        - containerPort: 9990
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 9990
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 9990
+        startupProbe:
+          httpGet:
+            path: /health/started
+            port: 9990
+        env:
+        - name: OLLAMA_CHAT_URL
+          value: 'http://{ollama-kubernetes-service-name}:{ollama-port}'
+        - name: OLLAMA_CHAT_MODEL_NAME
+          value: '{ollama-llm}'
+----
+
+apply the Deployment configuration to Kubernetes:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f deployment-{my-jaxrs-app-llm-docker-image-name}.yaml
+----
+
+We used link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] as Kubernetes Cluster, hence we expose the deployment as `NodePort`:
+
+[source,bash,subs="normal"]
+----
+kubectl expose deployment.apps/{my-jaxrs-app-llm-docker-image-name}-deployment --type=NodePort --port=8080
+----
+
+=== Check the application
+
+Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
+
+[source,bash,subs="normal"]
+----
+$ minikube service {my-jaxrs-app-llm-docker-image-name}-deployment --url
+http://192.168.39.178:30781
+----
+
+And set the following variable:
+
+[source,bash,subs="normal"]
+----
+export DEPLOYMENT_URL=http://192.168.39.178:30781
+----
+
+Now, invoke the application endpoint using `curl`:
+
+[source,bash,subs="normal"]
+----
+curl $DEPLOYMENT_URL/api/tommaso
+AiMessage { text = "Ciao Tommaso! Nice to meet you! How are you doing today?" toolExecutionRequests = null }
+----
+
+Alternatively, open the `$DEPLOYMENT_URL/api/tommaso` URL in your browser;
+
+NOTE: if you get *"dev.langchain4j.exception.HttpException: {"error":"model requires more system memory (3.9 GiB) than is available (3.6 GiB)"}"* try to stop minikube and re-start it with *"minikube start --memory 7000"*: this should give minikube enough memory to run *{ollama-llm}*
+
+== What's next?
+
+* link:https://www.wildfly.org/news/2024/11/04/WildFly-playing-with-generative-ai/["Playing with Generative AI with WildFly", window="_blank"]: contains a Retrieval-Augmented Generation (RAG) example application
+* link:https://www.youtube.com/watch?v=d8IExBP7rxw&t=11425s["WildFly Mini Conference March 2025", window="_blank"]: check the last track which is about link:https://modelcontextprotocol.io/introduction[MCP, window="_blank"]
+* link:https://www.wildfly.org/news/2025/02/10/Glowing-with-AI/["Making WildFly Glow with Intelligence", window="_blank"]: see how to use link:https://docs.wildfly.org/wildfly-glow/["Glow", window="_blank"] to find what feature packs and layers your deployment needs to be available on WildFly
+* link:https://www.youtube.com/watch?v=crSKeeBsXoE["WildFly AI - monitor and troubleshoot a WildFly server with the WildFly chatbot", window="_blank"]
+
+[[references]]
+== References
+
+* Source code for this guide: {source-code-git-repository}/simple-microservice-llm
+
+Back to Guides
+
+< link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
+|}

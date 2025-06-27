@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Using distributed realm ignore-unavailable-realms attribute in Elytron'
+date: 2023-11-29
+tags: distributed-realm filesystem-realm ldap
+synopsis: An example of distributed realm ignore-unavailable-realms attribute usage in WildFly.
+author: lvydra
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/distributed-realm-ignore-unavailable-realms/
+---

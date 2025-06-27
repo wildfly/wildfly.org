@@ -1,0 +1,52 @@
+---
+layout: post
+title:  "WildFly and Red Hat's middleware strategy"
+aliases: [/news/2025/03/05/WildFly_and_Red_Hat_strategy]
+date:   2025-03-05
+tags:   announcement red hat ibm
+author: bstansberry
+description: Discussion of the impact of Red Hat strategy change on WildFly.
+---
+
+Hi,
+
+Red Hat announced significant changes to its middleware strategy last month, and I wanted to give the WildFly community some context about those changes and how they affect WildFly. 
+
+The Red Hat announcement can be found on the Red Hat blog:
+
+https://www.redhat.com/en/blog/evolving-our-middleware-strategy[Evolving our middleware strategy, window=_blank]
+
+Some key points there are:
+
+* Red Hat’s Middleware and Integration Engineering and Products teams are moving to IBM in May 2025.
+* Red Hat will continue to sell and support its Middleware and Integration offerings as they do today; this will not be impacted.
+* All transitioning Red Hat technology will remain open source and continue to follow an upstream-first development model.
+
+Red Hat has sponsored the WildFly project (fka JBoss AS) since 2006, when it bought JBoss, Inc. Now, Red Hat’s participation in and support for WildFly is being transferred to IBM.
+
+WildFly has a vibrant, healthy community with different kinds of contributions from people from various companies all over the world. Still, it's undoubtedly the case that the bulk of our code contributions come from Red Hat employees working on the middleware product teams that are moving to IBM. 
+
+However, I don't expect this change to have a significant impact on the WildFly project, beyond the inevitable temporary disruption as the people who are moving focus some of their energy on the move.
+
+WildFly is the upstream project for Red Hat's JBoss Enterprise Application Platform (EAP) product. EAP will continue to be sold and supported through Red Hat, and will continue to be developed following an upstream-first development model. That model means that features and fixes for EAP will land first in WildFly's main branch or in the main branches of the components integrated into WildFly.
+
+IBM and Red Hat leaders have clearly stated that current and future contributions to WildFly are a key component of their middleware strategy.
+
+So, we'll continue to work on behalf of the WildFly community, striving to improve WildFly. Some things we'll be doing:
+
+* We'll have another https://www.wildfly.org//events/[WildFly Mini Conference, window=_blank] soon. Watch this space for more details!
+* We're hard at work on WildFly 36, with its final release expected around April 10.
+* After that, we move on to WildFly 37, which is expected in July. We intend to continue producing feature releases quarterly, followed by a bug fix release about a month later.
+* Work continues on EE 11 support in WildFly Preview and eventually in standard WildFly.
+* We'll continue to innovate outside of the Jakarta and MicroProfile areas, including https://www.youtube.com/watch?v=wg1hAdOoe2w[AI, window=_blank] and https://www.wildfly.org/news/2025/02/10/Glowing-with-AI/[WildFly Glow, window=_blank].
+* We'll continue to keep up with advancements in Java SE, with an aspiration of having each WildFly feature release run well on the latest SE release available when it comes out, and being able to recommend the latest LTS SE release as the preferred option as soon as possible after it comes out.
+
+Last month, I posted about https://www.wildfly.org/news/2025/02/03/WildFly-in-a-Foundation/[transitioning the WildFly project to a vendor-neutral software foundation, window=_blank]. I intend to continue with this process. Note that our interest in moving to an open source foundation was not triggered by Red Hat's strategy change. We'd been thinking about a move to a foundation since well before we learned about the move to IBM.
+
+Personally, I'll be sorry to leave Red Hat, which has been a fantastic place to work. Back in 2006, I was sorry to leave JBoss, Inc for the much bigger Red Hat, too, but it worked out very well. I think combining forces with Java teams at IBM makes a lot of sense and will be good for the middleware projects and products.  There's a lot of growth and innovation potential in the middleware technologies we offer and I'm looking forward to being part of a larger team excited about and focused on that potential. 
+
+Best regards,
+
+Brian Stansberry +
+WildFly Project Lead
+

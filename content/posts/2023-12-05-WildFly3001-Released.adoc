@@ -1,0 +1,51 @@
+---
+layout: post
+title:  "WildFly 30.0.1 is released!"
+aliases: [/news/2023/12/05/WildFly3001-Released]
+date:   2023-12-05
+tags:   announcement release
+author: kkhan
+description: WildFly 30.0.1.Final is now available for download.
+---
+
+WildFly 30.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+It's been about five weeks since the WildFly 30 release, so we've done a small bug fix update, WildFly 30.0.1. This includes an update to WildFly Preview.
+
+The following issues were resolved in 30.0.1:
+
+===== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-18295[WFLY-18295]] - WildFly vs WildFly Preview document needs update
+* [https://issues.redhat.com/browse/WFLY-18384[WFLY-18384]] - [CLUSTERING] File containing session data is never shrunk or deleted
+* [https://issues.redhat.com/browse/WFLY-18533[WFLY-18533]] - Simplest JAXRS app is failing when deployed in server provisioned with jaxrs
+* [https://issues.redhat.com/browse/WFLY-18702[WFLY-18702]] - In WildFly Preview jaxrs-server layer does not provision MP Rest Client
+* [https://issues.redhat.com/browse/WFLY-18727[WFLY-18727]] - ATTRIBUTE granularity distributed sessions should always replicate on setAttribute(...)
+* [https://issues.redhat.com/browse/WFLY-18740[WFLY-18740]] - On cache writes, Infinispan store=hotrod throws ISE: Only byte[] instances are supported currently
+
+
+===== Tasks
+
+* [https://issues.redhat.com/browse/WFLY-18642[WFLY-18642]] - Reevalute test exclusions in the integration/microprofile module
+
+===== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-18630[WFLY-18630]] - Upgrade Infinispan to 14.0.20.Final
+* [https://issues.redhat.com/browse/WFLY-18679[WFLY-18679]] - Upgrade jaxbintros from 2.0.0 to 2.0.1
+* [https://issues.redhat.com/browse/WFLY-18680[WFLY-18680]] - [WildFly 30.x] Upgrade HAL to 3.6.16.Final
+* [https://issues.redhat.com/browse/WFLY-18685[WFLY-18685]] - Upgrade santuario to 3.0.3 (addresses CVE-2023-44483)
+* [https://issues.redhat.com/browse/WFLY-18704[WFLY-18704]] - Upgrade Artemis to 2.31.2 (resolves CVE-2023-46604)
+* [https://issues.redhat.com/browse/WFLY-18713[WFLY-18713]] - Upgrade RESTEasy to 6.2.6.Final
+* [https://issues.redhat.com/browse/WFLY-18725[WFLY-18725]] - Upgrade WildFly Http Client to 2.0.6.Final
+
+
+Issues resolved in the WildFly Core update included with WildFly 30.0.1 were:
+
+===== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFCORE-6578[WFCORE-6578]] - [CVE-2023-3171] WildFly heap exhaustion via deserialization
+* [https://issues.redhat.com/browse/WFCORE-6592[WFCORE-6592]] - NPE in ThreadFactoryService
+
+
+Enjoy!
+

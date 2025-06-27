@@ -1,0 +1,72 @@
+---
+layout: post
+title:  "WildFly Maven Plugin"
+date:   2023-03-09
+tags:   announcement maven maven-plugin development
+author: jperkins
+description: Introduction to the wildfly-maven-plugin dev goal
+---
+:page-liquid: "asciidocify"
+
+The https://docs.wildfly.org/wildfly-maven-plugin[wildfly-maven-plugin] has introduced a new `dev` goal. If you are
+familiar with the `run` goal, this goal is very similar. However, it watches for changes to source files. If changes are
+found, the WAR is rebuilt and redeployed. This new goal is available in version 4.1.0.Beta3 of the wildfly-maven-plugin.
+
+== Using the `dev` Goal
+
+In its simplest form you enable the plugin like any other maven plugin:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly-maven-plugin}</version>
+</plugin>
+----
+
+Once added to your POM you can simply execute `mvn wildfly:dev` on your project, and you should be up and running. With
+no configuration, a full server is provisioned in your projects build directory, e.g. `target`. Changes to source files
+are monitored. If required, the `compile:compile` goal will be invoked. If a resource needs to be copied, the
+`resources:resources` goal will be invoked. In some cases the deployment might also need to be redeployed.
+
+You can also configure the goal to provision a custom version of WildFly. Below is an example of configuring a cloud
+server with the `cloud-server` layer with an H2 database.
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly-maven-plugin}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:${version.server}</location>
+            </feature-pack>
+            <feature-pack>
+                <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:${version.cloud.fp}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>cloud-server</layer>
+            <layer>h2-driver</layer>
+        </layers>
+    </configuration>
+</plugin>
+----
+
+Full documentation for the goal can be found in the
+https://docs.wildfly.org/wildfly-maven-plugin/dev-mojo.html[wildfly-maven-plugin documentation].
+
+== Limitations
+
+There are currently a couple of limitations on this goal. The first is this goal will only work with WAR deployments. The
+other is changes to the POM file are not watched. If you change the POM you need to kill, `CTRL+C`, the job and restart
+the process.
+
+== Conclusion
+
+Hopefully this goal is useful for more rapid development. If you'd like to see new features or have questions on how
+this new goal works, open a https://github.com/wildfly/wildfly-maven-plugin/discussions[discussion] on GitHub or in the
+https://groups.google.com/forum/#!forum/wildfly[forum]. If you find a bug, feel free to report it in https://issues.redhat.com/browse/WFMP[JIRA].

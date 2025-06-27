@@ -1,0 +1,218 @@
+---
+layout: post
+title: WildFly S2I v2 architecture overview
+aliases: [/news/2021/10/29/wildfly-s2i-v2-overview]
+date: 2021-10-29
+tags: wildfly galleon wildfly-s2i s2i
+synopsis: WildFly S2I v2 architecture overview
+author: jfdenise
+---
+
+For upcoming link:http://docs.wildfly.org[WildFly] 26 release we are re-architecting link:https://github.com/wildfly/wildfly-s2i/[WildFly S2I (Source to Image)]
+images to offer more flexibility, better efficiency and a simpler user experience.
+
+Since WildFly 16, in which we introduced an evolution of the WildFly s2i images, we have identified a set of pain points
+that we want to see addressed in a new architecture:
+
+* Strong coupling of the WildFly S2I builder image with a WildFly release. This implies that new builder images have
+to be released and deployed for each new server version.
+
+* Configuring the server during the S2I build is complex. Executing the simplest WildFly CLI script during build is far from trivial;
+it requires your application project to comply with a specific directory structure then you must define bash
+scripts (do you know Java developers who like to write bash scripts?) in order to call CLI command lines (and don't forget to start the embedded server).
+The simplest copy of some extra server content (e.g. JBoss Module modules) is also not that trivial and again requires bash scripting.
+
+* Executing your own CLI scripts during server startup implies having installed some extensions (again bash scripts) inside the server during the S2I build.
+
+* Server startup is always composed of a sequence of 2 steps -- server starts first in admin only mode and automatically applies
+generated CLI scripts, then reboots in normal mode. In cases your server configuration doesn't require some adjustments
+and could have booted directly in normal mode.
+
+* No simple way to provide server arguments (e.g. Java system properties) when starting the server.
+
+* No way to tailor a server according to the application needs from the project `pom.xml` file. Server provisioning during the S2I build is configured
+by env variables provided at S2I build time.
+
+* No way to build and run an application with a link:https://docs.wildfly.org/25/WildFly_and_WildFly_Preview.html[WildFly Preview] server.
+
+* WildFly S2I images contain much more than what we actually need to build and run the server. We need a much lighter Operating System.
+
+## New WildFly S2I architecture
+
+The current architecture is composed of 2 main artifacts:
+
+* WildFly S2I builder image with JDK11 based on centos7. Image released for each new WildFly release (to contain the latest release of the WildFly server).
+
+* WildFly S2I runtime image with JDK11 based on centos7. Image used to create docker chained builds to output smaller runtime application images.
+
+We are keeping the separation between the S2I builder image and the runtime image. The 2 new images we are offering are:
+
+* WildFly S2I builder image with JDK11 based on
+link:https://catalog.redhat.com/software/containers/ubi8/ubi-minimal/5c359a62bed8bd75a2c3fba8[ubi8 minimal].
+This image doesn't contain a WildFly server. It expects a server containing the application deployment to be provisioned during the S2I build phase.
+
+* WildFly runtime image with JDK11 based on
+link:https://catalog.redhat.com/software/containers/ubi8/ubi-minimal/5c359a62bed8bd75a2c3fba8[ubi8 minimal].
+We are keeping the JDK (instead of a JRE) in order to make Java debugging tools available in the image.
+This image can be used to run any WildFly server (not only a server provisioned using the builder image in a chained build).
+
+For now we will only be providing JDK 11 versions of these images.
+
+So the WildFly S2I builder image becomes a lightweight generic image allowing to build and execute applications deployed in any WildFly server.
+
+### New s2i build workflow
+
+We are removing the complex server configuration points and rely on the use of the
+link:https://github.com/wildfly/wildfly-maven-plugin/[WildFly Maven plugin] that can now provision a fully configured server containing your deployment.
+The WildFly Maven plugin `3.0.0.Alpha1` has been evolved with some new goals to provision, configure, and package the server and the deployment in one step.
+When designing your application pom file, add the WildFly Maven plugin `package` goal, configure it with the link:https://docs.wildfly.org/25/Galleon_Guide.html#wildfly-galleon-feature-packs[WildFly Galleon feature-pack]
+and link:https://docs.wildfly.org/25/Galleon_Guide.html#wildfly_layers[Galleon layer(s)], and optionally reference WildFly CLI scripts to be executed and
+content to be copied inside the server. At the end of the build you will get (by default in the `target/server` directory)
+a server with your app deployed, ready to be installed in the image.
+
+In order to allow for a smooth transition to the new images, we are still supporting (in a deprecated way) the legacy workflow.
+Your existing application would work, but you are now required to specify the Galleon feature-pack(s) and layer(s)
+(`GALLEON_PROVISION_FEATURE_PACKS` and `GALLEON_PROVISION_LAYERS` env variables)
+you want to see used during the S2I build to provision a WildFly server.
+
+### New image runtime API
+
+An image built from the WildFly S2I builder or runtime images both expose
+the same API allowing you to fine tune the server execution.
+This API is exposed by means of environment variables to be set when configuring your deployment.
+
+#### JVM configuration API
+
+The JVM link:https://github.com/jboss-openshift/cct_module/tree/master/jboss/container/java/jvm/api/module.yaml[env variables]
+that are used today with WildFly s2i images are still supported. They are a nice way to tune the JVM.
+
+#### WildFly server startup configuration API
+
+The new server startup configuration API is described in this
+link:https://github.com/wildfly/wildfly-cekit-modules/blob/v2/jboss/container/wildfly/run/api/module.yaml[documentation].
+This API comes with default values that should cover the main use-cases. 2 env variables open-up new possibilities:
+
+* `SERVER_ARGS` allows you to pass WildFly server arguments when starting the server.
+
+* `CLI_LAUNCH_SCRIPT` allows you to provide a path (relative to `JBOSS_HOME` or absolute) to a CLI script to be executed at startup time. Although CLI scripts
+should be executed at build time from the WildFly Maven plugin, in some cases it can be useful to adjust the configuration at execution time. You can package
+a set of CLI scripts inside your server at build time, then reference one of these CLI scripts to be executed at runtime.
+
+#### WildFly server subsystems configuration API
+
+If you are using WildFly s2i images you are perhaps asking yourself where are the env variables you have been using
+to configure the elytron subsystem, to add datasources, to configure logging or the microprofile-config subsystem,...
+They are provided by means of a new link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[WildFly cloud Galleon feature-pack]
+that you can combine with the WildFly Galleon feature-pack at build time to produce a server supporting these env variables.
+
+* If you only provision `org.wildfly:wildfly-galleon-pack:25.0.0.Final` you will get a "vanilla" WildFly server that
+will get lightly adjusted by the image entry-point to properly execute on OpenShift.
+
+* If you provision `org.wildfly:wildfly-galleon-pack:25.0.0.Final` and `org.wildfly.cloud:wildfly-cloud-galleon-pack:1.0.0.Alpha2`
+you will get a similar server to the one present in the current WildFly s2i image (with `JBOSS_HOME/bin/openshift-launch.sh` launcher).
+
+## Examples
+
+You can pull the new WildFly S2i images (Beta quality) from quay.io:
+
+* `docker pull quay.io/jfdenise/wildfly-s2i-jdk11`
+* `docker pull quay.io/jfdenise/wildfly-runtime-jdk11`
+
+NB: The images will be made available from the `quay.io/wildfly` organisation when they reach a Final quality.
+
+
+### S2I examples
+
+We have defined a set of link:https://github.com/wildfly/wildfly-s2i/tree/v2/examples[examples] to help
+you get started. They cover different use-cases that highlight the new capabilities.
+
+The examples rely on link:https://www.wildfly.org/news/2021/05/05/helm-charts-for-wildfly/[WildFly Helm Charts]
+to automate the build and deployment on OpenShift.
+
+In order to deploy the examples onto OpenShift, you can log in to the
+link:https://developers.redhat.com/developer-sandbox/[Developer Sandbox for Red Hat OpenShift].
+
+The use cases covered are:
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/v2/examples/jsf-ejb-jpa/README.md[Simple application], no specific configuration. Just build and deploy on OpenShift.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/v2/examples/elytron-oidc-client/README.md[Keycloak integration]. Use WildFly 25 `elytron-oidc-client`
+to interact with a Keycloak server. Also highlights the ability to provide server arguments at launch time.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/v2/examples/logging/README.md[Logging]. We all need to enable logging at some point.
+With a simple CLI script executed at server boot time, enable logging and redirect all traces to the CONSOLE.
+
+* link:https://github.com/wildfly/wildfly-s2i/tree/v2/examples/web-clustering/README.md[Clustering]. A cluster of PODS
+that share web sessions. This example benefits from the WildFly cloud feature-pack and WildFly Helm Charts capabilities
+to automatically enable the `dns.DNS_PING` JGroups protocol and generate the ping service.
+
+### Dockerfile example
+
+This chapter highlights the steps to build a docker image that contains the server and your application,
+publish it in a public docker registry in which you have an account (e.g. link:http://quay.io[quay.io]) and then deploy it on OpenShift.
+Here we are using the link:https://github.com/wildfly/wildfly-s2i/tree/v2/examples/jsf-ejb-jpa/README.md[Simple application] example.
+NB: Be sure to update the example steps with your own docker registry account.
+
+* Build the maven project:
+
+``
+$ mvn clean package
+``
+
+* Write a Dockerfile with the following content:
+
+```
+FROM quay.io/jfdenise/wildfly-runtime-jdk11:latest
+COPY --chown=jboss:root target/server $JBOSS_HOME
+RUN chmod -R ug+rwX $JBOSS_HOME
+```
+
+* Build the image
+
+``
+$ docker build -t quay.io/jfdenise/my-app:latest .
+``
+
+* You can run the image locally and interact with the application (e.g. http://docker_container_IP:8080).
+
+``
+$ docker run --rm quay.io/jfdenise/my-app:latest
+``
+
+* Publish the image
+
+``
+$ docker push quay.io/jfdenise/my-app:latest
+``
+
+* Write a WildFly Helm Charts `my-app.yaml` file with the following content:
+
+```
+image:
+  name: quay.io/jfdenise/my-app
+build:
+  enabled: false
+```
+
+* Deploy on OpenShift
+
+``
+helm install my-app -f my-app.yaml wildfly_v2/wildfly
+``
+
+* Once deployed, access the application route URL (e.g. https://my-app-jdenise-stage.apps.sandbox.x8i5.p1.openshiftapps.com/)
+
+## To conclude
+
+We hope that, like us, you will see the benefits of this new approach (for which you can perhaps find similarities
+with the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/[WildFly bootable JAR] S2I experience).
+This is going to allow us to offer more flexibility (provision the server of your choice), better efficiency (smaller images, faster server startup),
+simpler user experience (WildFly Maven plugin configuration is far simpler than the existing S2I configuration points).
+So in the end a much better overall experience.
+
+Keep us posted with your feedback. (You can log these as new
+link:https://github.com/wildfly/wildfly-s2i/issues[project issues].) This will help us evolve the new WildFly S2I experience in the right direction.
+
+Thank-you!
+
+JF Denise

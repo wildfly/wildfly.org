@@ -1,0 +1,168 @@
+---
+layout: post
+title: Configuring DNS ping on a WildFly Bootable JAR cluster application
+aliases: [/news/2021/03/12/Bootable-jar-jkube-clustering-dns-ping-openshift]
+date:   2021-03-12
+tags: wildfly galleon bootable jar bootable-jar clustering jkube dns-ping
+author: yborgess
+---
+
+[NOTE]
+====
+This post is a continuation of my https://www.wildfly.org/news/2021/02/01/Bootable-jar-jkube-clustering-openshift[WildFly Bootable JAR cluster application with JKube openshift-maven-plugin] blog post. It assumes you are familiar with the https://github.com/yersan/wildfly-clustering-demo.git[demo application] we used for that article.
+====
+
+== Introduction
+
+We recently described in this https://www.wildfly.org/news/2021/02/01/Bootable-jar-jkube-clustering-openshift[post] details about how to deploy and configure a WildFly Bootable JAR cluster application on OpenShift. By default, a Bootable JAR cluster application uses the http://www.jgroups.org/manual5/index.html#_kube_ping[KUBE_PING] protocol for its clustering discovery mechanism. This protocol is based on the ability to query the Kubernetes API to determine which pods match certain criteria and then create a JGroups cluster based on this information. This protocol may not be a viable or an ideal solution for your scenario; for example, if you cannot grant a specific permission on your Kubernetes cluster to use KUBE_PING, or if your requirement is to make your application agnostic to the Kubernetes API.
+
+In this guide we will explain how you can configure the same Bootable JAR cluster application but this time using the http://www.jgroups.org/manual5/#_dns_ping[DNS_PING] protocol.
+
+== Getting started
+
+The following are the key points we need to accomplish to configure our Bootable JAR cluster application to use DNS_PING:
+
+* *Define a ping service.* We need to create a https://kubernetes.io/docs/concepts/services-networking/service/#headless-services[headless service] resource, which is used by the protocol to get the IP addresses of the pods that would be part of the cluster. When we are defining this resource, we need to pay attention to the service selector and service name. The selector defines the pods that will be backed by this service. The JGroups subsystem needs to know the service name to configure the DNS_PING protocol.
+
+* *Configure the JGroups subsystem to use DNS_PING.* We need to change the default JGroups subsystem configuration of our Bootable JAR application. We will execute a CLI script at build time to configure the JGroups protocol stack, removing the default KUBE_PING protocol and adding the DNS_PING. One important detail about the DNS_PING configuration is the value we will use for the *dns_query* property. This value specifies the DNS name of the Kubernetes ping service the protocol is going to use to discover other cluster members.
+
+To sum up, we will need a Kubernetes service with a matching label selector to define which pods will be part of our cluster, and we will tell the JGroups subsystem that we want to use such a service to locate other possible cluster members.
+
+== Define a ping service
+
+The ping service is just an additional Kubernetes service resource. We are using the https://www.eclipse.org/jkube/docs/openshift-maven-plugin[JKube openshift-maven-plugin] to deploy our application. This maven plugin allows us to specify any additional resource we want to deploy. What we need to do is create our additional resources under *src/main/jkube/* and JKube will create the resource for us when deploying the application.
+
+This is our ping service definition at https://github.com/yersan/wildfly-clustering-demo/blob/dns-ping/src/main/jkube/ping_service.yaml[src/main/jkube/ping_service.yaml]:
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: wildfly-demo-ping-service
+  annotations:
+    description: The JGroups ping service for clustering discovery.
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app: wildfly-clustering-demo
+----
+
+The *selector* specifies the name of our application. Without any additional modification, the name of our application is the maven group id of our project.
+
+We have also configured the service with *publishNotReadyAddresses: true*. This configuration specifies that when there is a DNS lookup by using this service, the result will contain all pods matching the service’s label selector, even those which are not yet in a ready state. We want the JGroups cluster to form before the pods are receiving end user requests. This configuration makes it possible by returning also the IP of the pods that are not ready yet.
+
+We have also added *clusterIP: None* in the service spec. This means this service will not assign a cluster IP through which clients can connect to all the pods backing it; instead it will return an IP to connect directly to the pod.
+
+== Configure the JGroups subsystem to use DNS_PING.
+
+As a second step, we need to configure the JGroups stack to use the DNS_PING protocol. We have to instruct the  https://github.com/wildfly-extras/wildfly-jar-maven-plugin[wildfly-jar-maven-plugin] to execute the https://github.com/yersan/wildfly-clustering-demo/blob/dns-ping/src/main/scripts/configure_dns_ping.cli[following script]:
+
+----
+/subsystem=jgroups/stack=tcp/protocol=kubernetes.KUBE_PING:remove
+/subsystem=jgroups/stack=tcp/protocol=dns.DNS_PING:add(add-index=0)
+/subsystem=jgroups/stack=tcp/protocol=dns.DNS_PING/property=dns_query:add(value=${env.DNS_PING_SERVICE_NAME})
+/subsystem=jgroups/stack=tcp/protocol=dns.DNS_PING/property=async_discovery_use_separate_thread_per_request:add(value=true)
+----
+
+The script removes the existing *kubernetes.KUBE_PING* protocol and adds the *dns.DNS_PING*. The value of the *dns_query* property will be retrieved from an environment variable named *DNS_PING_SERVICE_NAME*. The value of this environment variable is specified under the *<env>* section of the JKube maven plugin configuration in our pom.xml.
+
+The maven _openshift_ profile looks as https://github.com/yersan/wildfly-clustering-demo/blob/dns-ping/pom.xml#L53-L100[follows]:
+----
+<profiles>
+    <profile>
+        <id>openshift</id>
+        ...
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-jar-maven-plugin</artifactId>
+                    <configuration>
+                        <cloud/>
+                        <cli-sessions>
+                            <cli-session>
+                                <script-files>
+                                    <script>${project.build.scriptSourceDirectory}/configure_dns_ping.cli</script>
+                                </script-files>
+                            </cli-session>
+                        </cli-sessions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.jkube</groupId>
+                    <artifactId>openshift-maven-plugin</artifactId>
+                    <version>1.0.2</version>
+                    <configuration>
+                        <resources>
+                            <env>
+                                 ...
+                                <DNS_PING_SERVICE_NAME>wildfly-demo-ping-service</DNS_PING_SERVICE_NAME>
+                            </env>
+                        </resources>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>resource</goal>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+</profiles>
+----
+
+== Build, deploy and verify the demo application
+
+Now let us build and deploy our Bootable JAR application. We assume you have a cluster running and you have already logged into it.
+
+1. Clone the demo application and checkout the *dns-ping* branch.
++
+----
+$ git clone https://github.com/yersan/wildfly-clustering-demo.git
+$ cd wildfly-clustering-demo
+wildfly-clustering-demo (master) $ git checkout dns-ping
+Switched to branch 'dns-ping'
+----
+2. Build and deploy the application by issuing the following maven goal:
++
+----
+wildfly-clustering-demo (dns-ping) $ mvn oc:deploy -Popenshift
+----
+
+3. Once your application has been completely deployed, scale it up, for example, three replicas:
++
+----
+wildfly-clustering-demo (dns-ping) $ oc scale dc/wildfly-clustering-demo --replicas=3
+deploymentconfig.apps.openshift.io/wildfly-clustering-demo scaled
+----
+
+4. Once your pods are in ready state, you can inspect the logs of any pod and verify there are three members in the cluster:
++
+----
+wildfly-clustering-demo (dns-ping) $ oc get pods
+NAME                                  READY   STATUS      RESTARTS   AGE
+wildfly-clustering-demo-3-9dmrk       1/1     Running     0          117s
+wildfly-clustering-demo-3-deploy      0/1     Completed   0          3m6s
+wildfly-clustering-demo-3-f99qb       1/1     Running     0          3m2s
+wildfly-clustering-demo-3-snh74       1/1     Running     0          117s
+wildfly-clustering-demo-s2i-1-build   0/1     Completed   0          5m31s
+
+wildfly-clustering-demo (dns-ping) $ oc logs -f pods/wildfly-clustering-demo-3-snh74
+...
+11:05:33,906 INFO  [org.infinispan.CLUSTER] (ServerService Thread Pool -- 50) ISPN000078: Starting JGroups channel ee
+11:05:33,908 INFO  [org.infinispan.CLUSTER] (ServerService Thread Pool -- 50) ISPN000094: Received new cluster view for channel ee: [clustering-demo-3-f99qb|2] (3) [clustering-demo-3-f99qb, clustering-demo-3-9dmrk, clustering-demo-3-snh74]
+11:05:33,911 INFO  [org.infinispan.CLUSTER] (ServerService Thread Pool -- 50) ISPN000079: Channel ee local address is clustering-demo-3-snh74, physical addresses are [10.129.148.40:7600]
+...
+----
+
+You should have at this point the Bootable JAR application running on a cluster of three pods.
+
+== Conclusion
+
+You can easily configure a Bootable JAR application and adapt it to your needs by executing a CLI script. In this article, we have seen a practical example of how to configure the JGroups protocol stack. Together with the ability to deploy additional resources given by the JKube maven plugin, we have replaced the default clustering discovery mechanism by adding minimal changes to our project.
+
+You can find out more examples of how to use and work with the Bootable JAR https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/3.0.2.Final/examples/[here]. If you have any question related, feel free to contact us joining to the https://groups.google.com/forum/#!forum/wildfly[WildFly community forums] or https://wildfly.zulipchat.com/[Zulip Chat].
