@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Introduction to a GUI wizard to configure TLS in WildFly'
+date: 2025-04-17
+tags: elytron gui
+synopsis: Learn how to use a GUI wizard to configure one-way TLS in WildFly.
+author: theashiot
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/gui-tls-wizard/
+---

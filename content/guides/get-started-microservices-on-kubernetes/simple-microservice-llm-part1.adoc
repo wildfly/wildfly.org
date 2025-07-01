@@ -1,0 +1,294 @@
+---
+layout: guide-getting-started
+---
+
+= \{simple-microservice-llm-part1}
+:summary: Java Microservice using WildFly that invokes an LLM
+:includedir: ../_includes
+{#include partials/guides/attributes.adoc /}
+{#include partials/guides/titles.adoc /}
+:prerequisites-time: 10
+
+In this guide, we will extend the example created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}] and consume an external LLM APIs through LangChain4J.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}]
+
+{#include partials/guides/constants.adoc /}
+
+{|
+== LLM
+
+You can use any LLM supported by link:https://docs.langchain4j.dev/integrations/language-models[LangChain4J, window="_blank"]; in this guide we will use model `{ollama-llm}` and run it using the link:https://ollama.com/blog/ollama-is-now-available-as-an-official-docker-image[Ollama Docker Image, window="_blank"];
+
+=== Ollama + {ollama-llm}
+
+Start Ollama:
+
+[source,bash,subs="normal"]
+----
+podman network create {podman-network-name}
+
+podman volume create ollama
+podman run --rm --network={podman-network-name} -d -v ollama:/root/.ollama -p 11434:11434 --name {ollama-pod-name} {ollama-docker-image}
+----
+
+NOTE: we started the container with the `--rm` flag: this way it is disposed of automatically when we stop it
+
+NOTE: We created the *{podman-network-name}* network and started the *{ollama-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{ollama-pod-name}* container from the *{my-jaxrs-app-llm-docker-image-name}* container
+
+Install the `{ollama-llm}` LLM inside the *{ollama-pod-name}* container:
+
+[source,bash,subs="normal"]
+----
+podman exec -it {ollama-pod-name} ollama pull {ollama-llm}
+----
+
+Test that your LLM is working by invoking its APIs like in the following:
+
+[source,bash,subs="normal"]
+----
+$ curl http://localhost:11434/api/generate -d '{ "model": "{ollama-llm}", "prompt":"Hi! My name is Tommaso"}'
+{"model":"llama3.1:8b","created_at":"2025-03-19T16:26:19.388567244Z","response":"C","done":false}
+{"model":"llama3.1:8b","created_at":"2025-03-19T16:26:19.518556766Z","response":"iao","done":false}
+{"model":"llama3.1:8b","created_at":"2025-03-19T16:26:19.646976123Z","response":" Tom","done":false}
+{"model":"llama3.1:8b","created_at":"2025-03-19T16:26:19.77417658Z","response":"mas","done":false}
+{"model":"llama3.1:8b","created_at":"2025-03-19T16:26:19.901190847Z","response":"o","done":false}
+{"model":"llama3.1:8b","created_at":"2025-03-19T16:26:20.033013914Z","response":"!","done":false}
+...
+----
+
+== Maven Project
+
+You will extend the sample application you created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}] by adding the link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[wildfly-ai-feature-pack, window="_blank"].
+
+The link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[wildfly-ai-feature-pack, window="_blank"] will:
+
+* add the necessary link:https://docs.langchain4j.dev[LangChain4J, window="_blank"] modules to the server (= the necessary dependencies to work with the model of choice)
+* add the configuration related to the model of choice; e.g. when using the `<layer>ollama-chat-model</layer>`, the feature pack would configure the server to connect to an external *Ollama* service
+
+=== pom.xml
+
+==== dependencies
+
+Add the following dependencies to the `pom-xml` file `dependencies` section:
+
+[source,xml,subs="normal"]
+----
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>{version-langchain4j}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-core</artifactId>
+            <version>{version-langchain4j}</version>
+            <scope>provided</scope>
+        </dependency>
+----
+
+NOTE: we are not adding LLM specific link:https://docs.langchain4j.dev[LangChain4J, window="_blank"] dependencies because they will be added automatically to the server by the `wildfly-ai-feature-pack` based on the specific AI layer we are using (e.g. the `ollama-chat-model` layer, will add the `dev.langchain4j:langchain4j-ollama` module to the server)
+
+==== wildfly-maven-plugin
+
+Add the `wildfly-ai-feature-pack` feature-pack and the `ollama-chat-model` layer to the `wildfly-maven-plugin` configuration.
+
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
+
+[source,xml,subs="normal"]
+----
+    <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>{version-wildfly-maven-plugin}</version>
+        <configuration>
+            <feature-packs>
+                <feature-pack>
+                    <location>org.wildfly:wildfly-galleon-pack:{version-wildfly-galleon-pack}</location>
+                </feature-pack>
+                <feature-pack>
+                    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
+                </feature-pack>
+                <feature-pack>
+                    <location>org.wildfly:wildfly-ai-feature-pack:{version-wildfly-ai-feature-pack}</location>
+                </feature-pack>
+            </feature-packs>
+            <layers>
+                <layer>cloud-server</layer>
+                <layer>ollama-chat-model</layer>
+            </layers>
+        </configuration>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>package</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+----
+
+NOTE: The `wildfly-maven-plugin` configuration can be simplified by using link:https://docs.wildfly.org/wildfly-glow/[wildfly-glow]; link:https://docs.wildfly.org/wildfly-glow/[wildfly-glow] inspects your deployment and figures out what `feature-pack` and `layers` to use automatically! just replace the whole `configuration` section with the following:
+[source,xml,subs="normal"]
+----
+<configuration>
+    <discoverProvisioningInfo>
+        <context>cloud</context>
+        <spaces>
+            <space>incubating</space>
+        </spaces>
+    </discoverProvisioningInfo>
+</configuration>
+----
+
+=== Java Classes
+
+Replace the content of the `org.wildfly.examples.GettingStartedEndpoint` class with the following:
+
+.org.wildfly.examples.GettingStartedEndpoint :
+[source,java]
+----
+package org.wildfly.examples;
+
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+@Path("/")
+@RequestScoped
+public class GettingStartedEndpoint {
+    @Inject
+    @Named(value = "ollama")
+    ChatLanguageModel model;
+
+    @GET
+    @Path("/{name}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response sayHello(final @PathParam("name") String name) {
+        ChatMemory memory = MessageWindowChatMemory.withMaxMessages(5);
+        UserMessage message1 = UserMessage.from("Hi! my name is " + name);
+        memory.add(message1);
+        AiMessage response1 = model.chat(memory.messages()).aiMessage();
+        memory.add(response1);
+        return Response.ok(response1).build();
+    }
+}
+----
+
+Delete class `org.wildfly.examples.GettingStartedService` which isn't used anymore at this point, since the LLM is now responsible for greeting us!
+
+=== Build the application
+
+[source,bash]
+----
+$ mvn clean package
+...
+[INFO] Copy deployment /home/tborgato/projects/guides/get-started-microservices-on-kubernetes/simple-microservice-llm/target/ROOT.war to /home/tborgato/projects/guides/get-started-microservices-on-kubernetes/simple-microservice-llm/target/server/standalone/deployments/ROOT.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.694 s
+[INFO] Finished at: 2025-03-19T14:39:09+01:00
+[INFO] ------------------------------------------------------------------------
+----
+
+== Docker Image
+
+=== Build the Docker Image
+
+Build the Docker Image with the following command:
+
+[source,bash,subs="normal"]
+----
+$ podman build -t {my-jaxrs-app-llm-docker-image-name}:latest .
+STEP 1/3: FROM quay.io/wildfly/wildfly-runtime:latest
+STEP 2/3: COPY --chown=jboss:root target/server $JBOSS_HOME
+--> 026526b27879
+STEP 3/3: RUN chmod -R ug+rwX $JBOSS_HOME
+COMMIT my-jaxrs-app-llm:latest
+--> 1cae487d4086
+Successfully tagged localhost/{my-jaxrs-app-llm-docker-image-name}:latest
+1cae487d408603eedebdc5f7d116ce70a4bfa5c1d44d8eeca890645973039899
+----
+
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+
+=== Run the Docker Image
+
+Note that, when running the `{my-jaxrs-app-llm-docker-image-name}:latest` Docker Image, we specify some environment variables used by WildFly to connect to the Ollama service:
+
+[source,bash,subs="normal"]
+----
+podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
+    -e OLLAMA_CHAT_URL=http://{ollama-pod-name}:11434 \
+    -e OLLAMA_CHAT_LOG_REQUEST=true \
+    -e OLLAMA_CHAT_LOG_RESPONSE=true \
+    -e OLLAMA_CHAT_TEMPERATURE=0.9 \
+    -e OLLAMA_CHAT_MODEL_NAME={ollama-llm} \
+    --name={my-jaxrs-app-llm-docker-image-name} \
+    {my-jaxrs-app-llm-docker-image-name}:latest
+----
+
+NOTE: We started the *{my-jaxrs-app-llm-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{ollama-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{ollama-pod-name}* container from the *{my-jaxrs-app-llm-docker-image-name}* container using the *{ollama-pod-name}* DNS name;
+
+=== Check the application [[check_the_application]]
+
+Put the http://localhost:8080/api/tom[http://localhost:8080/api/tom, window="_blank"] URL in your browser and you should receive a response like:
+
+[source,jsonlines]
+----
+AiMessage { text = "Nice to meet you, Tom! I'm happy to chat with you. What's on your mind today?" toolExecutionRequests = [] }
+----
+
+now point your browser to http://localhost:8080/api/get-previous-name[http://localhost:8080/api/get-previous-name, window="_blank"] and you should receive a response like:
+
+[source,jsonlines]
+----
+AiMessage { text = "I already knew that, Tom! You told me earlier, remember? Your name is... (drumroll) ...Tom!" toolExecutionRequests = [] }
+----
+
+which proves that the chat memory actually works and the LLM is able to tell your name from the previous conversation;
+
+=== Stop the Docker containers
+
+Stop the running container:
+
+[source,bash,subs="normal"]
+----
+podman stop {my-jaxrs-app-llm-docker-image-name}
+podman stop {ollama-pod-name}
+----
+
+== What's next?
+
+link:/guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part2[{simple-microservice-llm-part2}]
+
+[[references]]
+== References
+
+* Source code for this guide: link:{source-code-git-repository}/simple-microservice-llm[simple-microservice-llm, window="_blank"]
+* link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[wildfly-ai-feature-pack, window="_blank"]
+* link:https://docs.langchain4j.dev[LangChain4J, window="_blank"]
+* link:https://www.wildfly.org/news/2024/11/04/WildFly-playing-with-generative-ai[Playing with Generative AI with WildFly, window="_blank"]
+
+Back to Guides
+
+< link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
+|}

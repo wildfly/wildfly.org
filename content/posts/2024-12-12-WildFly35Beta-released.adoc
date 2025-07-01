@@ -1,0 +1,46 @@
+---
+layout: post
+title:  "WildFly 35 Beta is released!"
+aliases: [/news/2024/12/12/WildFly35Beta-released]
+date:   2024-12-12
+tags:   announcement release
+author: darranl
+description: WildFly 35 Beta is now available for download.
+---
+
+I'm pleased to announce that the new WildFly 35.0.0.Beta1 release is available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank].
+
+[[new_and_notable]]
+== New and Notable
+
+This quarter we had a heavy focus on MicroProfile, particularly link:https://microprofile.io/2024/08/22/microprofile-7-0-release/#[MicroProfile 7.0, window=_blank].
+
+* WildFly now link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19592_MicroProfile_Fault_Tolerance_4_1.html[supports MicroProfile Fault Tolerance 4.1, window=_blank].
+
+* WildFly now link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19591_MicroProfile_OpenAPI_4.0.html[supports MicroProfile OpenAPI 4.0, window=_blank].
+
+* Standard WildFly now link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19866-promote-mp-rest-client-to-default.html[supports MicroProfile REST Client 4.0, window=_blank]. This was previously supported in WildFly Preview.
+
+* Standard WildFly now link:https://docs.wildfly.org/wildfly-proposals/observability/WFLY-19846-promote-mp-tel-2-to-default.html[supports MicroProfile Telemetry 2.0, window=_blank]. This was previously supported in WildFly Preview.
+
+* Our MicroProfile Reactive Messaging subsystem has added OpenTelemetry tracing integration for link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19835_microprofile_reactive_messaging_otel_with_kafka.html[Kafka connectors, window=_blank] and link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19836_microprofile_reactive_messaging_otel_with_amqp.html[AMQP connectors, window=_blank].
+
+There's plenty of new things beyond MicroProfile area as well, though:
+
+* WildFly now includes link:https://docs.wildfly.org/wildfly-proposals/scripts/WFCORE-6935-system-daemon-scripts.html[supported `systemd` units, window=_blank] in the `bin/systemd` directory, replacing the old, unsupported `docs/contrib/scripts/systemd` files. The new units include support for a managed domain.
+
+* The `jaxrs` subsystem now link:https://docs.wildfly.org/wildfly-proposals/jaxrs/WFLY-13122_Add_Json_Merge_Patch_support.html[provides JSON merge patch support, window=_blank]. This feature allows the client to send a JSON http request with Content-Type "application/merge-patch+json", and the JSON content will be directly merged to the target resource.
+
+* We added link:https://docs.wildfly.org/wildfly-proposals/ee/WFLY-19776_Jakarta_Data_in_standard_WildFly.html[support for Jakarta Data 1.0, window=_blank] to standard WildFly. This was previously link:https://www.wildfly.org/news/2024/10/10/jakarta-data/[included in WildFly Preview 34, window=_blank]; now it is available in standard WildFly as well. This feature is provided at the link:https://docs.wildfly.org/34/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
+
+* WildFly Preview has  a new link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19954_Preview_Support_vertx_feature_pack.html[`vertx` subsystem and Galleon layer, window=_blank], intended to give user's greater control over the configuration of Vert.x instances running in the server. This feature is provided at the link:https://docs.wildfly.org/34/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
+
+* WildFly Glow has also received a new feature to https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[introduce spaces to structure discovered Galleon feature-packs, window=_blank], this allows feature packs to be grouped into spaces such as an incubating space to reflect the stability of the feature pack and to allow users to select which spaces they want to use.
+
+For further details please see the detailed https://github.com/wildfly/wildfly/releases/tag/35.0.0.Beta1[35.0.0.Beta1 Release Notes, window=_blank] in GitHub.
+
+As we approach the end of 2024 this is the time of the year where we release the Beta release of the major version just before
+we wrap up for the end of the year and will follow up with the Final release once we return in the new year.  Please take this
+time as an opportunity to try out this release and provide us with any feedback.
+
+Finally I would like to thank everyone who has contributed to making this release happen, both via direct contributions to WildFly as well as the countless contributions to the projects that WildFly depends upon. We also had a couple of first time contributors this release so I would like to thank https://github.com/aldaris[Peter Major, window=_blank] for taking on one of our `good-first-issue` Jira issues to remove redundant code from our application client implementation and https://github.com/pedro-hos[Pedro Hos, window=_blank] for contributing updates to our testsuite to move tests to a more appropriate location.

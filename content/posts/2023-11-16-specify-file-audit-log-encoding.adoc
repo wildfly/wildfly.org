@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Change the default encoding of the audit log file in WildFly'
+date: 2023-11-16
+tags: audit-logging encoding
+synopsis:  An overview of how to change the default encoding of the audit log file.
+author: ivassile
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/specify-file-audit-log-encoding/
+---

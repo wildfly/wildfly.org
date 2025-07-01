@@ -1,0 +1,84 @@
+# Conference data structure documented in README.adoc
+# If you modify the data structure, please document the changes in README.adoc
+date: "2024-03-06"
+start: "14:00"
+end: "18:00"
+status: done
+video-id: "_8g1rZ80u2A"
+video: "https://www.youtube.com/live/_8g1rZ80u2A"
+feedback: "https://forms.gle/VV8KgzLF4MxRZBi9A"
+agenda:
+  - title: "Welcome and opening ceremony"
+    start: "14:00"
+    end: "14:15"
+    type: other
+  - title: "Introduction to WildFly and how to get started fast"
+    start: "14:15"
+    end: "15:00"
+    type: talk
+    abstract: >
+      In this session the WildFly project itself will be introduced. You will get to know the different components that make up WildFly. We will take a closer look at the architecture and internal functionality of WildFly.
+
+      The session will also include a demo how to get started fast and how to deploy and evolve a very basic application.
+    speaker:
+      - name: hpehl
+        bio: "Harald Pehl is a principal software engineer at Red Hat. He works on the management capabilities of WildFly and leads the management console (HAL)."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/watch?v=_8g1rZ80u2A&t=797s"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202403-wildfly-intro-and-getting-started.pdf"
+  - title: "Deploying WildFly applications to bare-metal and the cloud"
+    start: "15:00"
+    end: "15:45"
+    type: talk
+    abstract: >
+      In this session, we'll see how Ansible can help deploy, configure, managed and maintened up to date Wildfly on any platform, from bare metal to VM and even clouds. We'll deal with Day 1 tasks in fully automated fashion, but also cover how to keep the system running after the initial deployment (Day 2).
+    speaker:
+      - name: rpelisse
+        bio: "Romain Pelisse works at Red Hat for over a decade. He started as runtimes consultant, building on expertise on JBoss EAP (Wildfly), and moved to engineering where he became the lead of the Ansible runtimes initiative, focusing on providing the best integration possible between Red Hat middleware solutions and Ansible Automation Platform."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/watch?v=_8g1rZ80u2A&t=3635s"
+      - title: "Slides"
+        url: "https://github.com/ansible-middleware/wfl-mini-conf-demo/blob/main/slides.md"
+  - title: "Break"
+    start: "15:45"
+    end: "16:00"
+    type: other
+  - title: "What is new in WildFly and roadmap for future releases"
+    start: "16:00"
+    end: "16:45"
+    type: talk
+    abstract: >
+      In this session we'll provide an overview of what's new in the WildFly project in the last several months, particularly in the WildFly 31 release. Then we'll describe where we see things going in WildFly over the remainder of 2024 -- release plans, a possible roadmap for Jakarta EE 11 support, plans around Java SE support and ideas around significant new features and initiatives.
+    speaker:
+    - name: bstansberry
+      bio: "Brian Stansberry is the lead of the WildFly application server project and the principal architect of Red Hat's JBoss Enterprise Application Platform."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/watch?v=_8g1rZ80u2A&t=7275s"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202403-whats-new-and-roadmap.pdf"
+  - title: "WildFly Glow"
+    start: "16:45"
+    end: "17:30"
+    type: talk
+    abstract: >
+      In this session you will be introduced to WildFly Glow, a new approach to the WildFly provisioning.
+
+      We will cover WildFly provisioning in general, discuss potential issues, and we will see how WildFly Glow simplifies the WildFly provisioning experience.
+
+      During the presentation WildFly Glow tooling will be demonstrated.
+    speaker:
+    - name: jfdenise
+      bio: "Jean-François Denise is a principal software engineer at Red Hat. He is involved in WildFly provisioning and tooling (WildFly CLI, WildFly Bootable JAR, Openshift images, WildFly Glow)."
+    links:
+      - title: "Video"
+        url: "https://www.youtube.com/watch?v=_8g1rZ80u2A&t=10116s"
+      - title: "Slides"
+        url: "https://www.wildfly.org/assets/conference/202403-glow.pdf"
+  - title: "Feedback and closing ceremony"
+    start: "17:30"
+    end: "18:00"
+    type: other

@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Remote EJB Client for Batch Application'
+date: 2023-07-21
+tags: #ejb #batch
+synopsis: How to use standalone remote EJB client to connect to WildFly and manage batch jobs
+author: chengfang
+external_link: http://jberet.org/remote-ejb-batch/
+---

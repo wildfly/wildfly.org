@@ -1,0 +1,50 @@
+---
+layout: base
+---
+
+<div class="news-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">Wild<strong>Fly</strong> Releases</h1>
+  </div>
+  <div class="grid__item width-2-12 rss-btn">
+    <a href="{site.url('feed.xml')}"><i class="fas fa-rss-square"></i></a>
+  </div>
+
+
+  <div class="grid__item width-10-12 width-12-12-m">
+      {#for post in site.collections.posts}
+      {#if post.data.tags.or("").contains('release') and post.data.tags.or("").contains('announcement')}
+      <div class="news-list-item grid-wrapper">
+        <div class="post-title grid__item width-12-12">
+          <h2>
+              {#let pageUrl = post.data.external_link.or(post.url.path)}
+              <a href="{pageUrl}" {#if post.data.containsKey('external_link')}target="_blank"{/if}>{post.title}</a>
+              {/let}
+          </h2>
+        </div>
+        <div class="grid__item width-6-12 width-12-12-m">
+            <p class="byline">By {cdi:authors.buildAuthorList(post).join(",")} | {post.date.format('LLLL d, YYYY')}</p>
+        </div>
+        <div class="grid__item width-6-12 width-12-12-m">{#include partials/share-page.html /}</div>
+        <div class="grid__item width-12-12">
+          {#if post.data.containsKey('synopsis')}
+            <p>{post.data.synopsis}</p>
+          {#else}
+            <p>{site.pageContent(post).stripHtml.wordLimit(75)}</p>
+          {/if}
+        </div>
+        <div class="grid__item width-12-12">
+            {#let pageUrl = post.data.external_link.or(post.url.path)}
+            <a href="{pageUrl}" {#if post.data.containsKey('external_link')}target="_blank"{/if}>
+            {#if pageUrl.contains('youtube')}Watch Video >{#else}Read More >{/if}</a>
+            {/let}
+        </div>
+      </div>
+        {/if}
+      {/for}
+  </div>
+
+  <div class="grid__item width-2-12"></div>
+</div>
+
+

@@ -1,0 +1,378 @@
+---
+layout: guide-getting-started
+---
+= \{simple-microservice-database-part1}
+:summary: Java Microservice using WildFly
+:includedir: ../_includes
+{#include partials/guides/attributes.adoc /}
+{#include partials/guides/titles.adoc /}
+:prerequisites-time: 10
+
+In this guide, we will extend the example created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}] and add Database connectivity.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}]
+
+{#include partials/guides/constants.adoc /}
+
+{|
+== Database
+
+=== PostgreSQL
+
+We will use PostgreSQL in this guide in its containerized version: see link:https://hub.docker.com/_/postgres[PostgreSQL Official Image, window="_blank"].
+
+Start PostgreSQL:
+
+[source,bash,subs="normal"]
+----
+podman network create {podman-network-name}
+
+podman run --rm --network={podman-network-name} --name {postgre-sql-pod-name} \
+  -p {postgre-sql-port}:{postgre-sql-port} \
+  -e POSTGRES_PASSWORD={postgre-sql-password} \
+  -e POSTGRES_USER={postgre-sql-user} \
+  -e POSTGRES_DB={postgre-sql-database} \
+  {postgre-docker-image}
+----
+
+NOTE: we started the container with the `--rm` flag: this way it is disposed of automatically when we stop it
+
+NOTE: We created the *{podman-network-name}* network and started the *{postgre-sql-pod-name}* container with the `--network={podman-network-name}` option: later in this guide, this will allow us to connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container
+
+== Maven Project
+
+You will extend the sample application you created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}] by adding the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"].
+
+The link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"] will:
+
+* install the JDBC Driver for the PostgreSQL Database into WildFly
+* add a database connection to PostgreSQL in WildFly
+
+=== pom.xml
+
+==== dependencies
+
+Add the following dependencies to the `pom-xml` file `dependencies` section:
+
+[source,xml,subs="normal"]
+----
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+----
+
+==== wildfly-maven-plugin
+
+Add the `wildfly-datasources-galleon-pack` feature-pack and the `postgresql-datasource` layer to the `wildfly-maven-plugin` configuration.
+
+You should end up with the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configured like in the following:
+
+[source,xml,subs="normal"]
+----
+    <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>{version-wildfly-maven-plugin}</version>
+        <configuration>
+            <feature-packs>
+                <feature-pack>
+                    <location>org.wildfly:wildfly-galleon-pack:{version-wildfly-galleon-pack}</location>
+                </feature-pack>
+                <feature-pack>
+                    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{version-wildfly-cloud-galleon-pack}</location>
+                </feature-pack>
+                <feature-pack>
+                    <location>org.wildfly:wildfly-datasources-galleon-pack:{version-wildfly-datasources-galleon-pack}</location>
+                </feature-pack>
+            </feature-packs>
+            <layers>
+                <layer>cloud-server</layer>
+                <layer>postgresql-datasource</layer>
+            </layers>
+        </configuration>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>package</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+----
+
+=== Java Classes
+
+Add the following classes to the project:
+
+.org.wildfly.examples.test_table.TestTable :
+[source,java]
+----
+package org.wildfly.examples.test_table;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
+import java.util.Objects;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
+
+@Entity
+public class TestTable {
+
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	private Long id;
+
+	private String field1;
+
+	private String field2;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getField1() {
+		return field1;
+	}
+
+	public void setField1(String field1) {
+		this.field1 = field1;
+	}
+
+	public String getField2() {
+		return field2;
+	}
+
+	public void setField2(String field2) {
+		this.field2 = field2;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TestTable testTable = (TestTable) o;
+		return Objects.equals(id, testTable.id) && Objects.equals(field1, testTable.field1) && Objects.equals(field2, testTable.field2);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, field1, field2);
+	}
+}
+----
+
+.org.wildfly.examples.test_table.TestTableResource :
+[source,java]
+----
+package org.wildfly.examples.test_table;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
+
+import java.util.List;
+
+@RequestScoped
+@Path("/test-table")
+public class TestTableResource {
+
+	@PersistenceContext(unitName = "primary")
+	private EntityManager em;
+
+	public void createOrUpdateRow(TestTable row) {
+		if (!em.contains(row)) {
+			row = em.merge(row);
+		}
+		em.persist(row);
+	}
+
+	public List<TestTable> getAllRows() {
+		return em.createQuery("SELECT t FROM TestTable t", TestTable.class).getResultList();
+	}
+
+	@Transactional
+	@POST
+	@Produces({"application/json"})
+	@Path("{field1}/{field2}")
+	public Response insertIntoTestTable(
+			@PathParam("field1") @DefaultValue("some data 1") String field1,
+			@PathParam("field2") @DefaultValue("some data 2") String field2) throws Exception {
+		TestTable testTable = null;
+		try {
+			testTable = new TestTable();
+			testTable.setField1(field1);
+			testTable.setField2(field2);
+
+			createOrUpdateRow(testTable);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+
+		return Response.ok(testTable).build();
+	}
+
+	@GET
+	@Produces({"application/json"})
+	public List<TestTable> getAllRowsFromTestTable() {
+		try {
+			List<TestTable> allRows = getAllRows();
+			return allRows;
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+}
+----
+
+=== persistence.xml
+
+Add the `src/main/resources/META-INF/persistence.xml` file to the project with the following content:
+
+.src/main/resources/META-INF/persistence.xml
+[source,xml,subs="normal"]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd" >
+    <persistence-unit name="primary">
+        <jta-data-source>{postgre-sql-jndi}</jta-data-source>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+
+----
+
+=== Build the application
+
+[source,bash]
+----
+$ mvn clean package
+...
+[INFO] Copy deployment /home/tborgato/Documents/WildFly-Mini-Serie/getting-started/target/ROOT.war to /home/tborgato/Documents/WildFly-Mini-Serie/getting-started/target/server/standalone/deployments/ROOT.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.830 s
+[INFO] Finished at: 2024-05-07T16:18:22+02:00
+[INFO] ------------------------------------------------------------------------
+----
+
+== Docker Image
+
+=== Build the Docker Image
+
+Build the Docker Image with the following command:
+
+[source,bash,subs="normal"]
+----
+$ podman build -t {my-jaxrs-app-db-docker-image-name}:latest .
+STEP 1/3: FROM quay.io/wildfly/wildfly-runtime:latest
+STEP 2/3: COPY --chown=jboss:root target/server $JBOSS_HOME
+--> 4609f8ed0c7f
+STEP 3/3: RUN chmod -R ug+rwX $JBOSS_HOME
+COMMIT my-jaxrs-app:latest
+--> db4677f5bf4f
+Successfully tagged localhost/my-jaxrs-app:latest
+db4677f5bf4f471f5624bd63a21fce3d91b7b3b93e985d3e86a8a4b0682d85cd
+----
+
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build
+
+=== Run the Docker Image
+
+Note that, when running the `{my-jaxrs-app-db-docker-image-name}:latest` Docker Image, we specify some environment variables used by WildFly to connect to the PostgreSQL database:
+
+[source,bash,subs="normal"]
+----
+podman run --rm --network={podman-network-name} -p 8080:8080 -p 9990:9990 \
+    -e POSTGRESQL_USER={postgre-sql-user} \
+    -e POSTGRESQL_PASSWORD={postgre-sql-password} \
+    -e POSTGRESQL_HOST={postgre-sql-pod-name} \
+    -e POSTGRESQL_PORT={postgre-sql-port} \
+    -e POSTGRESQL_DATABASE={postgre-sql-database} \
+    -e POSTGRESQL_JNDI={postgre-sql-jndi} \
+    --name={my-jaxrs-app-db-docker-image-name} \
+    {my-jaxrs-app-db-docker-image-name}:latest
+----
+
+NOTE: We started the *{my-jaxrs-app-db-docker-image-name}* container with the `--network={podman-network-name}` option just like we did when we started the *{postgre-sql-pod-name}* container: the two containers now run in the same *{podman-network-name}* network and we can connect to the *{postgre-sql-pod-name}* container from the *{my-jaxrs-app-db-docker-image-name}* container using the *{postgre-sql-pod-name}* DNS name;
+
+=== Check the application [[check_the_application]]
+
+Hit the following URLs, using a utility like `curl`:
+
+.Insert some Data into the Database:
+[source,bash]
+----
+$ curl -X POST http://localhost:8080/hello/test-table/somedata1/somedata2
+{"field1":"somedata1","field2":"somedata2","id":1}
+----
+
+.Query the database to show the inserted data:
+[source,bash]
+----
+$ curl http://localhost:8080/hello/test-table
+[{"field1":"somedata1","field2":"somedata2","id":1}]
+----
+
+=== Stop the Docker containers
+
+Stop the running container:
+
+[source,bash,subs="normal"]
+----
+podman stop {my-jaxrs-app-db-docker-image-name}
+podman stop {postgre-sql-pod-name}
+----
+
+== What's next?
+
+link:/guides/get-started-microservices-on-kubernetes/simple-microservice-database-part2[{simple-microservice-database-part2}]
+
+[[references]]
+== References
+
+* Source code for this guide: {source-code-git-repository}/simple-microservice-database
+* link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack, window="_blank"]
+* link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/postgresql[PostgreSQL datasource example, window="_blank"]
+
+Back to Guides
+
+< link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
+|}

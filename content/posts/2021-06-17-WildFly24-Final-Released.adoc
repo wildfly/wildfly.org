@@ -1,0 +1,85 @@
+---
+layout: post
+title:  "WildFly 24 is released!"
+aliases: [/news/2021/06/17/WildFly24-Final-Released]
+date:   2021-06-17
+tags:   announcement release microprofile jakartaee
+author: bstansberry
+description: WildFly 24.0.0.Final is now available for download
+---
+
+I'm pleased to announce that the WildFly 24 Final zip is now available link:https://wildfly.org/downloads[for download].
+
+Work during the WildFly 24 development cycle has been primarily oriented toward bug fixing, plus the link:https://www.wildfly.org/news/2021/04/29/WildFly2302-Released/[Jakarta EE 9.1 certification work done for WildFly 23]. We've also been doing work on getting WildFly Preview to run well on SE 16 and 17, with a goal of being able to support SE 17 in standard WildFly later this year.
+
+There are a number of new features in 24 though:
+
+== New Features
+
+* The MicroProfile Reactive Streams Operators subsystem has been updated to support link:https://github.com/eclipse/microprofile-reactive-streams-operators/releases/tag/2.0[version 2.0].
+* It is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFCORE-5027-charset-encoding-support.adoc[specify the character set and hash encoding] strings to verify client-supplied passwords against passwords stored in a Properties Realm, Filesystem Realm, JDBC Realm and LDAP realm in the Elytron subsystem.
+* Older JDK versions use the protocol ``SSLv2Hello`` in the initial handshake message where the SSL version that will be used for the rest of the handshake is negotiated. Although the use of this protocol is discouraged and disabled by default in newer JDK versions, in order to ensure feature parity with legacy security configurations it is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFCORE-5145-ssl-allowed-protocols.adoc[configure a client or server SSL context using the
+``SSLv2Hello`` protocol] in the Elytron subsystem.
+* Elytron previously supported configuring one certificate revocation list. However, if several Certificate Authorities were used, there was no
+way to configure more than one certificate revocation file. It is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFCORE-5170-multiple-certificate-revocation-lists.adoc[configure multiple certificate revocation lists] in Elytron.
+* A link:https://github.com/wildfly/quickstart/tree/24.0.0.Final/todo-backend[new quickstart] `todo-backend` showcases how WildFly can be deployed on OpenShift to provide a backend that exposes an HTTP API (using Jakarta RESTful Web Services) and stores data to a DB (using Jakarta Persistence).
+
+== Codehaus Jackson Removal
+
+Please note that in WildFly 24 we've link:https://issues.redhat.com/browse/WFLY-14672[removed the Codehaus Jackson libraries] from the server distribution, along with support for the Jakarta RESTful Web Services provider that used Codehaus Jackson. For many years now a provider based on the successor FasterXML Jackson project has been available and is the preferred option for those wanting to use Jackson.
+
+
+== WildFly Preview
+
+As I link:https://www.wildfly.org/news/2020/11/12/Jakarta-EE-9-with-WildFly-Preview/[announced in November] when we released WildFly 22 Alpha1, along with our traditional Jakarta EE 8 distribution we want to give our users a preview of what will be coming in WildFly as we move on to EE 9 and later. We call this distribution "WildFly Preview". The WildFly 24.0.0.Final release includes an update to WildFly Preview. _Even though this is coming from a .Final tag of the WildFly codebase, WildFly Preview should always be regarded as a tech-preview/beta distribution._
+
+EE 9 is primarily about implementing the necessary change in the Jakarta EE APIs from the javax.* package namespace to the jakarta.* namespace. This is a big change that is going to take a while to percolate through the EE ecosystem, e.g. for the many projects that compile against the EE APIs to provide versions that use jakarta.*. While this happens we want to continue to deliver new features and fixes to our community, so the primary WildFly distribution will continue to provide the EE 8 APIs. This will continue at least through WildFly 25.
+
+== Standards Support
+
+The standard WildFly 24.0.0 distribution is a Jakarta EE 8 compatible implementation, compatible with both the Full Platform and the Web Profile. Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE8/WildFly_24.0.0.Final/jakarta-full-platform.adoc#tck-results[for the Full Platform] and link:https://github.com/wildfly/certifications/blob/EE8/WildFly_24.0.0.Final/jakarta-web-profile.adoc#tck-results[for the Web Profile].
+
+Beginning with WildFly 23 we are exclusively focusing on the Jakarta EE test suite for EE certification / compliance.
+
+The standard WildFly 24 distribution is also a compliant implementation of the MicroProfile 4.0 platform specification.
+
+The WildFly Preview distribution released today is a compatible implementation of both the Jakarta EE 9.1 Web Profile and the Full Platform.  Evidence supporting our certification is available link:https://github.com/wildfly/certifications/blob/EE9.1/WildFly_24.0.0.Final/jakarta-full-platform.adoc#tck-results[for the Full Platform] and link:https://github.com/wildfly/certifications/blob/EE9.1/WildFly_24.0.0.Final/jakarta-web-profile.adoc#tck-results[for the Web Profile].
+
+== JDK Support
+
+Our recommendation is that you run WildFly on the most recent long-term support JDK release, i.e. on JDK 11 for WildFly 24. While we do do some testing of WildFly on JDK 13, we do considerably more testing of WildFly itself on the LTS JDKs, and we make no attempt to ensure the projects producing the various libraries we integrate are testing their libraries on anything other than JDK 8 or 11.
+
+WildFly 24 also is heavily tested and runs well on Java 8. We plan to continue to support Java 8 at least through WildFly 25, and probably beyond.
+
+While we recommend using an LTS JDK release, I do believe WildFly runs well on JDK 13. By run well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform.
+
+A major focus during the WildFly 24 development cycle was on identifying and addressing issues related to running WildFly on JDK 16 and the early access releases of JDK 17. JDK 17 is due out in September and will be the next LTS JDK release, so we want to be ready to support it as soon as we can. I'm pleased to be able to say that the 24.0.0.Final release of WildFly Preview runs well on SE 16 and the SE 17 early access release for most use cases. The main use case where we still have some issues to resolve relate to Hibernate's proxy generation, but these don't prevent JPA from working well in general. For developers wanting to get a sense of what SE 17 will mean for their applications, I encourage you to give WildFly Preview 24 a look.
+
+Standard WildFly does not run well on SE 14 or later because the security implementation used in our standard configurations will not work on SE 14 or later. However if you want to experiment with standard WildFly 24 on the latest SE, you can try starting with the configuration files provided in WildFly Preview, which do not use the legacy security subsystem. This has not been heavily tested, so YMMV.
+
+Please note that WildFly runs on Java 11 and later in classpath mode.
+
+== Upcoming Changes
+
+Beginning with WildFly 25 there will be some significant changes coming in WildFly, primarily related to moving completely to Elytron-based security and away from the legacy security implementation. Significant changes you can expect to see include:
+
+* Removal of the legacy security subsystem from the standard configurations.
+* Removal of support for the security vault, with Elytron credential stores as the replacement.
+* Removal of the core management security realms from the standard configurations, with Elytron subsystem resources used instead.
+* Removal of the Picketlink extension and the subsystems it provides.
+* Potentially the Picketbox libraries will no longer be available, making the legacy security subsystem and core management security realms unavailable altogether on a server.
+* Unrelated to security, "legacy feature packs" (which use a provisioning technology that predates Galleon) will no longer be distributed.
+
+We're also evaluating changes in domain mode to limit the set of older version Host Controllers a current Domain Controller must be able to support, reducing the set to some of the more recent WildFly versions.
+
+== Documentation
+
+The WildFly 24 documentation is available at the link:https://docs.wildfly.org/24/[docs.wildfly.org site]. The WildFly 24 management API documentation is in the link:https://docs.wildfly.org/24/wildscribe[wildscribe section of the WildFly 24 docs].
+
+== Jira Release Notes
+
+The full list of issues resolved is available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12313721&version=12358082[in the WFLY JIRA project]. Issues resolved in the WildFly Core 16 release included with WildFly 24 are available link:https://issues.redhat.com/secure/ReleaseNote.jspa?projectId=12315422&version=12358650[in the WFCORE JIRA project].
+
+== Enjoy!
+
+Thank you for your continued support of WildFly.  We'd love to hear your feedback at the link:https://groups.google.com/forum/#!forum/wildfly[WildFly forum].

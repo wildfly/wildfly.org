@@ -1,0 +1,302 @@
+---
+layout: guide-getting-started
+---
+= \{simple-microservice-client-part2}
+:summary: Invoke one microservice from another on Kubernetes
+:includedir: ../_includes
+{#include partials/guides/attributes.adoc /}
+{#include partials/guides/titles.adoc /}
+{#include partials/guides/constants.adoc /}
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 10
+
+{|
+In this guide, you will learn HOW-TO run the Docker Images you built in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-client-part1[{simple-microservice-client-part1}] on Kubernetes.
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-client-part1[{simple-microservice-client-part1}]
+
+== Introduction
+
+In this guide, we will deploy on Kubernetes the two container images we created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-client-part1[{simple-microservice-client-part1}];
+
+== Minikube
+
+You can use whatever Kubernetes cluster you have available; in this guide, and in the following, we will use link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"].
+
+== Microservice B - the server
+
+=== Image Registry
+
+To make the `{simple-microservice-server}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
+
+==== Quay.io
+
+There are many Image Registries you can use: in this guide, we will push the `{simple-microservice-server}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
+
+Create a public repository named `{simple-microservice-server}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-server}, window="_blank"]).
+
+NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
+
+Tag the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman tag {simple-microservice-server} quay.io/{quay-io-account-name}/{simple-microservice-server}
+----
+
+Push the `{simple-microservice-server}` Docker Image to it:
+
+[source,bash,subs="normal"]
+----
+podman push quay.io/{quay-io-account-name}/{simple-microservice-server}
+----
+
+At this point, the `{simple-microservice-server}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster;
+
+=== Deploy on Kubernetes
+
+Create a folder named `kubernetes` in the root of your project and create a file named `{simple-microservice-server}-deployment.yaml` inside it:
+
+.{simple-microservice-server}-deployment.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {simple-microservice-server}-deployment
+  labels:
+    app: {simple-microservice-server}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {simple-microservice-server}
+  template:
+    metadata:
+      labels:
+        app: {simple-microservice-server}
+    spec:
+      containers:
+        - name: {simple-microservice-server}
+          image: quay.io/tborgato/{simple-microservice-server}
+          ports:
+            - containerPort: 8080
+            - containerPort: 9990
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 9990
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 9990
+          startupProbe:
+            httpGet:
+              path: /health/started
+              port: 9990
+----
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f kubernetes/{simple-microservice-server}-deployment.yaml
+----
+
+NOTE: before running any `kubectl` remember to start you Kubernetes cluster (use `minikube start` if using  `minikube`)
+
+=== Create Kubernetes ClusterIP Service
+
+We create a link:https://kubernetes.io/docs/concepts/services-networking/service/[kubernetes service] to consume the services exposed by **{simple-microservice-server}** from inside Kubernetes;
+
+Create a file named `{simple-microservice-server}-service.yaml` in the `kubernetes` folder:
+
+.{simple-microservice-server}-service.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {simple-microservice-server}-service
+  labels:
+    app: {simple-microservice-server}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: {simple-microservice-server}
+  type: ClusterIP
+----
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f kubernetes/{simple-microservice-server}-service.yaml
+----
+
+=== Check Kubernetes Service
+
+[source,bash,subs="normal"]
+----
+kubectl run --rm -it --tty curl-{simple-microservice-server} --image=curlimages/curl --restart=Never --&nbsp;http://{simple-microservice-server}-service:8080/hello/pippo
+----
+
+== Microservice A - the client
+
+=== Image Registry
+
+To make the `{simple-microservice-client}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
+
+==== Quay.io
+
+There are many Image Registries you can use: in this guide, we will push the `{simple-microservice-client}:latest` Docker Image, to the link:https://quay.io[quay.io, window="_blank"] Image Registry.
+
+Create a public repository named `{simple-microservice-client}` on link:https://quay.io[quay.io, window="_blank"] (e.g. link:https://quay.io/repository/{quay-io-account-name}/my-jaxrs-app[https://quay.io/repository/{quay-io-account-name}/{simple-microservice-client}, window="_blank"]).
+
+NOTE: replace `{quay-io-account-name}` with the name of your account in all the commands that will follow
+
+Tag the Docker image:
+
+[source,bash,subs="normal"]
+----
+podman tag {simple-microservice-client} quay.io/{quay-io-account-name}/{simple-microservice-client}
+----
+
+Push the `{simple-microservice-client}` Docker Image to it:
+
+[source,bash,subs="normal"]
+----
+podman push quay.io/{quay-io-account-name}/{simple-microservice-client}
+----
+
+At this point, the `{simple-microservice-client}:latest` Docker Image should be publicly available and free to be consumed by any Kubernetes Cluster;
+
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image push to an image registry
+
+=== Deploy on Kubernetes
+
+Create a file named `{simple-microservice-client}-deployment.yaml` in the `kubernetes` folder:
+
+.{simple-microservice-client}-deployment.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {simple-microservice-client}-deployment
+  labels:
+    app: {simple-microservice-client}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {simple-microservice-client}
+  template:
+    metadata:
+      labels:
+        app: {simple-microservice-client}
+    spec:
+      containers:
+        - name: {simple-microservice-client}
+          image: quay.io/tborgato/{simple-microservice-client}
+          ports:
+            - containerPort: 8080
+            - containerPort: 9990
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 9990
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 9990
+          startupProbe:
+            httpGet:
+              path: /health/started
+              port: 9990
+          env:
+            - name: SIMPLE_MICROSERVICE_SERVER_URI
+              value: "http://{simple-microservice-server}-service:8080"
+----
+
+NOTE: The environment variable `SIMPLE_MICROSERVICE_SERVER_URI` allows **{simple-microservice-client}** to invoke **{simple-microservice-server}** through the service **{simple-microservice-server}-service**
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f kubernetes/{simple-microservice-client}-deployment.yaml
+----
+
+=== Create Kubernetes NodePort Service
+
+We create a service to consume the services exposed by **{simple-microservice-client}** from outside Kubernetes;
+
+Create a file named `{simple-microservice-client}-service.yaml` in the `kubernetes` folder:
+
+.{simple-microservice-client}-service.yaml:
+[source,yaml,subs="normal"]
+----
+apiVersion: v1
+kind: Service
+metadata:
+  name: {simple-microservice-client}-service
+  labels:
+    app: {simple-microservice-client}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: {simple-microservice-client}
+  type: NodePort
+----
+
+Deploy to your Kubernetes Cluster:
+
+[source,bash,subs="normal"]
+----
+kubectl apply -f kubernetes/{simple-microservice-client}-service.yaml
+----
+
+=== Check your application
+
+Find out on what IP address/port, link:https://minikube.sigs.k8s.io/docs/[minikube, window="_blank"] is exposing your service:
+
+[source,bash,subs="normal"]
+----
+$ minikube service {simple-microservice-client}-service --url
+http://192.168.39.143:30347
+----
+
+Verify it's working as expected:
+
+[source,bash,subs="normal"]
+----
+$ curl http://192.168.39.143:30347/hello/pippo
+Hello 'pippo'.
+----
+
+== What's next?
+
+link:/guides/get-started-microservices-on-kubernetes/simple-microservice-client-part3[{simple-microservice-client-part3}]
+
+[[references]]
+== References
+
+* Source code for this guide:
+** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client
+** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-server
+|}

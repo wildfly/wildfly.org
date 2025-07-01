@@ -1,0 +1,9 @@
+---
+layout: post
+title: "Introducing The Java Batch Processing API And JBeret Implementation"
+date: 2022-11-18
+tags: jberet batch
+synopsis: An overview of the Java Batch Processing API and JBeret implementation.
+author: liweinan
+external_link: https://jberet.github.io/jberet-intro/
+---

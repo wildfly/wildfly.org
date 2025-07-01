@@ -1,0 +1,10 @@
+---
+layout: post
+title: 'Client side default SSL context provider'
+date: 2022-04-19
+tags: ssl tls ssl-context client client-config provider
+synopsis:  An overview of the Elytron client default SSL context provider.
+author: dvilkola
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/client-default-ssl-context/
+---
+

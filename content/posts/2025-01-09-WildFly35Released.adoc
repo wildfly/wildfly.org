@@ -1,0 +1,142 @@
+---
+layout: post
+title:  "WildFly 35 is released!"
+aliases: [/news/2025/01/09/WildFly35Released]
+date:   2025-01-09
+tags:   announcement release
+author: bstansberry
+description: WildFly 35 Final is now available for download.
+---
+
+
+I'm pleased to announce that the new WildFly and WildFly Preview 35.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank].
+
+[[new_and_notable]]
+== New and Notable
+
+This quarter we had a heavy focus on MicroProfile, particularly link:https://microprofile.io/2024/08/22/microprofile-7-0-release/#[MicroProfile 7.0, window=_blank], which I'm pleased to say WildFly 35 fully supports. Improvements in the MicroProfile area include:
+
+* WildFly now link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19592_MicroProfile_Fault_Tolerance_4_1.html[supports MicroProfile Fault Tolerance 4.1, window=_blank].
+
+* WildFly now link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19591_MicroProfile_OpenAPI_4.0.html[supports MicroProfile OpenAPI 4.0, window=_blank].
+
+* Standard WildFly now link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19866-promote-mp-rest-client-to-default.html[supports MicroProfile REST Client 4.0, window=_blank]. This was previously supported in WildFly Preview.
+
+* Standard WildFly now link:https://docs.wildfly.org/wildfly-proposals/observability/WFLY-19846-promote-mp-tel-2-to-default.html[supports MicroProfile Telemetry 2.0, window=_blank]. This was previously supported in WildFly Preview.
+
+* Our MicroProfile Reactive Messaging subsystem has added OpenTelemetry tracing integration for link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19835_microprofile_reactive_messaging_otel_with_kafka.html[Kafka connectors, window=_blank] and link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19836_microprofile_reactive_messaging_otel_with_amqp.html[AMQP connectors, window=_blank].
+
+There's plenty of new things beyond MicroProfile area as well, though:
+
+* WildFly Preview is a compatible implementation of the link:https://jakarta.ee/specifications/coreprofile/11/[Jakarta EE 11 Core Profile, window=_blank], which was released in November, independent of the work-in-progress EE 11 Platform and Web Profile specifications. WildFly Preview was one of the compatible implementations used to ratify the specification, and WildFly Preview 35 is also a compatible implementation, on both https://github.com/wildfly/certifications/blob/EE11/WildFly_Preview_35.0.0.Final/jakarta-core-jdk17.adoc[Java 17, window=_blank] and https://github.com/wildfly/certifications/blob/EE11/WildFly_Preview_35.0.0.Final/jakarta-core-jdk21.adoc[Java 21, window=_blank].
+
+* WildFly now includes link:https://docs.wildfly.org/wildfly-proposals/scripts/WFCORE-6935-system-daemon-scripts.html[supported `systemd` units, window=_blank] in the `bin/systemd` directory, replacing the old, unsupported `docs/contrib/scripts/systemd` files. The new units include support for a managed domain.
+
+* The `jaxrs` subsystem now link:https://docs.wildfly.org/wildfly-proposals/jaxrs/WFLY-13122_Add_Json_Merge_Patch_support.html[provides JSON merge patch support, window=_blank]. This feature allows the client to send a JSON http request with Content-Type "application/merge-patch+json", and the JSON content will be directly merged to the target resource.
+
+* We added link:https://docs.wildfly.org/wildfly-proposals/ee/WFLY-19776_Jakarta_Data_in_standard_WildFly.html[support for Jakarta Data 1.0, window=_blank] to standard WildFly. This was previously link:https://www.wildfly.org/news/2024/10/10/jakarta-data/[included in WildFly Preview 34, window=_blank]; now it is available in standard WildFly as well. This feature is provided at the link:https://docs.wildfly.org/35/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
+
+* WildFly Preview has  a new link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19954_Preview_Support_vertx_feature_pack.html[`vertx` subsystem and Galleon layer, window=_blank], intended to give users greater control over the configuration of Vert.x instances running in the server. This feature is provided at the link:https://docs.wildfly.org/35/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
+
+* We added a new https://docs.wildfly.org/quickstart/helloworld-rs/README.html[Jakarta RESTful Web Services Helloworld, window=_blank] quickstart and a new https://www.wildfly.org/guides/messaging-high-availability-openshift[Deploying High-Availability Messaging with WildFly and AMQ 7 on OpenShift, window=_blank] guide.
+
+Another big thing that's new is, as I https://www.wildfly.org/news/2024/10/28/WildFly-moves-to-SE-17/[announced in October], WildFly now requires a minimum of Java SE 17, and thus no longer supports running on Java 11.
+
+== Supported Specifications
+
+=== Jakarta EE
+
+Standard WildFly 35 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
+
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications, window=_blank] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 10 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_35.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_35.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<|  Jakarta EE 10 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_35.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_35.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<| Jakarta EE 10 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_35.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_35.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+|=======================================================================
+
+
+=== MicroProfile
+
+Standard WildFly 35 supports https://microprofile.io/2024/08/22/microprofile-7-0-release/[MicroProfile Platform 7.0, window=_blank], along with several other MicroProfile specifications that are not part of MicroProfile Platform. WildFly's MicroProfile support includes implementations of the following specifications in our "full" (e.g. `standalone-full.xml`) and "default" (e.g `standalone.xml`) configurations as well as our "microprofile" configurations (e.g. `standalone-microprofile.xml`):
+
+[cols=",,",options="header"]
+|=======================================================================
+|MicroProfile Technology |WildFly Full/Default Configurations |WildFly MicroProfile Configuration
+
+|MicroProfile Config 3.1 |X |X
+
+|MicroProfile Fault Tolerance 4.1 |-- |X
+
+|MicroProfile Health 4.0 |-- |X
+
+|MicroProfile JWT Authentication 2.1 |X |X
+
+|MicroProfile LRA 2.0 |-- |X
+
+|MicroProfile OpenAPI 4.0 |-- |X
+
+|MicroProfile Reactive Messaging 3.0 |-- |--
+
+|MicroProfile Reactive Streams Operators 3.0 |-- |--
+
+|MicroProfile Rest Client 4.0|X |X
+
+|MicroProfile Telemetry 2.0|-- |X
+|=======================================================================
+
+link:https://github.com/wildfly/certifications/blob/MP7.0/WildFly_35.0.0.Final/microprofile-7.0/microprofile-7.0-full-certification.adoc[Compatibility evidence, window=_blank] for the above specifications that are part of MicroProfile 7.0 can be found in the WildFly Certifications repository on GitHub.
+
+
+[[preview-ee11]]
+=== WildFly Preview and EE 11
+
+As I noted in the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release announcement, window=_blank], beginning with that release we are using WildFly Preview to provide a look at what we're doing for Jakarta EE 11 support.  The EE 11 Platform and Web Profile specifications won't go GA before later this year. But there are milestone, Release Candidate and Final releases of many EE 11 specs and implementations available, so we are providiong those in WildFly Preview. This means for a number of EE APIs, WildFly Preview no longer provides an EE 10 compatible implementation.
+
+However, for a number of specifications that are planning changes for EE 11 we are still offering the EE 10 variant. In future releases we'll shift those to the EE 11 variants.
+
+As I mentioned earlier, the link:https://jakarta.ee/specifications/coreprofile/11/[EE 11 Core Profile specification, window=_blank] did go GA in November and WildFly Preview 35 is a compatible implementation of that profile.
+
+Full details on the EE specification versions provided by WildFly Preview can be found in https://docs.wildfly.org/35/WildFly_and_WildFly_Preview.html#ee-11-support-in-wildfly-preview[the WildFly 35 documentation, window=_blank].
+
+
+== Java SE Support
+
+Our recommendation is that you run WildFly 35 on Java SE 21, as that is the latest LTS JDK release where we have completed the full set of testing we like to do before recommending a particular SE version. WildFly 35 also is heavily tested and runs well on Java 17.
+
+Our recommendation of SE 21 over SE 17 is solely because as a general principle we recommend being on later LTS releases, not because of any problems with WildFly on SE 17.
+
+While we recommend using an LTS JDK release, I do believe WildFly runs well on SE 23. By runs well, I mean the main WildFly testsuite runs with no more than a few failures in areas not expected to be commonly used. We want developers who are trying to evaluate what a newer JVM means for their applications to be able to look to WildFly as a useful development platform. We've also had good results with tests on Linux of an EA release of SE 24 (Oracle 24-ea+15-1658).
+
+Please note that WildFly runs in classpath mode.
+
+[[incompatibilities]]
+== Incompatible Changes
+
+Beginning with the WildFly 35 release, standard WildFly no longer supports running in a Java SE 11 environment. Users should run WildFly 35 on SE 21 or SE 17.
+
+The default name of the bootable jar produced by https://docs.wildfly.org/wildfly-maven-plugin/releases/5.1/package-mojo.html#bootableJar[WildFly's maven tooling, window=_blank] has changed from a fixed name of `server-bootable.jar` to the dynamic name `${project.artifactId}-bootable.jar` where `project.artifactId` is the maven artifact id of the module producing the jar. If this default value isn't wanted, https://docs.wildfly.org/wildfly-maven-plugin/releases/5.1/package-mojo.html#bootableJarName[the bootable jar name can be configured, window=_blank].
+
+
+
+== Release Notes
+
+The full WildFly 35 release notes are link:https://github.com/wildfly/wildfly/releases/tag/35.0.0.Final[available in GitHub, window=_blank].  Issues fixed in the underlying WildFly Core 27.0.0 release are listed in the link:https://issues.redhat.com/issues/?filter=12451392[WildFly Core JIRA, window=_blank].
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA, window=_blank].
+
+And, with that, I'm moving on to what I think will be a very busy WildFly 36!
+
+Best regards,
+
+Brian
+

@@ -1,0 +1,246 @@
+---
+layout: guide-getting-started
+---
+
+= \{simple-microservice-part1}
+:summary: Java Microservice using WildFly
+:includedir: ../_includes
+{#include partials/guides/attributes.adoc /}
+{#include partials/guides/titles.adoc /}
+:prerequisites-time: 10
+
+In this guide, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] implemented using WildFly.
+
+In the following guide link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[\{simple-microservice-part2}], you will see how to run the same link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] on link:https://kubernetes.io/[Kubernetes];
+
+{#include partials/guides/prerequisites.adoc /}
+
+* Install link:https://www.docker.com/[Docker, window="_blank"] or link:https://podman.io/[Podman, window="_blank"]
+
+{#include partials/guides/constants.adoc /}
+
+{|
+== Maven Project
+
+Create a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] using the `org.wildfly.archetype:wildfly-getting-started-archetype` archetype:
+
+[source,bash]
+----
+mvn archetype:generate \
+-DarchetypeGroupId=org.wildfly.archetype \
+-DarchetypeArtifactId=wildfly-getting-started-archetype
+----
+
+NOTE: See link:/get-started[Getting Started with WildFly, window="_blank"] for the details
+
+=== pom.xml
+
+We need to add some features that will be required when, in the next guide, we will run our application on link:https://kubernetes.io/[Kubernetes, window="_blank"]; specifically, we need to expose link:https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/["Liveness, Readiness and Startup Probes", window="_blank"]; we can add these features thanks to the link:https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack, window="_blank"].
+
+Thanks to the integration of link:https://github.com/wildfly/wildfly-glow[WildFly Glow, window="_blank"] in the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"],
+the `wildfly-cloud-galleon-pack` will be automatically added to the Galleon provisioning configuration.
+
+Update the `pom.xml` file to add the `<context>cloud</context>` XML element to the link:https://github.com/wildfly/wildfly-maven-plugin/[wildfly-maven-plugin, window="_blank"] configuration like in the following:
+
+[source,xml,subs="normal"]
+----
+    <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>{version-wildfly-maven-plugin}</version>
+        <configuration>
+            <discover-provisioning-info>
+              <version>${version.wildfly.bom}</version>
+              <context>cloud</context>
+            </discover-provisioning-info>
+        </configuration>
+        <executions>
+            <execution>
+                <goals>
+                    <goal>package</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+----
+
+=== Build the application
+
+[source,bash]
+----
+$ mvn clean package
+...
+[INFO] Copy deployment /home/tborgato/Documents/WildFly-Mini-Serie/getting-started/target/ROOT.war to /home/tborgato/Documents/WildFly-Mini-Serie/getting-started/target/server/standalone/deployments/ROOT.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.478 s
+[INFO] Finished at: 2024-04-12T17:35:46+02:00
+[INFO] ------------------------------------------------------------------------
+----
+
+=== Start the application
+
+[source,bash]
+----
+$ ./target/server/bin/standalone.sh
+...
+17:36:25,755 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-3) WFLYUT0006: Undertow HTTP listener default listening on 0.0.0.0:8080
+...
+17:36:25,967 INFO  [org.jboss.weld.deployer] (MSC service thread 1-2) WFLYWELD0003: Processing weld deployment ROOT.war
+...
+17:36:26,835 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 62) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.wildfly.examples.GettingStartedApplication
+17:36:26,859 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 62) WFLYUT0021: Registered web context: '/' for server 'default-server'
+17:36:26,883 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 35) WFLYSRV0010: Deployed "ROOT.war" (runtime-name : "ROOT.war")
+17:36:26,901 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
+17:36:26,904 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+17:36:26,904 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
+17:36:26,904 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 2175ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+
+As you can see, the application started, and it's ready to serve requests on port `8080`.
+
+=== Check the application [[check_the_application]]
+
+Go to this URL:
+
+* link:http://127.0.0.1:8080/hello/pippo[http://127.0.0.1:8080/hello/pippo, window="_blank"]
+
+either in your browser or using a utility like `curl`:
+
+[source,bash]
+----
+$ curl http://127.0.0.1:8080/hello/pippo
+Hello 'pippo'.
+----
+
+=== Check Liveness, Readiness and Startup Probes [[check_liveness_readiness_and_startup_probes]]
+
+Go to these URLs:
+
+* link:http://127.0.0.1:9990/health/live[http://127.0.0.1:9990/health/live, window="_blank"]
+* link:http://127.0.0.1:9990/health/ready[http://127.0.0.1:9990/health/ready, window="_blank"]
+* link:http://127.0.0.1:9990/health/started[http://127.0.0.1:9990/health/started, window="_blank"]
+
+either in your browser, or using a utility like `curl`:
+
+[source,bash]
+----
+$ curl http://127.0.0.1:9990/health/live
+{"status":"UP","checks":[{"name":"empty-liveness-checks","status":"UP"}]}
+----
+[source,bash]
+----
+$ curl http://127.0.0.1:9990/health/ready
+{"status":"UP","checks":[{"name":"suspend-state","status":"UP","data":{"value":"RUNNING"}},{"name":"server-state","status":"UP","data":{"value":"running"}},{"name":"deployments-status","status":"UP","data":{"ROOT.war":"OK"}},{"name":"boot-errors","status":"UP"},{"name":"ready-deployment.ROOT.war","status":"UP"}]}
+----
+[source,bash]
+----
+$ curl http://127.0.0.1:9990/health/started
+{"status":"UP","checks":[{"name":"started-deployment.ROOT.war","status":"UP"}]}
+----
+
+Everything works fine!
+
+Let's move on and package our application in a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image] ...
+
+== Docker Image
+
+=== Dockerfile
+
+We will use the Dockerfile from link:https://github.com/wildfly/wildfly-s2i/blob/main/examples/docker-build/Dockerfile[examples/docker-build/Dockerfile, window="_blank"] because it is crafted specifically for WildFly.
+
+Create a file named `Dockerfile` in the same directory as the `pom.xml` file, with the following content:
+
+[source,dockerfile]
+----
+ARG runtime_image=quay.io/wildfly/wildfly-runtime:latest
+FROM ${runtime_image}
+COPY --chown=jboss:root target/server $JBOSS_HOME
+RUN chmod -R ug+rwX $JBOSS_HOME
+----
+
+=== Build the Docker Image
+
+Build the Docker Image `{my-jaxrs-app-docker-image-name}:latest` with the following command:
+
+[source,bash,subs="normal"]
+----
+$ podman build -t {my-jaxrs-app-docker-image-name}:latest .
+STEP 1/3: FROM quay.io/wildfly/wildfly-runtime:latest
+STEP 2/3: COPY --chown=jboss:root target/server $JBOSS_HOME
+--> cf1b99511a9b
+STEP 3/3: RUN chmod -R ug+rwX $JBOSS_HOME
+COMMIT {my-jaxrs-app-docker-image-name}:latest
+--> e1ab6e80ed20
+Successfully tagged localhost/{my-jaxrs-app-docker-image-name}:latest
+e1ab6e80ed20c3619a7e859f03c71f33b79a4d292f971ed83e7484f4779121d8
+----
+
+NOTE: As you can see, we used link:https://podman.io/[Podman, window="_blank"], but you can also use link:https://www.docker.com/[Docker, window="_blank"], depending on your preference and on which one you have installed on your PC; to switch to Docker, replace *podman* with *docker* in the previous command (and in the ones that will follow).
+
+NOTE: You can use link:https://docs.wildfly.org/wildfly-maven-plugin/releases/{version-wildfly-maven-plugin-docs}/image-mojo.html[`wildfly-maven-plugin`, window="_blank"] to automate the image build (have a look at the `image` profile in {source-code-git-repository}/simple-microservice/pom.xml["simple-microservice/pom.xml", window="_blank"] for a complete example).
+
+NOTE: Have a look at link:https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/[Testing WildFly applications on Docker with Arquillian Cube] to see how to automate the image build and execution.
+
+=== Run the Docker Image
+
+To check that our brand-new `{my-jaxrs-app-docker-image-name}:latest` Docker Image works as expected, run the following command:
+
+[source,bash,subs="normal"]
+----
+$ podman run --rm -p 8080:8080 -p 9990:9990 \
+  --name={my-jaxrs-app-docker-image-name} \
+  {my-jaxrs-app-docker-image-name}
+...
+16:14:49,477 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-5) WFLYUT0006: Undertow HTTP listener default listening on 0.0.0.0:8080
+...
+16:14:49,677 INFO  [org.jboss.weld.deployer] (MSC service thread 1-4) WFLYWELD0003: Processing weld deployment ROOT.war
+...
+16:14:50,403 INFO  [org.jboss.resteasy.resteasy_jaxrs.i18n] (ServerService Thread Pool -- 61) RESTEASY002225: Deploying jakarta.ws.rs.core.Application: class org.wildfly.examples.GettingStartedApplication
+16:14:50,426 INFO  [org.wildfly.extension.undertow] (ServerService Thread Pool -- 61) WFLYUT0021: Registered web context: '/' for server 'default-server'
+16:14:50,451 INFO  [org.jboss.as.server] (ServerService Thread Pool -- 35) WFLYSRV0010: Deployed "ROOT.war" (runtime-name : "ROOT.war")
+16:14:50,459 INFO  [org.jboss.as.server] (Controller Boot Thread) WFLYSRV0212: Resuming server
+16:14:50,460 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://0.0.0.0:9990/management
+16:14:50,460 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0054: Admin console is not enabled
+16:14:50,461 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 31.0.0.Final (WildFly Core 23.0.1.Final) started in 1101ms - Started 280 of 378 services (149 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+
+As you can see, the application started, and it's ready to serve requests on port `8080`.
+
+NOTE: we explicitly mapped port `8080` in the container to port `8080` on the HOST (your PC); we also mapped port `9990` in the container to port `9990` on the HOST to expose the Liveness, Readiness and Startup Probes.
+
+=== Check the application
+
+Repeat the checks in <<check_the_application>>.
+
+NOTE: the only difference here, is that the response is served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image
+
+=== Check Liveness, Readiness and Startup Probes
+
+Repeat the checks in <<check_liveness_readiness_and_startup_probes>>;
+
+NOTE: here too, the only difference, is that the responses are served by the application running inside our `{my-jaxrs-app-docker-image-name}:latest` Docker Image
+
+=== Stop the Docker container
+
+Stop the running container:
+
+[source,bash,subs="normal"]
+----
+$ podman stop {my-jaxrs-app-docker-image-name}
+----
+
+== What's next?
+
+link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[{simple-microservice-part2}]
+
+[[references]]
+== References
+
+* link:https://docs.wildfly.org/wildfly-maven-plugin["wildfly-maven-plugin", window="_blank"]
+* Source code for this guide: {source-code-git-repository}/simple-microservice["simple-microservice", window="_blank"]
+* link:https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/["Testing WildFly applications on Docker with Arquillian Cube", window="_blank"]
+
+< link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
+|}

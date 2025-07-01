@@ -1,0 +1,67 @@
+---
+layout: post
+title: WildFly Bootable JAR 6.0 is released!
+aliases: [/news/2021/10/12/bootable-jar-6.0.Final-Released]
+date: 2021-10-12
+tags: wildfly galleon bootable jar bootable-jar
+synopsis: Bootable JAR Maven plugin 6 has been released.
+author: jfdenise
+---
+
+The 6.0.0.Final version of the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/[WildFly Bootable JAR Maven plugin] has been released.
+
+For people who are not familiar with the WildFly Bootable JAR, I strongly recommend that you read
+this link:https://www.wildfly.org/news/2020/10/19/bootable-jar-2.0-released/[blog post] that covers it in detail.
+
+## New examples to highlight new Galleon layers introduced in WildFly 25
+
+For each new release of the WildFly Bootable JAR Maven plugin we are upgrading the dependency of the
+link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/6.0.0.Final/examples[examples] to the latest WildFly release and highlight
+new features that you can use when building WildFly Bootable JARs.
+
+For 6.0.0.Final, we have added two new examples to cover some new Galleon layers that are of particualr importance for Wildfly Bootable JAR packaging.
+
+### Automatic generation of self signed certificate
+
+Up to now, in order to configure HTTPS when using elytron, we had to include a keystore in the Bootable JAR during packaging.
+During development phases we generally don't really care of the content of the keystore (and generating one implies extra steps...).
+WildFly 25 introduces the ``undertow-https`` Galleon layer that adds an elytron secured ``https-listener``
+that generates a self signed certificate on first connection.
+
+The link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/6.0.0.Final/examples/https[https example]
+has been evolved with the ``self-signed`` profile to provision a server that makes use of the ``undertow-https`` Galleon layer.
+
+
+### OpenID Connect (OIDC) native support
+
+Up to now, as highlighted in the link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/6.0.0.Final/examples/keycloak[keycloak example],
+in order to secure a deployment using link:https://www.keycloak.org/[Keycloak] we had to provision both WildFly
+Galleon feature-pack and Keycloak OIDC adapter feature-pack.
+Starting with WildFly 25, we are now relying on the WildFly native OIDC support and are deprecating
+the use of the Keycloack Galleon feature-pack.
+
+WildFly 25 introduces the ``elytron-oidc-client`` Galleon layer to provision the ``elytron-oidc-client`` subsystem that allows to interact
+with OIDC compliant authorization servers (such as the link:https://www.keycloak.org/[Keycloak] server).
+
+This native support is very similar to the Keycloack one. Migrating from using Keycloak Galleon adapter to using WildFly OIDC native support
+when building a Bootable JAR is a matter of:
+
+* Removing the Keycloak OIDC adapter feature-pack (``org.keycloak:keycloak-adapter-galleon-pack``) from the plugin configuration.
+* Replacing the ``keycloak-client-oidc`` Galleon layer by the ``elytron-oidc-client`` Galleon layer in the plugin configuration.
+* Change the ``<auth-method>KEYCLOAK</auth-method>`` to ``<auth-method>OIDC</auth-method>`` in your ``web.xml`` file.
+* If you were using ``WEB-INF/keycloak.json`` file you would need to rename it to ``WEB-INF/oidc.json`` and update its
+content by following the link:https://docs.wildfly.org/25/Admin_Guide.html#Elytron_OIDC_Client[OIDC client subsystem documentation].
+* If you were calling WildFly CLI scripts to update the subsystem configuration, you will need to adjust the management operations.
+More information can be found in the link:https://docs.wildfly.org/25/Admin_Guide.html#Elytron_OIDC_Client[OIDC client subsystem documentation].
+
+The link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/tree/6.0.0.Final/examples/elytron-oidc-client[elytron-oidc-client example] covers
+the steps required to use this new Galleon layer.
+
+## To conclude
+
+Finally we would really appreciate if if you would keep us posted with your feedback and new requirements. (You can log these as new
+link:https://github.com/wildfly-extras/wildfly-jar-maven-plugin/issues[project issues].) This will help us evolve the WildFly Bootable JAR experience in the right direction.
+
+Thank-you!
+
+JF Denise

@@ -1,0 +1,91 @@
+---
+layout: getstarted
+title: Getting Started with WildFly
+link: /get-started/
+---
+
+== Build and run a Jakarta EE application with WildFly in a few minutes.
+
+=== Step 0. Install Java & Maven
+
+You need Java (at least version `17`, and preferably `21`) and Maven installed on your machine to create a Maven project that contains the source code of the Jakarta EE application.
+
+You can verify they are installed by executing the commands:
+
+[source,bash]
+----
+java -version
+mvn -version
+----
+
+=== Step 1. Create the Application
+
+You can create the Jakarta EE application as a Maven project by executing the commands:
+
+[source,bash]
+----
+mvn archetype:generate \
+    -DarchetypeGroupId=org.wildfly.archetype \
+    -DarchetypeArtifactId=wildfly-getting-started-archetype
+----
+
+The `getting-started` project that is generated contains a simple "Hello World" application that
+exposes a HTTP endpoint with the Jakarta-RS API.
+
+The Maven project is configured to "provision" (install and configure)
+the WildFly that hosts your application.
+
+=== Step 2. Build the Application
+
+You can build the application by executing the commands:
+
+[source,bash]
+----
+cd getting-started
+mvn package verify
+----
+
+This Maven command compiles the Jakarta EE application, provisions WildFly, deploys the application into WildFly and
+runs integration tests against it.
+When this command is finished, you have a fully functional, tested application running on  WildFly.
+
+=== Step 3. Run the Application
+
+The `target/server` contains a fully functional WildFly server with your application. You start it by executing the command:
+
+[source,bash]
+----
+./target/server/bin/standalone.sh
+----
+
+The application is accessible at http://localhost:8080/.
+
+To stop the application, type `Ctrl + C` in the terminal where you started  WildFly.
+
+=== Step 4. Continuous Development
+
+You can develop your application and see the updates in the running application immediately by using the `wildfly:dev` goal from the root
+of your project:
+
+[source,bash]
+----
+mvn clean wildfly:dev
+----
+
+The application is accessible at http://localhost:8080 and will be continuously updated when its code changes.
+
+Open your favorite code editor and change the `hello` method in the `GettingStartedService.java` file:
+
+[source,java]
+----
+public String hello(String name) {
+  return String.format("Hello '%s'.", name.toUpperCase());
+}
+----
+
+Save the file, and the application will be recompiled and updated in WildFly. If you access the application at http://localhost:8080,
+it will now return the name in uppercase.
+
+== What's next?
+
+To learn more about WildFly, you can read its https://docs.wildfly.org[documentation,window=_blank]. If you want to learn how to use WildFly on OpenShift, read the https://docs.wildfly.org/{cdi:releases.latest.majorVersion}/Getting_Started_on_OpenShift.html[Getting Started with WildFly on OpenShift Guide,window=_blank]. In addition, you can also watch the https://youtu.be/_8g1rZ80u2A?t=743[talk,window=_blank] from our first mini conference about getting started with WildFly. Finally, you can browse more https://www.wildfly.org/guides/[guides] on a wide range of topics relating to WildFly.

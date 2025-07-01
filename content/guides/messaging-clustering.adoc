@@ -1,0 +1,179 @@
+---
+layout: guide
+---
+= Configuring Clustered Messaging in WildFly
+:summary: Learn how to configure WildFly with an ActiveMQ Artemis Cluster, Server-Side Message and Client Load Balancing.
+:includedir: _includes
+{#include partials/guides/attributes.adoc /}
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 15
+
+{|
+In this guide, you will learn how to configure WildFly servers with an embedded ActiveMQ Artemis broker in a messaging cluster,
+enabling server-side message and client load balancing. It will demonstrate how to configure deployments, such as MDBs,
+EJBs, or Servlets, as well as external JMS clients, to load balance connections across all servers in the cluster.
+
+[NOTE]
+--
+An ActiveMQ Artemis cluster is distinct from a standard WildFly cluster formed by the Infinispan subsystem.
+While a WildFly cluster using Infinispan focuses on data caching and session replication across nodes, an Artemis cluster
+is specifically designed for messaging, allowing message redistribution across brokers and load balancing of message producers and consumers.
+These two clusters operate independently, each with its own purpose and configuration, although they can coexist within
+the same WildFly environment.
+--
+
+For a detailed explanation of ActiveMQ Artemis clusters, refer to the https://activemq.apache.org/components/artemis/documentation/latest/clusters.html#overview[Apache ActiveMQ Artemis Clustering Documentation]
+and the https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/7.4/html-single/configuring_messaging/index#clusters_overview[EAP 7.4 Messaging Clusters Overview].
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Roughly {prerequisites-time} minutes
+* JDK {jdk-minimal-version} installed with `JAVA_HOME` configured appropriately
+
+== Prepare WildFly Servers
+
+Now, let's configure two WildFly servers with embedded ActiveMQ Artemis brokers in a cluster. We'll use the `full-ha` profile,
+as it already contains most of the necessary settings and requires only minor modifications.
+
+By default, the messaging cluster in WildFly uses JGroups, which relies on a multicast-based discovery mechanism to locate
+servers in the cluster. This allows the cluster to automatically discover and add new servers within the network. However,
+if multicast is not available or suitable for your environment, you can configure the messaging cluster to use alternative
+discovery mechanisms based on your specific requirements. This flexibility ensures that the cluster can be adapted to various
+network topologies and infrastructure setups.
+
+[NOTE]
+--
+While the `full-ha` profile may seem to provide High Availability (HA) for messaging, it only configures a messaging cluster
+without inherent HA capabilities. To enable HA for messaging, refer to the
+link:messaging-high-availability[Configure WildFly with a Messaging (ActiveMQ Artemis) Cluster and High Availability] guide.
+--
+
+* Copy WildFly into two directories `wildfly-1` and `wildfly-2`
+* Start `wildfly-1` in a `full-ha` profile in admin-only mode:
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-1/bin/standalone.sh -c standalone-full-ha.xml --admin-only
+----
+
+* In a different terminal, connect to the server using the JBoss CLI:
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-1/bin/jboss-cli.sh -c
+----
+
+* Run the following CLI commands on `wildfly-1`:
+
+[NOTE]
+--
+In the following CLI script, replace `<password>` with the actual password for the cluster connection.
+--
+
+[source, bash, options="nowrap"]
+----
+# Change ActiveMQ Artemis cluster <password>
+/subsystem=messaging-activemq/server=default:write-attribute(name=cluster-password, value=<password>)
+
+# Rebalance inbound connections for MDBs when cluster topology changes
+/subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=rebalance-connections,value=true)
+
+# Shutdown the server
+shutdown
+----
+
+* Start `wildfly-2` in a `full-ha` profile in admin-only mode (set port offset to 1000 to avoid port conflicts):
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-2/bin/standalone.sh -c standalone-full-ha.xml -Djboss.socket.binding.port-offset=1000 --admin-only
+----
+
+* In a different terminal, connect to the server using the JBoss CLI:
+
+[source, bash, options="nowrap"]
+----
+./wildfly-2/bin/jboss-cli.sh -c --controller=127.0.0.1:10990
+----
+
+* Run the following CLI commands on `wildfly-2`:
+
+[NOTE]
+--
+In the following CLI script, replace `<password>` with the actual password for the cluster connection.
+--
+
+[source, bash, options="nowrap"]
+----
+# Change ActiveMQ Artemis cluster <password>
+/subsystem=messaging-activemq/server=default:write-attribute(name=cluster-password, value=<password>)
+
+# Rebalance inbound connections for MDBs when cluster topology changes
+/subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=rebalance-connections,value=true)
+
+# Shutdown the server
+shutdown
+----
+
+== Testing and Verifying the Messaging Cluster
+
+We'll use the https://github.com/wildfly/quickstart/tree/main/helloworld-mdb[helloworld-mdb quickstart] from WildFly
+to test and verify the messaging cluster. This quickstart features a `HelloWorldMDBServletClient` servlet that sends messages
+to the `HELLOWORLDMDBQueue` queue, and a `HelloWorldQueueMDB` MDB that consumes messages from this queue.
+
+Start both WildFly servers, each in a separate terminal:
+
+[source, bash, options="nowrap"]
+----
+./wildfly-1/bin/standalone.sh -c standalone-full-ha.xml
+./wildfly-2/bin/standalone.sh -c standalone-full-ha.xml -Djboss.socket.binding.port-offset=1000
+----
+
+Check the server logs to verify it contains the following entry:
+[source, bash, options="nowrap"]
+----
+14:20:30,673 INFO  [org.apache.activemq.artemis.core.server] (Thread-2 (ActiveMQ-server-org.apache.activemq.artemis.core.server.impl.ActiveMQServerImpl$6@33607b42)) AMQ221027: Bridge ClusterConnectionBridge ... is connected
+----
+This log entry indicates that the cluster has been successfully formed.
+
+You can build and deploy the https://github.com/wildfly/quickstart/tree/main/helloworld-mdb[helloworld-mdb quickstart] by running:
+[source, bash, options="nowrap"]
+----
+git clone git@github.com:wildfly/quickstart.git
+cd quickstart/helloworld-mdb
+mvn clean package wildfly:deploy
+mvn clean package wildfly:deploy -Dwildfly.port=10990
+----
+
+At this point, open your web browser and navigate to http://localhost:8080/helloworld-mdb/. This will invoke the servlet
+to send messages to the `HelloWorldMDBServletClient` queue on `wildfly-1` server.
+
+Check the server logs of both servers to ensure they contain entries similar to the following:
+[source, bash, options="nowrap"]
+...
+14:54:32,439 INFO  [class org.jboss.as.quickstarts.mdb.HelloWorldQueueMDB] (Thread-19 (ActiveMQ-client-global-threads)) Received Message from queue: This is message 2
+14:54:32,447 INFO  [class org.jboss.as.quickstarts.mdb.HelloWorldQueueMDB] (Thread-19 (ActiveMQ-client-global-threads)) Received Message from queue: This is message 4
+...
+----
+
+The presence of these log entries in the `wildfly-2` server log confirms that messages were successfully load balanced from `wildfly-1`.
+
+== What's Next?
+
+With the ActiveMQ Artemis cluster in place, you can explore various strategies for server-side message and client load balancing.
+This flexibility allows you to optimize performance and reliability according to your specific needs.
+
+Additionally, the setup of an ActiveMQ Artemis cluster is a prerequisite for implementing High Availability.
+For a comprehensive guide on configuring WildFly with a Messaging (ActiveMQ Artemis) Cluster and High Availability,
+refer to link:messaging-high-availability[Configure WildFly with a Messaging (ActiveMQ Artemis) Cluster and High Availability].
+
+[[references]]
+== References
+
+* https://activemq.apache.org/components/artemis/documentation/latest/clusters.html#overview[Apache ActiveMQ Artemis Documentation - Clusters]
+* https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/7.4/html-single/configuring_messaging/index#clusters_overview[EAP 7.4 Messaging Clusters Overview].
+|}

@@ -1,9 +1,0 @@
----
-layout: post
-title: 'WildFly and the Twelve-factor App Methodology'
-date: 2023-09-13
-tags: development cloud user-experience
-synopsis: In this article, Jeff Mesnil explains what WildFly provides to develop and operate "cloudy" Entreprise Java applications and how it also benefits "bare metal" applications.
-author: jmesnil
-link: https://jmesnil.net/weblog/2023/09/13/wildfly-12-factor-app/
----

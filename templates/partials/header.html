@@ -1,0 +1,44 @@
+<div class="header navigation">
+  <div class="logo-wrapper">
+    <a href="{site.url}">
+        <img class="wf-logo" src="{site.url('assets/img/wildfly_icons_one-color-logo.png')}">
+    </a>
+  </div>
+  <div class="nav-container">
+    <nav>
+      <div class="nav-mobile"><a id="nav-toggle" href="#!"><span></span></a></div>
+      <ul class="nav-list">
+        <li>
+          <a href="{site.url('news/')}" class="{#if page.url.path.contains('/news/')}active{/if}">News</a>
+        </li>
+        <li>
+          <a href="{site.url('about/')}" class="{#if page.url.path.contains('/about/')}active{/if}">About</a>
+        </li>
+        <li>
+          <a href="{site.url('contribute/')}" class="{#if page.url.path.contains('/contribute/')}active{/if}">Contribute</a>
+        </li>
+        <li>
+            <a target="_blank" href="https://docs.wildfly.org">Docs</a>
+        </li>
+        <li>
+          <a href="{site.url('guides/')}" class="{#if page.url.path.contains('/guides/')}active{/if}">Guides</a>
+        </li>
+        <li>
+          <a href="{site.url('events/')}" class="{#if page.url.path.contains('/events/')}active{/if}">Events</a>
+        </li>
+        <li>
+          <a href="{site.url('downloads/')}" class="{#if page.url.path.contains('/downloads/')}active{/if}">Downloads</a>
+        </li>
+        <li>
+          <a href="{site.url('security/')}" class="{#if page.url.path.contains('/security/')}active{/if}">CVE Reporting</a>
+        </li>
+        <li>
+          <a href="https://github.com/wildfly/wildfly/fork" target="_blank">Fork</a>
+        </li>
+        <li>
+          <a class="button-cta secondary {#if page.url.path.contains('/get-started/')}active{/if}" href="{site.url('get-started/')}">Get Started</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

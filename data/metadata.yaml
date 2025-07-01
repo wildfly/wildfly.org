@@ -1,0 +1,10 @@
+title: WildFly
+url: "https://wildfly.org/" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: WildFlyAS
+github_username:  wildfly
+chatroom_url: "https://wildfly.zulipchat.com/"
+forum_url: "https://groups.google.com/forum/#!forum/wildfly"
+# This should typically be 0. However, in some cases we might want a different index to be used. For example if a micro
+# is released, but we still want to advertise the newest minor or major.
+current_release_index: 0
+show_teaser: true

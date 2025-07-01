@@ -1,0 +1,67 @@
+---
+layout: post
+title:  "WildFly Release Plans for 2022"
+aliases: [/news/2022/01/21/WildFly-2022]
+date:   2022-01-21
+tags:   announcement roadmap
+author: bstansberry
+description: WildFly's release patterns will be changing in 2022
+---
+
+In my link:https://www.wildfly.org/news/2021/09/27/WildFly-Changes/[Changes are coming to WildFly] post last September, I tried to give a sense of how the transition to Jakarta EE 10 was likely to impact the next few WildFly releases. With link:https://www.wildfly.org/news/2021/12/16/WildFly26-Final-Released/[WildFly 26] out the door and our efforts for 2022 ramping up, I want to give our community on update on how we see things playing out over the course of the year.
+
+The tl;dr; of this is WildFly will be moving away from time-boxed major feature releases for 2022, and will instead produce feature-boxed majors when key feature sets like EE 10 are ready. We do, however, want to produce updates for our community, so in the March timeframe we'll be doing a WildFly 26.1 release.
+
+Before I get into the details, first a bit of explanation of how the WildFly project operates.
+
+== Current WildFly Development and Release Practices
+
+Since the WildFly 12 release, the WildFly project has followed a roughly time-boxed development model. Roughly every three months we endeavor to produce a new WildFly major release, with a large set of features, enhancements and bug fixes. We don't operate on a strict time schedule, but we avoid significant schedule delays just to bring in particular feature or set of features. If a feature doesn't make a particular release it can just go in the next one a few months later.
+
+The vast majority of the work on WildFly, both for features and bug fixing, is on our main branch, aimed at producing the next WildFly major.
+
+When we release each major we also create a new branch specific to that major. That branch is used to produce one micro (primarily bug fix) release for the major, with the micro usually released about a month after the major. This too is roughly time-boxed. We just link:https://www.wildfly.org/news/2022/01/21/WildFly-2601-Released/[released WildFly 26.0.1 today]. The number of changes in the micro is typically small compared to what's gone into main in the same period, as we want to be particularly conservative about introducing bugs or behavior changes in the micro.  We've been consistently producing these micros since WildFly 17.0.1, and had done a few prior to that as well.
+
+== Moving to Feature-Boxed Development for 2022
+
+Time-boxed releases work well most of the time but they can be problematic when a large interrelated set of features need to come in as a block. Say, for example, Jakarta EE 10! Trying to fit all of our EE 10 work into a single quarterly release is not looking practical, and using time boxing for EE 10 isn't conceptually valid, as Jakarta's work on EE 10 itself isn't time-boxed.
+
+So, we've decided to make WildFly 27 feature-boxed, with EE 10 as the primary feature set. We'll produce WildFly 27.0.0.Final when we are satisfied that we've met our feature goals. When that will be done is uncertain, partly because it depends on when EE 10 itself goes GA. For sure we won't be done in March, when our next major normally would be released.
+
+Typically for a WildFly major we produce a single feature-complete Beta release a couple weeks before the Final release. It's likely that for 27 we'll also produce at least one interim, not-feature-complete release, probably labeled as an Alpha.
+
+I expect WildFly 28 will be feature-boxed as well. My instinct is once the EE 10 work is complete we'll have a big enough further set of work that is best done as a unit to justify doing another feature boxed release.
+
+Late in 2022 or early in 2023 I'd like for the project to move back to quarterly time boxing. I think most of the time that is the better way to deliver software.
+
+== WildFly 26.1
+
+We don't want to entirely move away from our quarterly feature releases though. We want to make some features available to our users without waiting for WildFly 27, and we want to have a vehicle for releasing some bug fixes. So, in the roughly March timeframe when we would have done our next feature release, we plan to release a WildFly 26.1.  However, the feature and bug fix payload for this release will be significantly smaller than what would be included in a typical WildFly quarterly release. Our development efforts this quarter will largely be focused on WildFly 27.
+
+We'll also do a 26.1.1 release roughly a month after 26.1.0.
+
+If it makes sense we may do a WildFly 27.1 as well, later this year.
+
+== Major Changes Coming in WildFly 27
+
+When WildFly 27 is released there will be large changes compared to WildFly 26:
+
+* We don't plan to support Jakarta EE 8 in standard WildFly. The WildFly 26.1 releases will be the last that support EE 8.
+* We don't plan to support Java SE 8 in WildFly 27.  The WildFly 26.1 releases will be the last that support SE 8. WildFly 27 will require SE 11 or later.
+* We don't plan to support MicroProfile 4.1 in WildFly 27.  The WildFly 26.1 releases will be the last that support MicroProfile 4.1.
+* We will likely link:https://issues.redhat.com/browse/WFCORE-5781[drop support for Log4j 1]. With all the other major changes coming in 27, it seems like the right time to stop providing Log4j 1, and just have users who need it package it in their deployments.
+
+So, the WildFly 26.1 release will be the last feature release that support EE 8 and SE 8. With WildFly 27 we'll have moved on to EE 10, SE 11/17 and MicroProfile 5.
+
+We plan to continue to produce WildFly Preview. The primary use case for it at its inception was as a preview of our EE 9+ support, but from the start it was meant to be a general purpose way of providing a look at things not yet appropriate for standard WildFly, and there's still a need for that. It wouldn't surprise me though if the difference between WildFly 27 and WildFly Preview 27 is fairly small, while we focus our energies on completing EE 10.
+
+We're also strongly considered no longer producing the "Servlet-only distribution" of WildFly that can be found on link:https://www.wildfly.org/downloads/[the download page] for each WildFly release. We don't see much evidence of this distribution being used, Galleon can easily be used to provision an equivalent server, and producing that distribution requires a non-trivial amount of work that could that could be applied elsewhere. I'd like to hear from the WildFly community about this, so I started a link:https://groups.google.com/g/wildfly/c/ag8Ojx3zWqo[thread on the WildFly forum].
+
+
+== Questions?
+
+If you have questions or want to provide feedback, I encourage you to post on the link:https://groups.google.com/g/wildfly[WildFly forum], on the link:https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/[wildfly-dev mail list] or in link:https://wildfly.zulipchat.com/[Zulip chat]. I will be starting threads on the forum and wildfly-dev list about this topic.
+
+Best regards,
+
+Brian

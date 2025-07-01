@@ -1,0 +1,9 @@
+---
+layout: post
+title: 'Upcoming automatic registration of client side default SSLContext'
+date: 2021-03-19
+tags: elytron wildfly23 default ssl context client jvm security provider
+synopsis: An overview of the upcoming automatic registration of client side JVM wide default SSLContext
+author: dvilkola
+external_link: https://wildfly-security.github.io/wildfly-elytron/blog/automatic-registration-of-client-side-jvm-wide-default-sslcontext/
+---

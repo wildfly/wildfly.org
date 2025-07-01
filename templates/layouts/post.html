@@ -1,0 +1,45 @@
+---
+layout: base
+link: /news/:year/:month/:day/:Slug
+---
+{@io.quarkiverse.roq.frontmatter.runtime.model.DocumentPage page}
+
+<div class="post-page grid-wrapper">
+  <div class="grid__item width-10-12">
+    <h1 class="title">{page.title}</h1>
+
+    <p>
+        {#for author_data in cdi:authors.buildAuthorList(page)}
+          <p class="byline">
+            {#if author_data.avatar != null}
+            <img class="avatar" height="60px" width="60px" src="/assets/img/authors/{author_data.avatar}"/>
+            {/if}
+
+            {#if author_data_isFirst}By {/if}{author_data.name}
+            {#if author_data_hasNext}
+              ,
+            {#else}
+              | {page.date.format("LLLL d, YYYY")}
+            {/if}
+          </p>
+        {/for}
+      {!% else %}
+        <p class="byline">By {{ author | join: ', ' }} | {page.date.format("LLLL d, YYYY")}</p>
+      {% endif %!}
+    </p>
+  </div>
+  <div class="grid__item width-10-12 doc-content">
+    {#if page.data.containsKey('external_link')}
+    {#if page.data.containsKey('synopsis')}
+    {page.data.synopsis}
+    {#else}
+    {#insert /}
+    {/if}
+    <p>
+      Redirecting to <a href="{page.data.external_link}">{page.data.external_link}</a>
+    </p>
+    {#else}
+    {#insert /}
+    {/if}
+  </div>
+</div>

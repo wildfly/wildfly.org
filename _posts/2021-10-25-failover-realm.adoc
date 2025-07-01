@@ -1,9 +1,0 @@
----
-layout: post
-title: 'Using failover realm in WildFly Elytron'
-date: 2021-10-25
-tags: elytron wildfly security failover realm ldap
-synopsis: An example of failover realm usage in WildFly.
-author: dvilkola
-link: https://wildfly-security.github.io/wildfly-elytron/blog/failover-realm/
----

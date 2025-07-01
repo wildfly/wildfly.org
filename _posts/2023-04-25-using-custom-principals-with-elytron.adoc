@@ -1,9 +1,0 @@
----
-layout: post
-title: 'Using Custom Principals with Elytron'
-date: 2023-04-25
-tags: custom-principal principal principal-transformer
-synopsis: How to make accessing user information simpler, with new support for custom principals in WildFly Elytron.
-author: jessicarod7
-link: https://wildfly-security.github.io/wildfly-elytron/blog/using-custom-principals-with-elytron/
----

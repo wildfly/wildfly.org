@@ -1,0 +1,232 @@
+---
+layout: guide
+---
+= Configure WildFly with a Messaging (ActiveMQ Artemis) Cluster and High Availability
+:summary: Learn how to configure WildFly with a messaging (ActiveMQ Artemis) cluster and high availability
+:includedir: _includes
+{#include partials/guides/attributes.adoc /}
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 20
+
+{|
+In this guide you will learn how to configure two WildFly servers with messaging (integrated ActiveMQ Artemis broker)
+in a high availability topology with https://activemq.apache.org/components/artemis/documentation/latest/ha.html#shared-store[shared journal, window=_blank].
+
+The Apache ActiveMQ Artemis broker, embedded within WildFly, supports linking brokers together in primary-secondary pairs.
+This creates an active-passive HA design: under normal conditions, the primary broker handles all the workload, while the secondary node remains on standby,
+ready to take over if the primary broker fails. However, we will not start another WildFly server solely to support an inactive Artemis broker, instead we will configure an additional ActiveMQ Artemis broker
+on each WildFly instance to act as the secondary broker for the primary in the other WildFly. This setup results in two primary-secondary pairs, with each pair maintaining its own journal directory.
+
+image::/assets/img/news/artemis-collocated-topology.png[WildFly with ActiveMQ Artemis in collocated HA topology, window=_blank]
+
+If one WildFly server fails, the secondary ActiveMQ Artemis broker on the other WildFly server will activate and take over all duties.
+All HA enabled connections from the original primary broker will fail over to the secondary broker. The secondary broker will
+access all messages stored on the primary broker by loading them from the shared journal directory. Once the original WildFly server is restarted,
+the secondary broker will automatically switch back to standby mode, and all clients will fail back to the primary broker.
+
+[NOTE]
+--
+For simplicity, we will use just one machine to run WildFly instances and use local directories for shared journals. In a real world scenario those should be two separate machines with a shared journal mount from a shared file system (like NFS4).
+--
+
+[[prerequisites]]
+== Prerequisites
+
+To complete this guide, you need:
+
+* Roughly {prerequisites-time} minutes
+* JDK {jdk-minimal-version} installed with `JAVA_HOME` configured appropriately
+
+== Prepare shared journal directories
+
+Create two directories for each primary-secondary pair:
+
+[source, bash ,options="nowrap"]
+----
+mkdir messaging-journal-a
+mkdir messaging-journal-b
+----
+
+== Prepare WildFly Servers
+
+Now let's configure two WildFly servers with two primary-secondary pairs of embedded ActiveMQ Artemis brokers. The ActiveMQ Artemis broker configured
+as the primary on the first WildFly server and as the secondary on the second WildFly server will use the `messaging-journal-a`
+directory for their shared journal. Similarly, the primary broker on the second WildFly server and the secondary broker on
+the first WildFly server will use the `messaging-journal-b` directory for their shared journal.
+
+[NOTE]
+--
+All ActiveMQ Artemis brokers must be in a cluster so that they are aware of each other and can provide cluster topology to connected clients. If any WildFly instance crashes, clients will know the location of the secondary broker and can fail over seamlessly. The procedures in this guide ensure that the brokers are properly clustered.
+--
+
+* Copy WildFly into two directories `wildfly-1` and `wildfly-2`
+* Start `wildfly-1` in a `full-ha` profile in admin-only mode:
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-1/bin/standalone.sh -c standalone-full-ha.xml --admin-only
+----
+
+* In a different terminal, connect to the server using the JBoss CLI:
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-1/bin/jboss-cli.sh -c
+----
+
+* Run the following CLI commands on `wildfly-1`:
+
+[NOTE]
+--
+In the following CLI script, replace the `<password>` and `<path>` values according to your environment.
+--
+
+[source, bash ,options="nowrap"]
+----
+# Change ActiveMQ Artemis cluster <password>
+/subsystem=messaging-activemq/server=default:write-attribute(name=cluster-password, value=<password>)
+
+# Set location of journal for pair A - change path to messaging-journal-a directory based on your environment
+/subsystem=messaging-activemq/server=default/path=bindings-directory:write-attribute(name=path,value=<path>/messaging-journal-a/bindings)
+/subsystem=messaging-activemq/server=default/path=journal-directory:write-attribute(name=path,value=<path>/messaging-journal-a/journal)
+/subsystem=messaging-activemq/server=default/path=large-messages-directory:write-attribute(name=path,value=<path>/messaging-journal-a/largemessages)
+/subsystem=messaging-activemq/server=default/path=paging-directory:write-attribute(name=path,value=<path>/messaging-journal-a/paging)
+
+# Set "default" Artemis broker as primary
+/subsystem=messaging-activemq/server=default/ha-policy=shared-store-primary:add(failover-on-server-shutdown=true)
+reload
+
+# Add secondary broker
+/subsystem=messaging-activemq/server=secondary:add(security-enabled=true, elytron-domain=ApplicationDomain)
+
+# Change ActiveMQ Artemis cluster <password>
+/subsystem=messaging-activemq/server=secondary:write-attribute(name=cluster-password, value=password)
+
+# Create http-connector/http-acceptor pointing to this broker
+/subsystem=messaging-activemq/server=secondary/http-acceptor=acceptor:add(http-listener=default)
+/subsystem=messaging-activemq/server=secondary/http-connector=connector:add(endpoint=acceptor,socket-binding=http)
+
+# Create a broadcast group to advertise the broker in the cluster and a corresponding discovery group to be used by the cluster connection to discover other brokers, enabling the formation of the cluster.
+/subsystem=messaging-activemq/server=secondary/jgroups-broadcast-group=bg-group1:add(jgroups-cluster=activemq-cluster, connectors=[connector])
+/subsystem=messaging-activemq/server=secondary/jgroups-discovery-group=dg-group1:add(jgroups-cluster=activemq-cluster)
+/subsystem=messaging-activemq/server=secondary/cluster-connection=my-cluster:add(cluster-connection-address=jms,connector-name=connector,discovery-group=dg-group1)
+
+# Set "secondary" Artemis broker as secondary
+/subsystem=messaging-activemq/server=secondary/ha-policy=shared-store-secondary:add(failover-on-server-shutdown=true)
+
+# Set location of journal for pair B - change path to messaging-journal-a directory based on your environment
+/subsystem=messaging-activemq/server=secondary/path=bindings-directory:write-attribute(name=path,value=<path>/messaging-journal-b/bindings)
+/subsystem=messaging-activemq/server=secondary/path=journal-directory:write-attribute(name=path,value=<path>/messaging-journal-b/journal)
+/subsystem=messaging-activemq/server=secondary/path=large-messages-directory:write-attribute(name=path,value=<path>/messaging-journal-b/largemessages)
+/subsystem=messaging-activemq/server=secondary/path=paging-directory:write-attribute(name=path,value=<path>/messaging-journal-b/paging)
+
+# Shutdown the server
+shutdown
+----
+
+* Start `wildfly-2` in a `full-ha` profile in admin-only mode (set port offset to 1000 to avoid port conflicts):
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-2/bin/standalone.sh -c standalone-full-ha.xml -Djboss.socket.binding.port-offset=1000 --admin-only
+----
+
+* In a different terminal, connect to the server using the JBoss CLI:
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-2/bin/jboss-cli.sh -c --controller=127.0.0.1:10990
+----
+
+* Run the following CLI commands on `wildfly-2`:
+
+[NOTE]
+--
+In the following CLI script, replace the `<password>` and `<path>` values according to your environment.
+--
+
+[source, bash ,options="nowrap"]
+----
+# Change ActiveMQ Artemis cluster <password>
+/subsystem=messaging-activemq/server=default:write-attribute(name=cluster-password, value=<password>)
+
+# Set location of journal for pair B - change path to messaging-journal-b directory based on your environment
+/subsystem=messaging-activemq/server=default/path=bindings-directory:write-attribute(name=path,value=<path>/messaging-journal-b/bindings)
+/subsystem=messaging-activemq/server=default/path=journal-directory:write-attribute(name=path,value=<path>/messaging-journal-b/journal)
+/subsystem=messaging-activemq/server=default/path=large-messages-directory:write-attribute(name=path,value=<path>/messaging-journal-b/largemessages)
+/subsystem=messaging-activemq/server=default/path=paging-directory:write-attribute(name=path,value=<path>/messaging-journal-b/paging)
+
+# Set "default" Artemis broker as primary
+/subsystem=messaging-activemq/server=default/ha-policy=shared-store-primary:add(failover-on-server-shutdown=true)
+reload
+
+# Add secondary broker
+/subsystem=messaging-activemq/server=secondary:add(security-enabled=true, elytron-domain=ApplicationDomain)
+
+# Change ActiveMQ Artemis cluster <password>
+/subsystem=messaging-activemq/server=secondary:write-attribute(name=cluster-password, value=password)
+
+# Create http-connector/http-acceptor pointing to this broker
+/subsystem=messaging-activemq/server=secondary/http-acceptor=acceptor:add(http-listener=default)
+/subsystem=messaging-activemq/server=secondary/http-connector=connector:add(endpoint=acceptor,socket-binding=http)
+
+# Create a broadcast group to advertise the broker in the cluster and a corresponding discovery group to be used by the cluster connection to discover other brokers, enabling the formation of the cluster.
+/subsystem=messaging-activemq/server=secondary/jgroups-broadcast-group=bg-group1:add(jgroups-cluster=activemq-cluster, connectors=[connector])
+/subsystem=messaging-activemq/server=secondary/jgroups-discovery-group=dg-group1:add(jgroups-cluster=activemq-cluster)
+/subsystem=messaging-activemq/server=secondary/cluster-connection=my-cluster:add(cluster-connection-address=jms,connector-name=connector,discovery-group=dg-group1)
+
+# Set "secondary" Artemis broker as secondary
+/subsystem=messaging-activemq/server=secondary/ha-policy=shared-store-secondary:add(failover-on-server-shutdown=true)
+
+# Set location of journal for pair A - change path to messaging-journal-a directory based on your environment
+/subsystem=messaging-activemq/server=secondary/path=bindings-directory:write-attribute(name=path,value=<path>/messaging-journal-a/bindings)
+/subsystem=messaging-activemq/server=secondary/path=journal-directory:write-attribute(name=path,value=<path>/messaging-journal-a/journal)
+/subsystem=messaging-activemq/server=secondary/path=large-messages-directory:write-attribute(name=path,value=<path>/messaging-journal-a/largemessages)
+/subsystem=messaging-activemq/server=secondary/path=paging-directory:write-attribute(name=path,value=<path>/messaging-journal-a/paging)
+
+# Shutdown the server
+shutdown
+----
+
+== Test High Availability
+
+We’ll test HA by crashing the first WildFly server and checking that the secondary ActiveMQ Artemis broker on the second WildFly server is active.
+
+* Start both WildFly servers, each in a separate terminal:
+
+[source, bash ,options="nowrap"]
+----
+./wildfly-1/bin/standalone.sh -c standalone-full-ha.xml
+./wildfly-2/bin/standalone.sh -c standalone-full-ha.xml -Djboss.socket.binding.port-offset=1000
+----
+
+* Shut down or crash `wildfly-1` and verify in the server log that the secondary broker has started in `wildfly-2`:
+
+[source, bash ,options="nowrap"]
+----
+16:25:44,921 INFO  [org.apache.activemq.artemis.core.server] (AMQ229000: Activation for server ActiveMQServerImpl::name=secondary) AMQ221010: Backup Server is now active
+----
+
+* Start `wildfly-1` server and verify that fail-back happened and the secondary broker on `wildfly-2` went to standby mode:
+
+[source, bash ,options="nowrap"]
+----
+16:26:53,043 INFO  [org.apache.activemq.artemis.core.server] (Thread-4 (ActiveMQ-scheduled-threads)) AMQ221008: primary server wants to restart, restarting server in backup
+...
+16:26:55,488 INFO  [org.apache.activemq.artemis.core.server] (Thread-0 (ActiveMQ-server-org.apache.activemq.artemis.core.server.impl.ActiveMQServerImpl$6@2845f281)) AMQ221031: backup announced
+----
+
+== What's next?
+
+ActiveMQ Artemis in WildFly also allows you to use a replicated journal, where each primary-secondary pair replicates data
+over the network. This approach has its pros and cons: it eliminates the need to mount shared journal directories on each
+machine but typically results in lower performance due to the network round trip times required between paired brokers.
+More information can be found in the https://activemq.apache.org/components/artemis/documentation/[ActiveMQ Artemis documentation].
+
+[[references]]
+== References
+
+* https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.4/html-single/configuring_messaging/index#messaging-ha[Configuring Messaging guide for EAP 7.4, window=_blank]
+* https://activemq.apache.org/components/artemis/documentation/[ActiveMQ Artemis documentation, window=_blank]
+|}

@@ -1,0 +1,14 @@
+---
+layout: post
+title:  "WildFly Mini Conference"
+date:   2024-02-12
+tags:   announcement conference
+author: hpehl
+description: The WildFly team is hosting a conference.
+---
+
+The WildFly team organizes a conference. The conference will take place on *Wednesday, March 6, 2024*. It starts at *14:00 UTC* and includes *four sessions* with topics related to WildFly. All sessions will be streamed live on YouTube.
+
+For more information, please take a look at the conference page at https://www.wildfly.org/conference/
+
+We're looking forward to seeing you there!

@@ -1,0 +1,100 @@
+- contributor: bstansberry
+  name: "Brian Stansberry"
+  bio: "Brian Stansberry is the current lead of the WildFly application server project. He is best known for the development of the administration and management capabilities in WildFly and JBoss EAP 6."
+  github: bstansberry
+  signing:
+      - id: ed25519/DCA5BDCD
+        key: F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD
+        link: https://keyserver.ubuntu.com/pks/lookup?search=F2D377ECA2698D0E2E4C42FE47CB96A7DCA5BDCD&fingerprint=on&op=index
+        fingerprint: F2D3 77EC A269 8D0E 2E4C  42FE 47CB 96A7 DCA5 BDCD
+- contributor: darranl
+  name: "Darran Lofthouse"
+  bio: "Darran is a software engineer working on the WildFly application server project, focusing on the security integration provided by the WildFly Elytron project."
+  github: darranl
+  signing:
+       - id: ed25519/E85C11F6
+         key: 245404A11575A55D6A41107E2D52D4ACE85C11F6
+         link: https://keyserver.ubuntu.com/pks/lookup?search=245404A11575A55D6A41107E2D52D4ACE85C11F6&fingerprint=on&op=index
+         fingerprint: 2454 04A1 1575 A55D 6A41  107E 2D52 D4AC E85C 11F6
+- contributor: hpehl
+  name: "Harald Pehl"
+  bio: "Harald is a software engineer at Red Hat working on management capabilities of WildFly. He is currently leading the management console (HAL)."
+  github: hpehl
+  signing:
+      - id: rsa2048/2A79C898
+        key: 0D68DE5E4B91E5DAE74D9B634A5939FF2A79C898
+        link: https://keyserver.ubuntu.com/pks/lookup?search=0D68DE5E4B91E5DAE74D9B634A5939FF2A79C898&fingerprint=on&op=index
+        fingerprint: 0D68 DE5E 4B91 E5DA E74D  9B63 4A59 39FF 2A79 C898
+- contributor: jfdenise
+  name: "Jean-François Denise"
+  bio: "Jean-François is a software engineer at Red Hat. He is the lead of the WildFly and Galleon command line tools and in charge of the WildFly S2I images."
+  github: jfdenise
+  signing:
+      - id: rsa3072/81CC32E6
+        key: F88F1E1773E7B59122B924E55EF1B82981CC32E6
+        link: https://keyserver.ubuntu.com/pks/lookup?search=F88F1E1773E7B59122B924E55EF1B82981CC32E6&fingerprint=on&op=index
+        fingerprint: F88F 1E17 73E7 B591 22B9  24E5 5EF1 B829 81CC 32E6
+- contributor: jmesnil
+  name: "Jeff Mesnil"
+  bio: "Jeff works at Red Hat. He is a core developer on WildFly application server."
+  github: jmesnil
+  signing:
+      - id: ed25519/7792AFBEB39D5EB4
+        key: 5E5857795C01436C6F78A5747792AFBEB39D5EB4
+        link: https://keyserver.ubuntu.com/pks/lookup?search=5E5857795C01436C6F78A5747792AFBEB39D5EB4&fingerprint=on&op=index
+        fingerprint: 5E58 5779 5C01 436C 6F78 A574 7792 AFBE B39D 5EB4
+- contributor: jperkins
+  name: "James R. Perkins"
+  bio: "James works at Red Hat on WildFly. He is the RESTEasy project lead and a committer on WildFly. He also contributes to the Jakarta RESTful Web Services specification, the Jakarta TCK
+    and various other Jakarta related projects and specifications."
+  github: jamezp
+  signing:
+      - id: rsa4096/39B3A8E7
+        key: 6D2AF456B8CB597387901C786F29F72839B3A8E7
+        link: https://keyserver.ubuntu.com/pks/lookup?search=6D2AF456B8CB597387901C786F29F72839B3A8E7&fingerprint=on&op=index
+        fingerprint: 6D2A F456 B8CB 5973 8790  1C78 6F29 F728 39B3 A8E7
+- contributor: jasondlee
+  name: "Jason Lee"
+  bio: "Jason works at Red Hat on the WildFly project. He maintains the observability libraries (Micrometer, OpenTelemetry, etc) and helps out with the Undertow project."
+  github: jasondlee
+  signing:
+      - id: rsa4096/3E9BFEE1
+        key: 9B53ED5D2441059B1646122E1F56A2773E9BFEE1
+        link: https://keyserver.ubuntu.com/pks/lookup?search=9b53ed5d2441059b1646122e1f56a2773e9bfee1&fingerprint=on&op=index
+        fingerprint: 9B53 ED5D 2441 059B 1646  122E 1F56 A277 3E9B FEE1
+- contributor: pferraro
+  name: "Paul Ferraro"
+  bio: "Paul Ferraro is responsible for the clustering functionality of the WildFly application server project."
+  github: pferraro
+  signing:
+      - id: rsa2048/C53F6469
+        key: 5ED7CDF9BA92540C9C22BD1D7721DC87C53F6469
+        link: https://keys.openpgp.org/vks/v1/by-fingerprint/5ED7CDF9BA92540C9C22BD1D7721DC87C53F6469
+        fingerprint: 5ED7 CDF9 BA92 540C 9C22  BD1D 7721 DC87 C53F 6469
+- contributor: yborgess
+  name: "Yeray Borges"
+  bio: "Yeray Borges works at Red Hat on the WildFly project. He maintains WildFly Core and WildFly Operator."
+  github: yersan
+  signing:
+      - id: rsa3072/B1D38A2DCD625601
+        key: 14F3D63B2CD5E055730DB060B1D38A2DCD625601
+        link: https://keyserver.ubuntu.com/pks/lookup?search=14f3d63b2cd5e055730db060b1d38a2dcd625601&fingerprint=on&op=index
+        fingerprint: 14F3 D63B 2CD5 E055 730D  B060 B1D3 8A2D CD62 5601
+- contributor: jkasik
+  name: "Jan Kašík"
+  bio: "Jan Kašík works at Red Hat. He maintains some auxiliary WildFly projects."
+  github: honza-kasik
+  signing:
+      - id: ed25519/3FC239F5FC312325
+        key: 0EB27E1BCDB2C21682F8DFC33FC239F5FC312325
+        link: https://keys.openpgp.org/vks/v1/by-fingerprint/0EB27E1BCDB2C21682F8DFC33FC239F5FC312325
+        fingerprint: 0EB2 7E1B CDB2 C216 82F8  DFC3 3FC2 39F5 FC31 2325
+- contributor: asoldano
+  name: "Alessio Soldano"
+  bio: "Alessio Soldano works at Red Hat. He contributed to the WebServices and REST subsystems."
+  github: asoldano
+  signing:
+    - id: eddsa263/de29c9e8063d635c6c00b8fa7b2e5a9fa517708b
+      key: DE29C9E8063D635C6C00B8FA7B2E5A9FA517708B
+      link: https://keyserver.ubuntu.com/pks/lookup?search=0xde29c9e8063d635c6c00b8fa7b2e5a9fa517708b&fingerprint=on&op=index
+      fingerprint: DE29 C9E8 063D 635C 6C00 B8FA 7B2E 5A9F A517 708B

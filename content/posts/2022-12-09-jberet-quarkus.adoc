@@ -1,0 +1,9 @@
+---
+layout: post
+title: "Using JBeret With Quarkus"
+date: 2022-12-09
+tags: jberet batch quarkus
+synopsis: An overview of the JBeret usage in Quarkus.
+author: liweinan
+external_link: https://jberet.github.io/jberet-quarkus/
+---

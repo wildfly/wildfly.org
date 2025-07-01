@@ -1,0 +1,31 @@
+---
+layout: post
+title:  "Thanks for a great 2023!"
+aliases: [/news/2023/12/22/Year-end-message]
+date:   2023-12-22
+tags:
+author: bstansberry
+description: Thanks to the WildFly community for a great 2023.
+---
+
+We are almost at the end of 2023 and we wanted to take this opportunity to thank all our community members for their help on WildFly this year.
+
+2023 was a busy year for WildFly, with:
+
+* 3 Major versions -- 28, 29, 30.
+** And 31 Beta just came out yesterday.
+* New extensions for MicroProfile Telemetry and MicroProfile LRA.
+* Implementations of most of MicroProfile 6.0, with updates to 6.1 coming in WildFly 31.
+* Java 21 support.
+* More than 2000 issues and enhancements resolved in our main code
+** and this does not count all the work done in the components integrated in WildFly.
+* A change of the WildFly code base to Apache License 2.0.
+* A lot of work around on improving documentation and tooling related how to get start with and use WildFly. More on that when WildFly 31 comes out in January!
+
+We will start 2024 with the WildFly 31 release and with a great online mini-conference -- a day dedicated to presentations and discussions about WildFly with our community. We will announce the conference date later, but it will likely be in February.
+
+Thanks all for of your for your work and help in making WildFly a successful Open Source project. We are looking forward to continuing working with you next year!
+
+Best wishes from the WildFly team and Happy New Year!
+
+- Brian

@@ -1,0 +1,171 @@
+---
+layout: post
+title:  "Developing in the cloud with Eclipse Che"
+aliases: [/news/2023/11/07/Developping-in-the-cloud-with-Eclipse-Che]
+date:   2023-11-07 06:00:00 +0100
+tags:   wildfly cloud ide k8s devfile getting-started
+author: ehsavoie
+---
+
+https://eclipse.dev/che/[Eclipse Che] is a cloud IDE that promises to get rid of the cumbersome setup of your local environment by providing automated setup in the cloud. It can be run easily on Kubernetes or its derivative like OpenShift. The purpose of this blog entry is not to setup Eclipse Che.
+In this blog entry we will show you in a first step how you can use Eclipse Che for regular development. On a second step we will resuse the same application and deploy it on Kubernetes.
+
+For the video and demo purpose we used Eclipse Che installation on https://kubernetes.io/docs/tasks/tools/install-minikube/[Minikube] following the https://eclipse.dev/che/docs/stable/administration-guide/installing-che-on-minikube/[instructions] with the https://eclipse.dev/che/docs/stable/administration-guide/installing-the-chectl-management-tool/[chectl management tool].
+
+In order to setup our project environment we will use a simple *getting-started* project which contains only a single REST endpoint and an integration test. In this project we provide also:
+
+* a `devfile.yaml` to setup and configure the Che workspace. You may learn more about it on https://devfile.io .
+* a `ContainerFile` to describe how to build our runtime image to be deployed on Kubernetes.
+* a `ingress.yaml` file that can server as an example to expose our running service.
+
+== Regular development on the cloud ==
+
+=== Creating our workspace ===
+
+The first step is of course to create our workspace, for this you have to paste the following URL https://github.com/wildfly-extras/wildfly-devfile-examples/tree/simple-cloud .
+As you can see this repository is quite simple and provides at its root the `devfile.yaml` that will configure our workspace.
+Let's do a quick analysis of this file content:
+
+ * it has a single component using a Universal Developer Image to bring in all the tools that a cloud developer might need.
+ * it defines the debug port and the ports that can be exposed
+ * there is also a volume where the downloaded maven artefacts will be stored to keep them between restarts
+
+The we have several commands to provide shortcuts to commands a developer might need. They are quite standard and make development life easier but of course you can type them in a terminal if you's rather do it that way.
+
+=== Taking a look at the code ===
+
+The code consists of a very basic REST endpont with an `index.html` page to call it and display the result. There is also an integration test that will call that endpoint and checks that it returns properly.
+If you take a look at the Apache Maven `pom.xml` you can see that it uses the https://docs.jboss.org/wildfly/plugins/maven/latest/[WildFly Maven Plugin].
+
+[source,xml]
+----
+<plugin>
+  <groupId>org.wildfly.plugins</groupId>
+  <artifactId>wildfly-maven-plugin</artifactId>
+  <version>${version.wildfly.maven.plugin}</version>
+  <configuration>
+    <feature-packs>
+      <feature-pack>
+        <location>org.wildfly:wildfly-galleon-pack:${version.jboss.bom}</location>
+      </feature-pack>
+      <feature-pack>
+        <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:${version.cloud.fp}</location>
+      </feature-pack>
+    </feature-packs>
+    <layers>
+      <!-- layers may be used to customize the server to provision-->
+      <layer>cloud-server</layer>
+    </layers>
+    <javaOpts></javaOpts>
+  </configuration>
+  <executions>
+    <execution>
+      <goals>
+        <goal>package</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+----
+
+We use this plugin to provision a server and deploy our application to it. As you can see, we are installing the `cloud-server` layer from the `wildfly-cloud-galleon-pack` as it makes WildFly behave better in the cloud.
+
+=== Building and debugging ===
+
+As you can see on the demo, we provide three commands for reglar development ('InnerLoop') :
+
+- the first one builds the application, provisions the server and executes the integration test
+- the second one provisions and starts the server with the application in `dev` mode: this means that whenever the code changes the server is automatically updated. It is covered in more details https://www.wildfly.org/news/2023/03/09/WildFly-Maven-Plugin/[here].
+- the third one provisions and starts the server with the application in `dev` mode with debug enabled so you can debug the application and also take advantage of the dev mode.
+
+[NOTE]
+====
+Note you can use a terminal to execute those commands or your own. For example you can start the provisionned server with the regular `standalone.sh` in *target/server/bin*.
+====
+
+video::Riw0IcWUW98[youtube,width=560,height=315,title="YouTube video player"]
+
+== Deploying to the cloud ==
+
+=== Creating the secret ===
+
+Because we need to make our image available to be deployed on Kubernetes we have to provide the credentials and details on where to push it. In order to do that we need to create a *secret* in the namespace you are running your workspace on (in my case it is `admin-che`). On the devfile the target registry is *quay.io*, you may change that if you want to use your own image registry.
+
+
+[source,bash,options="nowrap"]
+----
+kubectl delete secret quay-secret --namespace admin-che
+kubectl create secret generic quay-secret \
+  --namespace admin-che \
+  --from-literal=IMAGE_REGISTRY_PASSWORD=**** \
+  --from-literal=IMAGE_REGISTRY_LOGIN=mylogin@quay.io \
+  --from-literal=IMAGE_REGISTRY_NAMESPACE=mylogin
+kubectl label secret quay-secret \
+  --namespace admin-che \
+  controller.devfile.io/mount-to-devworkspace=true \
+  controller.devfile.io/watch-secret=true
+kubectl annotate secret quay-secret --namespace admin-che controller.devfile.io/mount-as='env'
+----
+
+The label and the annotation are here so that the secret will be automounted by the Che workspace on start. So you will need to restart the workspace if you created it as in the first part of this article.
+
+
+=== Building the image ===
+
+For this task we are going to use https://podman.io/[Podman] and a very simple `ContainerFile` that will take the output of the provisionning task a copy it to a `wildfly-runtime` image:
+
+[source,bash]
+----
+FROM quay.io/wildfly/wildfly-runtime:latest
+COPY --chown=jboss:root target/server $JBOSS_HOME
+RUN chmod -R ug+rwX $JBOSS_HOME
+----
+
+Once that image is built we need to push it.
+
+=== Tagging and pushing the image ===
+
+Here again we are going to use Podman to tag the image we just built and push it to our image registry. This task is the the that uses the content of the *secret* we created. Otherwise it is just regular Podman commands.
+
+=== Deploying the image on Kubernetes ===
+
+Now we are going to deploy the image we have built and pushed on Kubernetes. In order to do this we are going to use https://docs.wildfly.org/wildfly-charts/[WildFly Helm Charts].
+The first step is to register the WildFly helm charts then execute `helm install` with a few values to customize our deployment:
+
+ * `--set build.enabled=false` : this indicates that we are using an image that has already been built (in Openshift you can use s2i to automate what we just did before).
+ * in the .charts/helm.yaml file you will notice that there is a `deploy.route.enabled` set to false this is again to override an Openshift feature where the `route` to the service is automatically added. In Kubernetes you will have to create the Ingress resource manually (until now at least).
+
+Now that the image has been deployed and the service created, you need to expose it by creating the *ingress* resource.
+
+[source,yaml]
+----
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: getting-started-ingress
+  namespace: admin-che
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: hello-world.info
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: getting-started
+                port:
+                  number: 8080
+----
+
+You may want to change the target host name. In my example I added an entry in my `hosts` configuration file mapping *hello-world.info* to the minikube IP address.
+
+Now you can access the service on http://hello-world.info
+
+
+=== Undeploying the image ===
+
+We provide again a simple command that does a `helm uninstall` thus removing the deployment.
+
+video::WdrIXFKV8r4[youtube,width=560,height=315,title="YouTube video player"]

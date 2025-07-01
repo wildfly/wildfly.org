@@ -1,0 +1,410 @@
+---
+layout: post
+title: Deploy on Kubernetes with Helm
+aliases: [/news/2023/06/16/deploy-on-kubernetes-with-helm]
+date: 2023-06-16
+tags: wildfly kubernetes helm
+synopsis: How to deploy WildFly applications on Kubernetes with Helm.
+author: marcosgopen
+---
+
+https://helm.sh[Helm] is a tool that helps define, install and upgrade complex applications on Kubernetes clusters.
+
+In this post, we will use the Wildfly chart from https://github.com/wildfly/wildfly-charts/[https://github.com/wildfly/wildfly-charts/] to deploy a simple Wildfly application:
+
+* Create a simple Java application
+* Use the wildfly-maven-plugin's `image` goal to create a Docker image straight from Maven
+* Push that image in a container registry (eg quay.io or ghcr.io)
+* Use Helm to deploy that image in a Kubernetes cluster (e.g. using kind)
+
+Note: for the purpose of this article we will use 'kind' as a tool for running local Kubernetes cluster (see more about https://kind.sigs.k8s.io/[kind]).
+
+## Prerequisites
+* https://helm.sh/docs/intro/install/[Helm] installed
+* https://docs.docker.com/engine/install/[Docker] or https://podman.io/docs/installation[Podman]
+* A kubernetes cluster
+* A public container registry where to push and pull your image (e.g. on quay.io or ghcr.io)
+
+## Create a simple Java application
+
+We will use the https://github.com/wildfly/quickstart/tree/main/helloworld[helloworld] WildFly quickstart as an example:
+
+[source,bash]
+----
+$ git clone https://github.com/wildfly/quickstart
+$ cd quickstart/helloworld 
+----
+
+## Install Helm and have access to a Kubernetes cluster.
+
+Please refer to https://helm.sh/docs/intro/install/[Installing Helm] page to install Helm in your environment.
+
+We will use https://kind.sigs.k8s.io/[kind] as our Kubernetes cluster.
+
+## Install Helm Repository for WildFly Chart
+
+The `wildfly` Chart can be installed from the https://docs.wildfly.org/wildfly-charts/ repository
+
+[source,options="nowrap"]
+----
+$ helm repo add wildfly https://docs.wildfly.org/wildfly-charts/
+"wildfly" has been added to your repositories
+$ helm search repo wildfly
+NAME                  	CHART VERSION	APP VERSION	DESCRIPTION                                       
+wildfly/wildfly       	2.3.1        	           	Build and Deploy WildFly applications on OpenShift
+wildfly/wildfly-common	2.1.0        	           	A library chart for WildFly-based applications  
+----
+
+## Make sure your application pom contains the wildfly-maven-plugin plugin
+
+In our helloworld quickstart the wildfly-maven-plugin plugin is already present under the 'openshift' profile.
+Add it if you don't have it in your pom.xml.
+
+[source,options="nowrap"]
+----
+<profiles>
+...
+        <profile>
+            <id>openshift</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <version>${version.wildfly.maven.plugin}</version>
+                        <configuration>
+                            <feature-packs>
+                                <feature-pack>
+                                    <location>org.wildfly:wildfly-galleon-pack:${version.server}</location>
+                                </feature-pack>
+                                <feature-pack>
+                                    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:${version.cloud.fp}</location>
+                                </feature-pack>
+                            </feature-packs>
+                            <layers>
+                                <layer>cloud-server</layer>
+                            </layers>
+                            <filename>${project.artifactId}-${project.version}.war</filename>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+...
+    </profiles>    
+----
+
+## Build the docker image with the wildfly-maven-plugin plugin 
+
+Note: In this example we use 'docker', but 'podman' works as well.
+
+[source,bash,options="nowrap"]
+----
+ $ mvn package wildfly:image -Popenshift
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< org.wildfly.quickstarts:helloworld >-----------------
+[INFO] Building Quickstart: helloworld 29.0.0.Alpha1-SNAPSHOT
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ helloworld ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /home/msappegr/workspace/test/helloworld/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ helloworld ---
+[INFO] Changes detected - recompiling the module!
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 2 source files to /home/msappegr/workspace/test/helloworld/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ helloworld ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ helloworld ---
+[INFO] Changes detected - recompiling the module!
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 2 source files to /home/msappegr/workspace/test/helloworld/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ helloworld ---
+[INFO] 
+[INFO] --- maven-war-plugin:3.2.3:war (default-war) @ helloworld ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [helloworld] in [/home/msappegr/workspace/test/helloworld/target/helloworld-29.0.0.Alpha1-SNAPSHOT]
+[INFO] Processing war project
+[INFO] Copying webapp resources [/home/msappegr/workspace/test/helloworld/src/main/webapp]
+[INFO] Webapp assembled in [38 msecs]
+[INFO] Building war: /home/msappegr/workspace/test/helloworld/target/helloworld-29.0.0.Alpha1-SNAPSHOT.war
+[INFO] 
+[INFO] --- wildfly-maven-plugin:4.1.0.Final:package (default) @ helloworld ---
+[INFO] Provisioning server in /home/msappegr/workspace/test/helloworld/target/server
+[INFO] Resolving feature-packs
+[INFO] Installing packages
+[INFO] Resolving artifacts
+[INFO] Generating configurations
+Jul 07, 2023 5:10:53 PM org.wildfly.core.embedded.LoggerContext$JBossLoggingModuleLogger greeting
+INFO: JBoss Modules version 2.1.0.Final
+Jul 07, 2023 5:10:54 PM org.jboss.msc.service.ServiceContainerImpl <clinit>
+INFO: JBoss MSC version 1.5.0.Final
+Jul 07, 2023 5:10:54 PM org.jboss.threads.Version <clinit>
+INFO: JBoss Threads version 2.4.0.Final
+Jul 07, 2023 5:10:54 PM org.jboss.as.server.ApplicationServerService start
+INFO: WFLYSRV0049: WildFly Full 28.0.1.Final (WildFly Core 20.0.2.Final) starting
+Jul 07, 2023 5:10:54 PM org.jboss.as.patching.installation.InstallationManagerService start
+INFO: WFLYPAT0050: WildFly Full cumulative patch ID is: base, one-off patches include: none
+Jul 07, 2023 5:10:54 PM org.jboss.as.server.suspend.SuspendController resume
+INFO: WFLYSRV0212: Resuming server
+Jul 07, 2023 5:10:54 PM org.jboss.as.server.BootstrapListener printBootStatisticsMessage
+INFO: WFLYSRV0025: WildFly Full 28.0.1.Final (WildFly Core 20.0.2.Final) started in 868ms - Started 29 of 32 services (3 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+Jul 07, 2023 5:10:55 PM org.wildfly.security.Version <clinit>
+INFO: ELY00001: WildFly Elytron version 2.1.0.Final
+Jul 07, 2023 5:10:56 PM org.jboss.as.server.ApplicationServerService stop
+INFO: WFLYSRV0050: WildFly Full 28.0.1.Final (WildFly Core 20.0.2.Final) stopped in 4ms
+[INFO] Copy deployment /home/msappegr/workspace/test/helloworld/target/helloworld-29.0.0.Alpha1-SNAPSHOT.war to /home/msappegr/workspace/test/helloworld/target/server/standalone/deployments/helloworld-29.0.0.Alpha1-SNAPSHOT.war
+[INFO] 
+[INFO] --- wildfly-maven-plugin:4.1.0.Final:image (default-cli) @ helloworld ---
+[INFO] A server already exists in /home/msappegr/workspace/test/helloworld/target/server, skipping image of org.wildfly.quickstarts:helloworld
+[INFO] Generating Dockerfile /home/msappegr/workspace/test/helloworld/target/Dockerfile from base image quay.io/wildfly/wildfly-runtime:latest
+[INFO] Building application image helloworld:latest using docker.
+[INFO] Executing the following command to build application image: 'docker build -t helloworld:latest .'
+[INFO] #1 [internal] load build definition from Dockerfile
+[INFO] #1 transferring dockerfile: 351B done
+[INFO] #1 DONE 0.0s
+[INFO] 
+[INFO] #2 [internal] load .dockerignore
+[INFO] #2 transferring context: 2B done
+[INFO] #2 DONE 0.0s
+[INFO] 
+[INFO] #3 [internal] load metadata for quay.io/wildfly/wildfly-runtime:latest
+[INFO] #3 DONE 0.7s
+[INFO] 
+[INFO] #4 [1/4] FROM quay.io/wildfly/wildfly-runtime:latest@sha256:841dcb723e1dd55c86c5762a19f190967c7f5382c2b1896ab34e033091b2d1b1
+[INFO] #4 DONE 0.0s
+[INFO] 
+[INFO] #5 [internal] load build context
+[INFO] #5 transferring context: 148.55MB 0.8s done
+[INFO] #5 DONE 0.8s
+[INFO] 
+[INFO] #4 [1/4] FROM quay.io/wildfly/wildfly-runtime:latest@sha256:841dcb723e1dd55c86c5762a19f190967c7f5382c2b1896ab34e033091b2d1b1
+[INFO] #4 CACHED
+[INFO] 
+[INFO] #6 [2/4] COPY --chown=jboss:root server /opt/server
+[INFO] #6 DONE 0.5s
+[INFO] 
+[INFO] #7 [3/4] RUN chmod -R ug+rwX /opt/server
+[INFO] #7 DONE 2.0s
+[INFO] 
+[INFO] #8 [4/4] COPY --chown=jboss:root helloworld-29.0.0.Alpha1-SNAPSHOT.war /opt/server/standalone/deployments/helloworld-29.0.0.Alpha1-SNAPSHOT.war
+[INFO] #8 DONE 0.1s
+[INFO] 
+[INFO] #9 exporting to image
+[INFO] #9 exporting layers
+[INFO] #9 exporting layers 0.8s done
+[INFO] #9 writing image sha256:cb47ca7e7baccc74e877087f98659509e14d70c91030d0234245ffaa481f7cbc done
+[INFO] #9 naming to docker.io/library/helloworld:latest done
+[INFO] #9 DONE 0.8s
+[INFO] Successfully built application image helloworld:latest
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  17.841 s
+[INFO] Finished at: 2023-07-07T17:11:05+02:00
+[INFO] ------------------------------------------------------------------------
+
+----
+
+And then make sure you have it in your docker images
+
+[source,options="nowrap"]
+----
+ $ docker images
+REPOSITORY                        TAG                     IMAGE ID       CREATED          SIZE
+helloworld                        latest                  6d404b584da2   32 seconds ago   686MB
+
+----
+
+## Push the just created image to a container registry (e.g. quay.io, ghcr.io or hub.docker.com)
+
+In this article we will use Quay.io as a container registry.
+If you don't have an account you can start a free trial on https://quay.io/[https://quay.io/] or create an account on https://hub.docker.com/[dockerhub].
+
+* Login to your container registry (see how to get started https://docs.quay.io/solution/getting-started.html[here])
+
+* Tag the new image with the proper format 'quay.io/username/reponame'
+
+Note: make sure to replace the 'username' (your account username) and the 'reponame' (your image name) accordingly!
+If you use ghcr.io you have to change 'quay.io/username/reponame' with `ghcr.io/NAMESPACE/IMAGE_NAME`
+If you use hub.docker.com you have to change 'quay.io/username/reponame' with `username/image_name`
+
+
+
+[source,bash]
+----
+$ docker login quay.io
+$ docker tag helloworld quay.io/username/helloworld
+----
+
+Check that your image has been tagged:
+
+[source]
+----
+$ docker images
+helloworld                          latest                  6d404b584da2   56 minutes ago   686MB
+quay.io/username/helloworld   latest                  6d404b584da2   56 minutes ago   686MB
+
+----
+Push the image in your registry:
+
+[source,bash]
+----
+$ docker push quay.io/username/helloworld
+Using default tag: latest
+The push refers to repository [quay.io/username/helloworld]
+ad91a69a4efb: Pushed 
+f454069ae0d4: Pushed 
+b21a08aa50a4: Pushed 
+4fc9e93f9cc1: Pushed 
+55ea6d5a354e: Pushed 
+latest: digest: sha256:1d72e7b4f8dd75414a2b1dc8da3505906b0211ac6962e871b84f2c8ead43cb3a size: 1377
+----
+Now your image is available in your container registry (in my case it is available at https://quay.io/repository/rh_ee_msappegr/helloworld)
+
+Note: make sure your registry is public in order to pull it from the cluster. Otherwise you will need to create a https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/[docker-registry secret] .
+
+## Create the YAML value file under the charts folder
+
+In our example the charts folder already exists under quickstart/helloworld/charts, so move to that directory and create a file named values.yaml
+
+[source,bash]
+----
+$ cd charts 
+$ touch values.yaml
+----
+
+and paste the following inside the values.yaml
+
+[source,bash]
+----
+image:
+  name: quay.io/rh_ee_msappegr/helloworld # change it with the image you have just pushed
+build:
+  enabled: false # The build part is not needed since we have already built our application with the wildfly-maven-plugin plugin
+deploy:
+  route:
+    enabled: false # the route can be enabled, but only for OpenShift clusters
+----
+
+
+## Deploy the Application on Kubernetes
+
+Once the `wildfly` Chart is added, we can install a Helm *release* by using the `helm install` command with the name of the release as well as a YAML configuration file that contains all the settings to build and deploy the application:
+
+[source,bash]
+----
+$ helm install helloworld-app \
+    wildfly/wildfly \
+    -f charts/values.yaml
+
+NAME: helloworld-app
+LAST DEPLOYED: Wed Jun 14 18:45:38 2023
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+To follow the deployment of your application, run:
+
+$ kubectl get deployment helloworld-app -w
+----
+
+As you can read above, the output of the `helm install` command contains instructions to follow the installation of the application.
+
+We can watch its deployment by running:
+
+[source,bash]
+----
+$ kubectl get deployment helloworld-app -w
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+helloworld-app   1/1     1            1           30s
+----
+
+The application is now available and we can query it (you might need to wait some seconds to see our application up and running).
+
+In order to reach your application from the browser you could port-forward port 8080 to your host:
+
+[source,bash]
+----
+$ kubectl port-forward $(oc get pod -l app.kubernetes.io/instance=helloworld-app -o name) 8080:8080
+Forwarding from 127.0.0.1:8080 -> 8080
+...
+----
+
+Note: If your application has a different name you can retrieve your pod name by executing:
+`$ kubectl get pod`
+
+Then in the output you will see your pod name.
+
+Using the 'pod name' execute:
+`$ kubectl port-forward your_pod_name 8080:8080`
+
+Now open your browser and browse URL 'localhost:8080', your application will respond: Hello World!
+
+Alternately you can curl it from your terminal:
+
+[source,html]
+----
+$ curl localhost:8080
+<!--
+    JBoss, Home of Professional Open Source
+    Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+    contributors by the @authors tag. See the copyright.txt in the
+    distribution for a full listing of individual contributors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!-- Plain HTML page that kicks us into the app -->
+
+<html>
+    <head>
+        <meta http-equiv="Refresh" content="0; URL=HelloWorld">
+    </head>
+</html>
+----
+
+The application is up and running.
+
+## Conclusion
+It is possible to run your application with very simple steps.
+
+All that is necessary is to:
+
+* have the wildfly-maven-plugin plugin in your root pom
+
+* generate your image and to push it to your registry
+
+* install the helm chart
+
+## More about Helm Chart
+
+More documentation about it can be found at https://github.com/wildfly/wildfly-charts/blob/main/charts/wildfly/README.md[`wildfly` Chart documentation].
+
+## More information
+
+* https://helm.sh[Helm] - The package manager for Kubernetes
+* https://github.com/wildfly/wildfly-charts[wildfly-charts Project Page]
+* https://github.com/wildfly/wildfly-charts/blob/main/charts/wildfly/README.md[Wildfly Chart documentation]
+

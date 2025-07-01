@@ -1,9 +1,0 @@
----
-layout: post
-title: 'AMA Recap'
-date: 2022-12-22
-tags: ama elytron opensource recap
-synopsis: A recap of the Ask Me Anything session with the WildFly Elytron team that took place this week.
-author: fjuma
-link: https://wildfly-security.github.io/wildfly-elytron/blog/ask-me-anything-recap/
----
