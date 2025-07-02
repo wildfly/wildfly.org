@@ -98,9 +98,9 @@ Add the following dependencies to the `pom.xml` file:
 ----
 
 ==== Configure WildFly Datasource and trimming server capabilities:
-To connect to the database we need to configure the https://docs.wildfly.org/32/Admin_Guide.html#DataSource[WildFly Datasource Subsystem,window=_blank] and install the PostgreSQL driver into the WildFly server. The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack, window=_blank] contains a set of https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/main/doc/postgresql/README.md[Galleon Layers, window=_blank] that provide *JDBC drivers* and *WildFly Datasource Subsystem* configurations for various databases. For this guide, we will use the `postgresql-default-datasource` Galleon layer that will configure a PostgreSQL datasource as the default datasource for the server.
+To connect to the database we need to configure the https://docs.wildfly.org/36/Admin_Guide.html#DataSource[WildFly Datasource Subsystem,window=_blank] and install the PostgreSQL driver into the WildFly server. The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack, window=_blank] contains a set of https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/main/doc/postgresql/README.md[Galleon Layers, window=_blank] that provide *JDBC drivers* and *WildFly Datasource Subsystem* configurations for various databases. For this guide, we will use the `postgresql-default-datasource` Galleon layer that will configure a PostgreSQL datasource as the default datasource for the server.
 
-In addition to the Galleon Layers to configure the datasource and install the drivers, we also want to trim the WildFly server to remove any unnecessary subsystems and features we don't need. That will reduce the server footprint and the security attack surface. This task can be done by selecting the appropriate https://docs.wildfly.org/32/Galleon_Guide.html#wildfly_galleon_layers[Galleon Layers, window=_blank] shipped with any WildFly distribution. However, instead of adding a static list of Galleon Layers, we are going to configure the `wildfly-maven-plugin` plugin to discover the required layers automatically for us.
+In addition to the Galleon Layers to configure the datasource and install the drivers, we also want to trim the WildFly server to remove any unnecessary subsystems and features we don't need. That will reduce the server footprint and the security attack surface. This task can be done by selecting the appropriate https://docs.wildfly.org/36/Galleon_Guide.html#wildfly_galleon_layers[Galleon Layers, window=_blank] shipped with any WildFly distribution. However, instead of adding a static list of Galleon Layers, we are going to configure the `wildfly-maven-plugin` plugin to discover the required layers automatically for us.
 
 Replace the current `wildfly-maven-plugin` configuration in the `pom.xml` file provided by the getting started guide with the following one:
 
@@ -751,12 +751,12 @@ Finally, to stop the PostgreSQL database, press `Ctrl+C` in the terminal where t
 == What's next?
 
 In this guide we have learned how to configure a WildFly server to access to a PostgreSQL database and how to easily trim the server capabilities using WildFly Glow. Seamlessly, you can adapt the same application to use other databases by changing the Galleon Layers used by the WildFly server.
-You can learn more about how to configure WildFly for other databases by looking at the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack] documentation and https://docs.wildfly.org/32/Glow_Guide.html[WildFly Glow Guide].
+You can learn more about how to configure WildFly for other databases by looking at the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack, window=_blank] documentation and https://docs.wildfly.org/wildfly-glow/[WildFly Glow Guide, window=_blank].
 
 // Always add this section last to link to any relevant content
 [[references]]
 == References
 
-* https://docs.wildfly.org/32/Admin_Guide.html#DataSource[WildFly Datasource Subsystem]
-* https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack]
-* https://docs.wildfly.org/32/Glow_Guide.html[WildFly Glow Guide].
+* https://docs.wildfly.org/36/Admin_Guide.html#DataSource[WildFly Datasource Subsystem, window=_blank]
+* https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly Datasources Galleon Pack, window=_blank]
+* https://docs.wildfly.org/wildfly-glow/[WildFly Glow Guide, window=_blank]
