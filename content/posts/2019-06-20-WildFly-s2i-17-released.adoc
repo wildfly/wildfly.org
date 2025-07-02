@@ -7,10 +7,10 @@ tags:   wildfly, galleon
 author: jfdenise
 ---
 
-== WildFly 17 S2I image on link:http://quay.io[quay.io]
+== WildFly 17 S2I image on https://quay.io[quay.io]
 
 Starting with WildFly 17, the WildFly S2I Docker image is now accessible from
-link:http://quay.io[quay.io] at this URL: link:https://quay.io/repository/wildfly/wildfly-centos7[https://quay.io/repository/wildfly/wildfly-centos7]
+https://quay.io[quay.io] at this URL: link:https://quay.io/repository/wildfly/wildfly-centos7[https://quay.io/repository/wildfly/wildfly-centos7]
 
 A companion image, a WildFly runtime Docker image that allows you to chain builds
 in OpenShift or use Docker multi stage builds, is available from: link:https://quay.io/repository/wildfly/wildfly-runtime-centos7[https://quay.io/repository/wildfly/wildfly-runtime-centos7]

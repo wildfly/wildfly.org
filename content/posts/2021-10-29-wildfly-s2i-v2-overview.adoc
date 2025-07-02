@@ -149,7 +149,7 @@ to automatically enable the `dns.DNS_PING` JGroups protocol and generate the pin
 ### Dockerfile example
 
 This chapter highlights the steps to build a docker image that contains the server and your application,
-publish it in a public docker registry in which you have an account (e.g. link:http://quay.io[quay.io]) and then deploy it on OpenShift.
+publish it in a public docker registry in which you have an account (e.g. https://quay.io[quay.io]) and then deploy it on OpenShift.
 Here we are using the link:https://github.com/wildfly/wildfly-s2i/tree/v2/examples/jsf-ejb-jpa/README.md[Simple application] example.
 NB: Be sure to update the example steps with your own docker registry account.
 
