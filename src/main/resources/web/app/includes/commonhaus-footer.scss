@@ -1,15 +1,16 @@
-.redhat-footer {
+.commonhaus-footer {
   background-color: $black;
 
   .grid-wrapper { padding: .5rem 0; }
 
   .licence {
-    grid-column: 5/9;
+    grid-column: 1/6;
+    grid-row: 1;
     align-self: center;
     justify-self: center;
     a {
       color: $white;
-      font-size: .75rem;
+      font-size: .875rem;
       font-weight: 200;
     }
     @media screen and (max-width: 1024px) {
@@ -17,7 +18,7 @@
       justify-self: left;
     }
     @media screen and (max-width: 768px) {
-      grid-column: 1/7;
+      grid-column: 1/5;
     }
     @media screen and (max-width: 480px) {
       grid-column: 1/13;
@@ -26,37 +27,49 @@
     }
   }
 
-  .redhat {
-    grid-column: 9/12;
+  .commonhaus-logo {
+    grid-column: 7/13;
+    grid-row: 1;
+    justify-self: center;
     align-self: center;
-    justify-self: end;
-    font-size: .75rem;
-    font-weight: 200;
+    img { 
+        height: 30px; 
+    }
     @media screen and (max-width: 1024px) {
-      grid-column: 5/12;
-      justify-self: right;
-    }
-    @media screen and (max-width: 768px) {
-      grid-column: 7/11;
-    }
-    @media screen and (max-width: 480px) {
-      grid-column: 1/13;
+      grid-column: 6/12;
       justify-self: center;
-      order: 2;
     }
-  }
-  .redhat-logo {
-    grid-column: 12/13;
-    justify-self: end;
-    align-self: center;
-    img { width: 6rem; }
     @media screen and (max-width: 768px) {
-      grid-column: 11/13;
+      grid-column: 5/11;
     }
     @media screen and (max-width: 480px) {
       grid-column: 1/13;
       justify-self: center;
       order: 1;
+    }
+  }
+
+  .commonhaus-legal {
+    grid-column: 1/13;
+    grid-row: 2;
+    align-self: start;
+    justify-self: center;
+    font-size: .75rem;
+    font-weight: 200;
+    a {
+      color: $white;
+    }
+    @media screen and (max-width: 1024px) {
+      grid-column: 1/12;
+      justify-self: center;
+    }
+    @media screen and (max-width: 768px) {
+      grid-column: 1/11;
+    }
+    @media screen and (max-width: 480px) {
+      grid-column: 1/13;
+      justify-self: center;
+      order: 2;
     }
   }
 }
