@@ -17,7 +17,7 @@ display the logs at the level you want.
 WildFly supports all major logging facades. These include:
 
 * https://github.com/jboss-logging/jboss-logging[JBoss Logging]
-* https://sl4fj.org[SLF4J]
+* https://www.sl4fj.org[SLF4J]
 * https://logging.apache.org/log4j/2.x/[Apache Log4j] (2.x+)
 * https://commons.apache.org/proper/commons-logging/[Apache Commons Logging]
 * Java Util Logging
