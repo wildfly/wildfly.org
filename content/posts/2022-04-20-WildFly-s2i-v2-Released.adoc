@@ -92,8 +92,8 @@ are identical applications deployed on different kind of WildFly server. Just a 
 === Release of the new images
 
 Images release cadence is now decoupled from the WildFly server release cadence. Images have their own lifecycle. New releases will be done to address fixes and new features.
-Released images are deployed in the link:http://quay.io/wildfly[quay.io/wildfly organization]
-For the one that love to be on the bleeding edge we are constantly deploying images under development to the link:http://quay.io/wildfly-snapshots[quay.io/wildfly-snapshots organization].
+Released images are deployed in the https://quay.io/wildfly[quay.io/wildfly organization]
+For the one that love to be on the bleeding edge we are constantly deploying images under development to the https://quay.io/wildfly-snapshots[quay.io/wildfly-snapshots organization].
 
 === Using the JDK 17 S2I builder image
 

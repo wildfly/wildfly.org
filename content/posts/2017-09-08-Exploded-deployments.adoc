@@ -26,9 +26,9 @@ Let's create a from_scratch.war deployment:
 --
 [standalone@localhost:9990 /] /deployment=from_scratch.war:add(content=[{empty=true}])
 [standalone@localhost:9990 /] /deployment=from_scratch.war:add-content(content=[
-          \{input-stream-index=/home/ehsavoie/NetBeansProjects/SimpleWebapp/target/SimpleWebapp/index.html,target-path=index.html},
-          \{input-stream-index=/home/ehsavoie/NetBeansProjects/SimpleWebapp/target/SimpleWebapp/WEB-INF/web.xml, target-path=WEB-INF/web.xml},
-          \{input-stream-index=/home/ehsavoie/NetBeansProjects/SimpleWebapp/target/SimpleWebapp/WEB-INF/classes/org/wildfly/sample/simplewebapp/SimpleServlet.class, target-path=WEB-INF/classes/org/wildfly/sample/simplewebapp/SimpleServlet.class}])
+          {input-stream-index=/home/ehsavoie/NetBeansProjects/SimpleWebapp/target/SimpleWebapp/index.html,target-path=index.html},
+          {input-stream-index=/home/ehsavoie/NetBeansProjects/SimpleWebapp/target/SimpleWebapp/WEB-INF/web.xml, target-path=WEB-INF/web.xml},
+          {input-stream-index=/home/ehsavoie/NetBeansProjects/SimpleWebapp/target/SimpleWebapp/WEB-INF/classes/org/wildfly/sample/simplewebapp/SimpleServlet.class, target-path=WEB-INF/classes/org/wildfly/sample/simplewebapp/SimpleServlet.class}])
 [standalone@localhost:9990 /] /deployment=from_scratch.war:deploy
 --
 Here we have created an empty deployment called from_scratch.war to which we have added 3 files:
@@ -82,72 +82,72 @@ Using the browse-content operation you can have the list of files in the deploym
 {
     "outcome" => "success",
     "result" => [
-        \{
+        {
             "path" => "META-INF/",
             "directory" => true
         },
-        \{
+        {
             "path" => "META-INF/MANIFEST.MF",
             "directory" => false,
             "file-size" => 134L
         },
-        \{
+        {
             "path" => "WEB-INF/",
             "directory" => true
         },
-        \{
+        {
             "path" => "WEB-INF/classes/",
             "directory" => true
         },
-        \{
+        {
             "path" => "WEB-INF/classes/org/",
             "directory" => true
         },
-        \{
+        {
             "path" => "WEB-INF/classes/org/wildfly/",
             "directory" => true
         },
-        \{
+        {
             "path" => "WEB-INF/classes/org/wildfly/sample/",
             "directory" => true
         },
-        \{
+        {
             "path" => "WEB-INF/classes/org/wildfly/sample/simplewebapp/",
             "directory" => true
         },
-        \{
+        {
             "path" => "WEB-INF/web.xml",
             "directory" => false,
             "file-size" => 916L
         },
-        \{
+        {
             "path" => "WEB-INF/classes/org/wildfly/sample/simplewebapp/SimpleServlet.class",
             "directory" => false,
             "file-size" => 2302L
         },
-        \{
+        {
             "path" => "index.html",
             "directory" => false,
             "file-size" => 234L
         },
-        \{
+        {
             "path" => "META-INF/maven/",
             "directory" => true
         },
-        \{
+        {
             "path" => "META-INF/maven/org.wildfly.sample/",
             "directory" => true
         },
-        \{
+        {
             "path" => "META-INF/maven/org.wildfly.sample/SimpleWebapp/",
             "directory" => true
         },
-        \{
+        {
             "path" => "META-INF/maven/org.wildfly.sample/SimpleWebapp/pom.xml",
             "directory" => false,
             "file-size" => 2992L
         },
-        \{
+        {
             "path" => "META-INF/maven/org.wildfly.sample/SimpleWebapp/pom.properties",
             "directory" => false,
             "file-size" => 125L
@@ -163,12 +163,12 @@ For exemple
 {
     "outcome" => "success",
     "result" => [
-        \{
+        {
             "path" => "web.xml",
             "directory" => false,
             "file-size" => 916L
         },
-        \{
+        {
             "path" => "classes/",
             "directory" => true
         }
@@ -181,8 +181,8 @@ So now we can display the content of the web.xml. Using the read-content operati
 [standalone@localhost:9990 /] /deployment=to_be_exploded.war:read-content(path=WEB-INF/web.xml)
 {
     "outcome" => "success",
-    "result" => \{"uuid" => "c778c51e-a507-4a71-a21f-d6af8b230db4"},
-    "response-headers" => \{"attached-streams" => [{
+    "result" => {"uuid" => "c778c51e-a507-4a71-a21f-d6af8b230db4"},
+    "response-headers" => {"attached-streams" => [{
         "uuid" => "c778c51e-a507-4a71-a21f-d6af8b230db4",
         "mime-type" => "application/xml"
     }]}
@@ -231,11 +231,11 @@ File saved to /home/ehsavoie/tmp/web.xml
 === Using the web console ===
 Navigate to 'Deployments' and select the deployment you want to browse. Then open the context menu and choose Browse Content:
 
-image::exploded_deployments/browse_content_op.png[]
+image::/assets/img/news/exploded_deployments/browse_content_op.png[]
 
 This opens a new page with the contents of the deployment. For each file, there's a link with the full path and size of the file. Click on the link to download the file:
 
-image::exploded_deployments/content.png[]
+image::/assets/img/news/exploded_deployments/content.png[]
 
 === Using HAL.NEXT ===
 The next major version of the web console (HAL.next) is currently under active development and is available as technical preview https://github.com/hal/hal.next.
@@ -248,13 +248,13 @@ Besides general improvements like better navigation and a revisited look and fee
 
 Select deployments and just click on View to display its content:
 
-image::exploded_deployments/explode_next.png[]
+image::/assets/img/news/exploded_deployments/explode_next.png[]
 
 This opens a new page which allows for a really nice way to browse and read content from a deployment:
 
-image::exploded_deployments/content_next.png[]
+image::/assets/img/news/exploded_deployments/content_next.png[]
 
 == References ==
 
 For the official documentation regarding deployments: link:https://docs.jboss.org/author/display/WFLY/Application+deployment[Official Documentation] +
-The example basic webapp used in this article is available link:images/exploded_deployments/SimpleWebapp.tar.gz[here]
+The example basic webapp used in this article is available link:/assets/img/news/exploded_deployments/SimpleWebapp.tar.gz[here]

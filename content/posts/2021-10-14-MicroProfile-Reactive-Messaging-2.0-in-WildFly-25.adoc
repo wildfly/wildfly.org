@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "MicroProfile Reactive Messaging 2.0 in WildFly 25"
-aliases: [/news/2021/10/14/MicroProfile-Reactive-Messaging-2.0-in-WildFly-25]
+aliases: [/news/2021/10/14/MicroProfile-Reactive-Messaging-2.0-in-WildFly-25, /news/2021/10/14/MicroProfile-Reactive-Messaging-2.0-in-WildFly-25.adoc]
 date:   2021-10-14
 tags:   wildfly microprofile reactive messaging
 author: kkhan

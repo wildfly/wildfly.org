@@ -5,6 +5,7 @@ aliases: [/news/2022/08/19/RHOSAK]
 date:   2022-08-19 00:00:00 +0000
 tags:   wildfly microprofile reactive messaging kafka rhosak
 author: kkhan
+escape: false
 ---
 
 
@@ -97,7 +98,7 @@ Since both are using the same underlying Kafka topic, messages sent via the `Emi
 
 == Running the Application Locally
 
-Since the intent of this article is to show integration with RHOSAK, we won't go into too many details here, as it has been covered in this previous link:./2021-10-14-MicroProfile-Reactive-Messaging-2.0-in-WildFly-25.adoc[blog post].
+Since the intent of this article is to show integration with RHOSAK, we won't go into too many details here, as it has been covered in this previous link:{site.page('posts/2021-10-14-MicroProfile-Reactive-Messaging-2.0-in-WildFly-25.adoc').url}[blog post].
 
 The steps are:
 
@@ -189,9 +190,9 @@ When deploying an application into OpenShift using Helm, it will look for a Mave
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-jar-maven-plugin</artifactId>
-                <version>${version.wildfly-jar.maven.plugin}</version>
+                <version>$\{version.wildfly-jar.maven.plugin}</version>
                 <configuration>
-                    <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#${version.server.bootable-jar}</feature-pack-location>
+                    <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#$\{version.server.bootable-jar}</feature-pack-location>
                     <layers>
                         <layer>cloud-server</layer>
                         <layer>microprofile-reactive-messaging-kafka</layer>
@@ -234,19 +235,19 @@ The plugin will also run the link:https://github.com/kabir/blog-mp-reactive-mess
 ----
 echo "Adding the 'rhoas' secret volume mount as a MicroProfile Config source..."
 
-/subsystem=microprofile-config-smallrye/config-source=rhosak-binding:add(dir={path=/etc/config/rhoas})
+/subsystem=microprofile-config-smallrye/config-source=rhosak-binding:add(dir=\{path=/etc/config/rhoas})
 
 echo "Adding the MicroProfile Config entries mapping the secret values..."
 
 /subsystem=microprofile-config-smallrye/\
 config-source=reactive-messaging-properties:add(properties={\
-mp.messaging.connector.smallrye-kafka.bootstrap.servers=${KAFKA_HOST},\
+mp.messaging.connector.smallrye-kafka.bootstrap.servers=$\{KAFKA_HOST},\
 mp.messaging.connector.smallrye-kafka.security.protocol=SASL_SSL,\
 mp.messaging.connector.smallrye-kafka.sasl.mechanism=PLAIN,\
 mp.messaging.connector.smallrye-kafka.sasl.jaas.config="\n\
 org.apache.kafka.common.security.plain.PlainLoginModule required\n\
-username=\"${RHOAS_SERVICE_ACCOUNT_CLIENT_ID}\"\n\
-password=\"${RHOAS_SERVICE_ACCOUNT_CLIENT_SECRET}\";"\
+username=\"$\{RHOAS_SERVICE_ACCOUNT_CLIENT_ID}\"\n\
+password=\"$\{RHOAS_SERVICE_ACCOUNT_CLIENT_SECRET}\";"\
 }, ordinal=500)
 ----
 First of all it is worth noting that we don't need to enable the MicroProfile Reactive Messaging and Reactive Streams Operators extensions/subsystems in this case. This is unlike when we were using the downloaded WildFly zip archive earlier. This is because when a server is provisioned using Galleon, the `microprofile-reactive-messaging-kafka` layer takes care of that for us.
@@ -316,4 +317,3 @@ If we break down what we have actually done, it looks simpler:
 *** run a CLI script when building the server to mount the `/etc/config/rhoas` folder as a MicroProfile Config ConfigSource and use values from that to override the location of the server, and add properties to turn on SSL, SASL authentication, and provide the credentials from our secret to authenticate
 
 I hope this guide will be helpful to people wanting to try RHOSAK from WildFly for the first time.
-
