@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Testing WildFly applications on OpenShift with Arquillian Cube
-date: 2025-07-02
+date: 2025-07-07
 tags: wildfly openshift arquillian cube containers
 synopsis: Arquillian Cube is an Arquillian extension that provides an easy way to test containerized applications and
   services on Docker, Kubernetes and OpenShift
