@@ -1,0 +1,29 @@
+---
+layout: post
+title:  Join us on July 24 for a discussion of WildFly Governance!
+date:   2025-07-17
+tags:   announcement
+author: bstansberry
+---
+
+We're working hard on adopting a new governance model for the WildFly projects, and we'd love to have your input.
+
+To that end, we'll be hosting a call (Google meet) a week from today, July 24, 9 AM EDT, to discuss the topic. It would be great to see you there and hear your thoughts!
+
+The call is shown on the https://www.wildfly.org/events/[events, window=_blank] page. 
+
+Details:
+
+* https://meet.google.com/ihy-jfjf-twc[Meeting link, window=_blank]
+* https://docs.google.com/document/d/1bdAQnKOuFXUTXgihtdaj7IGZq7bfi88xkKV0uU4CVIE/edit?tab=t.0[Agenda and discussion document, window=_blank]
+
+I encourage you to have a look at my https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/XPIXPQ5FCGZRRKPR43ZURTKJ5Y2VWWE5/[call-for-input, window=_blank] 
+from a couple weeks ago and the https://docs.google.com/document/d/1r2i17R6VtqGeslKlyH6lWVIQix0-QCiMa_6naq1tn-c/edit?tab=t.0[draft document, window=_blank] I discussed there. 
+The more that people are familiar with the background the more we can focus on the call on moving things forward.
+
+Discussion in advance, either here on the https://lists.jboss.org/archives/list/wildfly-dev@lists.jboss.org/thread/XPIXPQ5FCGZRRKPR43ZURTKJ5Y2VWWE5/[wildfly-dev thread, window=_blank] 
+or in comments on the https://docs.google.com/document/d/1r2i17R6VtqGeslKlyH6lWVIQix0-QCiMa_6naq1tn-c/edit?tab=t.0[governance doc draft, window=_blank] are more than welcome.
+
+See you there!
+
+Brian]
