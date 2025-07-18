@@ -183,7 +183,7 @@ needed to build and deploy our application.
 {|
 === Behind the Scenes
 
-While our application is building, let's take a closer look at our application's https://github.com/wildfly-security/elytron-examples/blob/main/simple-webapp-saml/pom.xml[pom.xml] file.
+While our application is building, let's take a closer look at our application's https://github.com/wildfly-security-incubator/elytron-examples/blob/main/simple-webapp-saml/pom.xml[pom.xml] file.
 Notice that it contains the following `wildfly-maven-plugin` configuration:
 
 [source,xml]
