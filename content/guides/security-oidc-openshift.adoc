@@ -93,7 +93,7 @@ needed to build and deploy our application.
 
 While our application is building, let's take a closer look at our application.
 
-* Examine the  https://github.com/wildfly-security/elytron-examples/blob/main/simple-webapp-oidc/pom.xml[pom.xml] file.
+* Examine the https://github.com/wildfly-security-incubator/elytron-examples/blob/main/simple-webapp-oidc/pom.xml[pom.xml] file.
 +
 Notice that it contains an `openshift` profile. A profile in Maven lets you create a set of configuration values to customize your application build for different environments.
 The `openshift` profile in this example defines a configuration that will be used by the WildFly Helm Chart when provisioning the WildFly server on OpenShift.
