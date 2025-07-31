@@ -16,13 +16,13 @@ links:
   - title: Contribute
     subfolderitems:
       - page: Submit a bug
-        url: https://issues.jboss.org/browse/WFLY
+        url: https://issues.redhat.com/browse/WFLY
       - page: Join the forum
         url: https://groups.google.com/forum/#!forum/wildfly
       - page: Fork WildFly
         url: https://github.com/wildfly/wildfly/fork
       - page: Follow us
-        url: https://twitter.com/WildFlyAS
+        url: https://x.com/WildFlyAS
       - page: Contributor PGP Information
         url: /contributors/pgp
   - title: Get Help
@@ -36,15 +36,15 @@ more_links:
   - title: Find more Community Projects used with WildFly
     subfolderitems:
       - page: Arquillian
-        url: http://arquillian.org
+        url: https://arquillian.org/
       - page: Ansible Collection for Wildfly
         url: https://github.com/ansible-middleware/wildfly
       - page: Byteman
-        url: http://byteman.jboss.org/
+        url: https://byteman.jboss.org/
       - page: Hibernate
-        url: http://hibernate.org/
+        url: https://hibernate.org/
       - page: Infinispan
-        url: http://www.infinispan.org/
+        url: https://infinispan.org/
       - page: IronJacamar
         url: https://www.ironjacamar.org/
       - page: Jackson
@@ -52,18 +52,18 @@ more_links:
       - page: JBoss Logging
         url: https://github.com/jboss-logging
       - page: JBoss Remoting
-        url: http://jbossremoting.jboss.org/
+        url: https://jbossremoting.jboss.org/
       - page: Keycloak
         url: https://www.keycloak.org/
-      - page: Mod Cluster
-        url: http://modcluster.io/
+      - page: mod_cluster
+        url: https://www.modcluster.io/
       - page: Narayana
         url: https://www.narayana.io/
       - page: Quarkus
         url: https://quarkus.io/
       - page: RESTEasy
         url: https://resteasy.dev/
-      - page: Smallrye
+      - page: SmallRye
         url: https://smallrye.io/
       - page: Undertow
         url: https://undertow.io/
