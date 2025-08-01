@@ -23,7 +23,7 @@ links:
         url: https://github.com/wildfly/wildfly/fork
       - page: Follow us
         url: https://x.com/WildFlyAS
-      - page: Contributor PGP Information
+      - page: PGP Info
         url: /contributors/pgp
   - title: Get Help
     subfolderitems:
