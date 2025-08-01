@@ -21,6 +21,12 @@
       text-align: center;
     }
   }
+
+  .calendar-ics {
+    word-wrap: anywhere;
+    word-break: break-all;
+    hyphens: none;
+  }
 }
 
 .events-toc {
