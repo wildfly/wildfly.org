@@ -98,3 +98,12 @@
       key: DE29C9E8063D635C6C00B8FA7B2E5A9FA517708B
       link: https://keyserver.ubuntu.com/pks/lookup?search=0xde29c9e8063d635c6c00b8fa7b2e5a9fa517708b&fingerprint=on&op=index
       fingerprint: DE29 C9E8 063D 635C 6C00 B8FA 7B2E 5A9F A517 708B
+- contributor: ehsavoie
+  name: "Emmanuel Hugonnet"  
+  bio: "Emmanuel works at Red Hat on WildFly Messaging integration. He currently works on the WildFly AI feature pack and support for Eclipse Che."
+  github: ehsavoie
+  signing:
+    - id: rsa2048/EDB2EE81
+      key: 923F0E141E7FF26FADB8BDF73DD1CCD4EDB2EE81
+      link: https://keyserver.ubuntu.com/pks/lookup?op=vindex&search=0x3dd1ccd4edb2ee81
+      fingerprint: 923F 0E14 1E7F F26F ADB8  BDF7 3DD1 CCD4 EDB2 EE81
