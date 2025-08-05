@@ -37,7 +37,7 @@ more_links:
     subfolderitems:
       - page: Arquillian
         url: https://arquillian.org/
-      - page: Ansible Collection for Wildfly
+      - page: Ansible Collection for WildFly
         url: https://github.com/ansible-middleware/wildfly
       - page: Byteman
         url: https://byteman.jboss.org/
