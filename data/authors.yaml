@@ -78,7 +78,7 @@
   name: "Ken Wills"
   location: "Madison, WI"
   occupation: "Software Engineer"
-  bio: "Ken works at Red Hat on Wildfly Core and WildFly domain mode. He has a particular interest in all things WildFly embedded."
+  bio: "Ken works at Red Hat on WildFly Core and WildFly domain mode. He has a particular interest in all things WildFly embedded."
   avatar: kwills.jpg
   twitter: "luck4y"
 - id: "hpehl"

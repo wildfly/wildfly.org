@@ -1,4 +1,4 @@
-# Wildfly.org Website Based on Roq
+# wildfly.org Website Based on Roq
 
 ## Getting Started
 
