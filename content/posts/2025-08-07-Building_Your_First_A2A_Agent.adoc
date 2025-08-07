@@ -1,0 +1,436 @@
+---
+layout: post
+title:  "Building your First A2A Agent"
+date:   2025-08-07
+tags:   generative-ai a2a agent wildfly
+author: ehsavoie
+description: How to create an interoperable A2A agent in WildFly using the A2A Java SDK and the AI Feature Pack.
+---
+The new https://a2aprotocol.ai/[Agent2Agent (A2A) Protocol] establishes an open standard for universal interoperability, allowing AI agents built by different vendors or on separate frameworks to communicate and collaborate effectively. By providing a standardized method for exchanging information and coordinating actions, A2A empowers businesses to create a unified, multi-agent ecosystem that breaks down data silos and automates complex workflows across their entire enterprise.The specifications of this protocol are available https://github.com/a2aproject/A2A[online], and you can find SDKs for different languages and tools on the https://github.com/a2aproject[A2A Github Organization]. You can watch this https://www.youtube.com/watch?v=Fbr_Solax1w[introduction to the Agent2Agent Protocol].
+
+This article guides you through building your first A2A-enabled agent in WildFly. We will leverage the https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta[A2A Java SDK for Jakarta Servers] (providing Jakarta EE integration for the https://github.com/a2aproject/a2a-java[A2A Java SDK]) and the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature Pack] to create a powerful, LLM-powered agent. This agent is compliant with version *0.2.5* of the A2A specifications and uses a simple https://modelcontextprotocol.io/[Model Context Protocol] tool written in Python.
+
+== Prerequisites
+
+Before diving in, make sure you have:
+
+* JDK 17+
+* Apache Maven 3.8+
+* A Java IDE (e.g., Apache NetBeans, IntelliJ, VS Code)
+* A Google AI Studio API Key
+* Python 3.10+
+* https://github.com/astral-sh/uv[uv], which is required to execute our MCP Tool written in Python.
+
+== Create the Weather Agent
+
+We will write an agent that provides forecasts and severe weather alerts based on a human language query. This agent will rely on a Python MCP tool that exposes two functions: `get_alerts` and `get_forecast`.
+
+Let's create a simple LangChain4J service that uses a Python MCP tool:
+[source,java]
+----
+package org.wildfly.ai.a2a.weather;
+
+import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
+import io.smallrye.llm.spi.RegisterAIService;
+import jakarta.enterprise.context.ApplicationScoped;
+
+@RegisterAIService(toolProviderName = "mcp-stdio", chatModelName = "gemini", scope = ApplicationScoped.class)
+public interface WeatherAgent {
+
+    @SystemMessage("""
+            You are a specialized weather forecast assistant. Your primary function is to utilize the provided tools to
+            retrieve and relay weather information in response to user queries. You must rely exclusively on these tools
+            for data and refrain from inventing information. Ensure that all responses include the detailed output from
+            the tools used and are formatted in Markdown.
+            """
+    )
+    String chat(@UserMessage String question);
+}
+----
+
+This interface defines a `chat` method. The `@RegisterAIService` annotation instructs WildFly to create a proxy for this service, enabling interaction with the configured LLM. The `@SystemMessage` and `@UserMessage` annotations provide instructions to the LLM.
+
+== Define the Agent
+
+To expose your agent to the A2A Protocol, you need to define:
+
+* An *Agent Card*: According to version 0.2.5 of the A2A specification, each A2A Server must have an agent card accessible at the `/.well-known/agent.json` resource. This card supports the discovery phase for A2A clients by providing complete information on how to access the agent and its capabilities.
+* An *Agent Executor*: This is the code that handles A2A requests and calls the agent's code.
+
+To convert our AI application into an A2A agent, we are using the https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta[A2A Java SDK for Jakarta Servers], which expects an instance of `io.a2a.server.agentexecution.AgentExecutor` and `io.a2a.spec.AgentCard` to be available via CDI.
+
+NOTE: We need to define this dependency in our pom.xml as follows:
+[source,xml]
+----
+<dependency>
+    <groupId>org.wildfly.a2a</groupId>
+    <artifactId>a2a-java-sdk-server-jakarta</artifactId>
+    <version>${version.io.a2a.sdk}</version>
+</dependency>
+----
+
+=== Agent Card
+
+We will instantiate a CDI producer for an `io.a2a.spec.AgentCard` as follows:
+
+[source,java]
+----
+package org.wildfly.ai.a2a.weather;
+
+import java.util.Collections;
+import java.util.List;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+
+import io.a2a.spec.AgentCapabilities;
+import io.a2a.spec.AgentCard;
+import io.a2a.spec.AgentSkill;
+
+import io.a2a.server.PublicAgentCard;
+
+@ApplicationScoped
+public class WeatherAgentCardProducer {
+
+    @Produces
+    @PublicAgentCard
+    public AgentCard agentCard() {
+        return new AgentCard.Builder()
+                .name("Weather Agent")
+                .description("Helps with weather")
+                .url("http://host.containers.internal:8080")
+                .version("1.0.0")
+                .protocolVersion("0.2.5")
+                .capabilities(new AgentCapabilities.Builder()
+                        .streaming(true)
+                        .pushNotifications(false)
+                        .stateTransitionHistory(false)
+                        .build())
+                .defaultInputModes(Collections.singletonList("text"))
+                .defaultOutputModes(Collections.singletonList("text"))
+                .skills(Collections.singletonList(new AgentSkill.Builder()
+                        .id("weather_search")
+                        .name("Search weather")
+                        .description("Helps with weather in a city or state")
+                        .tags(Collections.singletonList("weather"))
+                        .examples(List.of("weather in LA, CA", "Quelle est la météo à Los Angeles, Californie ?"))
+                        .build()))
+                .build();
+    }
+}
+----
+As you can see, we are primarily providing metadata about our agent. We set the `url` to `http://host.containers.internal:8080`, the standard URL that Podman exposes for the host (at least on machines where it uses a VM internally). This URL is used to connect to the A2A agent, and you would typically set it to your agent's public URL.
+
+=== Agent Executor
+
+We will instantiate a CDI producer for an `io.a2a.server.agentexecution.AgentExecutor` as follows:
+
+[source,java]
+----
+package org.wildfly.ai.a2a.weather;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import java.util.List;
+
+import io.a2a.server.agentexecution.AgentExecutor;
+import io.a2a.server.agentexecution.RequestContext;
+import io.a2a.server.events.EventQueue;
+import io.a2a.server.tasks.TaskUpdater;
+import io.a2a.spec.JSONRPCError;
+import io.a2a.spec.Message;
+import io.a2a.spec.Part;
+import io.a2a.spec.Task;
+import io.a2a.spec.TaskNotCancelableError;
+import io.a2a.spec.TaskState;
+import io.a2a.spec.TextPart;
+
+@ApplicationScoped
+public class WeatherAgentExecutorProducer {
+
+    public WeatherAgentExecutorProducer(){
+    }
+
+    //Injecting the LLM service
+    @Inject
+    WeatherAgent weatherAgent;
+
+    @Produces
+    public AgentExecutor agentExecutor() {
+        return new WeatherAgentExecutor(weatherAgent);
+    }
+
+    private static class WeatherAgentExecutor implements AgentExecutor {
+
+        private final WeatherAgent weatherAgent;
+
+        public WeatherAgentExecutor(WeatherAgent weatherAgent) {
+            this.weatherAgent = weatherAgent;
+        }
+
+        @Override
+        public void execute(RequestContext context, EventQueue eventQueue) throws JSONRPCError {
+            TaskUpdater updater = new TaskUpdater(context, eventQueue);
+
+            // mark the task as submitted and start working on it
+            if (context.getTask() == null) {
+                updater.submit();
+            }
+            updater.startWork();
+            // extract the text from the message
+            String userMessage = extractTextFromMessage(context.getMessage());
+            // call the weather agent with the user's message
+            String response = weatherAgent.chat(userMessage);
+            // create the response part
+            TextPart responsePart = new TextPart(response, null);
+            List<Part<?>> parts = List.of(responsePart);
+            // add the response as an artifact and complete the task
+            updater.addArtifact(parts, null, null, null);
+            updater.complete();
+        }
+
+        private String extractTextFromMessage(Message message) {
+            StringBuilder textBuilder = new StringBuilder();
+            if (message.getParts() != null) {
+                for (Part part : message.getParts()) {
+                    if (part instanceof TextPart textPart) {
+                        textBuilder.append(textPart.getText());
+                    }
+                }
+            }
+            return textBuilder.toString();
+        }
+
+        @Override
+        public void cancel(RequestContext context, EventQueue eventQueue) throws JSONRPCError {
+            Task task = context.getTask();
+            if (task.getStatus().state() == TaskState.CANCELED) {
+                // task already cancelled
+                throw new TaskNotCancelableError();
+            }
+            if (task.getStatus().state() == TaskState.COMPLETED) {
+                // task already completed
+                throw new TaskNotCancelableError();
+            }
+            // cancel the task
+            TaskUpdater updater = new TaskUpdater(context, eventQueue);
+            updater.cancel();
+        }
+    }
+}
+----
+
+The `extractTextFromMessage` method extracts the content from the A2A message, which is then used as the payload for the AI service.
+
+=== Exposing the Agent
+
+To expose the agent's endpoints from the A2A Java SDK for Jakarta Servers library, we need to register a JAX-RS application as shown below:
+
+[source,java]
+----
+package org.wildfly.ai.a2a.weather;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+
+@ApplicationPath("/")
+public class RestApplication extends Application {
+}
+----
+
+== Deploy and Test Your Agent
+
+=== Setting Up the A2A-Inspector Tool
+
+To test our agent, we will use Google's https://github.com/a2aproject/a2a-inspector[A2A-inspector] tool in a container. First, clone the repository locally, build the container image, and then run it.
+
+[source,bash]
+----
+git clone https://github.com/a2aproject/a2a-inspector.git
+cd a2a-inspector
+podman build -t a2a-inspector .
+podman run -d --rm --name a2a-inspector -p 5001:8080 a2a-inspector
+----
+
+Verify that the inspector is running by navigating to http://localhost:5001/.
+
+=== Build and Run the A2A Agent
+
+The `pom.xml` file is straightforward and relies on https://docs.wildfly.org/wildfly-glow/[WildFly Glow] to provision the server with all the necessary components.
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>49</version>
+    </parent>
+
+    <groupId>org.wildfly.generative-ai</groupId>
+    <artifactId>weather-agent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jakartaee>10.0.0</jakartaee>
+        <version.wildfly.maven.plugin>5.1.3.Final</version.wildfly.maven.plugin>
+        <version.wildfly.server>36.0.1.Final</version.wildfly.server>
+        <version.wildfly.ai.feature.pack>1.0.0-SNAPSHOT</version.wildfly.ai.feature.pack>
+        <version.dev.langchain4j>1.1.0</version.dev.langchain4j>
+        <version.dev.langchain4j.embeddings>1.1.0-beta7</version.dev.langchain4j.embeddings>
+        <version.io.smallrye.llm>0.0.6</version.io.smallrye.llm>
+        <version.compiler.plugin>3.13.0</version.compiler.plugin>
+        <version.war.plugin>3.4.0</version.war.plugin>
+        <version.io.a2a.sdk>0.2.5</version.io.a2a.sdk>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${jakartaee}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.smallrye.llm</groupId>
+            <artifactId>smallrye-llm-langchain4j-core</artifactId>
+            <version>${version.io.smallrye.llm}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.smallrye.llm</groupId>
+            <artifactId>smallrye-llm-langchain4j-portable-extension</artifactId>
+            <version>${version.io.smallrye.llm}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>${version.dev.langchain4j}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-core</artifactId>
+            <version>${version.dev.langchain4j}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.a2a</groupId>
+            <artifactId>a2a-java-sdk-server-jakarta</artifactId>
+            <version>${version.io.a2a.sdk}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--Configuration of the maven-compiler-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${version.compiler.plugin}</version>
+                <configuration></configuration>
+            </plugin>
+
+            <!--Filtering the jboss-cli script -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <outputDirectory>${basedir}/target/scripts</outputDirectory>
+                    <resources>
+                        <resource>
+                            <directory>src/scripts</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+
+            <!--Build configuration for the WAR plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.war.plugin}</version>
+                <configuration>
+                    <!-- Jakarta EE doesn't require web.xml, Maven needs to catch up! -->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>${version.wildfly.maven.plugin}</version>
+                <configuration>
+                    <discoverProvisioningInfo>
+                        <spaces>
+                            <space>incubating</space>
+                        </spaces>
+                        <version>${version.wildfly.server}</version>
+                        <suggest>true</suggest>
+                    </discoverProvisioningInfo>
+                    <name>ROOT.war</name>
+                    <extraServerContentDirs>
+                        <extraServerContentDir>extra-content</extraServerContentDir>
+                    </extraServerContentDirs>
+                    <packagingScripts>
+                        <packaging-script>
+                            <scripts>
+                                <script>${basedir}/target/scripts/configure_mcp.cli</script>
+                            </scripts>
+                        </packaging-script>
+                    </packagingScripts>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+----
+
+[source,bash]
+----
+git clone git@github.com:ehsavoie/a2a-weather.git
+
+cd a2a-weather
+
+mvn clean package
+
+export GEMINI_CHAT_MODEL_NAME=gemini-2.5-flash
+export GEMINI_API_KEY=*******************************
+
+./target/server/bin/standalone.sh -b 0.0.0.0
+----
+
+.A2A Inspector - Agent Card
+image::/assets/img/news/ai/a2a_inspector.png[A2A Agent Card]
+
+Now, if we ask for the weather in Los Angeles, California, we get the following response:
+
+.A2A Inspector - Agent Execution
+image::/assets/img/news/ai/a2a_invocation.png[A2A Agent Execution]
+
+Our agent is now up and running and can be consumed by any A2A-compliant agent or client, not just the inspector.
+
+== Conclusion
+
+Transforming an AI application into an A2A agent requires minimal effort. This enables your agent to communicate with other AI agents, allowing them to collaborate, share information, and coordinate actions regardless of their underlying frameworks or vendors.
+
