@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Building your First A2A Agent"
-date:   2025-07-28
+date:   2025-08-07
 tags:   generative-ai a2a agent wildfly
 author: ehsavoie
 description: How to create an interoperable A2A agent in WildFly using the A2A Java SDK and the AI Feature Pack.
