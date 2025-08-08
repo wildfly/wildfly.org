@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Vlog: Getting started with WildFly using Gemini CLI"
-date: 2025-08-07
+date: 2025-08-08
 tags: wildfly ai management vlog
 synopsis: >
   In this demonstration, we are using the Gemini CLI to get started with WildFly using its MCP server.
