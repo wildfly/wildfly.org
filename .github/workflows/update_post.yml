@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: "main"
       - name: Update the date of ${{ github.event.inputs.post_name }}
