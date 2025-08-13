@@ -2,17 +2,38 @@
 layout: base
 ---
 
-<div>
-    <h1 class="title">{page.title}</h1>
+<div class="guides-page grid-wrapper">
+    <div class="grid__item width-8-12 width-12-12-m">
+        <h1 class="title">{page.title}</h1>
+    </div>
+    <div class="grid__item width-4-12 width-12-12-m guides-search-wrapper">
+        <div class="guides-search-container">
+            <div class="search-input-wrapper">
+                <input type="text" 
+                       id="guides-search" 
+                       class="guides-search-input" 
+                       placeholder="Search guides by keywords..." 
+                       autocomplete="off">
+                <button type="button" 
+                        id="guides-search-clear" 
+                        class="guides-search-clear" 
+                        title="Clear search"
+                        style="display: none;">
+                    ✕
+                </button>
+            </div>
+            <div id="guides-search-count" class="guides-search-count" style="display: none;"></div>
+        </div>
+    </div>
 </div>
 
 <div class="guides">
     <div class="grid-wrapper news-list-blocks">
         {#for item in cdi:guides.categories }
-        <h2 class="grid__item width-12-12" id="{item.id}">{item.title}</h2>
+        <h2 class="grid__item width-12-12 guide-category" id="{item.id}">{item.title}</h2>
         {#if item.groups }
         {#for group in item.groups}
-        <div class="grid__item width-3-12 news-block-item">
+        <div class="grid__item width-3-12 news-block-item" data-guide-title="{group.title}" data-guide-keywords="{#for guide in group.guides}{guide.keywords ?: ''}{#if guide_hasNext}, {/if}{/for}">
             <div class="post-title">
                 <h4>{group.title}</h4>
                 {#for guide in group.guides}
@@ -25,7 +46,7 @@ layout: base
         {/if}
         {#if item.guides}
         {#for guide in item.guides}
-        <div class="grid__item width-3-12 news-block-item">
+        <div class="grid__item width-3-12 news-block-item" data-guide-title="{guide.title}" data-guide-keywords="{guide.keywords ?: ''}">
             <div class="post-title">
                 <h4><a href="{site.url(guide.url)}">{guide.title}</a></h4>
                 <div class="description">{guide.description} {! | markdownify !}</div>
@@ -36,3 +57,5 @@ layout: base
         {/for}
     </div>
 </div>
+
+<script src="{site.url('/assets/javascript/guides-search.js')}"></script>
