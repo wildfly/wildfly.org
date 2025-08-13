@@ -5,18 +5,22 @@ categories:
       - title: Getting Started with WildFly
         url: /get-started
         description: Build and run a Jakarta EE application with WildFly in a few minutes
+        keywords: Getting-Started, quickstart, quick start, Jakarta EE, Get Started
       - title: Prototyping with JBang
         url: /guides/prototyping-with-jbang
         description: Use JBang to prototype simple WildFly applications from a single source file.
+        keywords: JBang, Getting-Started, Prototyping, Get Started, quickstart, quick start
   - category: Automation
     cat-id: automation
     guides:
       - title: Deploying WildFly using Ansible
         url: /guides/automate-with-ansible
         description: Learn how to automate WildFly deployments with Ansible.
+        keywords: Automation, Deploying, Ansible
       - title: Testing with Arquillian and JUnit 5
         url: /guides/testing-arquillian-junit5
         description: Learn how to write JUnit 5 tests using Arquillian for Jakarta EE based applications.
+        keywords: Testing, Arquillian, JUnit 5, JUnit, Jakarta EE, Automation
   - category: Cloud / Containerization
     cat-id: cloud-containerization
     groups:
@@ -24,67 +28,86 @@ categories:
         guides:
           - description: Build the Container Image
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-part1
+            keywords: Microservices, Kubernetes, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-part2
+            keywords: Microservices, Kubernetes, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service using a Database
         guides:
           - description: Build the Container Image
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-database-part1
+            keywords: Microservices, Kubernetes, Database, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-database-part2
+            keywords: Microservices, Kubernetes, Database, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service using Infinispan
         guides:
           - description: Build the Container Image
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part1
+            keywords:  Microservices, Kubernetes, Infinispan, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part2
+            keywords: Microservices, Kubernetes, Infinispan, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service using a Message Broker
         guides:
           - description: Build the Container Image
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part1
+            keywords: Microservices, Kubernetes, Message Broker, messaging, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part2
+            keywords: Microservices, Kubernetes, Message Broker, messaging, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service invoking another Jakarta REST service
         guides:
           - description: Build the Container Image
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part1
+            keywords: Microservices, Kubernetes, rest client, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part2
+            keywords: Microservices, Kubernetes, rest client, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Propagate Authentication and Authorization
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part3
+            keywords: Microservices, Kubernetes, rest client, security, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service invoking an LLM using LangChain4J
         guides:
           - description: Build the Container Image
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1
+            keywords: Microservices, Kubernetes, AI, LLM, Integration, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part2
+            keywords: Microservices, Kubernetes, AI, LLM, Integration, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
   - category: Datasources
     cat-id: datasources
     guides:
       - title: Integrating with a PostgreSQL database
         url: /guides/database-integrating-with-postgresql
         description: Learn how to configure a datasource to connect to a PostgreSQL database.
+        keywords: Database, Integration, PostgreSQL, Docker
   - category: Messaging
     cat-id: messaging
     guides:
       - title: Configuring Clustered Messaging in WildFly
         url: /guides/messaging-clustering
         description: Learn how to configure WildFly with an ActiveMQ Artemis Cluster, Server-Side Message and Client Load Balancing.
+        keywords: Messaging, Clustering, Message Broker, ActiveMQ, Artemis, Artemis broker
       - title: Configuring High Availability Messaging in WildFly
         url: /guides/messaging-high-availability
         description: Learn how to configure two WildFly servers with messaging (ActiveMQ Artemis broker) in a high availability topology using a shared journal.
+        keywords: Messaging, Clustering, Message Broker, high Availability, ActiveMQ, Artemis, Artemis broker
       - title: Deploying High-Availability Messaging with WildFly and AMQ 7 on OpenShift
         url: /guides/messaging-high-availability-openshift
         description: Discover how to configure WildFly with AMQ 7 (ActiveMQ Artemis) on OpenShift, using a clustered, high-availability topology for reliable messaging.
+        keywords: Messaging, OpenShift, Clustering, High Availability, AMQ 7, ActiveMQ, Artemis
   - category: MicroProfile
     cat-id: microprofile
     guides:
       - title: Using MicroProfile Config
         url: /guides/use-microprofile-config
         description: Discover how to use MicroProfile Config With WildFly.
+        keywords: MicroProfile, MicroProfile Config
       - title: Using MicroProfile Reactive Messaging with Secured AMQP Connector to connect to AMQ 7 on OpenShift
         url: /guides/use-microprofile-amqp-connector-with-ssl-openshift
         description: Discover how to securely connect to AMQ 7 deployed on OpenShift using MicroProfile Reactive Messaging application & AMQP connector.
+        keywords: MicroProfile, Messaging, OpenShift, Security, Reactive, AMQP Connector, AMQ 7
 #      - title: Using MicroProfile LRA
 #        url: /guides/use-microprofile-lra
 #        description: Discover how to use MicroProfile LRA With WildFly.
@@ -94,41 +117,53 @@ categories:
       - title: Configuring Logging for your Application
         url: /guides/application-logging
         description: Learn how to setup and configure logging in WildFly.
+        keywords: Observability, Logging
   - category: Security
     cat-id: security
     guides:
       - title: Securing WildFly Apps with Keycloak on OpenShift
         url: /guides/security-oidc-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with the Keycloak OpenID provider.
+        keywords: Security, OpenShift, Keycloak, oidc
       - title: Securing WildFly Apps with Okta on OpenShift
         url: /guides/security-oidc-okta-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with the Okta OpenID provider.
+        keywords: Security, OpenShift, oidc, okta, OpenID provider
       - title: Securing WildFly Apps with Auth0 on OpenShift
         url: /guides/security-oidc-auth0-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with the Auth0 OpenID provider.
+        keywords: Security, OpenShift, Auth0, OpenID provider
       - title: Identity Propagation with OpenID Connect
         url: /guides/security-oidc-identity-propagation
         description: Learn how to propagate identities within a deployment and across deployments when securing apps with OpenID Connect.
+        keywords: Security, Microservices, OpenID Connect, OpenID, Identity, Propagation
       - title: Securing WildFly Apps on OpenShift with OpenID Connect Using Additional Scope Values
         url: /guides/security-oidc-scope-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with OpenID Connect using additional scope values.
+        keywords: Security, OpenShift, OpenID Connect, OpenID, Scope Values
       - title: Sending Request Objects as A JWT Using Request Parameters for OpenID Connect
         url: /guides/security-oidc-request-openshift
         description: Learn how to send the request object as a Json Web Token when securing a WildFly application using OpenID Connect on OpenShift.
+        keywords: Security, OpenShift, JWT, OpenID Connect, OpenID, Json Web Token
       - title: Securing the WildFly Management Console with OpenID Connect
         url: /guides/security-oidc-management-console
         description: Learn how to secure the WildFly management console with the Keycloak OpenID provider.
+        keywords: Security, Management Console, OpenID Connect, OpenID, Keycloak
       - title: Securing WildFly Apps with SAML on OpenShift
         url: /guides/security-saml-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
+        keywords: Security, OpenShift, SAML
       - title: Using Credential Stores to Replace Clear Text Passwords with WildFly
         url: /guides/security-credential-store-for-passwords
         description: How to use credential stores to specify passwords for resources.
+        keywords: Security, Credential Stores, Clear Text Passwords
       - title: Using Credential Stores for WildFly Client
         url: /guides/security-credential-store-client-config
         description: How to set up a credential store using the elytron-tool and use it to configure WildFly clients.
+        keywords: Security, Client, Credential Stores, Clear Text Passwords, elytron-tool
       - title: Using Credential Stores With Encrypted Expressions with WildFly
         url: /guides/security-credential-store-enc-exp
         description: How to set up encrypted expressions and use it to replace clear-text sensitive information.
+        keywords: Security, Credential Stores, Encrypted Expressions
 
 
