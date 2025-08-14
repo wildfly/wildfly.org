@@ -167,6 +167,13 @@
   location: "Boston, USA"
   occupation: "Principal Software Engineer"
   avatar: pferraro.png
+- id: rhusar
+  name: Radoslav Husar
+  location: Bohemia
+  occupation: Software Developer
+  bio: Radoslav Husar is a software engineer at IBM working on the WildFly project, focusing on clustering subsystems and maintaining integrations such as MicroProfile Fault Tolerance. He also leads the mod_cluster project.
+  twitter: radoslavhusar
+  avatar: rhusar.jpg
 - id: "scottmarlow"
   name: "Scott Marlow"
   location: "United States"
