@@ -33,7 +33,7 @@ layout: base
         <h2 class="grid__item width-12-12 guide-category" id="{item.id}">{item.title}</h2>
         {#if item.groups }
         {#for group in item.groups}
-        <div class="grid__item width-3-12 news-block-item" data-guide-title="{group.title}" data-guide-keywords="{#for guide in group.guides}{guide.keywords ?: ''}{#if guide_hasNext}, {/if}{/for}">
+        <div class="grid__item width-3-12 news-block-item" data-guide-title="{group.title}" data-guide-keywords="{#for guide in group.guides}{#if !guide_isFirst && guide.keywords}, {/if}{guide.keywords ?: ''}{/for}">
             <div class="post-title">
                 <h4>{group.title}</h4>
                 {#for guide in group.guides}

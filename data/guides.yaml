@@ -31,7 +31,7 @@ categories:
             keywords: Microservices, Kubernetes, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-part2
-            keywords: Microservices, Kubernetes, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
+            #keywords: The same Keywords are applied for the guides on the same group, it is not necessary repeat the keywords
       - title: Jakarta REST service using a Database
         guides:
           - description: Build the Container Image
@@ -39,7 +39,6 @@ categories:
             keywords: Microservices, Kubernetes, Database, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-database-part2
-            keywords: Microservices, Kubernetes, Database, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service using Infinispan
         guides:
           - description: Build the Container Image
@@ -47,7 +46,6 @@ categories:
             keywords:  Microservices, Kubernetes, Infinispan, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-infinispan-part2
-            keywords: Microservices, Kubernetes, Infinispan, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service using a Message Broker
         guides:
           - description: Build the Container Image
@@ -55,18 +53,15 @@ categories:
             keywords: Microservices, Kubernetes, Message Broker, messaging, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-jms-part2
-            keywords: Microservices, Kubernetes, Message Broker, messaging, cache, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service invoking another Jakarta REST service
         guides:
           - description: Build the Container Image
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part1
-            keywords: Microservices, Kubernetes, rest client, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
+            keywords: Microservices, Kubernetes, rest client, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization, Authentication, Authorization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part2
-            keywords: Microservices, Kubernetes, rest client, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Propagate Authentication and Authorization
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-client-part3
-            keywords: Microservices, Kubernetes, rest client, security, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
       - title: Jakarta REST service invoking an LLM using LangChain4J
         guides:
           - description: Build the Container Image
@@ -74,7 +69,6 @@ categories:
             keywords: Microservices, Kubernetes, AI, LLM, Integration, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part2
-            keywords: Microservices, Kubernetes, AI, LLM, Integration, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
   - category: Datasources
     cat-id: datasources
     guides:
