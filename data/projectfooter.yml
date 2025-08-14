@@ -9,7 +9,7 @@ links:
         url: https://docs.wildfly.org
       - page: Get Started
         url: /get-started
-      - page: Github
+      - page: GitHub
         url: https://github.com/wildfly/wildfly
       - page: Guides
         url: /guides
