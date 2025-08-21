@@ -107,3 +107,12 @@
       key: 923F0E141E7FF26FADB8BDF73DD1CCD4EDB2EE81
       link: https://keyserver.ubuntu.com/pks/lookup?op=vindex&search=0x3dd1ccd4edb2ee81
       fingerprint: 923F 0E14 1E7F F26F ADB8  BDF7 3DD1 CCD4 EDB2 EE81
+- contributor: fjuma
+  name: "Farah Juma"
+  bio: "Farah is a software engineer working on WildFly."
+  github: fjuma
+  signing:
+    - id: rsa4096/EA82ABA8
+      key: 9DD927BDDC3CF8C24163CB7B5D6612D4EA82ABA8
+      link: https://keys.openpgp.org/vks/v1/by-fingerprint/9DD927BDDC3CF8C24163CB7B5D6612D4EA82ABA8
+      fingerprint: 9DD9 27BD DC3C F8C2 4163  CB7B 5D66 12D4 EA82 ABA8
