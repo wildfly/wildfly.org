@@ -94,7 +94,7 @@ Here is the playbook we'll use to deploy our clusters. Its content is relatively
     - role: wildfly_install
   tasks:
 
-    - name: "Set up for WildFly instance \{{ item }}."
+    - name: "Set up for WildFly instance {{ item }}."
       ansible.builtin.include_role:
         name: wildfly_systemd
       vars:
@@ -153,7 +153,7 @@ skipping: [localhost]
 TASK [middleware_automation.wildfly.wildfly_install : Validate patch version for offline installs] ***
 skipping: [localhost]
 
-TASK [middleware_automation.wildfly.wildfly_install : Validate existing additional zipfiles \{{ eap_archive_filename }} for offline installs] ***
+TASK [middleware_automation.wildfly.wildfly_install : Validate existing additional zipfiles {{ eap_archive_filename }} for offline installs] ***
 skipping: [localhost]
 
 TASK [middleware_automation.wildfly.wildfly_install : Check that required packages list has been provided.] ***
@@ -276,7 +276,7 @@ ok: [localhost]
 TASK [Ensure firewalld configuration allows server port (if enabled).] *********
 skipping: [localhost]
 
-TASK [Set up for WildFly instance \{{ item }}.] *********************************
+TASK [Set up for WildFly instance {{ item }}.] *********************************
 
 TASK [middleware_automation.wildfly.wildfly_systemd : Validating arguments against arg spec 'main'] ***
 ok: [localhost]
@@ -323,7 +323,7 @@ TASK [middleware_automation.wildfly.wildfly_systemd : Set base directory for ins
 ok: [localhost]
 
 TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
-ok: [localhost] => \{
+ok: [localhost] => {
     "changed": false,
     "msg": "All assertions passed"
 }
@@ -430,7 +430,7 @@ TASK [middleware_automation.wildfly.wildfly_systemd : Set base directory for ins
 ok: [localhost]
 
 TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
-ok: [localhost] => \{
+ok: [localhost] => {
     "changed": false,
     "msg": "All assertions passed"
 }
@@ -537,7 +537,7 @@ TASK [middleware_automation.wildfly.wildfly_systemd : Set base directory for ins
 ok: [localhost]
 
 TASK [middleware_automation.wildfly.wildfly_systemd : Check arguments] *********
-ok: [localhost] => \{
+ok: [localhost] => {
     "changed": false,
     "msg": "All assertions passed"
 }
@@ -658,7 +658,7 @@ In our case, we will use the jboss_cli.yml task file, which encapsulates the run
 ----
 …
   post_tasks:
-      - name: "Ensures webapp \{{ app.name }} has been retrieved from \{{ app.url }}."
+      - name: "Ensures webapp {{ app.name }} has been retrieved from {{ app.url }}."
         ansible.builtin.get_url:
           url: "{{ app.url }}"
           dest: "{{ wildfly_install_workdir }}/{{ app.name }}"
@@ -669,7 +669,7 @@ In our case, we will use the jboss_cli.yml task file, which encapsulates the run
           tasks_from: jboss_cli.yml
         vars:
           jboss_home: "{{ wildfly_home }}"
-          query: "'deploy --force \{{ wildfly_install_workdir }}/{{ app.name }}'"
+          query: "'deploy --force {{ wildfly_install_workdir }}/{{ app.name }}'"
           jboss_cli_controller_port: "{{ item }}"
         loop:
           - 9990

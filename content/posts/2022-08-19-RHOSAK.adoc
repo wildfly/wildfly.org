@@ -190,9 +190,9 @@ When deploying an application into OpenShift using Helm, it will look for a Mave
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-jar-maven-plugin</artifactId>
-                <version>$\{version.wildfly-jar.maven.plugin}</version>
+                <version>${version.wildfly-jar.maven.plugin}</version>
                 <configuration>
-                    <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#$\{version.server.bootable-jar}</feature-pack-location>
+                    <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#${version.server.bootable-jar}</feature-pack-location>
                     <layers>
                         <layer>cloud-server</layer>
                         <layer>microprofile-reactive-messaging-kafka</layer>
@@ -235,19 +235,19 @@ The plugin will also run the link:https://github.com/kabir/blog-mp-reactive-mess
 ----
 echo "Adding the 'rhoas' secret volume mount as a MicroProfile Config source..."
 
-/subsystem=microprofile-config-smallrye/config-source=rhosak-binding:add(dir=\{path=/etc/config/rhoas})
+/subsystem=microprofile-config-smallrye/config-source=rhosak-binding:add(dir={path=/etc/config/rhoas})
 
 echo "Adding the MicroProfile Config entries mapping the secret values..."
 
 /subsystem=microprofile-config-smallrye/\
 config-source=reactive-messaging-properties:add(properties={\
-mp.messaging.connector.smallrye-kafka.bootstrap.servers=$\{KAFKA_HOST},\
+mp.messaging.connector.smallrye-kafka.bootstrap.servers=${KAFKA_HOST},\
 mp.messaging.connector.smallrye-kafka.security.protocol=SASL_SSL,\
 mp.messaging.connector.smallrye-kafka.sasl.mechanism=PLAIN,\
 mp.messaging.connector.smallrye-kafka.sasl.jaas.config="\n\
 org.apache.kafka.common.security.plain.PlainLoginModule required\n\
-username=\"$\{RHOAS_SERVICE_ACCOUNT_CLIENT_ID}\"\n\
-password=\"$\{RHOAS_SERVICE_ACCOUNT_CLIENT_SECRET}\";"\
+username=\"${RHOAS_SERVICE_ACCOUNT_CLIENT_ID}\"\n\
+password=\"${RHOAS_SERVICE_ACCOUNT_CLIENT_SECRET}\";"\
 }, ordinal=500)
 ----
 First of all it is worth noting that we don't need to enable the MicroProfile Reactive Messaging and Reactive Streams Operators extensions/subsystems in this case. This is unlike when we were using the downloaded WildFly zip archive earlier. This is because when a server is provisioned using Galleon, the `microprofile-reactive-messaging-kafka` layer takes care of that for us.

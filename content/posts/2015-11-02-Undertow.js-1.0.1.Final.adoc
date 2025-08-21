@@ -22,15 +22,15 @@ Binary messages are send and received using the JavaScript +ArrayBuffer+ object.
 [source,javascript]
 ----
 $undertow
-    .websocket("/websocket1", ['cdi:myBean', function (myBean, connection) \{
+    .websocket("/websocket1", ['cdi:myBean', function (myBean, connection) {
         connection.send(myBean.getConnectedMessage());
-        connection.onText = function(message) \{
+        connection.onText = function(message) {
             return "echo-" + message;
         }
-        connection.onBinary = function(message) \{
+        connection.onBinary = function(message) {
             return message;
         }
-        connection.onClose = function (message) \{
+        connection.onClose = function (message) {
             print(message.reason + " " + message.code);
         }
     }]);
@@ -49,9 +49,9 @@ To use this we simply need to add a +roles_allowed+ list to a handlers options m
 ----
 $undertow
     .onGet("/rest/endpoint",
-        \{roles_allowed: ['admin', 'user'], headers: \{"content-type": "application/json"}},
-        [function ($exchange) \{
-            return \{message: 'Hello World'};
+        {roles_allowed: ['admin', 'user'], headers: {"content-type": "application/json"}},
+        [function ($exchange) {
+            return {message: 'Hello World'};
         }])
 ----
 
@@ -67,9 +67,9 @@ back. To use this add +transactional: true+ to the methods options map:
 ----
 $undertow
     .onGet("/rest/endpoint",
-        \{transactional: true, headers: \{"content-type": "application/json"}},
-        [function ($exchange) \{
-            return \{message: 'Hello World'};
+        {transactional: true, headers: {"content-type": "application/json"}},
+        [function ($exchange) {
+            return {message: 'Hello World'};
         }])
 ----
 
@@ -88,10 +88,10 @@ handlers declared after the +setDefault+ call:
 ----
 $undertow
     .setDefault('transactional', true)
-    .setDefault('headers' \{"content-type": "application/json"})
+    .setDefault('headers' {"content-type": "application/json"})
     .onGet("/rest/endpoint",
-        [function ($exchange) \{
-            return \{message: 'Hello World'};
+        [function ($exchange) {
+            return {message: 'Hello World'};
         }])
 ----
 
@@ -108,5 +108,3 @@ Going forward
 
 We would welcome any feedback or suggestions. If you want to contribute, or have any comments head to
 undertow-dev@lists.jboss.org.
-
-

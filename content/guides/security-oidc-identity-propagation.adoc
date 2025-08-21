@@ -3,21 +3,18 @@ layout: guide
 ---
 = Identity Propagation with OpenID Connect
 :summary: Learn how to propagate identities within a deployment and across deployments when securing apps with OpenID Connect.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 15
 
-{|
 When securing an application with OpenID Connect (OIDC), WildFly https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#virtual-security-2[automatically]
 creates and makes use of a virtual security domain across the deployment. If the application invokes an EJB, additional configuration
 might be required in order to propagate the security identity from the virtual security domain. The configuration that's needed
 depends on how the EJB that's being invoked is secured. This guide covers the different use cases for propagating an identity
 from a virtual security domain.
-|}
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 * https://www.keycloak.org/guides#getting-started[Keycloak]
 
-{|
 == Overview of Identity Propagation with OIDC
 
 Additional configuration might be needed in order to propagate a security identity from a virtual security domain depending
@@ -83,11 +80,9 @@ This guide will be making use of Keycloak as our OpenID provider.
 
 To start a Keycloak server in your environment, follow the appropriate guide for your environment
 from Keycloak’s https://www.keycloak.org/guides#getting-started[Getting Started] page.
-|}
 :add-role:
-{#include partials/guides/proc-configure-keycloak.adoc /}
+include::../../templates/partials/guides/proc-configure-keycloak.adoc[]
 
-{|
 == Secure an EJB Invoked by an OIDC App using a Different Security Domain
 
 For this use case, we'll be using the https://github.com/wildfly-security-incubator/elytron-examples/tree/main/oidc-with-identity-propagation[oidc-with-identity-propagation] example.
@@ -404,4 +399,3 @@ documentation.
 * https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Elytron_OIDC_Client[Elytron OpenID Connect Client Subsystem Configuration]
 * https://www.keycloak.org/docs/latest/server_admin/index.html[Keycloak Server Administration Guide]
 * <<security-oidc-openshift.adoc#security-oidc-openshift,Securing WildFly Apps with OIDC on OpenShift>>
-|}

@@ -3,8 +3,8 @@ layout: guide
 ---
 = Testing WildFly Applications with Arquillian and JUnit 5
 :summary: Testing applications with WildFly, Arquillian and JUnit 5
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 15
@@ -12,9 +12,8 @@ layout: guide
 In this guide you will learn how to setup your project for testing with Arquillian and JUnit 5. We will use the
 https://github.com/wildfly-extras/guides/tree/main/arquillian-junit5[arquillian-junt5] example project in this guide.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 
-{|
 == Add JUnit and Arquillian Dependencies
 
 In order to use JUnit and Arquillian for your tests, you need to update the Maven `pom.xml`. The best practice is to
@@ -294,4 +293,3 @@ on WildFly.
 * https://arquillian.org[Arquillian]
 * https://docs.wildfly.org/wildfly-maven-plugin[WildFly Maven Plugin]
 * https://github.com/wildfly-extras/guides/tree/main/arquillian-junit5[Example Project]
-|}

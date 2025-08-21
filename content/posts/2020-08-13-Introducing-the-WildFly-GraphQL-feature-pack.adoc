@@ -47,14 +47,14 @@ that retrieves information about all films in the database:
 
 ----
 @GraphQLApi
-public class FilmResource \{
+public class FilmResource {
 
     @Inject
     GalaxyService service;
 
     @Query("allFilms")
     @Description("Get all Films from a galaxy far far away")
-    public List<Film> getAllFilms() \{
+    public List<Film> getAllFilms() {
         return service.getAllFilms();
     }
 }
@@ -62,7 +62,7 @@ public class FilmResource \{
 
 The `Film` class is just a regular JavaBean (getters and setters omitted for brevity):
 ----
-public class Film \{
+public class Film {
     private String title;
     private Integer episodeID;
     private String director;
@@ -72,8 +72,8 @@ public class Film \{
 
 In such case, if the GraphQL client calls the following query:
 ----
-query allFilms \{
-  allFilms \{
+query allFilms {
+  allFilms {
     title
     releaseDate
   }
@@ -83,17 +83,17 @@ query allFilms \{
 The client will get back the requested data about all the films in the database (in our case, we only included episodes 4, 5 and 6!):
 ----
 {
-  "data": \{
+  "data": {
     "allFilms": [
-      \{
+      {
         "title": "A New Hope",
         "releaseDate": "1977-05-25"
       },
-      \{
+      {
         "title": "The Empire Strikes Back",
         "releaseDate": "1980-05-21"
       },
-      \{
+      {
         "title": "Return Of The Jedi",
         "releaseDate": "1983-05-25"
       }

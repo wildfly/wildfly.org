@@ -10,7 +10,7 @@ author: ehsavoie
 In WildFly there used to be two worlds : one for developers with exploded deployments using a scanner and one for production where artifacts (wars/ears/jars) were deployed. +
 Now those two worlds have collided and you can have exploded deployments without a scanner. +
 And since this is using the management API you get remote access to the content for "free" and of course it works in domain mode. +
-While this new feature is really usefull for tools developers (JBoss Developer Studio will use this in a tech preview, and NetBeans should use it also), YOU can also take advantage of it.
+While this new feature is really useful for tools developers (JBoss Developer Studio will use this in a tech preview, and NetBeans should use it also), YOU can also take advantage of it.
 
 == Creating exploded deployments ==
 
@@ -59,9 +59,10 @@ Let's install and explode a to_be_exploded.war deployment:
 --
 
 This can be achieved via the web console using the explode operation in the menu:
+
 image::exploded_deployments/explode.png[explode]
 
-If you take a look at the $JBOSS_HOME/standalone/content//cf/9918bad9d875ffb20da8747b5dcd15bdab16e0/content/ you will see the exploded war content (it differs from the first example hash has the war file contains META-INF files).
+If you take a look at the `$JBOSS_HOME/standalone/content//cf/9918bad9d875ffb20da8747b5dcd15bdab16e0/content/` you will see the exploded war content (it differs from the first example hash has the war file contains META-INF files).
 [IMPORTANT]
 ====
 Since this content is managed, don't touch it directly by copying file to it manually, always use the Management API (through the jboss-cli or the web console).

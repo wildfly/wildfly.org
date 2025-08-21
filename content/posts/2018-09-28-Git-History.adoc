@@ -88,7 +88,7 @@ You can also use the CLI to list all the snapshots:
 [standalone@localhost:9990 /] :list-snapshots
 {
     "outcome" => "success",
-    "result" => \{
+    "result" => {
         "directory" => "",
         "names" => [
             "snapshot : 1st snapshot",

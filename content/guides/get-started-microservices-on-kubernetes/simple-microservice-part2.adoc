@@ -2,28 +2,27 @@
 layout: guide-getting-started
 ---
 
-= \{simple-microservice-part2}
+= {simple-microservice-part2}
 :summary: Java Microservice using WildFly on Kubernetes
 :includedir: ../_includes
-{#include partials/guides/attributes.adoc /}
-{#include partials/guides/titles.adoc /}
+include::../../../templates/partials/guides/attributes.adoc[]
+include::../../../templates/partials/guides/titles.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 10
 
-In this guide, you will learn HOW-TO run the Docker Image you built in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}] on Kubernetes.
+In this guide, you will learn HOW-TO run the Docker Image you built in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}] on Kubernetes.
 
 [[prerequisites]]
 == Prerequisites
 
 To complete this guide, you need:
 
-* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}]
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}]
 * A link:https://kubernetes.io[Kubernetes, window="_blank"] cluster: throughout this mini-series, we will use link:https://minikube.sigs.k8s.io[Minikube, window="_blank"]
 
-{#include partials/guides/constants.adoc /}
+include::../../../templates/partials/guides/constants.adoc[]
 
-{|
 == Image Registry
 
 To make the `{my-jaxrs-app-docker-image-name}:latest` Docker Image available to Kubernetes, you need to push it to some Image Registry that is accessible by the Kubernetes cluster you want to use.
@@ -163,4 +162,3 @@ Hello 'pippo'.
 * Source code for this guide: {source-code-git-repository}/simple-microservice
 
 < link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
-|}

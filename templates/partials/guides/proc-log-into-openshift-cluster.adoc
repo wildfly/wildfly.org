@@ -1,4 +1,3 @@
-{|
 == Log Into the OpenShift Cluster
 
 Before we can deploy our application, we need to log in to an OpenShift cluster. You can log in via the https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]:
@@ -24,4 +23,3 @@ If you don't already have a project created, you can create one using:
 oc new-project myProjectName
 ----
 
-|}

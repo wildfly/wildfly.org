@@ -127,9 +127,9 @@ The command returns `{"outcome" => "success"}` in case of success. This command 
 [source,xml]
 ----
     <datasources>
-        \{...}
+        {...}
         <drivers>
-            \{...}
+            {...}
             <driver name="mysql" module="com.mysql">
                 <driver-class>com.mysql.jdbc.Driver</driver-class>
             </driver>
@@ -187,7 +187,7 @@ The resulting part made by the console/command in the configuration file are:
 [source,xml]
 ----
     <datasources>
-        \{...}
+        {...}
         <datasource jndi-name="java:/jdbc/AppDS" pool-name="AppDS" enabled="true" use-java-context="true">
             <connection-url>jdbc:mysql://localhost:3306/app</connection-url>
             <driver>mysql</driver>
@@ -206,7 +206,7 @@ The resulting part made by the console/command in the configuration file are:
                 <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter”/>
             </validation>
         </datasource>
-        \{...}
+        {...}
     </datasources>
 ----
 
@@ -277,10 +277,12 @@ NOTE: At the time of this writing, WildFly Beta's admin console was not mature e
 
 Considering the data model in the figure above, go to the command line and type the following command to create the security domain:
 
+[source]
+-----
     ./subsystem=security/security-domain=app:add(cache-type="default")
       cd ./subsystem=security/security-domain=app
          ./authentication=classic:add(
-           login-modules=[ \{
+           login-modules=[ {
              code="Database",
              flag="required",
              module-options={
@@ -292,7 +294,7 @@ Considering the data model in the figure above, go to the command line and type 
                hashEncoding="BASE64",
                unauthenticatedIdentity="guest"
              }
-           }, \{
+           }, {
              code="RoleMapping",
              flag="required",
              module-options={
@@ -301,6 +303,7 @@ Considering the data model in the figure above, go to the command line and type 
              }
            }
          ])
+-----
 
 The resulting part made by the command in the configuration file are:
 [source,xml]

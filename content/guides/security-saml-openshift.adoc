@@ -3,16 +3,15 @@ layout: guide
 ---
 = Securing WildFly Apps with SAML on OpenShift
 :summary: Learn how to secure applications deployed to WildFly on OpenShift with SAML.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 15
 
 You can secure your WildFly applications deployed on OpenShift with Security Assertion Markup Language (SAML).
 By using SAML to secure applications, you delegate authentication to SAML identity providers (IdPs). This guide shows
 how to secure an example application deployed to WildFly on OpenShift with SAML using Keycloak as the SAML IdP.
 
-{#include partials/guides/prerequisites.adoc /}
-{|
+include::../../templates/partials/guides/prerequisites.adoc[]
 * Access to an OpenShift cluster (try the https://developers.redhat.com/developer-sandbox[Red Hat Developer Sandbox] for free)
 * https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
 * https://helm.sh/docs/intro/install/[Helm Chart]
@@ -29,14 +28,12 @@ To obtain this example, clone the `elytron-examples` repository to your local ma
 ----
 git clone git@github.com:wildfly-security-incubator/elytron-examples.git
 ----
-|}
 
-{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+include::../../templates/partials/guides/proc-log-into-openshift-cluster.adoc[]
 
 :saml-auth-method:
-{#include partials/guides/proc-start-keycloak-openshift.adoc /}
+include::../../templates/partials/guides/proc-start-keycloak-openshift.adoc[]
 
-{|
 == Configure Keycloak
 
 . Log into the `Keycloak Admin Console`.
@@ -176,11 +173,9 @@ helm install saml-app -f /PATH/TO/ELYTRON/EXAMPLES/simple-webapp-saml/charts/hel
 
 Notice that this command specifies the file we updated, `helm.yaml`, that contains the values
 needed to build and deploy our application.
-|}
 
-{#include partials/guides/proc-follow-build-and-deployment-openshift.adoc /}
+include::../../templates/partials/guides/proc-follow-build-and-deployment-openshift.adoc[]
 
-{|
 === Behind the Scenes
 
 While our application is building, let's take a closer look at our application's https://github.com/wildfly-security-incubator/elytron-examples/blob/main/simple-webapp-saml/pom.xml[pom.xml] file.
@@ -282,4 +277,3 @@ information, feel free to check out the resources linked below.
 * https://www.keycloak.org/getting-started/getting-started-openshift[Getting started with Keycloak on OpenShift]
 * https://www.keycloak.org/docs/latest/server_admin/index.html[Keycloak Server Administration Guide]
 * https://www.keycloak.org/docs/latest/securing_apps/#using-saml-to-secure-applications-and-services[Using SAML to secure applications and services]
-|}

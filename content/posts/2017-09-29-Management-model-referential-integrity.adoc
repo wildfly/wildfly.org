@@ -16,9 +16,10 @@ to suggest valid values to you as you set up your configuration.
 When you are configuring a WildFly server, a common thing you need to do is configure attributes whose value refers to the name of some other resource.
 A common example of this is a resource that includes a `socket-binding` attribute:
 
-....
+[source]
+-----
 [standalone@localhost:9999 /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
-....
+-----
 
 When you do this, it's because the services managed by the resource you are configuring need some capabilities provided by another resource. What you're
 doing is configuring which one to use. But what kind of resource that `socket-binding` attribute refers to may not be obvious, and what the valid values are
@@ -27,24 +28,26 @@ is also not obvious. And before the rollout of improved reference support, if yo
 Here, using WildFly 9 with a config where the previously unused 'ajp' socket binding config had been removed, we try and add an AJP listener
 to the web container:
 
-....
+[source]
+-----
 [standalone@localhost:9990 /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
 {
     "outcome" => "failed",
-    "failure-description" => \{"WFLYCTL0180: Services with missing/unavailable dependencies" => ["jboss.undertow.listener.ajp is missing [jboss.binding.ajp]"]},
+    "failure-description" => {"WFLYCTL0180: Services with missing/unavailable dependencies" => ["jboss.undertow.listener.ajp is missing [jboss.binding.ajp]"]},
     "rolled-back" => true
 }
-....
+-----
 
 That error message says nothing about where to go to correct the mistake.
 
 Worse, if you made that mistake when working with a server started in `admin-only` mode, that bad reference would not be detected when you entered it.
 
-....
+[source]
+-----
 [standalone@localhost:9990 /] reload --admin-only=true
 [standalone@localhost:9990 /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
 {"outcome" => "success"}
-....
+-----
 
 The configuration would be updated and the problem would only be detected when the server was reloaded or restarted not in `admin-only` mode.
 The server would boot but would not function correctly.
@@ -56,7 +59,8 @@ to proactively ensure that management operations that violate referential integr
 
 The same incorrect operation shown above will now fail immediately, with a message that gives a hint as to where you can configure the missing resource:
 
-....
+[source]
+-----
 [standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
 {
     "outcome" => "failed",
@@ -65,22 +69,24 @@ The same incorrect operation shown above will now fail immediately, with a messa
 		/socket-binding-group=*/socket-binding=*",
     "rolled-back" => true
 }
-....
+-----
 
 The same failure will happen if the server is running in `admin-only` mode (with some exceptions; see "Referential Integrity Checks in an `admin-only` Process"
 below.)
 
 If you think the resource you need already exists, but you're not sure of its name, you can use CLI tab completion to get a list of suggestions:
 
-....
+[source]
+-----
 [standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=
 http  https  management-http  management-https  txn-recovery-environment  txn-status-manager
 [standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=
-....
+-----
 
 Once the needed socket binding resource is added, it is available in the tab completion results.
 
-....
+[source]
+-----
 [standalone@embedded /] /socket-binding-group=standard-sockets/socket-binding=ajp:add(port=8009)
 {"outcome" => "success"}
 [standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=
@@ -88,7 +94,7 @@ ajp                       https                     management-https          tx
 http                      management-http           txn-recovery-environment
 [standalone@embedded /] /subsystem=undertow/server=default-server/ajp-listener=ajp:add(socket-binding=ajp)
 {"outcome" => "success"}
-....
+-----
 
 The HAL console will also suggest valid values by means of a pull-down:
 
@@ -96,7 +102,8 @@ image::choose-socket-binding.png[]
 
 If you try and remove a resource whose capabilities are depended upon by other resources, that will also result in a failed operation:
 
-....
+[source]
+-----
 [standalone@embedded /] /socket-binding-group=standard-sockets/socket-binding=ajp:remove
 {
     "outcome" => "failed",
@@ -104,7 +111,7 @@ If you try and remove a resource whose capabilities are depended upon by other r
 capability 'org.wildfly.undertow.listener.ajp' requires it for attribute 'socket-binding' at address '/subsystem=undertow/server=default-server/ajp-listener=ajp'",
     "rolled-back" => true
 }
-....
+-----
 
 == Referential Integrity Checks in an `admin-only` Process ==
 

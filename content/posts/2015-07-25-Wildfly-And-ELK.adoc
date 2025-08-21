@@ -17,21 +17,21 @@ Next we will need to create a configuraton file. In the logstash directory creat
 
 [source,yaml]
 ----
-input \{
-  tcp \{
+input {
+  tcp {
     port => 8000
   }
 }
 
-filter \{
-  json \{
+filter {
+  json {
     source => "message"
   }
 }
 
-output \{
+output {
 
-  elasticsearch \{
+  elasticsearch {
     # Use the embedded elsasticsearch for convienence
     embedded => true
     protocol => "http"

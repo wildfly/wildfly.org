@@ -3,23 +3,20 @@ layout: guide
 ---
 :summary: Learn how to securely connect to AMQ 7 deployed on OpenShift using MicroProfile Reactive Messaging application using AMQP connector.
 :prerequisites-time: 20
-{#include partials/guides/attributes.adoc /}
+include::../../templates/partials/guides/attributes.adoc[]
 
 = Use MicroProfile Reactive Messaging with AMQP Connector with SSL Connection to AMQ 7 on OpenShift
 
 In this guide, we will learn how to set up MicroProfile Reactive Messaging application with AMQP Connector
 to connect to AMQ 7 deployed on OpenShift. Communication will be secured using SSL/TLS.
 
-{#include partials/guides/prerequisites.adoc /}
-{|
+include::../../templates/partials/guides/prerequisites.adoc[]
 * Access to an OpenShift cluster (try the "Self-managed" variant of local development machine https://developers.redhat.com/products/openshift/download[Red Hat OpenShift
 ] for free)
-* https://docs.openshift.com/container-platform/\{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
-|}
+* https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
 // login to OpenShift cluster
-{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+include::../../templates/partials/guides/proc-log-into-openshift-cluster.adoc[]
 
-{|
 == Deploy AMQ 7 using operator
 === Install AMQ 7 operator
 Follow instruction in https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.11/html-single/deploying_amq_broker_on_openshift/index#proc-br-installing-operator-to-project-from-operatorhub_broker-ocp[Installing the Operator using OperatorHub]
@@ -120,7 +117,7 @@ cd guides/microprofile-reactive-messaging-amqp-connector-example/
 The important part of the application is `microprofile-config.properties` file configuring secured AMQP connector to remote AMQ 7 broker:
 [source, bash, options="nowrap"]
 ----
-amqp-host=$\{AMQ_HOST}
+amqp-host=${AMQ_HOST}
 amqp-port=443
 amqp-username=admin
 amqp-password=admin
@@ -207,4 +204,3 @@ WildFly MicroProfile Reactive Messaging provides multiple options to connect to 
 * https://artemiscloud.io/docs/tutorials/ssl_broker_setup/[Setting up SSL connections with ArtemisCloud Operator]
 * https://docs.wildfly.org/31/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye[MicroProfile Reactive Messaging Subsystem Configuration]
 * https://docs.wildfly.org/wildfly-glow/[WildFly Glow Documentation]
-|}

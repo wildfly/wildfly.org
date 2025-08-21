@@ -2,8 +2,8 @@
 layout: guide-getting-started
 ---
 
-= \{get-enterprise-ready}
-{#include partials/guides/titles.adoc /}
+= {get-enterprise-ready}
+include::../../../templates/partials/guides/titles.adoc[]
 
 
 Back to Guides

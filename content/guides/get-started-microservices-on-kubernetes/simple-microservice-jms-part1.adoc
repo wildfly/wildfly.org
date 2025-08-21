@@ -1,25 +1,24 @@
 ---
 layout: guide-getting-started
 ---
-= \{simple-microservice-jms-part1}
+= {simple-microservice-jms-part1}
 :summary: Java Microservice using WildFly
 :includedir: ../_includes
-{#include partials/guides/attributes.adoc /}
-{#include partials/guides/titles.adoc /}
+include::../../../templates/partials/guides/attributes.adoc[]
+include::../../../templates/partials/guides/titles.adoc[]
 :prerequisites-time: 10
 
-In this guide, we will extend the example created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}] and add an external Message Broker connectivity.
+In this guide, we will extend the example created in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}] and add an external Message Broker connectivity.
 
 [[prerequisites]]
 == Prerequisites
 
 To complete this guide, you need:
 
-* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[\{simple-microservice-part1}]
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part1[{simple-microservice-part1}]
 
-{#include partials/guides/constants.adoc /}
+include::../../../templates/partials/guides/constants.adoc[]
 
-{|
 == External Message Broker
 
 === Apache Artemis
@@ -293,4 +292,3 @@ link:/guides/get-started-microservices-on-kubernetes/simple-microservice-jms-par
 Back to Guides
 
 < link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
-|}

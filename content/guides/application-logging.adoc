@@ -3,8 +3,8 @@ layout: guide
 ---
 = Configuring Logging for your Application
 :summary: Learn how to use logging in your application and configure WildFly to display them
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: ../../templates/
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 10
@@ -12,7 +12,7 @@ layout: guide
 In this guide, you will learn how to use logging in your application and configure WildFly to
 display the logs at the level you want.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 
 WildFly supports all major logging facades. These include:
 
@@ -58,7 +58,6 @@ You need to add it to the `<dependencies>` section of the `pom.xml`:
 
 As an example, you can update the `GettingStartedService.java` file to add logging to the application at different levels:
 
-{|
 [source,java]
 ----
 package org.wildfly.examples;
@@ -80,7 +79,6 @@ public class GettingStartedService {
     }
 }
 ----
-|}
 You added a `log` Logger that can log messages with a name corresponding to the class `org.wildfly.examples.GettingStartedService`.
 You also added two logging calls, one at the `TRACE` level and the other one at the `INFO` level.
 
@@ -131,7 +129,7 @@ Copy the XML snippet:
 <!-- Execute the script in offline mode -->
 <offline>true</offline>
 <scripts>
-    <script>$\{project.build.scriptSourceDirectory}/configuration.cli</script>
+    <script>${project.build.scriptSourceDirectory}/configuration.cli</script>
 </scripts>
 ----
 
@@ -142,7 +140,7 @@ And add it to the `<configuration>` section of the `wildfly-maven-plugin`:
 <plugin>
     <groupId>org.wildfly.plugins</groupId>
     <artifactId>wildfly-maven-plugin</artifactId>
-    <version>$\{version.wildfly.maven.plugin}</version>
+    <version>${version.wildfly.maven.plugin}</version>
     <configuration>
         <!-- copy the XML snippet here -->
     </configuration>
@@ -173,10 +171,10 @@ $ mvn clean verify
 
 == What's next?
 
-WildFly provides extensive logging configuration. You can learn more by reading WildFly's https://docs.wildfly.org/\{wildfly-version}/Admin_Guide.html#Logging[Logging Subsystem Configuration Guide] and its https://docs.wildfly.org/\{wildfly-version}/wildscribe/subsystem/logging/[model reference].
+WildFly provides extensive logging configuration. You can learn more by reading WildFly's https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Logging[Logging Subsystem Configuration Guide] and its https://docs.wildfly.org/{wildfly-version}/wildscribe/subsystem/logging/[model reference].
 
 [[references]]
 == References
 
-* https://docs.wildfly.org/\{wildfly-version}/Admin_Guide.html#Logging[Logging Subsystem Configuration Guide]
-* https://docs.wildfly.org/\{wildfly-version}/wildscribe/subsystem/logging/[Logging Subsystem Model Reference]
+* https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Logging[Logging Subsystem Configuration Guide]
+* https://docs.wildfly.org/{wildfly-version}/wildscribe/subsystem/logging/[Logging Subsystem Model Reference]

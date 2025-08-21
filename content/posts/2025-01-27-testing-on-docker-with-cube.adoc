@@ -287,7 +287,7 @@ import java.net.URI;
  * Run integration tests with Arquillian to be able to test CDI beans
  */
 @RunWith(Arquillian.class)
-public class GettingStartedDockerIT \{
+public class GettingStartedDockerIT {
 
     @HostIp
     private String wildflyIp;
@@ -296,8 +296,8 @@ public class GettingStartedDockerIT \{
     int wildflyPort;
 
     @Test
-    public void testHelloEndpoint() \{
-        try (Client client = ClientBuilder.newClient()) \{
+    public void testHelloEndpoint() {
+        try (Client client = ClientBuilder.newClient()) {
             final String name = "World";
             Response response = client
                     .target(URI.create("http://" + wildflyIp + ":" + wildflyPort + "/"))
