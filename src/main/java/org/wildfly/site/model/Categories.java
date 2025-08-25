@@ -16,5 +16,5 @@ public record Categories(List<Category> categories) {
         List<Guide> guides
         ) { }
     public record Group(String title, List<Guide> guides) {}
-    public record Guide(String title, String url, String description) {}
+    public record Guide(String title, String url, String description, String keywords) {}
 }
