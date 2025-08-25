@@ -311,10 +311,10 @@ It works as a JUnit extension that take cares of the image deployment to k8s/ope
 
 [source,java]
 ----
-private void startResourcesInList(ExtensionContext context, KubernetesResource kubernetesResource, KubernetesList resourceList) \{
+private void startResourcesInList(ExtensionContext context, KubernetesResource kubernetesResource, KubernetesList resourceList) {
         KubernetesClient client = getKubernetesClient(context);
         resourceList.getItems().stream()
-                .forEach(i -> \{
+                .forEach(i -> {
                     client.resourceList(i).createOrReplace();
                     System.out.println("Created: " + i.getKind() + " name:" + i.getMetadata().getName() + ".");
                 });
@@ -325,78 +325,78 @@ private void startResourcesInList(ExtensionContext context, KubernetesResource k
                 i instanceof ReplicationController).collect(Collectors.toList());
         long started = System.currentTimeMillis();
         System.out.println("Waiting until ready (" + kubernetesResource.readinessTimeout() + " ms)...");
-        try \{
+        try {
             waitUntilCondition(context, waitables, i -> Readiness.getInstance().isReady(i), kubernetesResource.readinessTimeout(),
                     TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) \{
+        } catch (InterruptedException e) {
             throw new IllegalStateException("Gave up waiting after " + kubernetesResource.readinessTimeout());
         }
         long ended = System.currentTimeMillis();
         System.out.println("Waited: " + (ended - started) + " ms.");
         //Display the item status
         waitables.stream().map(r -> client.resource(r).fromServer().get())
-                .forEach(i -> \{
-                    if (!Readiness.getInstance().isReady(i)) \{
+                .forEach(i -> {
+                    if (!Readiness.getInstance().isReady(i)) {
                         readinessFailed(context);
                         System.out.println(i.getKind() + ":" + i.getMetadata().getName() + " not ready!");
                     }
                 });
 
 
-        if (hasReadinessFailed(context)) \{
+        if (hasReadinessFailed(context)) {
             throw new IllegalStateException("Readiness Failed");
-        } else if (kubernetesResource.additionalResourcesCreated().length > 0) \{
+        } else if (kubernetesResource.additionalResourcesCreated().length > 0) {
             long end = started + kubernetesResource.readinessTimeout();
             Map<String, ResourceGetter> resourceGetters = new HashMap<>();
-            for (org.wildfly.test.cloud.common.Resource resource : kubernetesResource.additionalResourcesCreated()) \{
-                if (resourceGetters.put(resource.name(), ResourceGetter.create(client, resource)) != null) \{
+            for (org.wildfly.test.cloud.common.Resource resource : kubernetesResource.additionalResourcesCreated()) {
+                if (resourceGetters.put(resource.name(), ResourceGetter.create(client, resource)) != null) {
                     throw new IllegalStateException(resource.name() + " appears more than once in additionalResourcesCreated()");
                 }
             }
 
             Map<String, HasMetadata> additionalWaitables = new HashMap<>();
-            while (System.currentTimeMillis() < end) \{
-                for (Map.Entry<String, ResourceGetter> entry : resourceGetters.entrySet()) \{
-                    if (!additionalWaitables.containsKey(entry.getKey())) \{
+            while (System.currentTimeMillis() < end) {
+                for (Map.Entry<String, ResourceGetter> entry : resourceGetters.entrySet()) {
+                    if (!additionalWaitables.containsKey(entry.getKey())) {
                         ResourceGetter getter = entry.getValue();
                         HasMetadata hasMetadata = getter.getResource();
-                        if (hasMetadata != null) \{
+                        if (hasMetadata != null) {
                             additionalWaitables.put(entry.getKey(), hasMetadata);
                         }
                     }
                 }
-                if (additionalWaitables.size() == resourceGetters.size()) \{
+                if (additionalWaitables.size() == resourceGetters.size()) {
                     break;
                 }
-                try \{
+                try {
                     Thread.sleep(1000);
-                } catch (InterruptedException e) \{
+                } catch (InterruptedException e) {
                     Thread.interrupted();
                     throw new IllegalStateException(e);
                 }
             }
 
-            if (additionalWaitables.size() != resourceGetters.size()) \{
+            if (additionalWaitables.size() != resourceGetters.size()) {
                 throw new IllegalStateException("Could not start all items in " + kubernetesResource.readinessTimeout());
             }
 
 
-            try \{
+            try {
                 waitUntilCondition(context, additionalWaitables.values(), i -> Readiness.getInstance().isReady(i), end - System.currentTimeMillis(),
                         TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) \{
+            } catch (InterruptedException e) {
                 throw new IllegalStateException("Gave up waiting after " + (System.currentTimeMillis() - started));
             }
 
             waitables.stream().map(r -> client.resource(r).fromServer().get())
-                    .forEach(i -> \{
-                        if (!Readiness.getInstance().isReady(i)) \{
+                    .forEach(i -> {
+                        if (!Readiness.getInstance().isReady(i)) {
                             readinessFailed(context);
                             System.out.println(i.getKind() + ":" + i.getMetadata().getName() + " not ready!");
                         }
                     });
 
-            if (hasReadinessFailed(context)) \{
+            if (hasReadinessFailed(context)) {
                 throw new IllegalStateException("Readiness Failed");
             }
         }
@@ -407,26 +407,26 @@ Here is the method that will be called after the test running:
 
 [source,java]
 ----
-private void cleanupKubernetesResources(ExtensionContext context, WildFlyIntegrationTestConfig config, WildFlyTestContext testContext) \{
-        if (config.getKubernetesResources().isEmpty()) \{
+private void cleanupKubernetesResources(ExtensionContext context, WildFlyIntegrationTestConfig config, WildFlyTestContext testContext) {
+        if (config.getKubernetesResources().isEmpty()) {
             return;
         }
 
         List<KubernetesResource> kubernetesResources = config.getKubernetesResources();
-        for (int i = kubernetesResources.size() - 1 ; i >= 0 ; i--) \{
+        for (int i = kubernetesResources.size() - 1 ; i >= 0 ; i--) {
             KubernetesResource kubernetesResource = kubernetesResources.get(i);
             KubernetesList resourceList = null;
-            try \{
-                try (InputStream in = getLocalOrRemoteKubernetesResourceInputStream(kubernetesResource.definitionLocation())) \{
+            try {
+                try (InputStream in = getLocalOrRemoteKubernetesResourceInputStream(kubernetesResource.definitionLocation())) {
                     resourceList = Serialization.unmarshalAsList(in);
                 }
-            } catch (Exception e) \{
+            } catch (Exception e) {
                 throw toRuntimeException(e);
             }
 
             List<HasMetadata> list = resourceList.getItems();
             Collections.reverse(list);
-            list.stream().forEach(r -> \{
+            list.stream().forEach(r -> {
                 System.out.println("Deleting: " + r.getKind() + " name:" + r.getMetadata().getName() + ". Deleted:"
                         + getKubernetesClient(context).resource(r).cascading(true).delete());
             });

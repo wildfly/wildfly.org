@@ -151,10 +151,10 @@ In addition, there are several interface properties defined in the `host.xml` fi
 ----
 <interfaces>
     <interface name="management">
-        <inet-address value="$\{jboss.bind.address.management:127.0.0.1}"/>
+        <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
     </interface>
     <interface name="public">
-        <inet-address value="$\{jboss.bind.address:127.0.0.1}"/>
+        <inet-address value="${jboss.bind.address:127.0.0.1}"/>
     </interface>
 </interfaces>
 ----
@@ -256,7 +256,7 @@ You are disconnected at the moment. Type 'connect' to connect to the server or '
     "outcome" => "success",
     "result" => undefined,
     "server-groups" => undefined,
-    "response-headers" => \{"process-state" => "reload-required"}
+    "response-headers" => {"process-state" => "reload-required"}
 }
 ----
 
@@ -282,7 +282,7 @@ So I need to define this `authentication-context` in the `elytron` subsystem. Th
                 <credential-reference clear-text="123"/>
             </authentication-configuration>
             <authentication-context name="myCtx">
-                <match-rule match-host="$\{jboss.domain.primary.address}" authentication-configuration="myConfig"/>
+                <match-rule match-host="${jboss.domain.primary.address}" authentication-configuration="myConfig"/>
             </authentication-context>
         </authentication-client>
         ...
@@ -295,13 +295,13 @@ Here is the equivalent CLI command to do the configuration:
 
 [source,bash]
 ----
-[domain@embedded /] /host=secondary/subsystem=elytron/authentication-configuration=myConfig:add(sasl-mechanism-selector=DIGEST-MD5, authentication-name=admin, realm=ManagementRealm, credential-reference=\{clear-text="123"})
+[domain@embedded /] /host=secondary/subsystem=elytron/authentication-configuration=myConfig:add(sasl-mechanism-selector=DIGEST-MD5, authentication-name=admin, realm=ManagementRealm, credential-reference={clear-text="123"})
 {"outcome" => "success"}
 ----
 
 [source,bash]
 ----
-[domain@embedded /] /host=secondary/subsystem=elytron/authentication-context=myCtx:add(match-rules=[{match-host="$\{jboss.domain.primary.address}", authentication-configuration=myConfig}])
+[domain@embedded /] /host=secondary/subsystem=elytron/authentication-context=myCtx:add(match-rules=[{match-host="${jboss.domain.primary.address}", authentication-configuration=myConfig}])
 {"outcome" => "success"}
 ----
 
@@ -314,8 +314,8 @@ Then I need to add modify configuration of the `domain-controller`:
 <domain-controller>
     <remote authentication-context="myCtx">
         <discovery-options>
-            <static-discovery name="primary" protocol="$\{jboss.domain.primary.protocol:remote+http}"
-                              host="$\{jboss.domain.primary.address}" port="$\{jboss.domain.primary.port:9990}"/>
+            <static-discovery name="primary" protocol="${jboss.domain.primary.protocol:remote+http}"
+                              host="${jboss.domain.primary.address}" port="${jboss.domain.primary.port:9990}"/>
         </discovery-options>
     </remote>
 </domain-controller>
@@ -330,7 +330,7 @@ As the configuration is shown above, I defined the `authentication-context` to b
     "outcome" => "success",
     "result" => undefined,
     "server-groups" => undefined,
-    "response-headers" => \{"process-state" => "reload-required"}
+    "response-headers" => {"process-state" => "reload-required"}
 }
 ----
 

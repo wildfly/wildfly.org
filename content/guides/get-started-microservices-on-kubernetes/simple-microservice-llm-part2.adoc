@@ -2,25 +2,24 @@
 layout: guide-getting-started
 ---
 
-= \{simple-microservice-llm-part2}
+= {simple-microservice-llm-part2}
 :summary: Java Microservice using WildFly on Kubernetes that invokes an LLM
 :includedir: ../_includes
-{#include partials/guides/attributes.adoc /}
-{#include partials/guides/titles.adoc /}
+include::../../../templates/partials/guides/attributes.adoc[]
+include::../../../templates/partials/guides/titles.adoc[]
 :prerequisites-time: 10
 
-In this guide, you will learn HOW-TO run the Docker Image we built in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1[\{simple-microservice-llm-part1}] on Kubernetes.
+In this guide, you will learn HOW-TO run the Docker Image we built in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1[{simple-microservice-llm-part1}] on Kubernetes.
 
 [[prerequisites]]
 == Prerequisites
 
 To complete this guide, you need:
 
-* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1[\{simple-microservice-llm-part1}]
+* Complete link:/guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part1[{simple-microservice-llm-part1}]
 
-{#include partials/guides/constants.adoc /}
+include::../../../templates/partials/guides/constants.adoc[]
 
-{|
 == LLM
 
 We basically will repeat everything we did in link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[{simple-microservice-part2}] with a few changes but, before that, we will deploy link:https://ollama.com/library/smollm2[`{ollama-llm}`, window="_blank"] on Kubernetes using the Ollama container.
@@ -266,4 +265,3 @@ NOTE: if you get *"dev.langchain4j.exception.HttpException: {"error":"model requ
 Back to Guides
 
 < link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
-|}

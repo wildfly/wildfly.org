@@ -3,10 +3,9 @@ layout: getstarted
 title: Java Microservices on Kubernetes with WildFly
 ---
 :includedir: ./get-started-microservices-on-kubernetes/_includes
-{#include partials/guides/titles.adoc /}
+include::../../templates/partials/guides/titles.adoc[]
 :page-liquid:
 
-{|
 == Build Java Microservices with WildFly and run them on link:https://kubernetes.io/[Kubernetes, window="_blank"].
 
 === Intro
@@ -41,5 +40,3 @@ We will start building a link:https://docs.docker.com/[Docker Image, window="_bl
 == References
 
 * https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config, window="_blank"]
-
-|}

@@ -43,9 +43,9 @@ packaging, not `war`, and you will need your own Main:
 
 [source,java]
 ------------------------------
-public class Main \{
+public class Main {
 
-    public static void main(String[] args) throws Exception \{
+    public static void main(String[] args) throws Exception {
       Container container = new Container();
       container.start();
 
@@ -119,4 +119,3 @@ and continue doing your builds.  Everything is available through Maven Central.
 You can keep up with the project through the link:https://www.hipchat.com/gSW9XYz69[WildFly HipChat]
 room, link:http://twitter.com/wildflyswarm[@wildflyswarm on Twitter], or through
 link:https://github.com/wildfly-swarm/wildfly-swarm/issues[GitHub Issues].
-

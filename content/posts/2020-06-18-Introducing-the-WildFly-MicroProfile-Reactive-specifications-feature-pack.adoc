@@ -54,7 +54,7 @@ First we have a method which generates a new price every five seconds:
     private Random random = new Random();
 
     @Outgoing("generated-price")
-    public Flowable<Integer> generate() \{
+    public Flowable<Integer> generate() {
         return Flowable.interval(5, TimeUnit.SECONDS)
                 .map(tick -> random.nextInt(100));
     }
@@ -66,7 +66,7 @@ In this case, we have another method (it can be in another class) annotated with
 ----
     @Incoming("generated-price")
     @Outgoing("to-kafka")
-    public double process(int priceInUsd) \{
+    public double process(int priceInUsd) {
         return priceInUsd * CONVERSION_RATE;
     }
 ----
@@ -109,7 +109,7 @@ Now that we have the converted stream in a `Publisher` instance we can access it
     @Path("/prices")
     @Produces(MediaType.SERVER_SENT_EVENTS) // denotes that server side events (SSE) will be produced
     @SseElementType(MediaType.TEXT_PLAIN) // denotes that the contained data, within this SSE, is just regular text/plain data
-    public Publisher<Double> readThreePrices() \{
+    public Publisher<Double> readThreePrices() {
         // get the next three prices from the price stream
         return ReactiveStreams.fromPublisher(prices)
                 .limit(3)
@@ -131,11 +131,11 @@ Next, let's see how MicroProfile Context Propagation is useful. We will modify t
     @Path("/prices")
     @Produces(MediaType.SERVER_SENT_EVENTS) // denotes that server side events (SSE) will be produced
     @SseElementType(MediaType.TEXT_PLAIN) // denotes that the contained data, within this SSE, is just regular text/plain data
-    public Publisher<Double> readThreePrices() \{
+    public Publisher<Double> readThreePrices() {
         // get the next three prices from the price stream
         return ReactiveStreams.fromPublisher(prices)
                 .limit(3)
-                .map(price -> \{
+                .map(price -> {
                     // Context propagation makes this block inherit the transaction of the caller
                     System.out.println("Storing price: " + price);
                     // store each price before we send them

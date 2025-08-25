@@ -3,8 +3,8 @@ layout: guide
 ---
 = Integrating with a PostgreSQL database
 :summary: Learn how to configure a datasource to connect a PostgreSQL database
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 20
 :postgre-sql-user: postgres
 :postgre-sql-password: admin
@@ -16,7 +16,7 @@ layout: guide
 
 In this guide, you will learn how to configure WildFly to connect to a PostgreSQL database. You will create a simple Book Store API application to manage books stored in the database using https://jakarta.ee/specifications/restful-ws/[Jakarta RESTful Web Services (Jakarta REST), window=_blank].
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 
 * Docker or any Open Container Initiative engine installed. This guide uses https://podman.io/[Podman, window=_blank].
 
@@ -28,7 +28,6 @@ We will use PostgreSQL as the database server in its containerized version: see 
 
 Start PostgreSQL database in a container with:
 
-{|
 [source,bash,subs="normal"]
 ----
 podman run --rm --name bookstore \
@@ -38,7 +37,6 @@ podman run --rm --name bookstore \
   -e POSTGRES_DB={postgre-sql-database} \
   {postgre-docker-image}
 ----
-|}
 
 NOTE: we started the container with the `--rm` flag so it can be disposed of automatically when we stop it.
 
@@ -104,7 +102,6 @@ In addition to the Galleon Layers to configure the datasource and install the dr
 
 Replace the current `wildfly-maven-plugin` configuration in the `pom.xml` file provided by the getting started guide with the following one:
 
-{|
 [source,xml]
 ----
 <plugin>
@@ -127,7 +124,6 @@ Replace the current `wildfly-maven-plugin` configuration in the `pom.xml` file p
     </executions>
 </plugin>
 ----
-|}
 In the above configuration, behind the scenes the `wildfly-maven-plugin` is using https://docs.wildfly.org/wildfly-glow/[WildFly Glow, window=_blank] to discover automatically the required Galleon Layers for our application. The `discover-provisioning-info` configuration tells the plugin to discover the required layers by inspecting our application code. By using the `postgresql:default` addon, we are specifying we want to use a PostgreSQL database, and we want to configure it as the default datasource for the server.
 
 === persistence.xml
@@ -164,7 +160,7 @@ import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
 @ApplicationPath("/api")
-public class BookStoreApplication extends Application \{
+public class BookStoreApplication extends Application {
 }
 ----
 
@@ -173,7 +169,6 @@ The `Book` entity represents a book record in the database.
 
 Create a new class `Book` in the `src/main/java/org/wildfly/examples/books` directory with the following content:
 
-{|
 [source,java]
 ----
 package org.wildfly.examples.books;
@@ -283,14 +278,12 @@ public class Book {
     }
 }
 ----
-|}
 
 === BookResource
 The `BookResource` is the web service that exposes the book records as JSON objects.
 
 Create a new class `BookResource` in the `src/main/java/org/wildfly/examples/books` directory with the following content:
 
-{|
 [source,java]
 ----
 package org.wildfly.examples.books;
@@ -400,7 +393,6 @@ public class BookResource {
     }
 }
 ----
-|}
 
 == Start the application
 
@@ -453,7 +445,6 @@ postgresql-default-datasource environment variables:
 
 Now create the required *environment variables* used by WildFly to connect to the PostgreSQL database and start the server:
 
-{|
 [source,bash,subs="normal"]
 ----
 export POSTGRESQL_USER={postgre-sql-user}
@@ -464,7 +455,6 @@ export POSTGRESQL_DATABASE={postgre-sql-database}
 ...
 11:34:49,242 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 32.0.1.Final (WildFly Core 24.0.1.Final) started in 2118ms - Started 295 of 366 services (139 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
 ----
-|}
 
 == Check the application
 
@@ -473,7 +463,6 @@ We have our application running at http://localhost:8080/. Let's now interact wi
 === Create a book
 To create a new book, execute a POST request to the `/api/books` endpoint with the book information:
 
-{|
 [source,bash]
 ----
 $ curl -v -X POST http://localhost:8080/api/books -H "Content-Type: application/json" -d '
@@ -484,7 +473,6 @@ $ curl -v -X POST http://localhost:8080/api/books -H "Content-Type: application/
 "title": "From the Earth to the Moon"
 }'
 ----
-|}
 
 If you inspect the response, you will see the URL of the newly created book gets returned under the location header:
 
@@ -495,7 +483,6 @@ Location: http://localhost:8080/api/books/1
 
 You can use the location to check the book you have just created:
 
-{|
 [source,bash]
 ----
 $ curl http://localhost:8080/api/books/1
@@ -510,7 +497,6 @@ $ curl http://localhost:8080/api/books/1
   "title": "From the Earth to the Moon"
 }
 ----
-|}
 
 === Read all the books
 To list all the books, execute a GET request to the `/api/books` endpoint:
@@ -522,7 +508,6 @@ $ curl http://localhost:8080/api/books
 
 It will return the list of books of our database:
 
-{|
 [source,json]
 ----
 [
@@ -535,12 +520,10 @@ It will return the list of books of our database:
   }
 ]
 ----
-|}
 
 === Update a book
-To update a book, execute a PUT request to the `/api/books/\{id}` endpoint with the book information you want. For example to change the price of the recent book we have recently created, execute the following:
+To update a book, execute a PUT request to the `/api/books/{id}` endpoint with the book information you want. For example to change the price of the recent book we have recently created, execute the following:
 
-{|
 [source,bash]
 ----
 $ curl -X PUT http://localhost:8080/api/books/1 -H "Content-Type: application/json" -d '
@@ -551,10 +534,9 @@ $ curl -X PUT http://localhost:8080/api/books/1 -H "Content-Type: application/js
 "title": "From the Earth to the Moon"
 }'
 ----
-|}
 
 === Delete a book
-To delete a book, execute a DELETE request to the `/api/books/\{id}` endpoint with the book id you want to delete. For example, to delete the book we have recently created:
+To delete a book, execute a DELETE request to the `/api/books/{id}` endpoint with the book id you want to delete. For example, to delete the book we have recently created:
 
 [source,bash]
 ----
@@ -588,7 +570,6 @@ Add the following dependency to the `pom.xml` file:
 
 Create a new class `BookResourceIT` in the `src/test/java/org/wildfly/examples/books` directory with the following content:
 
-{|
 [source,java]
 ----
 package org.wildfly.examples.books;
@@ -738,7 +719,6 @@ export POSTGRESQL_DATABASE={postgre-sql-database}
 
 mvn clean verify
 ----
-|}
 
 In this guide we have reused the same database instance for running the application and for the test cases. If you want to use a different instance for test cases, you have to adapt the values of the environment variables accordingly.
 

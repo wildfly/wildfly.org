@@ -2,24 +2,23 @@
 layout: guide-getting-started
 ---
 
-= \{simple-microservice-part1}
+= {simple-microservice-part1}
 :summary: Java Microservice using WildFly
 :includedir: ../_includes
-{#include partials/guides/attributes.adoc /}
-{#include partials/guides/titles.adoc /}
+include::../../../templates/partials/guides/attributes.adoc[]
+include::../../../templates/partials/guides/titles.adoc[]
 :prerequisites-time: 10
 
 In this guide, you will learn how to create and run a link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] implemented using WildFly.
 
-In the following guide link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[\{simple-microservice-part2}], you will see how to run the same link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] on link:https://kubernetes.io/[Kubernetes];
+In the following guide link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[{simple-microservice-part2}], you will see how to run the same link:https://docs.docker.com/guides/docker-concepts/the-basics/what-is-an-image/[Docker Image, window="_blank"] on link:https://kubernetes.io/[Kubernetes];
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../../templates/partials/guides/prerequisites.adoc[]
 
 * Install link:https://www.docker.com/[Docker, window="_blank"] or link:https://podman.io/[Podman, window="_blank"]
 
-{#include partials/guides/constants.adoc /}
+include::../../../templates/partials/guides/constants.adoc[]
 
-{|
 == Maven Project
 
 Create a simple Jakarta EE application Maven Project containing a link:https://jakarta.ee/specifications/restful-ws/[Jakarta REST service, window="_blank"] using the `org.wildfly.archetype:wildfly-getting-started-archetype` archetype:
@@ -243,4 +242,3 @@ link:/guides/get-started-microservices-on-kubernetes/simple-microservice-part2[{
 * link:https://www.wildfly.org/news/2025/01/27/testing-on-docker-with-cube/["Testing WildFly applications on Docker with Arquillian Cube", window="_blank"]
 
 < link:/guides/get-started-microservices-on-kubernetes[Back to Getting Started with WildFly micro-services on Kubernetes]
-|}

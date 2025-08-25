@@ -3,15 +3,15 @@ layout: guide
 ---
 = Deploying WildFly using Ansible
 :summary: Learn how to automate WildFly deployments with Ansible
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 20
 
 In this brief guide, we’ll set up and run three instances of WildFly on the same machine (localhost). Together they will form a cluster. It’s a rather classic setup, where the appservers need to synchronize the content of their application’s sessions to ensure fail over if one of the instances fails. This configuration guarantees that, if one instance fails while processing a request, another one can pick up the work without any data loss. Note that we’ll use a multicast to discover the members of the cluster and ensure that the cluster’s formation is fully automated and dynamic.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 
 == Install Ansible and its collection for WildFly
 
@@ -72,7 +72,6 @@ There are essentially two steps to set up the WildFly cluster:
 
 Here is the playbook we'll use to deploy our clusters. Its content is relatively self-explanitory, at least if you are somewhat familiar with the Ansible syntax.
 
-{|
 [source, yml]
 ----
 - name: "WildFly installation and configuration"
@@ -124,7 +123,6 @@ Here is the playbook we'll use to deploy our clusters. Its content is relatively
       loop_control:
         loop_var: port
 ----
-|}
 In short, this playbook uses the Ansible collection for WildFly to, first, install the appserver by using the wildfly_install role. This will download all the artifacts, create the required system groups and users, install dependency (unzip) and so on. At the end of its execution, all the tidbits required to run WildFly on the target host are installed, but the server is not yet running. That is what's happening in the next step.
 
 In the tasks section of the playbook, we then call on another role provided by the collection: wildfly_systemd. This role will take care of integrating WildFly, as a regular system service, into the service manager. Here, we use a loop to ensure that we create not one, but three different services. Each one will have the same configuration (standalone-ha.xml) but runs on different ports, using a different set of directories to store its data.
@@ -445,7 +443,6 @@ Now, our three WildFly servers are running, but the cluster has yet to form. Ind
 
 In our case, we will use the jboss_cli.yml task file, which encapsulates the running of JBoss command-line interface (CLI) commands:
 
-{|
 [source, yaml]
 ----
 …
@@ -468,7 +465,6 @@ In our case, we will use the jboss_cli.yml task file, which encapsulates the run
           - 10090
           - 10190
 ----
-|}
 
 Now, we will once again execute our playbook so the web application is deployed on all instances. Once the automation completes successfully, the deployment will trigger the formation of the cluster.
 

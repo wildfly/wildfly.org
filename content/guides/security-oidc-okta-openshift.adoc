@@ -3,13 +3,13 @@ layout: guide
 ---
 = Securing WildFly Applications Using Okta on OpenShift
 :summary: A step by step guide on how to secure a WildFly application using Okta's OpenID Provider and deploy it to OpenShift.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 15
 
 WildFly applications can be secured using OpenID Connect (OIDC) and deployed to OpenShift. By using OIDC to secure applications, you delegate authentication to OIDC providers. The `elytron-oidc-client` subsystem can be used to secure an application deployed to WildFly using any OpenID Provider. This guide demonstrates how to secure an example application deployed to WildFly on OpenShift using https://www.okta.com/[Okta] as the OpenID Provider.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 * Roughly 15 minutes
 * Access to an OpenShift cluster (try the https://developers.redhat.com/developer-sandbox[Red Hat Developer Sandbox] for free)
 * https://docs.openshift.com/container-platform/4.14/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
@@ -28,9 +28,8 @@ git clone git@github.com:wildfly-security-incubator/elytron-examples.git
 cd simple-webapp-okta
 ----
 
-{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+include::../../templates/partials/guides/proc-log-into-openshift-cluster.adoc[]
 
-{|
 == Configure Okta
 
 For this guide, we will be using Okta as our OpenID provider. In order to secure the application, we will need to access the Okta web console and register our application as a client. The following set of steps outlines how to register an OpenID web-application with Okta:
@@ -124,9 +123,8 @@ You can view the deployment configuration used in this example by navigating to 
 Now that we have added the required changes, we can deploy our application, the helm chart will specify the location for this example application and pull information needed for our deployment specified in the `oidc.json` file.
 
 == Deploy the Example Application to WildFly on OpenShift
-|}
 
-{#include partials/guides/proc-install-or-update-helm.adoc /}
+include::../../templates/partials/guides/proc-install-or-update-helm.adoc[]
 
 We can deploy our example application to WildFly on OpenShift using the WildFly Helm Chart:
 
@@ -136,9 +134,8 @@ helm install oidc-app -f /PATH/TO/ELYTRON/EXAMPLES/simple-webapp-saml/charts/hel
 ----
 Notice that this command specifies the file we updated, `helm.yaml`, that contains the values needed to build and deploy our application.
 
-{#include partials/guides/proc-follow-build-and-deployment-openshift.adoc /}
+include::../../templates/partials/guides/proc-follow-build-and-deployment-openshift.adoc[]
 
-{|
 === Behind the Scenes
 
 While our application is building, let’s take a closer look at our application.
@@ -263,4 +260,3 @@ This guide demonstrates how to use an OpenID provider other than Keycloak to sec
 * https://docs.openshift.com/container-platform/4.13/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
 * https://docs.wildfly.org/31/Getting_Started_on_OpenShift.html#helm-charts[WildFly Helm Charts]
 * <<security-oidc-openshift.adoc#security-oidc-openshift,Securing WildFly Apps with OIDC on OpenShift>>
-|}

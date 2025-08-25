@@ -3,13 +3,12 @@ layout: guide
 ---
 = Configuring Clustered Messaging in WildFly
 :summary: Learn how to configure WildFly with an ActiveMQ Artemis Cluster, Server-Side Message and Client Load Balancing.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 15
 
-{|
 In this guide, you will learn how to configure WildFly servers with an embedded ActiveMQ Artemis broker in a messaging cluster,
 enabling server-side message and client load balancing. It will demonstrate how to configure deployments, such as MDBs,
 EJBs, or Servlets, as well as external JMS clients, to load balance connections across all servers in the cluster.
@@ -176,4 +175,3 @@ refer to link:messaging-high-availability[Configure WildFly with a Messaging (Ac
 
 * https://activemq.apache.org/components/artemis/documentation/latest/clusters.html#overview[Apache ActiveMQ Artemis Documentation - Clusters]
 * https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/7.4/html-single/configuring_messaging/index#clusters_overview[EAP 7.4 Messaging Clusters Overview].
-|}

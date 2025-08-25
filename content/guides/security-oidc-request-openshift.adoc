@@ -3,8 +3,8 @@ layout: guide
 ---
 = Sending Request Objects as A JWT Using Request Parameters for OpenID Connect
 :summary: How to send the request object as a Json Web Token when securing a WildFly application using OpenID Connect on Openshift.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 20
 
 WildFly 33 includes the ability to send the request object as a Json Web Token (JWT) when securing an application using OIDC.
@@ -14,7 +14,7 @@ provider. The OAuth 2.0 request syntax sends the Request Object in the request b
 However, OpenID Connect allows the Request Object to be sent as a JWT using https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests[request parameters], which can be signed and optionally
 encrypted. This adds an added layer of protection, as the parameters are no longer human-readable.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 * Access to an OpenShift cluster (try the Red Hat Developer Sandbox for free)
 
 * https://docs.openshift.com/container-platform/4.15/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
@@ -79,11 +79,10 @@ Take a note of the absolute path of the keystore file along with the key alias a
 
 If you would like to use JKS keystore files instead, see https://docs.redhat.com/en/documentation/red_hat_jboss_data_virtualization/6.4/html/security_guide/create_a_privatepublic_key_pair_with_keytool[here] for more information.
 
-{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+include::../../templates/partials/guides/proc-log-into-openshift-cluster.adoc[]
 
-{#include partials/guides/proc-start-keycloak-openshift.adoc /}
+include::../../templates/partials/guides/proc-start-keycloak-openshift.adoc[]
 
-{|
 === OpenShift Web Console
 To make sure your Keycloak server has been provisioned using the OpenShift web console, navigate to the *Topology* view in the *Developer* perspective. You can click on your *keycloak* app to check its status. Once it is running, you can click on *Open URL* and you will be taken to Keycloak’s *Administration Console* login page.
 
@@ -412,4 +411,3 @@ documentation of your OpenID provider.
 * https://docs.wildfly.org/33/Admin_Guide.html#Feature_stability_levels[Feature stability levels]
 * https://docs.wildfly.org/33/Galleon_Guide.html#WildFly_Galleon_feature-packs[WildFly Galleon feature-packs]
 * https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html[Keytool documentation].
-|}

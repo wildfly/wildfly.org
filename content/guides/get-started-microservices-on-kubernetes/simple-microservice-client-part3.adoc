@@ -1,17 +1,16 @@
 ---
 layout: guide-getting-started
 ---
-= \{simple-microservice-client-part3}
+= {simple-microservice-client-part3}
 :summary: Invoke one microservice from another on Kubernetes propagating users authentication
 :includedir: ../_includes
-{#include partials/guides/attributes.adoc /}
-{#include partials/guides/titles.adoc /}
-{#include partials/guides/constants.adoc /}
+include::../../../templates/partials/guides/attributes.adoc[]
+include::../../../templates/partials/guides/titles.adoc[]
+include::../../../templates/partials/guides/constants.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 10
 
-{|
 In this guide, you will learn HOW-TO propagate user authentication and authorization data between two microservices;
 
 [[prerequisites]]
@@ -757,4 +756,3 @@ Hello ddd Subject:aaef43ee-4005-4d2d-a5f0-0e0d11a1f831 Issuer: http://192.168.39
 * Source code for this guide:
 ** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-client-secured
 ** {source-code-git-repository}/simple-microservice-rest-client/simple-microservice-server-secured
-|}

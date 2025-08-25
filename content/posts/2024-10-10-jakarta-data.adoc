@@ -32,7 +32,7 @@ Following is an example repository:
 [source,java]
 ----
 @Repository
-interface Publishing \{
+interface Publishing {
     @Find
     Book book(String isbn);
 

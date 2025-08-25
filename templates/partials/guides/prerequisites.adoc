@@ -1,4 +1,3 @@
-{|
 [[prerequisites]]
 == Prerequisites
 
@@ -7,4 +6,3 @@ To complete this guide, you need:
 * Roughly {prerequisites-time} minutes
 * JDK {jdk-minimal-version} installed with `JAVA_HOME` configured appropriately
 * Apache Maven {maven-version}
-|}

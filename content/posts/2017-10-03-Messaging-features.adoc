@@ -91,7 +91,7 @@ Once statistics are enabled, the `pooled-connection-factory` resource will have 
 [standalone@localhost:9990 /] /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra/statistics=pool:read-resource(include-runtime)
 {
     "outcome" => "success",
-    "result" => \{
+    "result" => {
         "ActiveCount" => 15,
         "AvailableCount" => 20,
         ...

@@ -3,8 +3,8 @@ layout: guide
 ---
 = Securing WildFly Apps with Auth0 on OpenShift
 :summary: Learn how to secure applications deployed to WildFly on OpenShift with the Auth0 OpenID provider.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 15
 
 You can secure your WildFly applications deployed on OpenShift with OpenID Connect (OIDC). By using OIDC to secure
@@ -14,8 +14,7 @@ deployed to WildFly on OpenShift with OIDC using https://auth0.com/[Auth0] as th
 If you prefer to watch a video, check out this 5-minute https://www.youtube.com/watch?v=uoQoCPGyAik[video] which also covers the steps
 from this guide.
 
-{#include partials/guides/prerequisites.adoc /}
-{|
+include::../../templates/partials/guides/prerequisites.adoc[]
 * Access to an OpenShift cluster (try the https://developers.redhat.com/developer-sandbox[Red Hat Developer Sandbox] for free)
 * https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
 * https://helm.sh/docs/intro/install/[Helm Chart]
@@ -33,10 +32,8 @@ To obtain this example, clone the `elytron-examples` repository to your local ma
 ----
 git clone git@github.com:wildfly-security-incubator/elytron-examples.git
 ----
-|}
-{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+include::../../templates/partials/guides/proc-log-into-openshift-cluster.adoc[]
 
-{|
 == Configure Auth0
 
 We will be using Auth0 as our OpenID provider.
@@ -96,11 +93,9 @@ as described below.
 <3> Replace `<AUTH0_CLIENT_SECRET>` with the `Client Secret` value from your OIDC App's `Basic Information` section in the *Auth0 Dashboard*.
 
 == Deploy the Example Application to WildFly on OpenShift
-|}
 
-{#include partials/guides/proc-install-or-update-helm.adoc /}
+include::../../templates/partials/guides/proc-install-or-update-helm.adoc[]
 
-{|
 We can deploy our example application to WildFly on OpenShift using the WildFly Helm Chart:
 
 [source,bash]
@@ -110,10 +105,8 @@ helm install oidc-app -f /PATH/TO/ELYTRON/EXAMPLES/simple-webapp-auth0/charts/he
 
 Notice that this command specifies the file we updated, `helm.yaml`, that contains the values
 needed to build and deploy our application.
-|}
-{#include partials/guides/proc-follow-build-and-deployment-openshift.adoc /}
+include::../../templates/partials/guides/proc-follow-build-and-deployment-openshift.adoc[]
 
-{|
 === Behind the Scenes
 
 While our application is building, let's take a closer look at our application.
@@ -259,4 +252,3 @@ documentation.
 * https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
 * https://docs.wildfly.org/{wildfly-version}/Getting_Started_on_OpenShift.html#helm-charts[WildFly Helm Chart]
 * <<security-oidc-openshift.adoc#security-oidc-openshift,Securing WildFly Apps with OIDC on OpenShift>>
-|}

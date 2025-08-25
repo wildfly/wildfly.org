@@ -3,13 +3,12 @@ layout: guide
 ---
 = Prototype WildFly applications with JBang
 :summary: Learn how to use JBang to prototype simple WildFly applications from a single Java source file.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 15
 
-{|
 In this guide, you will learn how to use https://jbang.dev[JBang] to prototype enterprise Java applications running with WildFly.
 
 [[prerequisites]]
@@ -325,4 +324,3 @@ For a deeper dive into prototyping WildFly applications with JBang (including wr
 
 * https://www.jbang.dev[JBang Home Page]
 * https://docs.wildfly.org/wildfly-glow/#jbang[WildFly Glow documentation to run WildFly with JBang]
-|}

@@ -271,7 +271,7 @@ The code itself is quite straightforward:
 ----
 @ServerEndpoint(value = "/websocket/chatbot",
         configurator = org.wildfly.ai.websocket.CustomConfigurator.class)
-public class RagChatBot \{
+public class RagChatBot {
     @Inject
     @Named(value = "ollama")
     ChatLanguageModel chatModel;
@@ -289,7 +289,7 @@ public class RagChatBot \{
             + "{{contents}}";
 
   @OnMessage
-  public String sayHello(String question, Session session) throws IOException \{
+  public String sayHello(String question, Session session) throws IOException {
         ChatMemory chatMemory = MessageWindowChatMemory.builder().id(session.getUserProperties().get("httpSessionId")).maxMessages(3).build();
         ConversationalRetrievalChain chain = ConversationalRetrievalChain.builder()
                 .chatLanguageModel(chatModel)
@@ -300,7 +300,7 @@ public class RagChatBot \{
         return result;
     }
 
-    private RetrievalAugmentor createBasicRag() \{
+    private RetrievalAugmentor createBasicRag() {
         return DefaultRetrievalAugmentor.builder()
                 .contentRetriever(retriever)
                 .contentInjector(DefaultContentInjector.builder()
@@ -352,4 +352,3 @@ If you look at the code you can easily tweak it to try several scenarios like us
 Also you can try https://openai.com/[OpenAI, window=_blank] or https://groq.com[Groq, window=_blank] instead of Ollama.
 
 All the source code of the feature pack is available on https://github.com/wildfly-extras/wildfly-ai-feature-pack[Github, window=_blank] and can be improved by extending the components that may be of use.
-

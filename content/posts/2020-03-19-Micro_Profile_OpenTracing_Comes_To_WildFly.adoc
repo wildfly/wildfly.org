@@ -54,7 +54,7 @@ If you want to use TCP instead of UDP you need to configure the *sender-endpoint
 [standalone@localhost:9990 /] /subsystem=microprofile-opentracing-smallrye/jaeger-tracer=jaeger-demo:write-attribute(name="sender-endpoint", value="http://localhost:14268/api/traces")
 {
     "outcome" => "success",
-    "response-headers" => \{
+    "response-headers" => {
         "operation-requires-reload" => true,
         "process-state" => "reload-required"
     }
@@ -70,7 +70,7 @@ Let's define this new tracer as the default tracer to be used by WildFly:
 [standalone@localhost:9990 /] /subsystem=microprofile-opentracing-smallrye:write-attribute(name=default-tracer, value=jaeger-demo)
 {
     "outcome" => "success",
-    "response-headers" => \{
+    "response-headers" => {
         "operation-requires-reload" => true,
         "process-state" => "reload-required"
     }

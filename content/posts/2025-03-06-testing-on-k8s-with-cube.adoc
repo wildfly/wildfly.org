@@ -494,7 +494,7 @@ import static org.junit.Assert.assertNotNull;
  * Run integration tests on Kubernetes with Arquillian Cube!
  */
 @RunWith(Arquillian.class)
-public class GettingStartedKubernetesIT \{
+public class GettingStartedKubernetesIT {
 
     @Named("my-jaxrs-app-service")
     @ArquillianResource
@@ -506,7 +506,7 @@ public class GettingStartedKubernetesIT \{
     private URL url;
 
     @Test
-    public void shouldFindServiceInstance() \{
+    public void shouldFindServiceInstance() {
         assertNotNull(myJaxrsAppService);
         assertNotNull(myJaxrsAppService.getSpec());
         assertNotNull(myJaxrsAppService.getSpec().getPorts());
@@ -514,9 +514,9 @@ public class GettingStartedKubernetesIT \{
     }
 
     @Test
-    public void shouldShowHelloWorld() throws URISyntaxException \{
+    public void shouldShowHelloWorld() throws URISyntaxException {
         assertNotNull(url);
-        try (Client client = ClientBuilder.newClient()) \{
+        try (Client client = ClientBuilder.newClient()) {
             final String name = "World";
             Response response = client
                     .target(url.toURI())

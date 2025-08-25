@@ -101,8 +101,8 @@ To verify that everything works as expected and that Ansible is ready to be used
 [source, bash]
 ----
 # ansible -m setup -i inventory all
-localhost | SUCCESS => \{
-    "ansible_facts": \{
+localhost | SUCCESS => {
+    "ansible_facts": {
 ...
 ----
 
@@ -164,7 +164,7 @@ skipping: [localhost]
 TASK [middleware_automation.wildfly.wildfly_install : Validate patch version for offline installs] ***
 skipping: [localhost]
 
-TASK [middleware_automation.wildfly.wildfly_install : Validate existing additional zipfiles \{{ eap_archive_filename }} for offline installs] ***
+TASK [middleware_automation.wildfly.wildfly_install : Validate existing additional zipfiles {{ eap_archive_filename }} for offline installs] ***
 skipping: [localhost]
 
 TASK [middleware_automation.wildfly.wildfly_install : Validate node identifier length] ***
@@ -204,7 +204,7 @@ TASK [middleware_automation.wildfly.wildfly_install : Check if work directory /o
 ok: [localhost]
 
 TASK [middleware_automation.wildfly.wildfly_install : Check if work directory /opt/ is readable] ***
-ok: [localhost] => \{
+ok: [localhost] => {
     "changed": false,
     "msg": "Archive directory /opt/ is readable"
 }
@@ -216,7 +216,7 @@ TASK [middleware_automation.wildfly.wildfly_install : Check if archive directory
 ok: [localhost]
 
 TASK [middleware_automation.wildfly.wildfly_install : Check if archive directory /opt/ is readable] ***
-ok: [localhost] => \{
+ok: [localhost] => {
     "changed": false,
     "msg": "Archive directory /opt/ is readable"
 }
@@ -523,7 +523,7 @@ FirstQueue is actually a legacy system, employed by a few, non-critical older ap
 /subsystem=messaging-activemq/server=default/jms-queue=FirstQueue:read-resource
 {
     "outcome" => "success",
-    "result" => \{
+    "result" => {
         "durable" => false,
         "entries" => ["java:/jms/queue/first"],
         "legacy-entries" => ["java:/jms/legacy/queue/old"],
@@ -626,8 +626,8 @@ As shown above, the collection provides a generic role that takes care of creati
 postgres_driver_version: 9.4.1212
 mariadb_driver_version: 3.2.0
 jdbc_drivers:
-    - \{ version: "{{ postgres_driver_version }}", name: 'org.postgresql', jar_file: "postgresql-{{ postgres_driver_version }}.jar", url: "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/{{ postgres_driver_version }}/postgresql-{{ postgres_driver_version }}.jar" }
-    - \{ version: "{{ mariadb_driver_version }}", name: 'org.mariadb', jar_file: "mariadb-java-client-{{ mariadb_driver_version }}.jar", url: "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/{{ mariadb_driver_version }}/mariadb-java-client-{{ mariadb_driver_version }}.jar" }
+    - { version: "{{ postgres_driver_version }}", name: 'org.postgresql', jar_file: "postgresql-{{ postgres_driver_version }}.jar", url: "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/{{ postgres_driver_version }}/postgresql-{{ postgres_driver_version }}.jar" }
+    - { version: "{{ mariadb_driver_version }}", name: 'org.mariadb', jar_file: "mariadb-java-client-{{ mariadb_driver_version }}.jar", url: "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/{{ mariadb_driver_version }}/mariadb-java-client-{{ mariadb_driver_version }}.jar" }
 ----
 
 *Note:* _The Ansible collection for WildFly comes with a default template to generate the `module.xml` of a custom module. Obviously, this template might not be a good fit for ALL the drivers that users may have to install in a WildFly setup. For this reason, the template itself can easily be replaced by another one, provided by the user._
@@ -654,12 +654,12 @@ As we already have a datastructure with most of the required information, we are
 ----
 ...
     datasources:
-      \{% if jdbc_drivers is defined and jdbc_drivers | length > 0 %}jdbc-driver:
+      {% if jdbc_drivers is defined and jdbc_drivers | length > 0 %}jdbc-driver:
 {% for driver in jdbc_drivers %}
-        \{{ driver.name | regex_replace('^org.', '') }}:
-          driver-name: \{{ driver.name | regex_replace('^org.', '') }}
-          driver-xa-datasource-class-name: \{{ driver.class_name }}
-          driver-module-name: \{{ driver.name }}
+        {{ driver.name | regex_replace('^org.', '') }}:
+          driver-name: {{ driver.name | regex_replace('^org.', '') }}
+          driver-xa-datasource-class-name: {{ driver.class_name }}
+          driver-module-name: {{ driver.name }}
 {% endfor %}
 {% endif %}
 ----
@@ -671,8 +671,8 @@ The variable provided by the default `playbook` does not contain the JDBC driver
 [source, yaml]
 ----
 jdbc_drivers:
-  - \{ version: "{{ postgres_driver_version }}", name: 'org.postgresql', jar_file: "postgresql-{{ postgres_driver_version }}.jar", url: "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/{{ postgres_driver_version }}/postgresql-{{ postgres_driver_version }}.jar", class_name: 'org.postgresql.xa.PGXADataSource' }
-  - \{ version: "{{ mariadb_driver_version }}", name: 'org.mariadb', jar_file: "mariadb-java-client-{{ mariadb_driver_version }}.jar", url: "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/{{ mariadb_driver_version }}/mariadb-java-client-{{ mariadb_driver_version }}.jar", class_name: 'org.mariadb.jdbc.Driver' }
+  - { version: "{{ postgres_driver_version }}", name: 'org.postgresql', jar_file: "postgresql-{{ postgres_driver_version }}.jar", url: "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/{{ postgres_driver_version }}/postgresql-{{ postgres_driver_version }}.jar", class_name: 'org.postgresql.xa.PGXADataSource' }
+  - { version: "{{ mariadb_driver_version }}", name: 'org.mariadb', jar_file: "mariadb-java-client-{{ mariadb_driver_version }}.jar", url: "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/{{ mariadb_driver_version }}/mariadb-java-client-{{ mariadb_driver_version }}.jar", class_name: 'org.mariadb.jdbc.Driver' }
 ----
 
 We can now run again the `playbook` and simply check, after it ran successfully, that the drivers have been properly added:
@@ -682,7 +682,7 @@ We can now run again the `playbook` and simply check, after it ran successfully,
 [standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=mariadb:read-resource
 {
     "outcome" => "success",
-    "result" => \{
+    "result" => {
         "deployment-name" => undefined,
         "driver-class-name" => undefined,
         "driver-datasource-class-name" => undefined,
@@ -699,7 +699,7 @@ We can now run again the `playbook` and simply check, after it ran successfully,
 [standalone@localhost:9990 /] /subsystem=datasources/jdbc-driver=postgresql:read-resource
 {
     "outcome" => "success",
-    "result" => \{
+    "result" => {
         "deployment-name" => undefined,
         "driver-class-name" => undefined,
         "driver-datasource-class-name" => undefined,
@@ -728,10 +728,10 @@ wildfly-configuration:
         DefaultDS:
           enabled: true
           jndi-name: java:jboss/datasources/DefaultDS
-          max-pool-size: \{{ default_ds_max_size }}
-          min-pool-size: \{{ default_ds_min_size }}
+          max-pool-size: {{ default_ds_max_size }}
+          min-pool-size: {{ default_ds_min_size }}
           connection-url: "jdbc:{% if ansible_distribution_major_version == 9 %}mariadb{% else %}postgresql{% endif %}://localhost/default_ds"
-          driver-name: \{% if ansible_distribution_major_version == 9 %}mariadb{% else %}postgresql{% endif %}
+          driver-name: {% if ansible_distribution_major_version == 9 %}mariadb{% else %}postgresql{% endif %}
 ----
 
 == Conclusion

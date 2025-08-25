@@ -3,8 +3,8 @@ layout: guide
 ---
 = Securing the WildFly Management Console with OpenID Connect
 :summary: Learn how to secure the WildFly management console with the Keycloak OpenID provider.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 15
 
 You can secure the WildFly Management Console with OpenID Connect (OIDC) using the Keycloak
@@ -13,10 +13,9 @@ access the console, they will be redirected to the Keycloak OpenID provider's lo
 authentication, the user will then be redirected back to the WildFly Management Console. This guide
 explains how to configure this.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 * https://www.keycloak.org/guides#getting-started[Keycloak]
 
-{|
 == Start Keycloak
 
 This guide will be making use of Keycloak as our OpenID provider.
@@ -130,4 +129,3 @@ documentation.
 * https://www.keycloak.org/guides#getting-started[Getting Started with Keycloak]
 * https://www.keycloak.org/docs/latest/server_admin/index.html[Keycloak Server Administration Guide]
 * <<security-oidc-openshift.adoc#security-oidc-openshift,Securing WildFly Apps with OIDC on OpenShift>>
-|}

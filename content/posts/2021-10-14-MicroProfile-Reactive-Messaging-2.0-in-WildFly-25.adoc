@@ -32,7 +32,7 @@ The core of the application is a https://github.com/kabir/blog-reactive-messagin
 
 [source, java]
 ----
-public class MessagingFilter extends HttpFilter \{
+public class MessagingFilter extends HttpFilter {
     @Inject
     @Channel("from-filter")
     Emitter<PageVisit> messagingEmitter;
@@ -42,7 +42,7 @@ FIrst we have field injected via CDI of type `Emitter`, called `messagingEmitter
 ----
 
     @Override
-    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException \{
+    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String user = getUsername(request);
         String address = request.getRemoteAddr();
         String page = Paths.get(request.getRequestURI()).getFileName().toString();
@@ -67,9 +67,9 @@ Getting the user name is simulated in the following method which randomly choose
 [source, java]
 ----
 
-    private String getUsername(HttpServletRequest servletRequest) \{
+    private String getUsername(HttpServletRequest servletRequest) {
         // Pretend we're looking up the authenticated user
-        switch ((int)Math.round(Math.random() * 3)) \{
+        switch ((int)Math.round(Math.random() * 3)) {
             case 0:
                 return "bob";
             case 1:
@@ -89,15 +89,15 @@ Next, we have an `ApplicationScoped` CDI bean called https://github.com/kabir/bl
 [source, java]
 ----
 @ApplicationScoped
-public class MessagingBean \{
+public class MessagingBean {
     @Inject
     @Channel("special")
     Emitter<PageVisit> special;
 
     @Incoming("from-filter")
     @Outgoing("kafka-visits")
-    public Message<PageVisit> fromFilter(PageVisit pageVisit) \{
-        if (pageVisit.getPage().equals("3.html")) \{
+    public Message<PageVisit> fromFilter(PageVisit pageVisit) {
+        if (pageVisit.getPage().equals("3.html")) {
             special.send(pageVisit);
         }
         Message<PageVisit> msg = Message.of(pageVisit);
@@ -111,7 +111,7 @@ public class MessagingBean \{
     }
 
     @Incoming("special")
-    public void special(PageVisit pageVisit) \{
+    public void special(PageVisit pageVisit) {
         System.out.println("===> " + pageVisit.getUserName() + " visited " + pageVisit.getPage());
     }
 }
@@ -174,15 +174,15 @@ The https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src
 [source, java]
 ----
 
-    public static void main(String[] args) throws Exception \{
-        try (DataStoreWrapper dsw = new DataStoreWrapper()) \{
+    public static void main(String[] args) throws Exception {
+        try (DataStoreWrapper dsw = new DataStoreWrapper()) {
             dsw.init();
             Map<String, String> lastPagesByUser = Collections.emptyMap();
-            try \{
+            try {
                 dsw.readLastVisitedPageByUsers();
-            } catch (InvalidStateStoreException e) \{
+            } catch (InvalidStateStoreException e) {
             }
-            if (lastPagesByUser.size() == 0) \{
+            if (lastPagesByUser.size() == 0) {
                 // It seems that although the stream is reported as RUNNING
                 // in dsw.init() it still needs some time to settle. Until that
                 // happens there is no data or we get InvalidStateStoreException
@@ -201,7 +201,7 @@ Looking at the https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/
 [source, java]
 ----
 @ApplicationScoped
-public class DataStoreWrapper implements Closeable \{
+public class DataStoreWrapper implements Closeable {
     private volatile KafkaStreams streams;
 ----
 We will initialise this streams instance in the `init()` method below.
@@ -209,14 +209,14 @@ We will initialise this streams instance in the `init()` method below.
 ----
 
     @Inject
-    private ConfigSupplier configSupplier = new ConfigSupplier() \{
+    private ConfigSupplier configSupplier = new ConfigSupplier() {
         @Override
-        public String getBootstrapServers() \{
+        public String getBootstrapServers() {
             return "localhost:9092";
         }
 
         @Override
-        public String getTopicName() \{
+        public String getTopicName() {
             return "page-visits";
         }
     };
@@ -225,15 +225,15 @@ The `configSupplier` field is inititalised to an implementation of https://githu
 [source, java]
 ----
 
-    DataStoreWrapper() \{
+    DataStoreWrapper() {
     }
 ----
 Next, we will take a look at the `init()` method where we set up the ability to query the stream.
 [source, java]
 ----
     @PostConstruct
-    void init() \{
-        try \{
+    void init() {
+        try {
 
             Properties props = new Properties();
             props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-pipe");
@@ -265,9 +265,9 @@ Now we create a https://kafka.apache.org/28/javadoc/org/apache/kafka/streams/kst
 ----
             final CountDownLatch startLatch = new CountDownLatch(1);
             final AtomicReference<KafkaStreams.State> state = new AtomicReference<>();
-            streams.setStateListener((newState, oldState) -> \{
+            streams.setStateListener((newState, oldState) -> {
                 state.set(newState);
-                switch (newState) \{
+                switch (newState) {
                     case RUNNING:
                     case ERROR:
                     case PENDING_SHUTDOWN:
@@ -278,15 +278,15 @@ Now we create a https://kafka.apache.org/28/javadoc/org/apache/kafka/streams/kst
             startLatch.await(10, TimeUnit.SECONDS);
             System.out.println("Stream started");
 
-            if (state.get() != KafkaStreams.State.RUNNING) \{
+            if (state.get() != KafkaStreams.State.RUNNING) {
                 throw new IllegalStateException();
             }
 ----
 Finally, we start the stream and wait for it to start.
 [source, java]
 ----
-        } catch (Exception e) \{
-            if (this.streams != null) \{
+        } catch (Exception e) {
+            if (this.streams != null) {
                 this.streams.close();
             }
             throw new RuntimeException(e);
@@ -298,7 +298,7 @@ The `readLastVisitedPageByUsers()` method uses the `StateStore` we set up earlie
 [source, java]
 ----
 
-    public Map<String, String> readLastVisitedPageByUsers() \{
+    public Map<String, String> readLastVisitedPageByUsers() {
         StoreQueryParameters<ReadOnlyKeyValueStore<String, PageVisit>> sqp = StoreQueryParameters.fromNameAndType("test-store", QueryableStoreTypes.keyValueStore());
         final ReadOnlyKeyValueStore<String, PageVisit> store = this.streams.store(sqp);
 
@@ -309,7 +309,7 @@ The `readLastVisitedPageByUsers()` method uses the `StateStore` we set up earlie
     }
 
     @PreDestroy
-    public void close() \{
+    public void close() {
         this.streams.close();
     }
 
@@ -341,17 +341,17 @@ We then create an implementation of the https://github.com/kabir/blog-reactive-m
 [source, java]
 ----
 @ApplicationScoped
-public class MpConfigConfigSupplier implements ConfigSupplier \{
+public class MpConfigConfigSupplier implements ConfigSupplier {
     @Inject
     Config config;
 
     @Override
-    public String getBootstrapServers() \{
+    public String getBootstrapServers() {
         return config.getValue("kafka.bootstrap.servers", String.class);
     }
 
     @Override
-    public String getTopicName() \{
+    public String getTopicName() {
         return config.getValue("kafka.topic", String.class);
     }
 }
@@ -360,11 +360,11 @@ Our https://github.com/kabir/blog-reactive-messaging-2.0/blob/master/streams/src
 [source, java]
 ----
 @ApplicationScoped
-public class DataStoreWrapper implements Closeable \{
+public class DataStoreWrapper implements Closeable {
     private volatile KafkaStreams streams;
 
     @Inject
-    private ConfigSupplier configSupplier = new ConfigSupplier() \{
+    private ConfigSupplier configSupplier = new ConfigSupplier() {
         // -- SNIP --
         // This implementation gets replaced by the injected MpConfigConfigSupplier
 ----
@@ -374,13 +374,13 @@ In order to be able to call this from a client, we add a simple https://github.c
 ----
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
-public class StreamsEndpoint \{
+public class StreamsEndpoint {
     @Inject
     DataStoreWrapper wrapper;
 
     @GET
     @Path("/last-visited")
-    public Map<String, String> getLastVisited() \{
+    public Map<String, String> getLastVisited() {
         return wrapper.readLastVisitedPageByUsers();
     }
 }

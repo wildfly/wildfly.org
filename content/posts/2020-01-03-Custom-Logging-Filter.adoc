@@ -28,18 +28,18 @@ matches the pattern configured on the filter.
 === Example Filter
 [source,java]
 ----
-public class ClassLoaderFilter implements Filter \{
+public class ClassLoaderFilter implements Filter {
 
     @Override
-    public boolean isLoggable(final LogRecord record) \{
+    public boolean isLoggable(final LogRecord record) {
         final ClassLoader cl = getClassLoader();
         String value;
-        if (cl instanceof ModuleClassLoader) \{
+        if (cl instanceof ModuleClassLoader) {
             value = ((ModuleClassLoader) cl).getName();
-        } else \{
+        } else {
             value = cl.toString();
         }
-        if (pattern == null || pattern.matcher(value).matches()) \{
+        if (pattern == null || pattern.matcher(value).matches()) {
             MDC.put("moduleName", value);
             return true;
         }

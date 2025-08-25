@@ -105,7 +105,7 @@ See link:/news/2015/03/13/Offline-CLI/#classloading[Modular vs Non-Modular Class
     "outcome" => "success",
     "result" => undefined,
     "server-groups" => undefined,
-    "response-headers" => \{"process-state" => "reload-required"}
+    "response-headers" => {"process-state" => "reload-required"}
 }
 ....
 
@@ -192,7 +192,7 @@ When configuring a slave host controller, configure the connection to the domain
     "outcome" => "success",
     "result" => undefined,
     "server-groups" => undefined,
-    "response-headers" => \{"process-state" => "reload-required"}
+    "response-headers" => {"process-state" => "reload-required"}
 }
 ....
 

@@ -3,22 +3,21 @@ layout: guide
 ---
 = Deploying High-Availability Messaging with WildFly and AMQ 7 on OpenShift
 :summary: Discover how to configure WildFly with AMQ 7 (ActiveMQ Artemis) on OpenShift, using a clustered, high-availability topology for reliable messaging.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 20
 
 In this guide, you will learn how to configure a WildFly server connected to a remote AMQ 7 cluster on OpenShift using operators.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 
 * Access to an OpenShift cluster (consider using the 'Self-managed' variant for a local development environment, available for free at https://developers.redhat.com/products/openshift/download[Red Hat OpenShift, window=_blank])
-* https://docs.openshift.com/container-platform/\{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI, window=_blank] tool
+* https://docs.openshift.com/container-platform/{ocp-version}/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI, window=_blank] tool
 * link:https://podman.io/[Podman, window="_blank"] (link:https://www.docker.com/[Docker, window="_blank"] is also compatible with minor adjustments)
 
 // login to OpenShift cluster
-{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+include::../../templates/partials/guides/proc-log-into-openshift-cluster.adoc[]
 
-{|
 == Install and deploy AMQ 7 using an operator
 
 To install the AMQ 7 Operator, follow the instructions in the Red Hat documentation: https://access.redhat.com/documentation/en-us/red_hat_amq_broker/7.12/html-single/deploying_amq_broker_on_openshift/index#proc-br-installing-operator-to-project-from-operatorhub_broker-ocp[Installing the Operator using OperatorHub, window=_blank]
@@ -299,4 +298,3 @@ These resources provide valuable insights and tools to optimize your WildFly and
 * https://docs.wildfly.org/wildfly-maven-plugin/releases/5.0/[WildFly Maven Plugin Documentation, window=_blank]
 * https://activemq.apache.org/components/artemis/documentation/latest/clusters.html#overview[Apache ActiveMQ Artemis Documentation - Clusters, window=_blank]
 * https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/7.4/html-single/configuring_messaging/index#clusters_overview[EAP 7.4 Messaging Clusters Overview, window=_blank]
-|}

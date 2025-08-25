@@ -3,8 +3,8 @@ layout: guide
 ---
 = TITLE OF THE GUIDE
 :summary: ONELINE EXPLANATION OF THE GUIDE
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 10
@@ -14,10 +14,9 @@ Something like:
 
 In this guide, you will learn how to setup and use Eclipse MicroProfile Config in your application.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 * Any additional prerequisites specific to this guide (eg you have completed a previous guide)
 
-{|
 == A section
 
 Lorem ipsum
@@ -38,4 +37,3 @@ MicroProfile Config provides multiple options to read the configuration from var
 
 * https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config]
 * https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration]
-|}

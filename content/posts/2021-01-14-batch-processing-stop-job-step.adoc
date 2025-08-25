@@ -42,14 +42,14 @@ different thread. And the batchlet class should be implemented to properly handl
 [source,java]
 ----
 @Named
-public class Batchlet1 implements Batchlet \{
+public class Batchlet1 implements Batchlet {
     private final AtomicBoolean toStop = new AtomicBoolean();
 
     @Override
-    public String process() throws Exception \{
+    public String process() throws Exception {
         String exitStatus = "BATCHLET1_COMPLETED";
-        while (true) \{
-            if (toStop.get()) \{
+        while (true) {
+            if (toStop.get()) {
                 exitStatus = "BATCHLET1_STOPPED";
                 break;
             }
@@ -59,7 +59,7 @@ public class Batchlet1 implements Batchlet \{
     }
 
     @Override
-    public void stop() throws Exception \{
+    public void stop() throws Exception {
         toStop.set(true);
     }
 }
@@ -96,7 +96,7 @@ restarted from where it left off.
 /deployment=numbers-chunk.war/subsystem=batch-jberet/job=numbers/execution=1:read-resource(include-runtime, recursive)
 {
     "outcome" => "success",
-    "result" => \{
+    "result" => {
         "batch-status" => "STOPPED",
         "create-time" => "2020-10-29T19:33:13.843-0400",
         "end-time" => "2020-10-29T19:33:30.258-0400",
@@ -159,12 +159,12 @@ Once the batchlet is stopped this way, the batch status of the step will be `COM
 [source,java]
 ----
 @Named
-public class Batchlet1 implements Batchlet \{
+public class Batchlet1 implements Batchlet {
     @Override
-    public String process() throws Exception \{
+    public String process() throws Exception {
         String exitStatus = "BATCHLET1_COMPLETED";
-        while (true) \{
-            if (shouldStop()) \{
+        while (true) {
+            if (shouldStop()) {
                 exitStatus = "BATCHLET1_STOPPED";
                 break;
             }
@@ -174,12 +174,12 @@ public class Batchlet1 implements Batchlet \{
         return exitStatus;
     }
 
-    private boolean shouldStop() \{
+    private boolean shouldStop() {
         return Boolean.getBoolean("job1.batchlet1.stop");
     }
 
     @Override
-    public void stop() throws Exception \{
+    public void stop() throws Exception {
         // implement stop() method to respond to incoming request
         // to stop this batchlet step and entire job execution
     }

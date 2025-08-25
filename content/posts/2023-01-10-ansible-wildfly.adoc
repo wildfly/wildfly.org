@@ -95,7 +95,7 @@ Here is the playbook we'll use to deploy our clusters. Its content is relatively
     - role: wildfly_install
   tasks:
 
-    - name: "Set up for WildFly instance \{{ item }}."
+    - name: "Set up for WildFly instance {{ item }}."
       ansible.builtin.include_role:
         name: wildfly_systemd
       vars:
@@ -446,7 +446,7 @@ In our case, we will use the jboss_cli.yml task file, which encapsulates the run
 ----
 …
   post_tasks:
-      - name: "Ensures webapp \{{ app.name }} has been retrieved from \{{ app.url }}."
+      - name: "Ensures webapp {{ app.name }} has been retrieved from {{ app.url }}."
         ansible.builtin.get_url:
           url: "{{ app.url }}"
           dest: "{{ wildfly_install_workdir }}/{{ app.name }}"
@@ -457,7 +457,7 @@ In our case, we will use the jboss_cli.yml task file, which encapsulates the run
           tasks_from: jboss_cli.yml
         vars:
           jboss_home: "{{ wildfly_home }}"
-          query: "'deploy --force \{{ wildfly_install_workdir }}/{{ app.name }}'"
+          query: "'deploy --force {{ wildfly_install_workdir }}/{{ app.name }}'"
           jboss_cli_controller_port: "{{ item }}"
         loop:
           - 9990

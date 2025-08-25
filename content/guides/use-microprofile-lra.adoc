@@ -3,14 +3,13 @@ layout: guide
 ---
 = Using MicroProfile LRA
 :summary: Learn how to use MicroProfile LRA With WildFly.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 
 In this guide, you will learn how to setup and use Eclipse MicroProfile LRA in your application.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 
-{|
 == Introduction
 
 https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html[MicroProfile Long Running
@@ -168,4 +167,3 @@ $ curl localhost:8080/lra-coordinator/lra-coordinator
 In this guide, we showed you how to configure and use the MicroProfile LRA specification in your WildFly applications.
 LRA provides a very broad feature set which we can't cover here. If you are interested in learning more, you can find
 the full specification at https://download.eclipse.org/microprofile/microprofile-lra-2.0/microprofile-lra-spec-2.0.html.
-|}

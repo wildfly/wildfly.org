@@ -158,7 +158,7 @@ Here is where the magic is happening :
 ----
 @ServerEndpoint(value = "/chatbot",
         configurator = CustomConfigurator.class)
-public class ChatBotWebSocketEndpoint \{
+public class ChatBotWebSocketEndpoint {
 
     private static final Logger logger = Logger.getLogger(ChatBotWebSocketEndpoint.class.getName());
 
@@ -182,7 +182,7 @@ public class ChatBotWebSocketEndpoint \{
 
     // It starts a Thread that notifies all sessions each second
     @PostConstruct
-    public void init() \{
+    public void init() {
     ...
     }
 ...

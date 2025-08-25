@@ -54,7 +54,7 @@ to be explitcly enabled either in the configuration XML or by using CLI operatio
 [standalone@localhost:9990 /] /subsystem=microprofile-lra-coordinator:add
 {
     "outcome" => "success",
-    "response-headers" => \{
+    "response-headers" => {
         "operation-requires-reload" => true,
         "process-state" => "reload-required"
     }
@@ -66,7 +66,7 @@ to be explitcly enabled either in the configuration XML or by using CLI operatio
 [standalone@localhost:9990 /] /subsystem=microprofile-lra-participant:add
 {
     "outcome" => "success",
-    "response-headers" => \{
+    "response-headers" => {
         "operation-requires-reload" => true,
         "process-state" => "reload-required"
     }
@@ -95,7 +95,7 @@ or 5xx error HTTP status codes the LRA will be cancelled instead.
 @LRA
 @GET
 @Path("/doInLRA")
-public Response doInLRA(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) \{
+public Response doInLRA(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
     LOG.info("Work LRA ID = " + lraId);
     ...
 ----
@@ -107,7 +107,7 @@ When LRA closes successfully, the LRA coordinator calls the completion callback 
 @Complete
 @PUT
 @Path("/complete")
-public Response complete(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) \{
+public Response complete(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
     LOG.info("Complete ID = " + lraId);
     ...
 ----
@@ -119,7 +119,7 @@ Or, in the case of LRA cancel, the compensation callback will be invoked instead
 @Compensate
 @PUT
 @Path("/compensate")
-public Response compensate(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) \{
+public Response compensate(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraId) {
     LOG.info("Compensate ID = " + lraId);
     ...
 ----

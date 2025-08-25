@@ -3,13 +3,12 @@ layout: guide
 ---
 = Configure WildFly with a Messaging (ActiveMQ Artemis) Cluster and High Availability
 :summary: Learn how to configure WildFly with a messaging (ActiveMQ Artemis) cluster and high availability
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 20
 
-{|
 In this guide you will learn how to configure two WildFly servers with messaging (integrated ActiveMQ Artemis broker)
 in a high availability topology with https://activemq.apache.org/components/artemis/documentation/latest/ha.html#shared-store[shared journal, window=_blank].
 
@@ -229,4 +228,3 @@ More information can be found in the https://activemq.apache.org/components/arte
 
 * https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.4/html-single/configuring_messaging/index#messaging-ha[Configuring Messaging guide for EAP 7.4, window=_blank]
 * https://activemq.apache.org/components/artemis/documentation/[ActiveMQ Artemis documentation, window=_blank]
-|}

@@ -3,15 +3,14 @@ layout: guide
 ---
 = Using MicroProfile Config
 :summary: Learn how to use MicroProfile Config With WildFly.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 :prerequisites-time: 10
 
 In this guide, you will learn how to setup and use Eclipse MicroProfile Config in your application.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 
-{|
 [[requirements]]
 == Configure Your App to make use of MicroProfile Config
 
@@ -133,4 +132,3 @@ MicroProfile Config provides multiple options to read the configuration from var
 
 * https://microprofile.io/specifications/microprofile-config/[Eclipse MicroProfile Config]
 * https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#MicroProfile_Config_SmallRye[MicroProfile Config Subsystem Configuration]
-|}

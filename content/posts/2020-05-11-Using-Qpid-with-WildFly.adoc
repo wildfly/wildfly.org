@@ -71,7 +71,7 @@ The example consists of two parts :  a _client_ that will send a message to the 
 This is the client code that sends a message:
 [source,java]
 --
-try (Connection connection = factory.createConnection("guest", "guest")) \{
+try (Connection connection = factory.createConnection("guest", "guest")) {
     connection.start();
     Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
     MessageProducer messageProducer = session.createProducer(queue);
@@ -84,16 +84,16 @@ The MDB code is in https://github.com/ehsavoie/qpid-example/blob/master/ejb/src/
 [source, java]
 --
 @Override
-public void onMessage(Message message) \{
+public void onMessage(Message message) {
     try (QueueConnection queueConnection = qcf.createQueueConnection("guest", "guest");
     QueueSession queueSession = queueConnection.createQueueSession(true, Session.SESSION_TRANSACTED);
-    QueueSender queueSender = queueSession.createSender(outQueue)) \{
-    if (message instanceof TextMessage) \{
+    QueueSender queueSender = queueSession.createSender(outQueue)) {
+    if (message instanceof TextMessage) {
         txtMsg = (TextMessage) message;
         msgCnt++;
         queueSender.send(message);
         queueSession.commit();
-    } else \{
+    } else {
         LOG.warnf("MDB[%d] Message of wrong type: %s", mdbID, message.getClass().getName());
     }
 }

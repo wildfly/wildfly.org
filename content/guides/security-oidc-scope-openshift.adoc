@@ -3,15 +3,15 @@ layout: guide
 ---
 = Securing WildFly Apps on OpenShift with OpenID Connect Using Additional Scope Values
 :summary: Learn how to secure applications deployed to WildFly on OpenShift with OpenID Connect using additional scope values.
-:includedir: _includes
-{#include partials/guides/attributes.adoc /}
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
 // you can override any attributes eg to lengthen the
 // time to complete the guide
 :prerequisites-time: 15
 
 WildFly 32 includes the ability to add additional scope values when securing applications using OpenID Connect (OIDC). This new feature is available at the https://docs.wildfly.org/32/Admin_Guide.html#Feature_stability_levels[Preview stability level]. https://openid.net/developers/how-connect-works/[ OpenID Connect] is an identity layer on top of the OAuth 2.0 protocol that makes it possible for a client to verify a user’s identity based on authentication that’s performed by an OpenID provider. The https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest[OpenID Connect specification] indicates that there are other scope values which may be included in the authentication request to ask permission to access additional and specific resources. This guide shows how to configure additional scope values when securing a WildFly app with OpenID Connect on OpenShift.
 
-{#include partials/guides/prerequisites.adoc /}
+include::../../templates/partials/guides/prerequisites.adoc[]
 * Access to an OpenShift cluster (try the Red Hat Developer Sandbox for free)
 
 * https://docs.openshift.com/container-platform/4.15/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI]
@@ -31,11 +31,10 @@ To obtain this example, clone the elytron-examples repository to your local mach
 git clone git@github.com:wildfly-security-incubator/elytron-examples.git
 ----
 
-{#include partials/guides/proc-log-into-openshift-cluster.adoc /}
+include::../../templates/partials/guides/proc-log-into-openshift-cluster.adoc[]
 
-{#include partials/guides/proc-start-keycloak-openshift.adoc /}
+include::../../templates/partials/guides/proc-start-keycloak-openshift.adoc[]
 
-{|
 === OpenShift Web Console
 To make sure your Keycloak server has been provisioned using the OpenShift web console, navigate to the *Topology* view in the *Developer* perspective. You can click on your *keycloak* app to check its status. Once it is running, you can click on *Open URL* and then access Keycloak’s *Administration Console*.
 
@@ -103,8 +102,7 @@ Additionally, we have used the `stability` galleon option to specify the stabili
 ----
 
 == Deploy the Example Application to WildFly on OpenShift
-|}
-{#include partials/guides/proc-install-or-update-helm.adoc /}
+include::../../templates/partials/guides/proc-install-or-update-helm.adoc[]
 
 We can deploy our example application to WildFly on OpenShift using the WildFly Helm Chart:
 
@@ -115,9 +113,8 @@ helm install oidc-app -f /PATH/TO/ELYTRON/EXAMPLES/elytron-oidc-client-scope/cha
 
 Notice that this command specifies the file we updated, `helm.yaml`, that contains the values needed to build and deploy our application.
 
-{#include partials/guides/proc-follow-build-and-deployment-openshift.adoc /}
+include::../../templates/partials/guides/proc-follow-build-and-deployment-openshift.adoc[]
 
-{|
 == Behind the Scenes
 While our application is building, let’s take a closer look at our application.
 
@@ -277,4 +274,3 @@ This example has demonstrated how to secure a WildFly application deployed to Op
 * https://www.keycloak.org/docs/latest/securing_apps/#_oidc[Using OpenID Connect to secure applications and services]
 * https://docs.wildfly.org/32/Admin_Guide.html#Feature_stability_levels[Feature stability levels]
 * https://docs.wildfly.org/32/Galleon_Guide.html#WildFly_Galleon_feature-packs[WildFly Galleon feature-packs]
-|}

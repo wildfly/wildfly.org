@@ -48,8 +48,8 @@ A simple HTTP endpoint
 ----
 $undertow
     .onGet("/hello",
-        \{headers: \{"content-type": "text/plain"}},
-        [function ($exchange) \{
+        {headers: {"content-type": "text/plain"}},
+        [function ($exchange) {
             return "Hello World";
         }])
 ----
@@ -72,9 +72,9 @@ Now lets try a simple JSON REST endpoint:
 ----
 $undertow
     .onGet("/rest/endpoint",
-        \{headers: \{"content-type": "application/json"}},
-        [function ($exchange) \{
-            return \{message: 'Hello World'};
+        {headers: {"content-type": "application/json"}},
+        [function ($exchange) {
+            return {message: 'Hello World'};
         }])
 ----
 
@@ -88,8 +88,8 @@ datasource:
 ----
 $undertow
     .onGet("/rest/members",
-        \{headers: \{"content-type": "application/json"}},
-        ['jndi:java:jboss/datasources/ExampleDS', function ($exchange, db) \{
+        {headers: {"content-type": "application/json"}},
+        ['jndi:java:jboss/datasources/ExampleDS', function ($exchange, db) {
             return db.select("select * from members");
         }])
 ----
@@ -132,18 +132,18 @@ Lets address those issues:
 $undertow
     .alias('db', 'jndi:java:jboss/datasources/ExampleDS')
     .onGet("/rest/members",
-        \{headers: \{"content-type": "application/json"}},
-        ['db', function ($exchange, db) \{
+        {headers: {"content-type": "application/json"}},
+        ['db', function ($exchange, db) {
             return db.select("select * from member");
         }]);
 
 
 var db = $undertow.resolve("db");
-try \{
+try {
     db.query("create table member (id serial primary key not null, name varchar(100), email varchar(100) unique, phone_number varchar(100))");
     db.query("insert into member (id, name, email, phone_number) values (0, 'John Smith', 'john.smith@mailinator.jsp.com', '2125551212')");
     db.query("insert into member (id, name, email, phone_number) values (1, 'Stuart Douglas', 'stuart@notmyrealaddress.com', '0487694837')");
-} catch(e) \{
+} catch(e) {
     print("DB create failed")
 }
 ----
@@ -165,9 +165,9 @@ value of your function as the data. An example is shown below:
 ----
 $undertow
     .onGet("/hello",
-        \{template: 'hello.txt', headers: \{"content-type": "text/plain"}},
-        [function ($exchange) \{
-            return \{name: 'Stuart'};
+        {template: 'hello.txt', headers: {"content-type": "text/plain"}},
+        [function ($exchange) {
+            return {name: 'Stuart'};
         }]);
 ----
 
@@ -175,7 +175,7 @@ And in `hello.txt`:
 
 [source]
 ----
-Hello \{{name}}
+Hello {{name}}
 ----
 
 Handling POST requests
@@ -191,18 +191,18 @@ An example of all three approaches is shown below:
 ----
 $undertow
     .onPost("/string",
-        \{headers: \{"content-type": "text/plain"}},
-        ['$entity', function ($exchange, entity) \{
+        {headers: {"content-type": "text/plain"}},
+        ['$entity', function ($exchange, entity) {
             return "You posted: " + entity;
         }])
     .onPost("/json",
-        \{headers: \{"content-type": "text/plain"}},
-        ['$entity:json', function ($exchange, entity) \{
+        {headers: {"content-type": "text/plain"}},
+        ['$entity:json', function ($exchange, entity) {
                 return "You posted: " + entity['name'];
         }])
     .onPost("/form",
-        \{headers: \{"content-type": "text/plain"}},
-        ['$entity:form', function ($exchange, entity) \{
+        {headers: {"content-type": "text/plain"}},
+        ['$entity:form', function ($exchange, entity) {
             return "You posted: " + entity.get('name');
         }])
 ----
@@ -218,5 +218,3 @@ At the moment the following additional features are planned:
 
 This feature is very new, and will evolve over the coming months based on user feedback. If you want to contribute, or have
 any suggestions/comments head to undertow-dev@lists.jboss.org.
-
-

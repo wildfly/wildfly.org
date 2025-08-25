@@ -2,7 +2,6 @@
 layout: base
 ---
 <div class="grid-wrapper events">
-  {|
   <div class="grid__item width-10-12 width-12-12-m">
     <h1>Wild<strong>Fly</strong> Events</h1>
     <h2 class="page-subtitle">
@@ -22,6 +21,7 @@ layout: base
         </tr></tbody>
       </table>
     </div>
+    {|
     <script type="text/javascript">
       const options = {
         src: 'wildflyorg%40gmail.com',
@@ -35,8 +35,8 @@ layout: base
       const iframe = `<iframe src="${url}" style="${style}" ${attributes}></iframe>`;
       document.getElementById('wildfly-org-calendar-container').innerHTML = iframe;
     </script>
+    |}
   </div>
-  |}
 
   <div class="grid__item events-toc">
     <h3>On this page</h3>
@@ -118,4 +118,3 @@ layout: base
     {/for}
   </div>
 </div>
-
