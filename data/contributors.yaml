@@ -62,6 +62,15 @@
         key: 9B53ED5D2441059B1646122E1F56A2773E9BFEE1
         link: https://keyserver.ubuntu.com/pks/lookup?search=9b53ed5d2441059b1646122e1f56a2773e9bfee1&fingerprint=on&op=index
         fingerprint: 9B53 ED5D 2441 059B 1646  122E 1F56 A277 3E9B FEE1
+- contributor: pesilva
+  name: "Pedro Henrique de Oliveira Silva"
+  bio: "Pedro is responsible for the Prospero project."
+  github: pedro-hos
+  signing:
+      - id: ed25519/0x80C9A5BA
+        key: 51F8871824A19B8C3EE6708AC34DC24F80C9A5BA
+        link: https://keys.openpgp.org/vks/v1/by-fingerprint/51F8871824A19B8C3EE6708AC34DC24F80C9A5BA
+        fingerprint: 51F8 8718 24A1 9B8C 3EE6 708A C34D C24F 80C9 A5BA
 - contributor: pferraro
   name: "Paul Ferraro"
   bio: "Paul Ferraro is responsible for the clustering functionality of the WildFly application server project."
