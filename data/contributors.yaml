@@ -112,7 +112,7 @@
   bio: "Farah is a software engineer working on WildFly."
   github: fjuma
   signing:
-    - id: rsa4096/EA82ABA8
-      key: 9DD927BDDC3CF8C24163CB7B5D6612D4EA82ABA8
-      link: https://keys.openpgp.org/vks/v1/by-fingerprint/9DD927BDDC3CF8C24163CB7B5D6612D4EA82ABA8
-      fingerprint: 9DD9 27BD DC3C F8C2 4163  CB7B 5D66 12D4 EA82 ABA8
+    - id: rsa4096/5ADC5697
+      key: AAAC4F7ECBC08A989AF76BADA599A3FA5ADC5697
+      link: https://keys.openpgp.org/vks/v1/by-fingerprint/AAAC4F7ECBC08A989AF76BADA599A3FA5ADC5697
+      fingerprint: AAAC 4F7E CBC0 8A98 9AF7  6BAD A599 A3FA 5ADC 5697
