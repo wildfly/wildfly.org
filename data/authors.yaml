@@ -167,6 +167,12 @@
   location: "Boston, USA"
   occupation: "Principal Software Engineer"
   avatar: pferraro.png
+- id: rhusar
+  name: Radoslav Husar
+  location: Bohemia
+  occupation: Software Developer
+  twitter: radoslavhusar
+  avatar: rhusar.jpg
 - id: "scottmarlow"
   name: "Scott Marlow"
   location: "United States"
@@ -258,7 +264,6 @@
   location: "Sao Paulo, Brazil"
   occupation: "Principal Software Engineer"
   avatar: frainone.jpg
-  bio: "https://github.com/fl4via"
 - id: "gaol"
   name: "Lin Gao"
   location: "Beijing"
