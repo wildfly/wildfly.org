@@ -2,6 +2,7 @@
   version_shortname: 37.0.1.Final
   date: 2025-09-04
   qualifier: Final
+  gpg_key: rsa4096/5ADC5697
   link:
     - name: WildFly Distribution
       items:
@@ -9,20 +10,28 @@
           url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final.zip
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final.zip.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final.zip.asc
         - format: tgz
           url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final.tar.gz
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final.tar.gz.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final.tar.gz.asc
     - name: WildFly Preview Distribution
       items:
         - format: zip
           url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-preview-37.0.1.Final.zip
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-preview-37.0.1.Final.zip.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-preview-37.0.1.Final.zip.asc
         - format: tgz
           url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-preview-37.0.1.Final.tar.gz
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-preview-37.0.1.Final.tar.gz.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-preview-37.0.1.Final.tar.gz.asc
     - name: Application Server Source Code
       licence: AL
       items:
@@ -30,10 +39,14 @@
           url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final-src.zip
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final-src.zip.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final-src.zip.asc
         - format: tgz
           url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final-src.tar.gz
           checksum: SHA-1
           checksum_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final-src.tar.gz.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/37.0.1.Final/wildfly-37.0.1.Final-src.tar.gz.asc
     - name: Quick Start Source Code
       licence: AL
       items:
