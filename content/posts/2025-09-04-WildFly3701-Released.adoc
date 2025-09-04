@@ -1,0 +1,50 @@
+---
+layout: post
+title: "WildFly 37.0.1 is released!"
+aliases: [/news/2025/09/04/WildFly3701-Released/]
+date: 2025-09-04
+tags: announcement release
+synopsis: WildFly 37.0.1.Final is now available for download.
+author: fjuma
+---
+
+WildFly 37.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+I am pleased to announce that the WildFly 37.0.1.Final release is now available for download.
+
+The following issues were resolved in 37.0.1:
+
+== Bugs
+
+* [https://issues.redhat.com/browse/WFLY-20787[WFLY-20787]] - java:comp/UserTransaction resource not found during CDI Startup event
+
+== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFLY-20808[WFLY-20808]] - Upgrade wildfly-clustering to 7.0.12.Final
+* [https://issues.redhat.com/browse/WFLY-20832[WFLY-20832]] - [CVE-2025-7962] org.eclipse.angus:angus-mail from 2.0.3 to 2.0.4
+* [https://issues.redhat.com/browse/WFLY-20841[WFLY-20841]] - Upgrade to jboss-parent 50; drop pom settings now provided by JBoss Parent
+* [https://issues.redhat.com/browse/WFLY-20846[WFLY-20846]] - [CVE-2025-55163] Upgrade Netty to 4.1.124.Final
+* [https://issues.redhat.com/browse/WFLY-20848[WFLY-20848]] - Upgrade wildfly-bom-builder-plugin to 2.0.9
+* [https://issues.redhat.com/browse/WFLY-20856[WFLY-20856]] - Upgrade Apache CXF to 4.0.9
+* [https://issues.redhat.com/browse/WFLY-20859[WFLY-20859]] - Upgrade Hibernate ORM to 6.6.26
+* [https://issues.redhat.com/browse/WFLY-20877[WFLY-20877]] - Upgrade Infinispan to 15.2.5.Final
+* [https://issues.redhat.com/browse/WFLY-20878[WFLY-20878]] - Upgrade JGroups to 5.4.9.Final
+* [https://issues.redhat.com/browse/WFLY-20880[WFLY-20880]] - Upgrade wildfly-core to 29.0.1.Final
+
+The following issues were also resolved in the version of WildFly Core contained within this release:
+
+== Bugs
+
+* [https://issues.redhat.com/browse/WFCORE-7319[WFCORE-7319]] - Maven warning: found duplicate declaration of plugin org.apache.maven.plugins:maven-gpg-plugin
+
+== Tasks
+
+* [https://issues.redhat.com/browse/WFCORE-7321[WFCORE-7321]] - Replace wildfly-component-matrix-plugin with wildfly-bom-builder-plugin
+
+== Component Upgrades
+
+* [https://issues.redhat.com/browse/WFCORE-7306[WFCORE-7306]] - Upgrade commons-lang3 to 3.18 (relates to CVE-2025-48924)
+* [https://issues.redhat.com/browse/WFCORE-7330[WFCORE-7330]] - Upgrade wildfly-bom-builder-plugin to 2.0.9
+* [https://issues.redhat.com/browse/WFCORE-7342[WFCORE-7342]] - Upgrade wildfly-bom-builder-plugin to 2.0.10
+
+Enjoy!
