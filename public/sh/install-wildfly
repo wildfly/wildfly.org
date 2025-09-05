@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+
+REPO="wildfly/wildfly"
+
+if [ -n "${WILDFLY_VERSION}" ]; then
+  echo "🔍 Fetching ${WILDFLY_VERSION} release from GitHub..."
+else
+  echo "🔍 Fetching latest release from GitHub..."
+  echo "💡 To install another version of WildFly, you can use the WILDFLY_VERSION environment variable."
+  WILDFLY_VERSION=$(curl -s https://api.github.com/repos/$REPO/releases/latest \
+    | grep "tag_name" \
+    | cut -d '"' -f 4)
+fi
+url="https://github.com/$REPO/releases/download/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz"
+
+echo "⬇️ Downloading $url..."
+curl -sLf -o "wildfly.tgz" $url
+if [ $? -ne 0 ]; then
+  echo "❌ Error downloading WildFly from $url" 1>&2
+  exit $retval
+fi
+
+echo "🔒 Verifying checksum..."
+SHA1SUM=$(curl -sLf ${url}.sha1)
+ACTUAL_SHA1=$(sha1sum wildfly.tgz |  cut -d ' ' -f 1)
+if [ "$ACTUAL" != "$EXPECTED" ]; then
+  echo "❌ Checksum failed" 1>&2
+  exit 1
+fi
+
+echo "📦 Extracting WildFly..."
+tar zxf ./wildfly.tgz
+rm ./wildfly.tgz
+rm -rf wildfly
+
+echo "🚀 Installing to $(pwd)/wildfly"
+mv wildfly-$WILDFLY_VERSION wildfly
+
+echo "💡 You can use the JBOSS_HOME environment variable:"
+echo "      export JBOSS_HOME=$(pwd)/wildfly"
+
+version=$(./wildfly/bin/jboss-cli.sh  --commands="embed-server,:read-attribute(name=product-version)" | grep result | cut -d '"' -f 4)
+echo "✅ Installation of WildFly $version complete!"
