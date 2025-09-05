@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+
+REPO="wildfly/wildfly-glow"
+
+if [ -n "${GLOW_VERSION}" ]; then
+  echo "🔍 Fetching ${GLOW_VERSION} release from GitHub..."
+  url="https://github.com/$REPO/releases/download/$GLOW_VERSION/wildfly-glow-$GLOW_VERSION.zip"
+else
+  echo "🔍 Fetching latest release from GitHub..."
+  url=$(curl -s https://api.github.com/repos/$REPO/releases/latest \
+    | grep "browser_download_url" \
+    | cut -d '"' -f 4)
+fi
+
+if [ -z "$url" ]; then
+  echo "❌ Could not find a release asset to download."
+  exit 1
+fi
+
+echo "⬇️ Downloading $url..."
+curl -sLf -o "wildfly-glow.zip" $url
+if [ $? -ne 0 ]; then
+  echo "❌ Error downloading WildFly Glow from $url" 1>&2
+  exit $retval
+fi
+
+echo "📦 Extracting WildFly Glow..."
+unzip -q "./wildfly-glow.zip" -d .
+# detect extracted directory (e.g., wildlfy-glow-1.3.0.Final)
+DIR=$(unzip -Z -1 "./wildfly-glow.zip" |head -n1)
+rm ./wildfly-glow.zip
+# remove existing directory
+rm -rf wildfly-glow
+
+echo "🚀 Installing to $(pwd)/wildfly-glow"
+mv $DIR wildfly-glow
+
+echo "💡 To install shell command completion, you can run:"
+echo "      source <(./wildfly-glow/wildfly-glow completion)"
+GLOW_VERSION=$(./wildfly-glow/wildfly-glow --version)
+echo "✅ Installation of WildFly Glow $GLOW_VERSION complete!"
