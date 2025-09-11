@@ -1,0 +1,21 @@
+---
+layout: post
+title: "WildFly Community Calls, starting on Thursday Sept. 18th"
+date: 2025-09-11
+tags: announcement
+synopsis: WildFly will hold community calls every other week. The first one will be held on Thursday, Sept. 18th
+author: jmesnil
+---
+
+Starting next Thursday , Sept 18^th^, WildFly will hold _Community calls_ open to any community members -- users and developers alike.
+
+These biweekly calls are an opportunity to meet and discuss about https://wildfly.org/[WildFly], its community, and its development.
+
+All information to join the call is published in the https://www.wildfly.org/events/#calendar[WildFly Calendar].
+
+We prepared the https://docs.google.com/document/d/1kjaMGFGtL3MPY58UCJMojLlTzl335DUm1L-P9lYk2HY/edit?tab=t.0#heading=h.gzras2odblrf[agenda] in advance.
+There is also a https://docs.google.com/document/d/1kjaMGFGtL3MPY58UCJMojLlTzl335DUm1L-P9lYk2HY/edit?tab=t.2gtt8vv7bb9i#heading=h.auc5xf2lxjbq[tab] to suggest topics for future meetings. 
+
+For anyone that can not attend the call, we will upload their recordings on our https://www.youtube.com/@WildFlyAS[YouTube channel] so that you can watch them at your own leisure.
+
+See you on Thursday!
