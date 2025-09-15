@@ -162,11 +162,22 @@
   bio: "Jessica is a Software Engineering Intern at Red Hat, working on the WildFly Elytron team."
   emailhash: "aba64bbfde66646d5b5bc40d23b7e0de"
   #twitter: "Racer_77"
+- id: "pesilva"
+  name: "Pedro Hos"
+  location: "São Paulo, Brazil"
+  occupation: "Senior Software Engineer"
+  avatar: pesilva.png
 - id: "pferraro"
   name: "Paul Ferraro"
   location: "Boston, USA"
   occupation: "Principal Software Engineer"
   avatar: pferraro.png
+- id: rhusar
+  name: Radoslav Husar
+  location: Bohemia
+  occupation: Software Developer
+  twitter: radoslavhusar
+  avatar: rhusar.jpg
 - id: "scottmarlow"
   name: "Scott Marlow"
   location: "United States"
@@ -258,7 +269,6 @@
   location: "Sao Paulo, Brazil"
   occupation: "Principal Software Engineer"
   avatar: frainone.jpg
-  bio: "https://github.com/fl4via"
 - id: "gaol"
   name: "Lin Gao"
   location: "Beijing"

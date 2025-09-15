@@ -62,6 +62,15 @@
         key: 9B53ED5D2441059B1646122E1F56A2773E9BFEE1
         link: https://keyserver.ubuntu.com/pks/lookup?search=9b53ed5d2441059b1646122e1f56a2773e9bfee1&fingerprint=on&op=index
         fingerprint: 9B53 ED5D 2441 059B 1646  122E 1F56 A277 3E9B FEE1
+- contributor: pesilva
+  name: "Pedro Henrique de Oliveira Silva"
+  bio: "Pedro is responsible for the Prospero project."
+  github: pedro-hos
+  signing:
+      - id: ed25519/0x80C9A5BA
+        key: 51F8871824A19B8C3EE6708AC34DC24F80C9A5BA
+        link: https://keys.openpgp.org/vks/v1/by-fingerprint/51F8871824A19B8C3EE6708AC34DC24F80C9A5BA
+        fingerprint: 51F8 8718 24A1 9B8C 3EE6 708A C34D C24F 80C9 A5BA
 - contributor: pferraro
   name: "Paul Ferraro"
   bio: "Paul Ferraro is responsible for the clustering functionality of the WildFly application server project."
@@ -71,6 +80,15 @@
         key: 5ED7CDF9BA92540C9C22BD1D7721DC87C53F6469
         link: https://keys.openpgp.org/vks/v1/by-fingerprint/5ED7CDF9BA92540C9C22BD1D7721DC87C53F6469
         fingerprint: 5ED7 CDF9 BA92 540C 9C22  BD1D 7721 DC87 C53F 6469
+- contributor: rhusar
+  name: Radoslav Husar
+  bio: Radoslav Husar is a software engineer at IBM working on the WildFly project, focusing on clustering subsystems and maintaining integrations such as MicroProfile Fault Tolerance. He also leads the mod_cluster project.
+  github: rhusar
+  signing:
+    - id: rsa4096/0E4B8C58
+      key: 5F6CFC79F85E869F663778A4C295F5C90E4B8C58
+      link: https://keys.openpgp.org/vks/v1/by-fingerprint/5F6CFC79F85E869F663778A4C295F5C90E4B8C58
+      fingerprint: 5F6C FC79 F85E 869F 6637  78A4 C295 F5C9 0E4B 8C58
 - contributor: yborgess
   name: "Yeray Borges"
   bio: "Yeray Borges works at Red Hat on the WildFly project. He maintains WildFly Core and WildFly Operator."
@@ -112,7 +130,7 @@
   bio: "Farah is a software engineer working on WildFly."
   github: fjuma
   signing:
-    - id: rsa4096/EA82ABA8
-      key: 9DD927BDDC3CF8C24163CB7B5D6612D4EA82ABA8
-      link: https://keys.openpgp.org/vks/v1/by-fingerprint/9DD927BDDC3CF8C24163CB7B5D6612D4EA82ABA8
-      fingerprint: 9DD9 27BD DC3C F8C2 4163  CB7B 5D66 12D4 EA82 ABA8
+    - id: rsa4096/5ADC5697
+      key: AAAC4F7ECBC08A989AF76BADA599A3FA5ADC5697
+      link: https://keys.openpgp.org/vks/v1/by-fingerprint/AAAC4F7ECBC08A989AF76BADA599A3FA5ADC5697
+      fingerprint: AAAC 4F7E CBC0 8A98 9AF7  6BAD A599 A3FA 5ADC 5697
