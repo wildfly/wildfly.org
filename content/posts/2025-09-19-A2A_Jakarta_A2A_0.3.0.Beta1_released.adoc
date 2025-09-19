@@ -34,13 +34,15 @@ A simple example showing how to package an agent for use with both transports ca
 Rather than going into a full example here, the starting point is to include one or both of the following dependencies in your application:
 * `org.wildfly.a2a:a2a-java-sdk-jakarta-jsonrpc:0.3.0.Beta1` - to enable the `JSON-RPC` protocol
 * `org.wildfly.a2a:a2a-java-sdk-jakarta-grpc:0.3.0.Beta1` - to enable the `gRPC` protocol.
-* `org.wildfly.a2a:a2a-java-sdk-jakarta-rest:0.3.0.Beta1` - to enable the `gRPC` protocol.
+* `org.wildfly.a2a:a2a-java-sdk-jakarta-rest:0.3.0.Beta1` - to enable the `HTTP+JSON` protocol.
 
 The https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/tree/main/examples/simple[simple example] provides more guidance for how to manage the dependencies. Additionally, you need to provide CDI beans which provide the `AgentCard` and `AgentExecutor` implementations for your Agent as per the A2A specification.
 
-Note that the simple example is more of a "Hello world" type application focussed on how to package your application for use with the A2A Java SDK for Jakarta.
+Note that the simple example is more of a "Hello world" type application focused on how to package your application for use with the A2A Java SDK for Jakarta.
 
-Once you have packaged your application, see the examples in the https://github.com/a2aproject/a2a-java/tree/main/examples/helloworld[A2A Java SDK] repository, and the https://github.com/a2aproject/a2a-samples/tree/main/samples/java/agents[Java samples in the a2a-samples] repository for how to actually implement agents that communicate with each other. You can then, for example, try to replace one of those agents with one running on WildFly.
+Once you have packaged your application, see the examples in the https://github.com/a2aproject/a2a-java/tree/main/examples/helloworld[A2A Java SDK] repository, and the https://github.com/a2aproject/a2a-samples/tree/main/samples/java/agents[Java samples in the a2a-samples] repository for how to actually implement agents that communicate with each other.
+
+You can then, for example, try to replace one of those agents with one running on WildFly. To help with integrating LLMs in WildFly applications, we have the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature Pack] which leverages https://github.com/langchain4j/langchain4j/[Langchain4j] to interact with the LLM.
 
 For more background information about the A2A Java SDK, and the A2A Java SDK for Jakarta, see our previous blog posts. Note that the blog posts are written using various versions of the SDK, so you will likely need to make some adjustments.
 
