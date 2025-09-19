@@ -1,0 +1,60 @@
+---
+layout: post
+title:  "A2A Java SDK for Jakarta 0.3.0.Beta1 is released!"
+aliases: [/news/2025/09/19/A2A_SDK_Jakarta_0.3.0.Beta1-Released/]
+date:   2025-09-19
+tags:   announcement release generative-ai a2a agent wildfly
+author: kkhan
+description: A2A Java SDK for Jakarta 0.3.0 is released.
+---
+
+Following the https://quarkus.io/blog/quarkus-a2a-java-0-3-0-beta-release/[release] of version 0.3.0.Beta1 of the A2A Java SDK, I am excited to announce the release of the corresponding https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/tree/v0.3.0.Beta1[0.3.0.Beta1 release] of the A2A Java SDK for Jakarta.
+
+A2A stands for https://a2a-protocol.org/latest/[Agent2Agent Protocol], which is a protocol hosted under the Linux Foundation to enable seamless communication and collaboration between AI Agents implemented using any language/technology stack.
+
+The https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta[A2A Java SDK for Jakarta] consumes the http://github.com/a2aproject/a2a-java[A2A Java SDK]. The reason for the split is that the A2A Java SDK is meant to be server agnostic. While it provides an implementation for Quarkus as its reference implementation, so that it has something to run tests and the https://github.com/a2aproject/a2a-tck[A2A Protocol TCK] against, it was decided that integrations with other runtimes should be developed externally. These are listed in the 'Server integrations' section of the A2A Java SDK https://github.com/a2aproject/a2a-java?tab=readme-ov-file#server-integrations[README].
+
+== What is new
+
+The change list can be found https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/releases/tag/v0.3.0.Beta1[here].
+
+We have done a lot of reorganisation of both projects so they are more modular.
+
+Also, following some upgrades to our internal infrastructure, we are now able to deploy the artifacts to https://central.sonatype.com/search?namespace=org.wildfly.a2a[Maven Central] under the `org.wildfly.a2a` groupId.
+
+Aside from that the major new features are the inclusion of the transports introduced in version 0.3.0 of the A2A Protocol specification:
+* [`gRPC`] - This relies on the https://github.com/wildfly-extras/wildfly-grpc-feature-pack[WildFly gRPC Feature Pack].
+* [`HTTP+JSON`] - Also referred to as `REST`.
+
+We pass the TCK for both these new transports, as well as the original `JSON-RPC` transport.
+
+A simple example showing how to package an agent for use with both transports can be found https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/tree/main/examples/simple[here].
+
+== How to use
+Rather than going into a full example here, the starting point is to include one or both of the following dependencies in your application:
+* `org.wildfly.a2a:a2a-java-sdk-jakarta-jsonrpc:0.3.0.Beta1` - to enable the `JSON-RPC` protocol
+* `org.wildfly.a2a:a2a-java-sdk-jakarta-grpc:0.3.0.Beta1` - to enable the `gRPC` protocol.
+* `org.wildfly.a2a:a2a-java-sdk-jakarta-rest:0.3.0.Beta1` - to enable the `gRPC` protocol.
+
+The https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/tree/main/examples/simple[simple example] provides more guidance for how to manage the dependencies. Additionally, you need to provide CDI beans which provide the `AgentCard` and `AgentExecutor` implementations for your Agent as per the A2A specification.
+
+Note that the simple example is more of a "Hello world" type application focussed on how to package your application for use with the A2A Java SDK for Jakarta.
+
+Once you have packaged your application, see the examples in the https://github.com/a2aproject/a2a-java/tree/main/examples/helloworld[A2A Java SDK] repository, and the https://github.com/a2aproject/a2a-samples/tree/main/samples/java/agents[Java samples in the a2a-samples] repository for how to actually implement agents that communicate with each other. You can then, for example, try to replace one of those agents with one running on WildFly.
+
+For more background information about the A2A Java SDK, and the A2A Java SDK for Jakarta, see our previous blog posts. Note that the blog posts are written using various versions of the SDK, so you will likely need to make some adjustments.
+
+* https://www.wildfly.org/news/2025/08/07/Building-your-First-A2A-Agent/[Building your First A2A Agent]
+* https://quarkus.io/blog/quarkus-a2a-java-0-3-0-alpha-release/[Getting Started with Quarkus and A2A Java SDK 0.3.0]
+* https://quarkus.io/blog/quarkus-and-a2a-java-sdk/[Getting Started with Quarkus and the A2A Java SDK]
+* https://quarkus.io/blog/quarkus-a2a-java-0-3-0-beta-release/[A2A Java SDK: Support for the REST Transport is Now Here] (announcement of the 0.3.0.Beta1 release of the A2A Java SDK)
+
+
+== What is coming next?
+
+We would like to investigate if we can provide the dependencies in a nicer way so all the exclusions seen in the current version of the sample https://github.com/a2aproject/a2a-java/issues/268[are no longer required].
+
+Additionally, we will continue improving the implementations in both repositories, and of course keep up as the A2A Protocol specification evolves.
+
+
+
