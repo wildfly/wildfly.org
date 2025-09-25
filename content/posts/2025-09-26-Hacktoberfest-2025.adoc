@@ -1,0 +1,84 @@
+---
+layout: post
+title:  "Hacktoberfest 2025"
+date:   2025-09-26
+tags: Hacktoberfest, OpenSource
+author: rchakrab
+description: Your guide to participating in Hacktoberfest 2025, including general rules, rewards, and how to get involved with WildFly projects.
+---
+
+= Hacktoberfest 2025 is Here!
+
+image::/assets/img/news/hacktoberfest/hacktoberfest2025.png[Hacktoberfest 2025]
+
+It's that time of year again! https://hacktoberfest.com/[Hacktoberfest] is back, calling on developers, contributors, and open-source enthusiasts from around the globe to come together for a month-long celebration of collaboration. Whether you're a seasoned coder or just starting your journey, Hacktoberfest is the perfect opportunity to give back to the community, learn new skills, and make a real impact, one pull request at a time.
+
+== What is Hacktoberfest?
+
+Hacktoberfest is a month-long event in October that encourages Open Source contributors and developers worldwide to give back to the global tech community. It's a fantastic opportunity for the contributors to showcase their skills and get to know about other Open Source communities.
+
+To participate you simply need to:
+
+* *Register:* The first step is to sign up on the official https://hacktoberfest.com/auth/[Hacktoberfest website]. Registration is open from *September 15 to October 31*. Once you register, you'll unlock your digital badge!
+
+* *Find Projects:* You can contribute to any public project hosted on GitHub or GitLab that has the `hacktoberfest` topic. This makes it easy to find repositories that are actively looking for contributors. You can also check out the below WildFly-related projects which are already picked and ready for you.
+
+* *Contribute:* Between *October 1 and October 31*, submit at least 6 high-quality pull or merge requests. Remember, for your contributions to count, they must be *accepted* by the project maintainers. Always read the project's `CONTRIBUTING.md` file for guidelines before you start. Quality over quantity is key!
+
+== Rewards for 2025
+
+This year's rewards are designed to celebrate your commitment to open source.
+
+* *Holopin Digital Badge:* As soon as you register, you'll receive a unique digital badge from Holopin. With each accepted PR/MR, your badge will *level up*, showcasing your progress throughout the month.
+
+* *Exclusive T-Shirt:* Become a *'Super Contributor'* by getting 6 accepted PRs/MRs. The first *10,000* participants to achieve this will receive an exclusive Hacktoberfest 2025 t-shirt! (Terms and Conditions apply).
+
+* *Make the World Greener:* For every contributor who earns the t-shirt reward, Hacktoberfest will make a contribution to *Treenation* to plant a tree. Your code can help the planet!
+
+== Get started with our projects
+
+This list features an exciting variety of projects under the WildFly umbrella, just waiting for your contributions. Whether your expertise lies in Java, TypeScript, Containers or Ansible, there's a project here for everyone to dive into and make an impact.
+
+. *WildFly:* WildFly is a powerful, modular, and lightweight application server that empowers you to build amazing applications.
+* Here are the https://github.com/wildfly/wildfly[GitHub repository], https://github.com/wildfly/wildfly/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421535[Hacktoberfest Issues link].
+
+. *WildFly Core:* WildFly Core provides the core runtime that is used by the WildFly application server. This includes modular class loading, unified management including domain mode, basic deployment architecture, and a CLI for management.
+* Here are the https://github.com/wildfly/wildfly-core[GitHub repository], https://github.com/wildfly/wildfly-core/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12421536[Hacktoberfest Issues link].
+
+. *Ansible Middleware:* https://ansiblemiddleware.com/[Ansible Middleware] is a suite of supported content that combines the power of Ansible automation with Red Hat's Middleware portfolio. It allows organizations to meet their business demands and automate the installation, configuration, and management of Enterprise Middleware.
+* Here are the https://github.com/ansible-middleware[GitHub repositories], https://github.com/ansible-middleware/keycloak/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/search?q=org%3Aansible-middleware+state%3Aopen+label%3Ahacktoberfest&type=issues[Hacktoberfest Issues link].
+
+. *A2A Java:* The A2A Java project provides a Java SDK for the Agent2Agent (A2A) protocol. The A2A protocol is an open standard initially developed by Google and is now part of the Linux Foundation. It enables AI agents to communicate and collaborate with one another, regardless of each agent’s underlying framework, language, or vendor. This is very important, as it’s paving the way for polyglot multi-agent systems.
+* Here are the https://github.com/a2aproject/a2a-java[GitHub repository], https://github.com/a2aproject/a2a-java/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/a2aproject/a2a-java/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22[Hacktoberfest Issues link].
+
+. *WildFly Elytron:* WildFly Elytron is a set of APIs and SPIs for application server security and client side security. Within the WildFly server, WildFly Elytron is used to secure applications deployed to the server as well as management access to the server. It is a standalone library that can also be used in other Java server environments.
+* Here are the https://github.com/wildfly-security/wildfly-elytron[GitHub repository], https://github.com/wildfly-security/wildfly-elytron/blob/2.x/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?filter=12383825[Hacktoberfest Issues link].
+
+. *Berg Hal console TS:* The Berg is TS for the HAL project. It is based on the Cypess test framework. Create tests, debug them visually, and automatically run them in your continuous integration builds.
+* Here are the https://github.com/hal/berg[GitHub repository], https://github.com/hal/berg/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/hal/berg/issues?q=state%3Aopen%20label%3A%22good%20first%20issue%22[Hacktoberfest Issues link].
+
+. *Undertow:* Undertow is a versatile and high-performance web server that provides both blocking and non-blocking APIs based on NIO. Its modular architecture allows you to build a web server tailored to your needs, from a full Java EE servlet container to a low-level non-blocking handler.
+* Here are the https://github.com/undertow-io/undertow[GitHub repository], https://github.com/undertow-io/undertow/blob/main/CONTRIBUTING.md[Contributing Guide], and https://issues.redhat.com/issues/?jql=project%20%3D%20Undertow%20%20and%20labels%20in%20(%22good-first-issue%22)[Hacktoberfest Issues link].
+
+. *PatternFly Java:* PatternFly Java is a 💯 Java implementation of PatternFly without any JavaScript dependencies. Its goal is to provide an easy-to-use, elegant, and efficient API to build complex web applications with PatternFly in Java. PatternFly Java works with both GWT and J2CL.
+PatternFly Java is used for the next-gen WildFly management console.
+* Here are the https://github.com/patternfly-java/patternfly-java[GitHub repository], https://github.com/patternfly-java/patternfly-java/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/patternfly-java/patternfly-java/issues?q=is%3Aissue%20state%3Aopen%20label%3Ahacktoberfest%20label%3Agood-first-issue[Hacktoberfest Issues link].
+
+. *Narayana LRA:* Long Running Actions (abbreviated as LRA ) is a MicroProfile specification that introduces APIs for services to coordinate activities. Narayana LRA is an implementation of the specification and is included in both Quarkus and WildFly.
+* Here are the https://github.com/jbosstm/lra[GitHub repository], https://github.com/jbosstm/lra/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/jbosstm/lra/issues?q=state%3Aopen%20label%3Ahacktoberfest[Hacktoberfest Issues link].
+
+. *Intersmash:* Intersmash is a Java library that makes it easy to automate the provisioning and execution of tests in cloud-native environments. It helps the user prototype and test complex interoperability scenarios on kubernetes compliant cloud-native environments and platforms, most notably OpenShift. (Other Kubernetes implementations will be supported in the future.)
+* Here are the https://github.com/Intersmash/intersmash[GitHub repository], https://github.com/Intersmash/intersmash/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/Intersmash/intersmash/issues[Hacktoberfest Issues link].
+
+. *Arquillian Cube:* https://arquillian.org/arquillian-cube/[Arquillian Cube] is an Arquillian extension that can be used to run tests on Docker containers, on Kubernetes and on OpenShift... the Arquillian way!
+You can start an application server Docker container, and deploy a given application within it and execute Arquillian tests.
+Or you can easily build your application image, run it on Kubernetes or OpenShift and execute tests against it. And that's not just about applications. Arquillian Cube can deploy any required services, like databases, mail servers, etc. replacing the need for mocking fake objects. Annotations are available to inject relevant resources directly into your test classes, and you can use Arquillian Cube APIs to orchestrate your tested services lifecycle. Whatever the platform that you use in production, your tests will be executed against it, making them even more real, effective and meaningful than before.
+* Here are the https://github.com/arquillian/arquillian-cube[GitHub repository], https://github.com/arquillian/arquillian-cube/blob/main/CONTRIBUTING.adoc[Contributing Guide], and https://github.com/arquillian/arquillian-cube/issues[Hacktoberfest Issues link].
+
+== Questions or Need Help?
+
+Got a question or need some help getting started with a contribution? We're here for you!
+
+Please join our https://wildfly.zulipchat.com/#narrow/stream/Hacktoberfest[Hacktoberfest Zulip chatroom] to connect directly with our mentors and fellow contributors. It's the best place to get assistance and ensure your Hacktoberfest journey is a smooth one.
+
+Every contribution, big or small, makes a difference. Let's work together to make Hacktoberfest 2025 a huge success!
