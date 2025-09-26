@@ -1,0 +1,539 @@
+---
+layout: post
+title:  "resteasy-grpc 1.0.0.Beta1 is available"
+aliases: [/news/2025/08/26/resteasy-grpc-1.0.0.Beta1-released]
+date:   2025-08-26
+tags:   announcement release
+author: rsigal
+description: resteasy-grpc 1.0.0.Beta1 is available.
+---
+
+= RESTEasy gRPC to Jakarta REST Bridge project
+
+The first beta releases (1.0.0.Beta1) of the *RESTEasy gRPC to Jakarta REST Bridge* 
+project (https://github.com/resteasy/resteasy-grpc[https://github.com/resteasy/resteasy-grpc]), aka **resteasy-grpc**,
+and its sibling *gRPCtoJakartaREST-archetype* project (1.0.0.Beta2)
+(https://github.com/resteasy/gRPCtoJakartaREST-archetype[https://github.com/resteasy/gRPCtoJakartaREST-archetype])
+are now available on Maven Central. A number of blogs have been written on the
+projects themselvesfootnote:[*gRPC and WildFly - Part II: Exposing Jakarta RESTFul Web Services to gRPC*: https://resteasy.dev/2023/06/11/grpc-in-wildfly-pt2/]
+footnote:[*resteasy-grpc: Handling arrays*: https://resteasy.dev/2024/01/23/grpc-jakarta-rs-arrays/]
+footnote:[*resteasy-grpc: Handling Collections*: https://resteasy.dev/2025/02/14/resteasy-grpc-collections/]
+and on their use in WildFlyfootnote:[*Vlog: WildFly gRPC*: https://www.youtube.com/watch?v=UYSNM9Dy5M4]
+footnote:[*grpc and WildFly - Part I*: https://www.wildfly.org/news/2023/06/12/grpc-and-WildFly-Part-I/]
+footnote:[*Using the resteasy-grpc feature together with the WildFly gRPC subsystem*: https://resteasy.dev/2023/09/12/resteasy-grpc/],
+so on this occasion we'll limit ourselves to a general overview.
+
+The goal of resteasy-grpc is to bridge the semantic gap between the worlds of gRPC and Jakarta REST so that a
+developer familiar with gRPC can write a client that communicates with a Jakarta REST server. resteasy-grpc
+contains module **grpc-bridge** which generates a set of classes that are used at runtime, supported by the
+module **grpc-bridge-runtime**. Given an existing Jakarta REST project, which we call the **target project**,
+we want to extend it with the generated classes and the runtime to a **bridge project** which, while still
+accepting invocations from Jakarta REST clients, can also process gRPC invocations. The transformation
+of the target project to the bridge project is facilitated by the gRPCtoJakartaREST-archetype project.
+
+The semantics of the two worlds, gRPC and Jakarta REST, are considerably different, so resteasy-grpc has to do
+some considerable lifting. The goal is to be able to accommodate any valid Jakarta REST project. We're not there
+yet, but the first beta release implements a reasonable set of constructs.
+
+We'll go step by step.
+
+== Compile time
+
+A gRPC developer codes in the context of a protobuf message descriptor file extended with gRPC rpc definitions,
+aka a **.proto file**, and it is the responsibility of the resteasy-grpc compile time module to generate a .proto
+file from the Jakarta REST server application. Briefly, it 
+
+. scans a directory tree of Java classes looking for Jakarta REST resource classesfootnote:[With great thanks to
+the Java parser project (https://github.com/javaparser/javaparser)];
+. for each resource class, it finds all of the resource methods and locators;
+. for each resource method and locator
+..  it creates an rpc definition, and
+..  for each entity parameter type and each return type, it creates a message definition.
+
+A parameter is given at compile time which is used to prefix various generated files. Here we'll use
+"Example", so, for example, we'll get Example.proto.
+
+=== Semantic disparities
+
+The foregoing algorithm passes over some serious semantic issues. Here are a few.
+
+==== Packages
+
+We incorporate Java package names into message namesfootnote:[In a future release we intend to make use of protobuf's package mechanism
+and multiple .proto files.].
+For example,
+
+----
+package dev.resteasy.grpc.example;
+
+public class X {
+
+    private int i;
+    
+    public X(int i) {this.i = i;}
+}
+----
+
+is turned into
+
+----
+// Type: dev.resteasy.grpc.example.X
+message dev_resteasy_grpc_example___X {
+  int32 i = 1;
+}
+----
+
+==== Inheritance
+
+protobuf has no notion of type inheritance, so we explicitly incorporate fields from ancestor classes into
+a descendant class. For example,
+
+----
+package dev.resteasy.grpc.example;
+
+public class Y extends X {
+
+    private int j;
+    
+    public Y(int i, int j) {
+       super(i);
+       this.j = j;
+    }
+}
+----
+
+turns into
+
+----
+// Type: dev.resteasy.grpc.example.Y
+message dev_resteasy_grpc_example___Y {
+  int32 i = 1;
+  int32 j = 2;
+}
+----
+
+==== Generic types
+
+protobuf has no notion of type variables and generic types, so we create create distinct message
+types for generic types with different type variable instantiations. For example, given
+
+----
+package dev.resteasy.grpc.example;
+
+public class Generic<T> {
+    T t;
+}
+----
+
+and
+
+----
+@Path("m")
+@GET
+public void method(Generic<Integer> gi, Generic<Float> gf) {
+}
+----
+
+we get
+
+----
+// Type: dev.resteasy.grpc.example.Generic<java.lang.Integer>
+message dev_resteasy_grpc_example___Generic46 {
+  int32 t = 1;
+}
+
+// Type: dev.resteasy.grpc.example.Generic<java.lang.Float>
+message dev_resteasy_grpc_example___Generic83 {
+  float t = 1;
+}
+----
+
+==== Arrays
+
+protobuf supports one dimensional arrays with the "repeated" keyword, but it doesn't
+support multidimensional or nullable arrays. First, consider
+
+----
+Integer[] intArray;
+----
+
+In a separate arrays.proto file, included in all generated bridge projects, we define
+
+----
+message dev_resteasy_grpc_arrays___Integer___Array {
+   repeated sfixed32 int_field = 1;
+}
+
+message dev_resteasy_grpc_arrays___Integer___wrapper {
+   oneof type {
+      dev_resteasy_grpc_arrays___NONE none_field = 1;
+      sfixed32 integer_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___Integer___WArray {
+   repeated dev_resteasy_grpc_arrays___Integer___wrapper wrapper_field = 1;
+}
+----
+
+The type `dev_resteasy_grpc_arrays_\__Integer___Array` is the simpler version of
+an integer array which is not nullable. To create a nullable version we define
+`dev_resteasy_grpc_arrays_\__Integer___wrapper` which can hold either 1) a special 
+type `dev_resteasy_grpc_arrays_\__NONE` which represents null, or 2) an integer.
+Then we define the type `dev_resteasy_grpc_arrays___Integer___WArray` in which
+each element is either null or an integer.
+
+Now, multidimensional arrays are defined by way of the recursively defined
+`dev_resteasy_grpc_arrays___ArrayHolder`:
+
+----
+message dev_resteasy_grpc_arrays___ArrayHolder {
+   oneof messageType {
+      ...
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___Array dev_resteasy_grpc_arrays___Integer___Array_field = 12;
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___Integer___WArray dev_resteasy_grpc_arrays___Integer___WArray_field = 13;
+      ---
+      dev_resteasy_grpc_arrays___ArrayHolder___WArray dev_resteasy_grpc_arrays___ArrayHolder___WArray_field = 21;
+   }
+}
+
+message dev_resteasy_grpc_arrays___ArrayHolder___wrapper {
+   oneof type {
+      dev.resteasy.grpc.arrays.dev_resteasy_grpc_arrays___NONE none_field = 1;
+      dev_resteasy_grpc_arrays___ArrayHolder dev_resteasy_grpc_arrays___ArrayHolder_field = 2;
+   }
+}
+
+message dev_resteasy_grpc_arrays___ArrayHolder___WArray {
+   string componentType = 1;
+   repeated dev_resteasy_grpc_arrays___ArrayHolder___wrapper wrapper___field = 2;
+}
+----
+
+Now, consider
+
+----
+@Path("m2")
+@GET
+public Superclass[][] method2(Superclass[] sc) {
+}
+----
+
+Then `Superclass[]` is represented by `dev_resteasy_grpc_example_\__Superclass___WArray`, and
+Superclass[][] is represented by `dev_resteasy_grpc_arrays_\__ArrayHolder___WArray`.
+
+==== Collections and maps
+
+We take a simplifying approach to instances of `java.util.List`, `java.util.Set`, `java.util.Map`,
+and `javax.ws.rs.core.MultivaluedMap`. Implementations, e.g., `java.util.ArrayList`, can be
+quite complex for reasons of efficiency and desired usage, but we choose to ignore those implementation
+details. For example, `java.util.ArrayList<Integer>` and `java.util.LinkedList<Integer>` will both be
+represented essentially the same:
+
+----
+// List: java.util.ArrayList<java.lang.Integer>
+message java_util___ArrayList176 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+----
+
+and
+
+----
+// List: java.util.LinkedList<java.lang.Integer>
+message java_util___LinkedList177 {
+  string classname = 1;
+  //java.lang.Integer
+  repeated int32 data = 2;
+}
+----
+
+Similarly, `java.util.HashMap<String, Integer>` would be represented as
+
+----
+// Map: java.util.HashMap<java.lang.String, java.lang.Integer>
+message java_util___HashMap41 {
+  string classname = 1;
+  //java.lang.String->java.lang.Integer
+  message Pair {
+    string key = 2;
+    int32 value = 3;
+  }
+  repeated Pair data = 4;
+}
+----
+
+==== HTTP
+
+Protobuf runs over HTTP/2, but it doesn't expose much to the user in the same way as Jakarta REST,
+so we define two message types to carry HTTP information:
+
+----
+message GeneralEntityMessage {
+   ServletInfo servletInfo = 1;
+   string URL = 2;
+   map<string, gHeader> headers = 3;
+   repeated gCookie cookies = 4;
+   string httpMethod = 5;
+   oneof messageType {
+      dev_resteasy_grpc_example___Generic46 dev_resteasy_grpc_example___Generic46_field = 6;
+      dev_resteasy_grpc_lists_sets___D137 dev_resteasy_grpc_lists_sets___D137_field = 7;
+      ...
+   }
+}
+----
+
+and
+
+----
+message GeneralReturnMessage {
+   map<string, gHeader> headers = 1;
+   repeated gNewCookie cookies = 2;
+   int32 status = 3;
+   oneof messageType {
+      dev_resteasy_grpc_example___Subclass dev_resteasy_grpc_example___Subclass_field = 8;
+      java_util___ArrayList java_util___ArrayList_field = 9;
+      ...
+   }
+}
+----
+
+where `messageType` in `GeneralEntityMessage` and `GeneralReturnMessage` can hold any of the entity types or 
+return types, respectively.
+
+== Runtime
+
+To understand what happens at runtime in a resteasy-grpc generated bridge project, let's start by looking at
+a pure gRPC example. In particular, consider the "hello world" example in
+https://github.com/grpc/grpc-java/tree/master/examples. It starts with
+https://github.com/grpc/grpc-java/blob/master/examples/src/main/proto/helloworld.proto[helloworld.proto]:
+
+----
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.helloworld";
+option java_outer_classname = "HelloWorldProto";
+option objc_class_prefix = "HLW";
+
+package helloworld;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+----
+
+When the .proto file is compiled, the compiler produces a client side stub with all of methods defined in the
+.proto file. The client
+https://github.com/grpc/grpc-java/blob/master/examples/src/main/java/io/grpc/examples/helloworld/HelloWorldClient.java[HelloWorldClient.java]
+
+----
+  public void greet(String name) {
+    ...
+    HelloRequest request = HelloRequest.newBuilder().setName(name).build();
+    HelloReply response;
+    try {
+      response = stub.sayHello(request);
+    ...
+  }
+----
+
+bridges the gap between Java and protobuf by using a `io.grpc.examples.helloworld.HelloRequest$Builder`
+to create an `io.grpc.examples.helloworld.HelloRequest`, which it passes to the stub to invoke the matching
+method on the server.
+
+For the server side, compiling the .proto file creates a class like `GreeterGrpc.GreeterImplBase` with
+no-op methods meant to be overridden. For example,
+https://github.com/grpc/grpc-java/blob/master/examples/src/main/java/io/grpc/examples/helloworld/HelloWorldServer.java[HelloWorldServer.java]
+overrides `GreeterGrpc.GreeterImplBase`:
+
+----
+static class GreeterImpl extends GreeterGrpc.GreeterImplBase {
+
+@Override
+public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
+   HelloReply reply = HelloReply.newBuilder().setMessage("Hello " + req.getName()).build();
+   responseObserver.onNext(reply);
+   responseObserver.onCompleted();
+}
+----
+
+It extracts a value from `HelloRequest` and uses a `HelloReply$Builder` to create a response.
+
+The same thing happens in a bridge project generated by resteasy-grpc, except that the messages in the generated
+.proto file represent Java types defined in the original Jakarta REST target project.
+
+Consider the resource method
+
+----
+@Path("m3")
+@GET
+public Y method3(Y y) {
+   return y;
+}
+----
+
+We can call it like this:
+
+----
+dev_resteasy_grpc_example___Y.Builder yb
+   = dev_resteasy_grpc_example___Y.newBuilder();
+dev_resteasy_grpc_example___Y y = yb.setI(3).setJ(7).build();
+
+GeneralEntityMessage.Builder gemb = GeneralEntityMessage.newBuilder();	 
+GeneralEntityMessage gem = gemb.setDevResteasyGrpcExampleYField(y).build();
+GeneralReturnMessage response = stub.method3(gem);
+Assertions.assertEquals(y, response.getDevResteasyGrpcExampleYField(););
+----
+
+It's structurally similar to `HelloWorldClient.java` except for the extra step of creating
+a `GeneralEntityMessage`.
+
+Similarly, on the server side `ExampleServiceGrpcImpl`
+contains an overriding method for each method in the .proto file.
+It's structurally similar to `sayHello()`, but it plays a different role. `sayHello()`
+implements some business logic, but with resteasy-grpc we're creating a project in which
+the business logic already exists in the resource methods of the target project. Instead,
+the function of the overriding methods is to provide a bridge between the gRPC world and the
+Jakarta REST world.
+
+For example, the overriding method for `method3()` would look like
+
+----
+@java.lang.Override
+public void method3(GeneralEntityMessage param, StreamObserver<GeneralReturnMessage> responseObserver) {
+   HttpServletRequest request = null;
+   try {
+      HttpServletResponseImpl response
+         = new HttpServletResponseImpl("dev_resteasy_grpc_example___Y", "sync",
+                                       Example_Server.getServletContext(), builder, fd);
+      GeneratedMessage actualParam = param.getDevResteasyGrpcExampleYField();
+      request = getHttpServletRequest(param, actualParam, "/", response, "GET",
+                                      "dev_resteasy_grpc_example___Y");
+      HttpServletDispatcher servlet = getServlet();
+      activateRequestContext();
+      servlet.service(request.getMethod(), request, response);
+      MockServletOutputStream msos = (MockServletOutputStream) response.getOutputStream();
+      ByteArrayOutputStream baos = msos.getDelegate();
+      ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+      dev_resteasy_grpc_example___Y reply = dev_resteasy_grpc_example___Y.parseFrom(bais);
+      GeneralReturnMessage.Builder grmb = createGeneralReturnMessageBuilder(response);
+      grmb.setDevResteasyGrpcExampleYField(reply);
+      responseObserver.onNext(grmb.build());
+   } catch (Exception e) {
+      responseObserver.onError(e);
+   } finally {
+      responseObserver.onCompleted();
+      if (requestContextController != null) {
+         requestContextController.deactivate();
+      }
+      if (tccl != null) {
+         Thread.currentThread().setContextClassLoader(tccl);
+      }
+   }
+}
+----
+
+Without going into the details, one of its responsibilities is to create a suitable runtime environment
+for a Jakarta REST resource method. For example, a CDI request context is activated. Another responsibility
+is to take a protobuf value from the wire, translate it to the appropriate Java class, and pass it as
+an entity value. Once the resource method runs, its response is translated back to a protobuf message,
+stored in a `GeneralReturnMessage`, and passed back to the gRPC runtime, which sends it to the client.
+
+A couple of other generated classes are worth mentioning.
+
+Given an existing Jakarta REST application, we start with a set of Java classes that occur as entity parameters
+or return values, turn them into protobuf messages, and then compile the messages
+into Java classes. For example, `dev.resteasy.grpc.example.X` is translated to the protobuf message
+`dev_resteasy_grpc_example\___X`. Then, when the .proto file is compiled,
+`dev.resteasy.grpc.example.Example_proto.java` contains the inner class `dev_resteasy_grpc_example___X`.
+We call these generated Java classes **javabuf** classes.
+
+`ExampleJavabufTranslator`, which implements implements the interface
+
+----
+package dev.resteasy.grpc.bridge.runtime.protobuf;
+
+public interface JavabufTranslator {
+
+    ...
+    
+    Object translateFromJavabuf(Message message);
+
+    Message translateToJavabuf(Object o);
+
+    Message translateToJavabuf(Object o, GenericType genericType);
+    
+    ...
+}
+----
+
+in the grpc-bridge-runtime module of resteasy-grpc, is responsible for translating back and
+forth between the original Java classes and their javabuf counterparts.
+
+`ExampleJavabufTranslator` is used by `ExampleMessageBodyReaderWriter`, which implements the 
+Jakarta REST interfaces `jakarta.ws.rs.ext.MessageBodyReader` and `jakarta.ws.rs.ext.MessageBodyWriter`.
+`ExampleMessageBodyReaderWriter` is registered with the RESTEasy runtime and is responsible for writing and
+reading protobuf messages to and from `java.io.OutputStream`{empty}s and `java.io.InputStream`{empty}s.
+
+It can also be used to replace the laborious creation of javabuf objects with `Builder`{empty}s. For example,
+instead of
+
+----
+dev_resteasy_grpc_example___Y.Builder yb
+   = dev_resteasy_grpc_example___Y.newBuilder();
+dev_resteasy_grpc_example___Y y = yb.setI(3).setJ(7).build();
+----
+
+we can do this:
+
+----
+Y y = new Y(3, 7);
+dev_resteasy_grpc_example___Y y = ExampleJavabufTranslator.translateToJavabuf(y);
+----
+
+== gRPCtoJakartaREST-archetype
+
+There are a number of steps in building a bridge project, and the gRPCtoJakartaREST-archetype
+embodies the correct order. Given a target project such as org.greet:greet:0.0.1, the
+bridge project can be built as follows:
+
+----
+mvn archetype:generate -B \
+       -DarchetypeGroupId=dev.resteasy.grpc \
+       -DarchetypeArtifactId=gRPCtoJakartaREST-archetype \
+       -DarchetypeVersion=${archetype.version} \
+       -DgroupId=org.greet \
+       -DartifactId=greet \
+       -Dversion=0.0.1 \
+       -Dgenerate-prefix=Greet \
+       -Dgenerate-package=org.greet \
+       -Dresteasy-version=${resteasy.version} \
+       -Dgrpc-bridge-version=${resteasy.grpc.version}
+----
+
+Running `mvn install` will build the files discussed above and package everything into
+a WAR. Dropping the WAR into an instance of WildFly provisioned with the 
+https://github.com/wildfly-extras/wildfly-grpc-feature-pack[wildfly-grpc-feature-pack] will
+expose the gridge project.
+
+== Conclusion
+
+For more details, see the https://resteasy.dev/docs/grpc/[documentation].
+
+resteasy-grpc now supports a significant subset of Jakarta REST semantics, and we
+eagerly solicit feedback.
