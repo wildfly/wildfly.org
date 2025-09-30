@@ -66,12 +66,12 @@ PatternFly Java is used for the next-gen WildFly management console.
 * Here are the https://github.com/jbosstm/lra[GitHub repository], https://github.com/jbosstm/lra/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/jbosstm/lra/issues?q=state%3Aopen%20label%3Ahacktoberfest[Hacktoberfest Issues link].
 
 . *Intersmash:* Intersmash is a Java library that makes it easy to automate the provisioning and execution of tests in cloud-native environments. It helps the user prototype and test complex interoperability scenarios on kubernetes compliant cloud-native environments and platforms, most notably OpenShift. (Other Kubernetes implementations will be supported in the future.)
-* Here are the https://github.com/Intersmash/intersmash[GitHub repository], https://github.com/Intersmash/intersmash/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/Intersmash/intersmash/issues[Hacktoberfest Issues link].
+* Here are the https://github.com/Intersmash/intersmash[GitHub repository], https://github.com/Intersmash/intersmash/blob/main/CONTRIBUTING.md[Contributing Guide], and https://github.com/Intersmash/intersmash/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22%20label%3Ahacktoberfest[Hacktoberfest Issues link].
 
 . *Arquillian Cube:* https://arquillian.org/arquillian-cube/[Arquillian Cube] is an Arquillian extension that can be used to run tests on Docker containers, on Kubernetes and on OpenShift... the Arquillian way!
 You can start an application server Docker container, and deploy a given application within it and execute Arquillian tests.
 Or you can easily build your application image, run it on Kubernetes or OpenShift and execute tests against it. And that's not just about applications. Arquillian Cube can deploy any required services, like databases, mail servers, etc. replacing the need for mocking fake objects. Annotations are available to inject relevant resources directly into your test classes, and you can use Arquillian Cube APIs to orchestrate your tested services lifecycle. Whatever the platform that you use in production, your tests will be executed against it, making them even more real, effective and meaningful than before.
-* Here are the https://github.com/arquillian/arquillian-cube[GitHub repository], https://github.com/arquillian/arquillian-cube/blob/main/CONTRIBUTING.adoc[Contributing Guide], and https://github.com/arquillian/arquillian-cube/issues[Hacktoberfest Issues link].
+* Here are the https://github.com/arquillian/arquillian-cube[GitHub repository], https://github.com/arquillian/arquillian-cube/blob/main/CONTRIBUTING.adoc[Contributing Guide], and https://github.com/arquillian/arquillian-cube/issues?q=is%3Aissue%20state%3Aopen%20label%3Agood-first-issue%20label%3Ahacktoberfest[Hacktoberfest Issues link].
 
 == Questions or Need Help?
 
