@@ -23,6 +23,9 @@ This release focuses heavily on component upgrades, MicroProfile 7.1 support, an
  ** **Apache Artemis 2.42.0**
  ** **Netty 4.1.127.Final**, addressing several security vulnerabilities.
  ** **WildFly Core 30.0.0.Beta3**
+ ** **JGit 7.3.0.202506031305-r**. addressing CVE-2025-4949.
+ ** **SmallRye Jandex 3.5.0**
+ ** **angus-mail 2.0.4**, addressing CVE-2025-7962.
 
 ---
 
