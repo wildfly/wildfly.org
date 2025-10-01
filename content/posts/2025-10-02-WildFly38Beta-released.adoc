@@ -8,15 +8,15 @@ author: darranl
 description: WildFly 38 Beta is now available for download.
 ---
 
-We're excited to announce the release of *WildFly 38 Beta 1*! This version is contains updates, new features, and bug fixes, paving the way for the upcoming final release. This beta version is a crucial step in our development cycle, allowing the community to test and provide feedback on the latest changes.
+We're excited to announce the release of *WildFly 38 Beta 1*! This version contains updates, new features, and bug fixes, paving the way for the upcoming final release. This beta version is a crucial step in our development cycle, allowing the community to test and provide feedback on the latest changes.
 
 
 == What's New and Noteworthy?
 
-This release focuses heavily on *component upgrades*, *MicroProfile 7.1 support*, and enhancements to the *WildFly Preview* distribution. Here's a quick rundown of the highlights:
+This release focuses heavily on component upgrades, MicroProfile 7.1 support, and enhancements to the WildFly Preview distribution. Here's a quick rundown of the highlights:
 
-* **Java EE 11 Integration:** A key new feature is the implementation of *Jakarta EE 11 JPA and CDI integration* in WildFly Preview, bringing us closer to full support for the latest Jakarta EE specifications.
-* **MicroProfile 7.1:** WildFly 38 Beta 1 supports the *MicroProfile 7.1* specification, including an update to the latest versions of SmallRye Reactive Messaging and Config. This upgrade ensures that developers can leverage the newest features and improvements in the MicroProfile ecosystem.
+* **Java EE 11 Integration:** A key new feature is the implementation of link:https://issues.redhat.com/browse/WFLY-19554[Jakarta EE 11 JPA and CDI integration] in WildFly Preview, bringing us closer to full support for the latest Jakarta EE specifications.
+* **MicroProfile 7.1:** WildFly 38 Beta 1 supports the *MicroProfile 7.1* specifications, including an update to the latest versions of MicroProfile OpenAPI and MicroProfile Telemetry. This upgrade ensures that developers can leverage the newest features and improvements in the MicroProfile ecosystem.
 * **Component Upgrades:** We've updated a wide range of dependencies to their latest versions, improving performance, stability, and security. Notable upgrades include:
  ** **Hibernate ORM 6.6.29.Final** (and 7.1.1.Final in WildFly Preview)
  ** **Infinispan 15.2.6.Final**
@@ -24,18 +24,16 @@ This release focuses heavily on *component upgrades*, *MicroProfile 7.1 support*
  ** **Netty 4.1.127.Final**, addressing several security vulnerabilities.
  ** **WildFly Core 30.0.0.Beta3**
 
-* **Quickstart and Documentation Improvements:** We've made significant improvements to our quickstarts and documentation. This includes removing old dependency files, adding new tests, and updating documentation to reflect the latest changes in EE 11 support.
-
 ---
 
 == Important Bug Fixes
 
-As a beta release, we've tackled several bugs to ensure a more stable experience:
+We've tackled several bugs to ensure a more stable experience:
 
-* Fixed an issue where the OpenAPI test was ineffective.
+* Resolved a memory leak issue with distributed cache listeners on suspend/resume.
 * Corrected a bug where the `TransactionUtil.isInTx` method returned an incorrect state.
 * Addressed multiple intermittent test failures related to OpenTelemetry and Fault Tolerance.
-* Resolved a memory leak issue with distributed cache listeners on suspend/resume.
+* Fixed an issue where the integration test in the OpenAPI quickstart was ineffective.
 
 We encourage you to explore the full list of changes in the official  link:https://github.com/wildfly/wildfly/releases/tag/38.0.0.Beta1[release notes].
 
@@ -45,7 +43,7 @@ We encourage you to explore the full list of changes in the official  link:https
 
 This is a *beta release*, so we don't recommend it for production environments. Your feedback is crucial to help us identify and fix issues before the final release.
 
-* **Download WildFly 38 Beta 1** from link:https://wildfly.org/downloads[https://wildfly.org/downloads]
+* **Download WildFly 38 Beta 1** from link:https://wildfly.org/downloads[https://wildfly.org/downloads] or provision a WildFly 38 Beta 1 server using a tool like the link:https://docs.wildfly.org/wildfly-maven-plugin/[wildfly-maven-plugin]
 * **Report a bug** or enhancement request on our link:https://issues.redhat.com/browse/WFLY[issue tracker]
 * **Ask a question** link:https://groups.google.com/forum/#!forum/wildfly[Google Group] or reach us on link:https://wildfly.zulipchat.com/[Zulip].
 
