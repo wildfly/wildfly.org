@@ -1,0 +1,9 @@
+---
+layout: post
+title:  2025-09-30-grpc-resteasy-beta-release.adoc
+date:   2025-09-30
+tags:   wildfly resteasy grpc
+synopsis: This blog discusses resteasy-grpc release 1.0.0.Beta1.
+author: rsigal
+external_link: https://resteasy.dev/2025/09/30/grpc-resteasy-beta-release/
+---
