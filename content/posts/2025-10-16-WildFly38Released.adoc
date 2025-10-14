@@ -1,0 +1,110 @@
+---
+layout: post
+title:  "WildFly 38 is released!"
+aliases: [/news/2025/10/16/WildFly38Released]
+date:   2025-10-16
+tags:   announcement release
+author: bstansberry
+description: WildFly 38 Final is now available.
+---
+
+I'm pleased to announce that the new WildFly and WildFly Preview 38.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature packs for WildFly 38 are available in https://repository.jboss.org/nexus/[the JBoss Maven repository, window=_blank].
+
+NOTE: We've encountered problems syncing the WildFly 38 artifacts and other Maven content from the JBoss Maven repository to Maven Central. This problem is currently under investigation. We recommend Maven users include link:https://repository.jboss.org/nexus/content/groups/public-jboss/[https://repository.jboss.org/nexus/content/groups/public-jboss/, window=_blank] in their Maven repositories configuration. This is a general best practice when provisioning a WildFly server, as some WildFly components may not be available in Maven Central.
+
+[[new_and_notable]]
+== New and Notable
+
+=== MicroProfile 7.1
+
+In the main server, the biggest new thing in WildFly 38 is support for the https://microprofile.io/2025/06/17/microprofile-7-1-released/[MicroProfile Platform 7.1, window=_blank] specifications, link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-20684_microprofile_platform_7.1.html[updating, window=_blank] from the MicroProfile 7.0 specs supported in WildFly 37. This included updates to two specs:
+
+* link:https://microprofile.io/specifications/open-api/4-1/[MicroProfile OpenAPI 4.1, window=_blank]
+* link:https://microprofile.io/specifications/telemetry/2-1/[MicroProfile Telemetry 2.1, window=_blank]
+
+=== WildFly Preview
+
+In WildFly Preview, something I encourage users to try out is the implementation of link:https://issues.redhat.com/browse/WFLY-19554[Jakarta EE 11 JPA and CDI integration, window=_blank]. Jakarta EE 11 includes link:https://jakarta.ee/specifications/platform/11/jakarta-platform-spec-11.0#a441[requirements, window=_blank] that implementations expose as CDI beans instances of a number of Jakarta Persistence types, including `EntityManager` and `EntityManagerFactory`. This makes possible injection of those types into other beans using `@Inject`. Jakarta is aiming to make the EE platform more CDI-centric; this is a step in that direction.
+
+=== Provisioning and documentation
+
+Feature packs that are used to provision WildFly now link:http://docs.wildfly.org/wildfly-proposals/provisioning/WFGP-292_doc_galleon-pack.html[provide generated documentation, window=_blank] that describes the feature pack and its layers, along with the management API reference for the management resources provided by the feature pack. We're making use of this new capability in a couple of ways:
+
+* The link:https://wildfly-extras.github.io/wildfly-catalog/38.0.0.Final/index.html[WildFly catalog of feature-packs and layers, window=_blank] is online. It allows you to browse the Management API Reference (and associated Galleon features) of each feature pack as well as the layers they contain (with their management model). The catalog currently contains an initial set of feature packs that is going to evolve. The catalog content and features will be covered in detail in a future blog entry.
+* We've also revamped a section of our documentation that provides the automatically generated detailed documentation of WildFly's administrative API. We've replaced the longstanding "wildscribe" documentation that only covered our management API (i.e. what you'd work with when using `jboss-cli`) with much richer link:https://docs.wildfly.org/38/feature-pack/doc/[documentation describing what our main `wildfly` feature pack provides, window=_blank].  If you're looking for the management API-focused documentation previously found at places like link:https://docs.wildfly.org/37/wildscribe/[https://docs.wildfly.org/37/wildscribe/, window=_blank] (for WildFly 37), you can find equivalent (but better!) content at link:https://docs.wildfly.org/38/feature-pack/doc/reference/index.html[https://docs.wildfly.org/38/feature-pack/doc/reference/index.html, window=_blank].
+
+== Supported Specifications
+
+=== Jakarta EE
+
+Standard WildFly 38 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications, window=_blank] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 10 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<|  Jakarta EE 10 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<| Jakarta EE 10 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+|=======================================================================
+
+
+=== MicroProfile
+
+As noted above, standard WildFly 38 supports https://microprofile.io/2025/06/17/microprofile-7-1-released/[MicroProfile Platform 7.1, window=_blank], along with several other MicroProfile specifications that are not part of MicroProfile Platform. The full listing is available in the link:https://docs.wildfly.org/38/Getting_Started_Guide.html[Getting Started Guide, window=_blank].
+
+link:https://github.com/wildfly/certifications/blob/MP7.1/WildFly_38.0.0.Final/microprofile-7.1/microprofile-7.1-full-certification.adoc[Compatibility evidence, window=_blank] for the specifications that are part of MicroProfile 7.1 can be found in the WildFly Certifications repository on GitHub.
+
+
+[[preview-ee11]]
+=== WildFly Preview and EE 11
+
+Since the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we have been using WildFly Preview to provide a look at what we're doing for Jakarta EE 11 support.  We continued to make progress on this during the WildFly 38 cycle, particularly in the aforementioned Jakarta Persistence + CDI integration and in updates to our Jakarta Authorization implementation.
+
+However, for a number of specifications that made changes for EE 11 we are still offering the EE 10 implementation. Our goal is shift those to the EE 11 implementation in WildFly Preview 39.
+
+The link:https://jakarta.ee/specifications/coreprofile/11/[EE 11 Core Profile specification, window=_blank] went GA last November and WildFly Preview 38 supports that profile.
+
+The Jakarta EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] and link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] went GA earlier this summer. We are working on completing our implementation of these in WildFly Preview, for eventual incorporation in standard WildFly.
+
+Full details on the EE specification versions provided by WildFly Preview can be found in https://docs.wildfly.org/38/WildFly_and_WildFly_Preview.html#ee-11-support-in-wildfly-preview[the WildFly 38 documentation, window=_blank].
+
+
+== Java SE Support
+
+Our recommendation is that you run WildFly 38 on Java SE 21, as that is the latest LTS JDK release where we have completed the full set of testing we like to do before recommending a particular SE version. WildFly 38 also is heavily tested and runs well on Java 17.
+
+Our recommendation of SE 21 over SE 17 is solely because as a general principle we recommend being on later LTS releases, not because of any problems with WildFly on SE 17.
+
+While we recommend using SE 21 or SE 17, I do believe WildFly runs well on *SE 25*, which is the most recent LTS release, released last month. By runs well, I mean the main WildFly testsuite runs with no more than a few  link:https://issues.redhat.com/issues/?filter=12481560[failures in areas not expected to be commonly used, window=_blank]. As of the date of this release announcement there were *no such issues*. We want developers who are trying to evaluate what SE 25 means for their applications to be able to look to WildFly as a useful development platform.
+
+Since SE 25 is an LTS release, we aim in a future WildFly version to include it in the list of recommended SE releases. To do this there is further qualifying to be done, beyond the good WildFly testsuite results we are seeing today. We're working to validate the SE 25 compatibility of key components we include in WildFly, and we'll try and use the Jakarta EE 11 TCK as a further set tests of how well we run on SE 25. (The EE 11 TCK was not written for SE 25, so we'll see how feasible this is. Using the EE 10 TCK to help qualify SE 21 worked well.)
+
+Please note that WildFly runs in classpath mode.
+
+[[contributors]]
+== New and Noteworthy Contributors
+
+WildFly gets great contributions from so many people. Let's thank a few of them.
+
+link:https://github.com/javideros[Javier de Ros Villar, window=_blank], link:https://github.com/akil-krsna[Akil Krishna, window=_blank] and link:https://github.com/survivant[Sebastien Dionne, window=_blank] made their first contributions to the link:https://github.com/wildfly/wildfly[main WildFly repository, window=_blank], while link:https://github.com/mskacelik[Marek Skácelík, window=_blank] made his first contribution to WildFly Core. Thank you, Javier, Akil, Sebastien and Marek!
+
+link:https://github.com/jmesnil[Jeff Mesnil, window=_blank] and link:https://github.com/jfdenise[Jean-François Denise, window=_blank] did great work on the new feature pack documentation capabilities and on the link:https://wildfly-extras.github.io/wildfly-catalog/38.0.0.Final/index.html[WildFly catalog, window=_blank]. I'm excited to see where this goes in the future.
+
+link:https://github.com/scottmarlow[Scott Marlow, window=_blank] showed great perseverance in working through the many tricky cases involved with the Jakarta Persistence + CDI integration in WildFly Preview. Thank you, Scott!
+
+== Release Notes
+
+The full WildFly 38 release notes are link:https://github.com/wildfly/wildfly/releases/tag/38.0.0.Final[available in GitHub, window=_blank].  Issues fixed in the underlying WildFly Core 30.0.0 release are listed in the link:https://issues.redhat.com/issues/?filter=12481561[WildFly Core JIRA, window=_blank].
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA, window=_blank].
+
+Best regards,
+
+Brian
