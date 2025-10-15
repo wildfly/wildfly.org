@@ -134,3 +134,12 @@
       key: AAAC4F7ECBC08A989AF76BADA599A3FA5ADC5697
       link: https://keys.openpgp.org/vks/v1/by-fingerprint/AAAC4F7ECBC08A989AF76BADA599A3FA5ADC5697
       fingerprint: AAAC 4F7E CBC0 8A98 9AF7  6BAD A599 A3FA 5ADC 5697
+- contributor: skyllarr
+  name: "Diana Křepinská"
+  bio: "Diana is a software engineer working on WildFly. She focuses on the WildFly Elytron project."
+  github: skyllarr
+  signing:
+    - id: ed25519/0xC4C0D99288624CC7
+      key: 332077B2C2C04732F0A8D473C4C0D99288624CC7
+      link: https://keys.openpgp.org/vks/v1/by-fingerprint/332077B2C2C04732F0A8D473C4C0D99288624CC7
+      fingerprint: 3320 77B2 C2C0 4732 F0A8  D473 C4C0 D992 8862 4CC7
