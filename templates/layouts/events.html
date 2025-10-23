@@ -59,6 +59,14 @@ layout: base
 
   <div class="grid__item width-10-12 width-12-12-m sec-title-yellow">
     <h2 id="next-events" style="margin-top: 0">Next Events</h2>
+    <div class="event">
+      <div class="event-details">
+        <h3>WildFly Community Calls</h3>
+        <p>We have decided to concentrate our community engagement on the new WildFly Community Calls format and we look forward to welcoming people that have already attended a mini conference at one of these events which occur fortnightly.</p>
+        <p>We would like to take the opportunity to mention that if you would like to share your experiences with WildFly on the community call, please feel free to propose your topic in our <a href="https://docs.google.com/document/d/1kjaMGFGtL3MPY58UCJMojLlTzl335DUm1L-P9lYk2HY/edit?tab=t.2gtt8vv7bb9i#heading=h.auc5xf2lxjbq">agenda</a></p>
+        <p>The conference format is something we can offer to our community again in the future, if you have any feedback on the format we have been using, please feel free to complete our <a href="https://docs.google.com/forms/d/e/1FAIpQLSdIBIACceXIBQAYobvrwUDcze8w5u64T42wlVWG0RBAL1s9DA/viewform?usp=publish-editor">form</a></p>
+      </div>
+    </div>
     {#for event in site.collections.events.group("event-type").get("wmc")}
     {#let confData=cdi:conferences.get(event)}
     {#if confData.status == "planning"}
