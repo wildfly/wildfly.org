@@ -10,19 +10,14 @@ description: A2A Java SDK for Jakarta 0.3.0.Final is released.
 
 I am pleased to announce the 0.3.0.Final release of the A2A Java SDK for Jakarta. You can find the release https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/releases/tag/v0.3.0.Final[here], and it supports version https://a2a-protocol.org/v0.3.0/specification/[0.3.0 of the A2A Protocol Specification].
 
-Since the https://www.wildfly.org/news/2025/09/19/A2A-Java-SDK-for-Jakarta-0-3-0-Beta1-is-released/[0.3.1.Beta1] release, there haven't been big changes on our side, but we are now aligned with version 0.3.2.Final of the https://github.com/a2aproject/a2a-java[A2A Java SDK]. A lot of work has taken place there since the previous version of the A2A Java SDK we aligned with which was 0.3.0.Beta1.
+Since the https://www.wildfly.org/news/2025/09/19/A2A-Java-SDK-for-Jakarta-0-3-0-Beta1-is-released/[0.3.0.Beta1] release, there haven't been big changes on our side, but we are now aligned with version 0.3.2.Final of the https://github.com/a2aproject/a2a-java[A2A Java SDK]. A lot of work has taken place there since the previous version of the A2A Java SDK we aligned with which was 0.3.0.Beta1.
 
-You can find the pulled in changes in the A2A Java SDK release notes for each version here:
+You can find the changes between versions 0.3.0.Beta2 and 0.3.2.Final of the A2A Java SDK https://github.com/a2aproject/a2a-java/compare/v0.3.0.Beta2...v0.3.2.Final[here].
 
-* https://github.com/a2aproject/a2a-java/releases/tag/v0.3.0.Beta2[v0.3.0.Beta2]
-* https://github.com/a2aproject/a2a-java/releases/tag/v0.3.0.Final[v0.3.0.Final]
-* https://github.com/a2aproject/a2a-java/releases/tag/v0.3.1.Final[v0.3.1.Final]
-* https://github.com/a2aproject/a2a-java/releases/tag/v0.3.2.Final[v0.3.2.Final]
-
-Please see the A2A Java SDK for Jakarta https://www.wildfly.org/news/2025/09/19/A2A-Java-SDK-for-Jakarta-0-3-0-Beta1-is-released/[0.3.1.Beta1] release announcement for how to get started with the SDK.
+Please see the A2A Java SDK for Jakarta https://www.wildfly.org/news/2025/09/19/A2A-Java-SDK-for-Jakarta-0-3-0-Beta1-is-released/[0.3.0.Beta1] release announcement for how to get started with the SDK.
 
 == Future Plans
-We will continue to align with the A2A SDK for Java, which is currently working towards supporting 0.4.0 of the A2A Protocol Specification. Note that the work on 0.4.0 of the specification has not finished yet.
+We will continue to align with the A2A SDK for Java, which is currently working towards supporting 0.4.0 of the A2A Protocol Specification. Note that the work on version 0.4.0 of the specification is still in progress.
 
 Also, it is worth pointing out that for WildFly users, the A2A Java SDK for Jakarta currently relies on bundling the jars from the two SDKs, as well as their dependencies, into your application deployment archive. We would like to create a WildFly feature pack for this, which would follow the normal WildFly pattern of enabling a subsystem which would make all the A2A libraries available automatically to deployments, thus removing the need to bundle them in your application.
 
