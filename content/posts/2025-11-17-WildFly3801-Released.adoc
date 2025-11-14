@@ -1,0 +1,16 @@
+---
+layout: post
+title: "WildFly 38.0.1 is released!"
+date: 2025-11-17
+tags: announcement release
+synopsis: WildFly 38.0.1.Final is now available for download.
+author: jmesnil
+---
+
+WildFly 38.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+The full WildFly 38.0.1.Final release notes are link:https://github.com/wildfly/wildfly/releases/tag/38.0.1.Final[available in GitHub, window=_blank].
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA, window=_blank].
+
+Enjoy!
