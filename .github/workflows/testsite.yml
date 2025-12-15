@@ -17,7 +17,7 @@ jobs:
       - name: Build with Maven
         run: mvn --batch-mode clean test
       - name: Archive generated site
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
             name: generated-site
             path: ./target/roq/
