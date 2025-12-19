@@ -1,0 +1,56 @@
+---
+layout: post
+title:  "New WildFly 39 Beta release"
+aliases: [/news/2025/12/19/WildFly39Beta-released/]
+date:   2025-12-19
+tags:   announcement release
+author: bstansberry
+description: WildFly 39 Beta is now available for download.
+---
+
+We're pleased to announce the release of *WildFly 39 Beta 1*. This version contains updates, new features, and bug fixes, paving the way for the planned January final release. This beta version is a crucial step in our development cycle, allowing the community to test and provide feedback on the latest changes.
+
+
+== What's New and Noteworthy?
+
+Here's a quick rundown of the highlights:
+
+* **Clustering:** We've added a couple new things in the clustering/high-availability area:
+** WildFly now supports https://docs.wildfly.org/wildfly-proposals/clustering/jgroups/WFLY-15836_Add_TLS_support_to_JGroups_TCP-based_transports.html[TLS configuration for TCP-based transport protocols]. This can be used to effectively replace `ASYM_ENCRYPT` with `AUTH` protocols in the existing JGroups stack.
+** WildFly now supports https://docs.wildfly.org/wildfly-proposals/clustering/infinispan/WFLY-20918_Add_max-idle_based_eviction_configuration_for_distributable_HttpSessions_SFSBs_Timers.html[idle time-based eviction for distributable HttpSessions, Stateful EJBs, and EJB Timers]. This provides administrators with more flexible resource management options, which is particularly useful when distributed state objects have highly variable sizes. The new configuration allows eviction based on how long a state object has been idle, complementing the existing count-based eviction mechanism.
+* **Jakarta RESTful Web Services**: A new attribute, `resteasy-original-webapplicationexception-behavior` has been https://docs.wildfly.org/wildfly-proposals/jaxrs/WFLY-14559-new-attributes.html[added to the `jaxrs` subsystem`]. It was previously only available by configuring the equivalent context parameter at a deployment level. Configuring this at the subsystem level will apply it to all deployments, unless the deployment itself explicitly sets the parameter.
+* **Java EE 11 Integration:** In WildFly Preview, we've  updated our implementations of Jakarta Authentication, Jakarta Concurrency, Jakarta Security, Jakarta Servlet,   and Jakarta Websockets.
+* **Galleon provisioning**: Our Galleon tooling has https://docs.wildfly.org/wildfly-proposals/provisioning/WFLY-21122-WildFly-Feature_pack-Family.html[added preview capabilities] that will make it possible for users who want to use a feature pack to choose which of a compatible set of dependency feature packs to use. There's no practical end-user benefit to this _yet_, but it will be helpful in the future as the feature packs we produce make use of this capability. A typical example will be letting users of something like the https://github.com/wildfly-extras/wildfly-ai-feature-pack[AI feature pack] choose which "base" feature pack that provides Jakarta EE to use -- `wildfly-ee`, `wildlfy-preview` or a planned `wildfly-ee-10`.
+* **Component Upgrades:** We've updated a wide range of dependencies to their latest versions, improving performance, stability, and security. Notable upgrades include:
+ ** **Jackson 2.20**
+ ** **Infinispan 16.0**
+ ** **JGroups 5.5**
+ ** **Apache Artemis 2.44**
+ ** **Narayana 7.3**
+ ** **WildFly Core 31.0.0.Beta3**
+ ** **WildFly Clustering 9.0.0.CR3**
+ ** **lz4-java 1.10.1**, addressing CVE-2025-12183 and CVE-2025-66566.
+
+== Important Bug Fixes
+
+We've tackled several bugs to ensure a more stable experience. Significant ones include:
+
+* Resolved a problem with https://issues.redhat.com/browse/WFLY-21044[not-recovered transactions] after a crash of a server that deployed MDBs.
+* Resolved a https://issues.redhat.com/browse/WFLY-21056[memory leak issue with Jakarta Web Services client proxies].
+* Resolved a problem where https://issues.redhat.com/browse/WFLY-21045[requesting a session that was invalidated by a concurrent request can cause a memory leak].
+
+We encourage you to explore the full list of changes in the official  link:https://github.com/wildfly/wildfly/releases/tag/39.0.0.Beta1[release notes].
+
+== Maven Publication Changes
+
+The https://github.com/wildfly/wildfly[main WildFly project] has begun deploying its release content directly to Maven Central. This is a change from the project's decades-old practice of deploying to https://repository.jboss.org/nexus/[JBoss Nexus], from which our content later would be synced to Maven Central. JBoss Nexus serves as a proxy for Maven Central, so this content will still be available via JBoss Nexus. Our expectation is this change will be transparent to our users. If you encounter problems, please let us know!
+
+== How to Get Involved
+
+This is a *beta release*, so we don't recommend it for production environments. Your feedback is crucial to help us identify and fix issues before the final release.
+
+* **Download WildFly 39 Beta 1** from link:https://wildfly.org/downloads[https://wildfly.org/downloads] or provision a WildFly 39 Beta 1 server using a tool like the link:https://docs.wildfly.org/wildfly-maven-plugin/[wildfly-maven-plugin]
+* **Report a bug** or enhancement request on our link:https://issues.redhat.com/browse/WFLY[issue tracker]
+* **Ask a question** in the link:https://groups.google.com/forum/#!forum/wildfly[Google Group] or reach us on link:https://wildfly.zulipchat.com/[Zulip].
+
+We look forward to hearing your feedback!

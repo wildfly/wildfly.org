@@ -1,3 +1,65 @@
+- version: 39.0.0.Beta1
+  version_shortname: 39 Beta1
+  date: 2025-12-19
+  qualifier: Beta
+  gpg_key: rsa4096/39B3A8E7
+  link:
+    - name: WildFly Distribution
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1.zip.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1.zip.asc
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1.tar.gz.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1.tar.gz.asc
+    - name: WildFly Preview Distribution
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-preview-39.0.0.Beta1.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-preview-39.0.0.Beta1.zip.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-preview-39.0.0.Beta1.zip.asc
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-preview-39.0.0.Beta1.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-preview-39.0.0.Beta1.tar.gz.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-preview-39.0.0.Beta1.tar.gz.asc
+    - name: Application Server Source Code
+      licence: AL
+      items:
+        - format: zip
+          url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-src.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-src.zip.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-src.zip.asc
+        - format: tgz
+          url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-src.tar.gz
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-src.tar.gz.sha1
+          signature: GPG
+          signature_url: https://github.com/wildfly/wildfly/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-src.tar.gz.asc
+    - name: Quick Start Source Code
+      licence: AL
+      items:
+        - format: Git Tag
+          url: https://github.com/wildfly/quickstart/tree/39.0.0.Beta1
+        - format: zip
+          url: https://github.com/wildfly/quickstart/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-quickstarts.zip
+          checksum: SHA-1
+          checksum_url: https://github.com/wildfly/quickstart/releases/download/39.0.0.Beta1/wildfly-39.0.0.Beta1-quickstarts.zip.sha1
+    - name: Release Notes
+      items:
+        - format: Notes
+          url: https://wildfly.org/news/2025/12/19/WildFly39Beta-released/
 - version: 38.0.1.Final
   version_shortname: 38.0.1.Final
   date: 2025-11-17
