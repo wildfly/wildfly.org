@@ -1,0 +1,120 @@
+---
+layout: post
+title:  "WildFly 39 is released!"
+aliases: [/news/2026/01/16/WildFly39Released]
+date:   2026-01-16
+tags:   announcement release
+author: bstansberry
+description: WildFly 39 Final is now available.
+---
+
+I'm pleased to announce that the new WildFly and WildFly Preview 39.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature packs for WildFly 39 are available in https://central.sonatype.com/[Maven Central, window=_blank].
+
+[[new_and_notable]]
+== New and Notable
+
+Here's what's new:
+
+* **Clustering:** We've added a couple new things in the clustering/high-availability area:
+** WildFly now supports https://docs.wildfly.org/wildfly-proposals/clustering/jgroups/WFLY-15836_Add_TLS_support_to_JGroups_TCP-based_transports.html[TLS configuration for TCP-based transport protocols, window=_blank]. This can be used to effectively replace `ASYM_ENCRYPT` with `AUTH` protocols in the existing JGroups stack.
+** WildFly now supports https://docs.wildfly.org/wildfly-proposals/clustering/infinispan/WFLY-20918_Add_max-idle_based_eviction_configuration_for_distributable_HttpSessions_SFSBs_Timers.html[idle time-based eviction for distributable HttpSessions, Stateful EJBs, and EJB Timers, window=_blank]. This provides administrators with more flexible resource management options, which is particularly useful when distributed state objects have highly variable sizes. The new configuration allows eviction based on how long a state object has been idle, complementing the existing count-based eviction mechanism.
+* **Jakarta RESTful Web Services**: A new attribute, `resteasy-original-webapplicationexception-behavior` has been https://docs.wildfly.org/wildfly-proposals/jaxrs/WFLY-14559-new-attributes.html[added to the `jaxrs` subsystem, window=_blank]. It was previously only available by configuring the equivalent context parameter at a deployment level. Configuring this at the subsystem level will apply it to all deployments, unless the deployment itself explicitly sets the parameter.
+* **Java EE 11 Integration:** In WildFly Preview, we've  updated our implementations of Jakarta Authentication, Jakarta Concurrency, Jakarta Security, Jakarta Servlet, and Jakarta Websockets.
+* **Galleon provisioning**: Our Galleon tooling has https://docs.wildfly.org/wildfly-proposals/provisioning/WFLY-21122-WildFly-Feature_pack-Family.html[added preview capabilities, window=_blank] that will make it possible for users who want to use a feature pack to choose which of a compatible set of dependency feature packs to use. There's no practical end-user benefit to this __yet__, but it will be helpful in the future as the feature packs we produce make use of this capability. A typical example will be letting users of something like the https://github.com/wildfly-extras/wildfly-ai-feature-pack[AI feature pack, window=_blank] choose which "base" feature pack that provides Jakarta EE to use -- `wildfly-ee`, `wildlfy-preview` or a planned `wildfly-ee-10`.
+** _Note_: If you plan to develop a feature pack that depends on WildFly 39, be sure to use WildFly Galleon Plugins 8.1.0 or later. We always recommend you use the same Galleon plugin version that WildFly used to build its own feature packs.
+* **Component Upgrades:** We've updated a wide range of dependencies to their latest versions, improving performance, stability, and security. Notable upgrades include:
+** **Jackson 2.20**
+** **Infinispan 16.0**
+** **JGroups 5.5**
+** **Apache Artemis 2.44**
+** **Narayana 7.3**
+** **WildFly Core 31**
+** **WildFly Clustering 9.0**
+** **lz4-java 1.10.1**, addressing CVE-2025-12183 and CVE-2025-66566.
+** **Undertow 2.3.22**, addressing CVE-2024-3884, CVE-2024-4027 and CVE-2025-12543.
+
+== Supported Specifications
+
+=== Jakarta EE
+
+Standard WildFly 39 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
+
+Evidence supporting our certification is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications, window=_blank] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 10 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<|  Jakarta EE 10 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<| Jakarta EE 10 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+|=======================================================================
+
+
+=== MicroProfile
+
+Standard WildFly 39 supports https://microprofile.io/2025/06/17/microprofile-7-1-released/[MicroProfile Platform 7.1, window=_blank], along with several other MicroProfile specifications that are not part of MicroProfile Platform. The full listing is available in the link:https://docs.wildfly.org/39/Getting_Started_Guide.html[Getting Started Guide, window=_blank].
+
+link:https://github.com/wildfly/certifications/blob/MP7.1/WildFly_39.0.0.Final/microprofile-7.1/microprofile-7.1-full-certification.adoc[Compatibility evidence, window=_blank] for the specifications that are part of MicroProfile 7.1 can be found in the WildFly Certifications repository on GitHub.
+
+
+[[preview-ee11]]
+=== WildFly Preview and EE 11
+
+Since the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we have been using WildFly Preview to provide a look at what we're doing for Jakarta EE 11 support.  We continued to make progress on this during the WildFly 39 cycle, with new integrations of implementations of Jakarta Authentication, Jakarta Concurrency, Jakarta Security, Jakarta Servlet and Jakarta Websocket.
+
+For Jakarta Pages we are still offering the EE 10 implementation. Our goal is shift to the EE 11 implementation in WildFly Preview 40.
+
+The Jakarta EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] and link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] went GA last summer. We are working on completing our implementation of these in WildFly Preview, for eventual incorporation in standard WildFly.
+
+Full details on the EE specification versions provided by WildFly Preview can be found in https://docs.wildfly.org/39/WildFly_and_WildFly_Preview.html#ee-11-support-in-wildfly-preview[the WildFly 39 documentation, window=_blank].
+
+
+== Java SE Support
+
+Our recommendation is that you run WildFly 39 on Java SE 21, as that is the latest LTS JDK release where we have completed the full set of testing we like to do before recommending a particular SE version. WildFly 39 also is heavily tested and runs well on Java 17.
+
+Our recommendation of SE 21 over SE 17 is solely because as a general principle we recommend being on later LTS releases, not because of any problems with WildFly on SE 17.
+
+While we recommend using SE 21 or SE 17, we believe WildFly runs well on *SE 25*, which is the most recent LTS release, released last September. By runs well, I mean the main WildFly https://ci.wildfly.org/project.html?projectId=WF_MainNightlyJobs[nightly testsuite jobs, window=_blank] produce results equivalent to what we see with SE 17 and SE 21. We want developers who are trying to evaluate what SE 25 means for their applications to be able to look to WildFly as a useful development platform.
+
+Since SE 25 is an LTS release, we aim in a future WildFly version to include it in the list of recommended SE releases. To do this there is further qualifying work to be done, beyond the good WildFly testsuite results we are seeing today. We're working to https://docs.google.com/spreadsheets/d/1Un8Q1suq2Y8Aqa490p5EHr3rLtgSKc5pMSn76FUAiUI/edit?gid=0#gid=0[validate the SE 25 compatibility of key components, window=_blank] we include in WildFly, and we're using the Jakarta EE 11 TCK as a further set of tests of how well we run on SE 25. (The EE 11 TCK was not written for SE 25, so there may be some tests that won't work on it. However, using the EE 10 TCK to help qualify SE 21 worked well.) In both of these areas we made good progress during the WildFly 39 development period.
+
+Please note that WildFly runs in classpath mode.
+
+[[incompatibilities]]
+== Incompatible Changes
+
+There are a couple of incompatible changes in WildFly 39 that may affect some users:
+
+* The `require-host-http11` attribute on `undertow` subsystem listener resources no longer has any effect. The server behavior is now always as if this were set to `true`, i.e. we now require that HTTP 1.1 or later requests include a `Host` header, as is mandated by the HTTP standards. Previously this was configurable and had a default value of `false`, meaning we did not require such a header. It was reported to us that not requiring this was a https://nvd.nist.gov/vuln/detail/cve-2025-12543[security flaw, window=_blank], so we changed this behavior.
+* Previously, when using HTTP to upload a deployment to our management interface, we imposed no limit on the size of the deployment. Now we impose a limit of 1GB. If you have deployments larger than that, you can use the `org.wildfly.management.upload.limit` system property to configure a different limit, with a value set to the number of bytes.
+
+== Maven Publication Changes
+
+The https://github.com/wildfly/wildfly[main WildFly project, window=_blank] has begun deploying its release content directly to Maven Central. This is a change from the project's decades-old practice of deploying to https://repository.jboss.org/nexus/[JBoss Nexus, window=_blank], from which our content later would be synced to Maven Central. JBoss Nexus serves as a proxy for Maven Central, so this content will still be available via JBoss Nexus. Our expectation is this change will be transparent to our users. If you encounter problems, please let us know!
+
+[[contributors]]
+== New and Noteworthy Contributors
+
+WildFly gets great contributions from so many people. Let's thank a few of them.
+
+link:https://github.com/bee0511[Jian-Fong Yu, window=_blank], link:https://github.com/nexus-penguin[Christian Voss, window=_blank] and link:https://github.com/HliasMpGH[Ilias Bourdakos, window=_blank] made their first contributions to the link:https://github.com/wildfly/wildfly[main WildFly repository, window=_blank], while link:https://github.com/rafaeldarosagit[Rafael Rosa, window=_blank] made his first contribution to https://github.com/wildfly/wildfly-core[WildFly Core, window=_blank]. Thank you, Jian-Fong, Christian, Ilias and Rafael!
+
+link:https://github.com/pferraro[Paul Ferraro, window=_blank] and link:https://github.com/rhusar[Rado Husar, window=_blank] did excellent work on our clustering capabilities. Rado was also on fire in general, doing all sorts of the kinds of unsung work that helps keep an OSS project moving. Thank you, Paul and Rado!
+
+link:https://github.com/fl4via[Flavia Rainone, window=_blank] and link:https://github.com/baranowb[Bartosz Baranowski, window=_blank] worked very hard to deliver a number of security and other improvements in our web tier for WildFly 39. Thank you, Flavia and Bartosz!
+
+== Release Notes
+
+The full WildFly 39 release notes are link:https://github.com/wildfly/wildfly/releases/tag/39.0.0.Final[available in GitHub, window=_blank].  Issues fixed in the underlying WildFly Core 30.0.0 and 30.0.1 releases are listed in the link:https://issues.redhat.com/issues/?jql=statusCategory%20%3D%20done%20AND%20project%20%3D%2012315422%20AND%20fixVersion%20in%20(12473018%2C%2012475547)%20ORDER%20BY%20priority%20DESC%2C%20key%20ASC[WildFly Core JIRA, window=_blank].
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA, window=_blank].
+
+Best regards,
+
+Brian
