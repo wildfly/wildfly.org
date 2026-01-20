@@ -1,0 +1,22 @@
+---
+layout: post
+title:  "A2A Java SDK for Jakarta 1.0.0.Alpha1 is released!"
+aliases: [/news/2026/01/20/A2A_SDK_Jakarta_1.0.0.Alpha1-Released/]
+date:   2026-01-20
+tags:   announcement release generative-ai a2a agent wildfly
+author: kkhan
+description: A2A Java SDK for Jakarta 1.0.0.Alpha1 is released.
+---
+
+I am pleased to announce the https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/releases/tag/v1.0.0.Alpha1[1.0.0.Alpha1 release] of the A2A Java SDK for Jakarta. It supports version https://a2a-protocol.org/latest/specification/[1.0 of the A2A Protocol Specification]. Note that version 1.0  of the A2A Protocol is not totally finalized yet, so there will likely be some more Alphas and Betas until we have a final release.
+
+The release builds on the 1.0.0.Alpha1 release of the https://github.com/a2aproject/a2a-java[a2a-java] SDK. This introduces some improvements, and some breaking changes, which you can read about https://quarkus.io/blog/a2a-java-sdk-1-0-0-alpha1/[here].
+
+There are some changes to the dependencies in a2a-java, so take a look at how the https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/tree/v1.0.0.Alpha1/examples/simple[example] is packaged, and also see how the deployments are packaged with Shrinkwrap in the https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/tree/v1.0.0.Alpha1/tests[tests].
+
+
+== Future Plans
+Note that while we pass all the tests 'inherited' from the a2a-java SDK, we don't currently pass the TCK. The TCK is undergoing big changes too, in order to support the 1.0 specification. So the next step will be to get the TCK passing.
+
+== Get involved
+* If you have any issues with the SDK, please open an https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/issues[issue]. Also, https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta/pulls[pull requests] are welcome!
