@@ -1,0 +1,158 @@
+---
+layout: guide
+aliases: [/guides/security-oidc-elytron-manual.html]
+---
+[[security-oidc-elytron-manual]]
+= Configuring More Advanced OIDC Use Cases with the Elytron Subsystem
+:summary: How to configure OpenID Connect manually via the Elytron subsystem for advanced control of the configuration.
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
+:prerequisites-time: 20
+
+WildFly can secure applications with OpenID Connect (OIDC) using the `elytron-oidc-client` subsystem and deployment descriptors, which is the typical approach. For more advanced control where you need to configure elytron subsystem resources as well—such as combining OIDC with other authentication mechanisms and security realms, you have to configure OIDC in the Elytron subsystem. This guide shows how to do that.
+
+include::../../templates/partials/guides/prerequisites.adoc[]
+* A WildFly installation that includes the Elytron HTTP OIDC module (e.g. provisioned with the `elytron-oidc-client` Galleon layer or equivalent)
+* An OpenID Connect provider (e.g. Keycloak) configured with a client for your application
+
+== Note
+
+Use this manual configuration approach if you need to combine with other elytron subsystem resources.
+
+This approach is not recommended if a deployment-level or elytron-oidc-client subsystem configuration is sufficient and no elytron subsystem configuration is needed.
+
+== Server configuration changes
+
+The following steps enable the OIDC mechanism using the *Elytron subsystem*.
+
+=== Configure an OIDC realm
+
+[source,bash]
+----
+/subsystem=elytron/custom-realm=myOidcRealm:add(module=org.wildfly.security.elytron-http-oidc, class-name=org.wildfly.security.http.oidc.OidcSecurityRealm)
+----
+
+=== Configure a security domain that references the OIDC realm
+
+[source,bash]
+----
+/subsystem=elytron/security-domain=myDomain:add(default-realm=myOidcRealm, permission-mapper=default-permission-mapper, realms=[{realm=myOidcRealm}])
+----
+
+=== Configure an HTTP server mechanism factory
+
+[source,bash]
+----
+/subsystem=elytron/service-loader-http-server-mechanism-factory=myFactory:add(module=org.wildfly.security.elytron-http-oidc)
+----
+
+=== Configure an HTTP authentication factory
+
+[source,bash]
+----
+/subsystem=elytron/http-authentication-factory=myMechanism:add(http-server-mechanism-factory=myFactory, security-domain=myDomain, mechanism-configurations=[{mechanism-name=OIDC}])
+----
+
+=== Configure application-security-domain mapping
+
+[source,bash]
+----
+/subsystem=undertow/application-security-domain=myDomain:add(http-authentication-factory=myMechanism, override-deployment-config=true)
+----
+
+== Application changes
+
+This approach requires use of *oidc.json* file (to configure OIDC provider settings) that will be included in your WAR deployment's WEB-INF folder. Inability to use the elytron oidc client subsystem configuration is a limitation of this approach.
+
+=== Reference the security domain in jboss-web.xml
+
+In `WEB-INF/jboss-web.xml`, reference the security domain you created:
+
+[source,xml]
+----
+<security-domain>myDomain</security-domain>
+----
+
+=== Add the OIDC configuration listener in web.xml
+
+Register the OIDC configuration servlet listener in `WEB-INF/web.xml`:
+
+[source,xml]
+----
+<listener>
+    <listener-class>org.wildfly.security.http.oidc.OidcConfigurationServletListener</listener-class>
+</listener>
+----
+
+=== Add the Elytron HTTP OIDC dependency and module
+
+Add the dependency to your application (e.g. in `pom.xml` for Maven):
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.wildfly.security</groupId>
+    <artifactId>wildfly-elytron-http-oidc</artifactId>
+    <scope>provided</scope>
+</dependency>
+----
+
+Declare the module dependency in `WEB-INF/jboss-deployment-structure.xml` (or `META-INF/jboss-deployment-structure.xml`):
+
+[source,xml]
+----
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="org.wildfly.security.elytron-http-oidc"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>
+----
+
+== Example of combining OIDC with LDAP security realm and BASIC mechanism
+
+For this example, you will combine OIDC with another authentication mechanism such as BASIC against an LDAP realm. Below is required to achieve this:
+
+* Add an LDAP `dir-context` and `ldap-realm` in the Elytron subsystem.
+* Add both custom OIDC and LDAP realms to the security domain and create constant realm mappers for each (e.g. `oidc-mapper` and `ldap-mapper`).
+* Use an aggregate HTTP server mechanism factory that includes both a BASIC-capable factory (e.g. a configurable factory with `silent=true` for BASIC) and the OIDC service-loader factory.
+* In the HTTP authentication factory, set `mechanism-configurations` so that OIDC uses the OIDC realm mapper and BASIC uses the LDAP realm mapper (and the appropriate `mechanism-realm-configurations`).
+
+Full example CLI commands to combine OIDC with silent BASIC mechanism and an LDAP security realm (adjust LDAP URL and credentials for your environment):
+
+[source,bash]
+----
+/subsystem=elytron/custom-realm=myOidcRealm:add(module=org.wildfly.security.elytron-http-oidc, class-name=org.wildfly.security.http.oidc.OidcSecurityRealm)
+
+/subsystem=elytron/dir-context=myLdapContext:add(url="ldap://LDAP_CONTAINER_IP:389", principal="cn=admin,dc=example,dc=com", credential-reference={clear-text="admin"} )
+
+/subsystem=elytron/ldap-realm=myLdapRealm:add(dir-context=myLdapContext,  direct-verification=true, identity-mapping= { search-base-dn="ou=Users,dc=example,dc=com", rdn-identifier="cn", user-password-mapper= {from="userPassword"}})
+
+/subsystem=elytron/security-domain=myDomain:add(default-realm=myOidcRealm, permission-mapper=default-permission-mapper, realms=[{realm=myLdapRealm},{realm=myOidcRealm}])
+
+/subsystem=elytron/constant-realm-mapper=ldap-mapper:add(realm-name="myLdapRealm")
+
+/subsystem=elytron/constant-realm-mapper=oidc-mapper:add(realm-name="myOidcRealm")
+
+
+/subsystem=elytron/provider-http-server-mechanism-factory=authMechanisms:add(providers=elytron)
+
+/subsystem=elytron/configurable-http-server-mechanism-factory=silentBasic:add(http-server-mechanism-factory=authMechanisms,properties={silent=true},filters=[{pattern-filter=BASIC}])
+
+/subsystem=elytron/service-loader-http-server-mechanism-factory=myOidcFactory:add(module=org.wildfly.security.elytron-http-oidc)
+
+/subsystem=elytron/aggregate-http-server-mechanism-factory=myAggregateHttpFactory:add(http-server-mechanism-factories=[silentBasic,myOidcFactory])
+
+/subsystem=elytron/http-authentication-factory=myMechanism:add(http-server-mechanism-factory=myAggregateHttpFactory,security-domain=myDomain,mechanism-configurations=[ {mechanism-name=OIDC, realm-mapper=oidc-mapper}, {mechanism-name=BASIC, realm-mapper=ldap-mapper,mechanism-realm-configurations=[{realm-name=myDomain,realm-mapper=ldap-mapper}]}])
+
+/subsystem=undertow/application-security-domain=myDomain:add(http-authentication-factory=myMechanism,override-deployment-config=true)
+----
+
+Now you can deploy your application containing *oidc.json* to the server.
+
+[[references]]
+== References
+
+* https://docs.wildfly.org/{wildfly-version}/WildFly_Elytron_Security.html[WildFly Elytron Security]
+* link:/guides/security-oidc-openshift[Securing WildFly Apps with OIDC on OpenShift]
