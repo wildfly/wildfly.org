@@ -1,0 +1,24 @@
+---
+layout: post
+title: "WildFly 39.0.1 is released!"
+aliases: [/news/2026/02/12/WildFly3901Released]
+date: 2026-02-12
+tags: announcement release
+synopsis: WildFly 39.0.1.Final is now available for download.
+author: rhusar
+---
+
+I am very happy to announce that WildFly 39.0.1.Final is now released and available link:/downloads[for download] (or to be provisioned by https://docs.wildfly.org/39/Galleon_Guide.html[Galleon], fetched as https://quay.io/repository/wildfly/wildfly[Container images on Quay], or obtained by whichever distribution mechanism you prefer).
+
+The complete WildFly 39.0.1.Final release notes are link:https://github.com/wildfly/wildfly/releases/tag/39.0.1.Final[available on GitHub, window=_blank].
+
+I want to highlight great work of our community users during this maintenance release.
+Rhuan H. found a memory leak https://issues.redhat.com/browse/WFLY-21390[issue] and did absolutely amazing work analyzing, debugging and verifying the fix.
+Cody L. found and promptly https://issues.redhat.com/browse/WFLY-21383[reported] an issue where `max-post-size` in Undertow was not being properly applied,
+capping uploads at 2 MB.
+
+Give it a try, upgrade and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://issues.redhat.com/projects/WFLY/summary[Jira, window=_blank].
+
+Best regards,
+
+Rado
