@@ -8,7 +8,7 @@ description: This article explains how to use the new capabilities of the wildfl
 author: jmesnil
 ---
 
-In this article, we will explain how a developer using the Docker image for WildFly can take advantage of the new capabilities of the `wildlfy-maven-plugin` and the new WildFly runtime image to build their container image.
+In this article, we will explain how a developer using the Docker image for WildFly can take advantage of the new capabilities of the `wildfly-maven-plugin` and the new WildFly runtime image to build their container image.
 
 We will describe the changes required to move to this new architecture.
 Once the changes are done, we will provide some examples of the benefits that can be gained from this new architecture.
@@ -57,7 +57,7 @@ Let's build a `wildfly-app` image from this Dockerfile and run it locally:
 
 [source,bash]
 ----
-docker build -t wildlfy-app .
+docker build -t wildfly-app .
 docker run -p 8080:8080 wildfly-app
 ----
 
@@ -137,7 +137,7 @@ Let's build again the `wildfly-app` image from this updated `Dockerfile` and run
 
 [source,bash]
 ----
-docker build -t wildlfy-app .
+docker build -t wildfly-app .
 docker run -p 8080:8080 wildfly-app
 ----
 
@@ -257,7 +257,7 @@ The most important feature pack is WildFly's own feature pack: `org.wildfly:wild
 We are also providing additional feature packs to provide additional capabilities to WildFly.
 It is out of scope of this article to list all of them but let's discuss two interesting ones:
 
-* The https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] provides a set of additional features allowing you to configure a WildFly server to work on the cloud. It adapts WildFly to run on orchestration plaftorms in an optimized way. In particular, it automatically routes server logs to the console, it provisions the `health` subsystem to monitor the server health with healthiness probes, etc.
+* The https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] provides a set of additional features allowing you to configure a WildFly server to work on the cloud. It adapts WildFly to run on orchestration platforms in an optimized way. In particular, it automatically routes server logs to the console, it provisions the `health` subsystem to monitor the server health with healthiness probes, etc.
 * The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] provides JDBC drivers and datasources for various databases. If you include this feature pack, you only need to specify the layer corresponding to the databases you want to use (e.g. `postgresql-datasource`). You then only need to specify a few environment variables (e.g. DB URL and credentials) at runtime to connect to the database when WildFly is running.
 
 ## Conclusion
@@ -269,7 +269,7 @@ The full customization of WildFly (using feature packs, packaging scripts, etc.)
 Creating a container image from this provisioned server is then just a matter of putting it in a runtime image that contains OpenJDK to run the application.
 
 We will continue to deliver the vanilla Docker image for WildFly but we are focusing on the new architecture and the new images to expand the capabilities of WildFly.
-We are looking forward to our users trying this new approach and validates how it improves their workflow. 
+We are looking forward to our users trying this new approach and validate how it improves their workflow. 
 
 We will also start an open conversation to bring additional synergies between the Docker and S2I images for WildFly that could benefit the whole community. In particular, we want to bring new capabilities such as additional architectures (in particular `linux/arm64`), newer versions of the JDK (with `17` being the priority), etc. to all our images.
 
