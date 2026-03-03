@@ -71,6 +71,12 @@
         key: 51F8871824A19B8C3EE6708AC34DC24F80C9A5BA
         link: https://keys.openpgp.org/vks/v1/by-fingerprint/51F8871824A19B8C3EE6708AC34DC24F80C9A5BA
         fingerprint: 51F8 8718 24A1 9B8C 3EE6 708A C34D C24F 80C9 A5BA
+        invalidated: 2026-03-03
+        invalidated-reason: No longer used
+      - id: ed25519/03E1CCCD
+        key: 28138A84851CAF4C87ACD1AF59C5229503E1CCCD
+        link: https://keys.openpgp.org/vks/v1/by-fingerprint/28138A84851CAF4C87ACD1AF59C5229503E1CCCD
+        fingerprint: 2813 8A84 851C AF4C 87AC D1AF 59C5 2295 03E1 CCCD
 - contributor: pferraro
   name: "Paul Ferraro"
   bio: "Paul Ferraro is responsible for the clustering functionality of the WildFly application server project."
