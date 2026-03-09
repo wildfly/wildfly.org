@@ -14,7 +14,7 @@ Built on top of HAL Foundation, *halOP* (HAL On Premise) is the next-gen managem
 halOP is a complete rewrite, built from the ground up using modern technologies like Java 21, https://j2cl-contrib.github.io/j2cl/getting-started[J2CL,window="_blank"] (Java to JavaScript transpilation), https://github.com/crysknife-io/crysknife[Crysknife CDI,window="_blank"], https://github.com/patternfly-java/patternfly-java[PatternFly Java,window="_blank"], and https://github.com/hal/elemento[Elemento,window="_blank"].
 The result is a fresh, modern user experience that makes managing your WildFly instances easier and more enjoyable.
 
-The next-gen management console was also introduced at the https://docs.google.com/document/d/1kjaMGFGtL3MPY58UCJMojLlTzl335DUm1L-P9lYk2HY/edit?tab=t.0[WildFly Community Call on December 18, 2025,window="_blank"].
+The next-gen management console was also introduced at the https://docs.google.com/document/d/1kjaMGFGtL3MPY58UCJMojLlTzl335DUm1L-P9lYk2HY/edit?tab=t.0[WildFly Community Call on December 18,2025,window="_blank"].
 If you prefer a live walkthrough, you can watch the https://www.youtube.com/watch?v=X43dkm1Zdm4&t=371s[recording,window="_blank"] or browse the https://docs.google.com/presentation/d/1M9OETbieAw4Jkai7meYflT8eF1l_pn350fA1D3dCPW8/edit?usp=sharing[slides,window="_blank"].
 
 image::hal/dashboard.png[halOP Dashboard]
@@ -22,6 +22,13 @@ image::hal/dashboard.png[halOP Dashboard]
 == What's New
 
 The new console comes with a number of exciting features and improvements:
+
+=== Dashboard
+
+The new dashboard gives you an at-a-glance overview of your WildFly instance.
+It shows key information like the server status, WildFly and JVM version, management model version, and stability level — all in one place.
+We have lots of ideas for the dashboard and are actively looking for feedback.
+If you have suggestions for what you'd like to see on the dashboard, please join the discussion at https://github.com/hal/foundation/issues/71[#71,window="_blank"].
 
 === Themes and Accessibility
 
@@ -35,8 +42,10 @@ This helps you quickly understand which features are stable, preview, or experim
 === Use Case-Centric Tasks
 
 A brand-new top-level *Tasks* category lets you complete complex management tasks quickly.
-Tasks combine multiple steps and operations that involve configuring different subsystems and resources — all in one place.
+Tasks combine multiple steps and operations that involve configuring different subsystems and resources.
 For example, the "Statistics" task lets you manage the `statistics-enabled` attribute across multiple resources, with filtering and expression assignment capabilities.
+We're planning to add more tasks over time.
+If you have ideas for tasks that would make your life easier, please let us know at https://github.com/hal/foundation/issues/189[#189,window="_blank"].
 
 === Enhanced Model Browser
 
