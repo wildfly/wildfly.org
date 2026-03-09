@@ -81,6 +81,7 @@ For a full overview of all new features — including screencasts of the statist
 halOP is already usable today!
 Here's what's ready:
 
+* The *dashboard* as the new starting page
 * The *model browser* with all the enhancements described above
 * *Theme support* (light and dark) with contrast settings
 * *Stability level indicators* across the UI
