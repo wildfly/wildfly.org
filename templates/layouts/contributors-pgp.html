@@ -8,7 +8,7 @@ layout: base
     </div>
 
     <div class="grid__item width-10-12 width-12-12-m">
-        {#for contributor in cdi:contributors.list}
+        {#for contributor in cdi:ContributorService.contributors}
         {#let author = cdi:authors.byId(contributor.id)}
         <div class="grid__item width-2-12 contributor-row">
             <h2 id="{contributor.id}">
@@ -34,11 +34,19 @@ layout: base
                 <h4>Signing Details:</h4>
                 <table>
                     {#for signing in contributor.signings}
+                    {#set style= (signing.invalidated ? "invalidated" : "")}
+                    {#if signing.invalidated}
+                    <tr class="separator invalidated-header">
+                        <td class="invalidated" colspan="2">Invalidated as of {signing.invalidated}: {signing.invalidatedReason}</td>
+                    </tr>
+                    <tr class="{style}">
+                    {#else}
                     <tr class="separator">
+                    {/if}
                         <td class="contributor-label" id="{signing.id}">Public Key Id</td>
                         <td class="copy-text">{signing.id}</td>
                     </tr>
-                    <tr>
+                    <tr class="{style}">
                         <td class="contributor-label">Public Key</td>
                         {#if signing.link}
                         <td class="copy-text"><a href="{signing.link}" target="_blank">{signing.key}</a></td>
@@ -46,7 +54,7 @@ layout: base
                         <td>{signing.key}</td>
                         {/if}
                     </tr>
-                    <tr>
+                    <tr class="{style}">
                         <td class="contributor-label">Fingerprint</td>
                         <td class="copy-text">{signing.fingerprint}</td>
                     </tr>
