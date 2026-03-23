@@ -23,16 +23,23 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -e
+          
+          readonly POSTS_DIR="content/posts"
 
-          readonly OLD_POST="${{ github.event.inputs.post_name }}"
+          TEMP_OLD_POST="${{ github.event.inputs.post_name }}"
+
+          if [[ $TEMP_OLD_POST =~ $POSTS_DIR ]]; then
+            echo "Truncating blog post ${TEMP_OLD_POST}"
+            TEMP_OLD_POST=${TEMP_OLD_POST//"$POSTS_DIR/"/}
+          fi
+
+          readonly OLD_POST=$TEMP_OLD_POST
           readonly ORIGINAL_PR="${{ github.event.inputs.PR_NUM }}"
           readonly NEW_DATE="$(date '+%Y-%m-%d')"
 
           readonly REPO_ID="wildfly/wildfly.org"
           readonly COMMIT_USERNAME="Wildfly.org CI"
           readonly COMMIT_EMAIL="wildfly-dev@lists.jboss.org"
-          
-          readonly POSTS_DIR="content/posts"
 
           FIX_BRANCH_NAME=''
           SOURCE_LINK=""
