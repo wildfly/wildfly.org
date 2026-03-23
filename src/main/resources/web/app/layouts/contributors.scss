@@ -41,6 +41,15 @@
     font-weight: bold;
   }
 
+  tr.invalidated {
+    text-decoration: line-through;
+  }
+
+  tr.invalidated-header {
+    color: $red;
+    font-weight: bold;
+  }
+
   a > img {
     height: 60px;
     width: 60px;
