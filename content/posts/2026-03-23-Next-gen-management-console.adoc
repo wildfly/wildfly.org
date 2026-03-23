@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Next-Gen Management Console for WildFly"
-date:   2026-03-09
+date:   2026-03-23
 tags:   hal console management
 author: hpehl
 description: Introducing halOP, the next-generation management console for WildFly — built from the ground up with modern technologies, new features, and a fresh user experience.
