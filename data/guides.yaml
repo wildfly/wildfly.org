@@ -115,6 +115,10 @@ categories:
   - category: Security
     cat-id: security
     guides:
+      - title: Upcoming integration of HashiCorp Vault within WildFly
+        url: /guides/security-hashicorp-vault-credential-store
+        description: How to integrate WildFly with HashiCorp Vault to use it as a credential store for managing secrets.
+        keywords: Security, Credential Store, HashiCorp Vault, Vault, Secrets Management, Credential Reference
       - title: Securing WildFly Apps with Keycloak on OpenShift
         url: /guides/security-oidc-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with the Keycloak OpenID provider.
@@ -159,5 +163,3 @@ categories:
         url: /guides/security-credential-store-enc-exp
         description: How to set up encrypted expressions and use it to replace clear-text sensitive information.
         keywords: Security, Credential Stores, Encrypted Expressions
-
-
