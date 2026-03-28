@@ -7,6 +7,10 @@ synopsis: >
   In this demonstration, we are using the Gemini CLI to get started with WildFly using its MCP server.
   
   By pointing the Gemini CLI to a war file and asking high-level questions, we can provision a server, deploy the application, run the server, and access the WildFly web console.
+description: >
+  In this demonstration, we are using the Gemini CLI to get started with WildFly using its MCP server.
+
+  By pointing the Gemini CLI to a war file and asking high-level questions, we can provision a server, deploy the application, run the server, and access the WildFly web console.
 author: jfdenise
 external_link: https://www.youtube.com/watch?v=OE1sd2o7Pkk
 ---
