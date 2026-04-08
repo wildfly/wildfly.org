@@ -1,0 +1,9 @@
+---
+layout: post
+title:  'The HashiCorp Vault feature pack is available for provisioning with WildFly 40 Beta'
+date:   2026-04-09
+tags:   wildfly hashicorp vault expression resolver
+synopsis: The blog post discusses new HashiCorp Vault feature pack that is available for provisioning in WildFly 40 Beta.
+author: dvilkola
+external_link: TODO
+---
