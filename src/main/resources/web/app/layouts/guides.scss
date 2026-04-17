@@ -5,21 +5,55 @@
 .guides {
   .description {
     margin: 0 1rem 1rem 1rem;
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  .news-block-item {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .post-title {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 14rem;
+
+      h4 {
+        margin-bottom: 1rem;
+      }
+
+      .description {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        a {
+          display: block;
+          margin-bottom: 0.5rem;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
   }
 }
 
 /* Header layout with title and search */
 .guides-page {
-  margin: 3rem 0 2rem 0;
-  
+  margin: 0 0 2rem 0;
+
   .title {
     margin: 0;
   }
-  
+
   .guides-search-wrapper {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    padding-top: 0.5em;
   }
 }
 
