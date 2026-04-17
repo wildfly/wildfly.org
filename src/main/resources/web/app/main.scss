@@ -1,8 +1,8 @@
+$content-width: 1000px;
+
 @use "global";
 @use "grid";
 @use "colors";
-@use "asciidoc";
-@use "copy";
 
 @use "includes/header";
 @use "includes/project-footer";
@@ -10,15 +10,11 @@
 @use "includes/share-page";
 @use "includes/header-banner";
 
+@use "layouts/pages";
 @use "layouts/home";
 @use "layouts/conference";
 @use "layouts/downloads";
 @use "layouts/news";
-@use "layouts/error-page";
-@use "layouts/contribute";
 @use "layouts/contributors";
-@use "layouts/getstarted";
 @use "layouts/guides";
-@use "layouts/about";
-@use "layouts/post";
 @use "layouts/events";
