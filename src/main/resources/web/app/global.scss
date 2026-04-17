@@ -242,33 +242,35 @@ a.button-cta.secondary {
 }
 
 .hljs {
-  color: $black;
-  background: $yellow;
+  background: #1a2530;
   border-radius: var(--border-radius);
   padding: 1.5rem !important;
   font-size: 0.95rem;
+  box-shadow: var(--shadow-sm);
 }
 
 code {
   font-family: var(--font-mono);
-  background-color: rgba(255, 239, 159, 0.2);
-  color: var(--wildfly-yellow);
+  background-color: rgba(62, 203, 175, 0.12);
+  color: #5ee6ca;
   overflow: auto;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-size: 0.9em;
-  border: 1px solid rgba(255, 239, 159, 0.3);
+  border: 1px solid rgba(62, 203, 175, 0.2);
 }
 
 pre {
   padding: 1rem 1.5rem;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #1a2530;
   border-radius: var(--border-radius);
   overflow-x: auto;
+  box-shadow: var(--shadow-sm);
   code {
     background: transparent;
     border: none;
     padding: 0;
+    color: inherit;
   }
 }
 
