@@ -3,7 +3,7 @@
 // It does not contain the YAML front matter and has no corresponding output file in the built site.
 
 @import "colors";
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&family=PT+Mono&family=Titillium+Web:wght@200,400,600,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:wght@300;400;500;600;700&family=Red+Hat+Display:wght@300;400;600;700&family=PT+Mono&display=swap');
 
 // Modern CSS Variables for theming
 :root {
@@ -29,8 +29,8 @@
   --text-muted: #c5cdd5;
 
   // Typography
-  --font-heading: 'Titillium Web', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Red Hat Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'PT Mono', monospace;
 
   // Spacing
