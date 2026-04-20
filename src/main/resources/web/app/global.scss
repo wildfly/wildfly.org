@@ -353,7 +353,7 @@ pre.highlight {
   padding: 1rem;
 }
 
-table {
+table:not(.version-table table) {
   border-spacing: 0;
   width: 100%;
   border-collapse: separate;
