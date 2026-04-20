@@ -175,4 +175,4 @@ wado is open source and contributions are welcome! There are several areas where
 * *Bug reports and feature requests* — if you use wado and run into issues or have ideas, please https://github.com/hpehl/wado/issues[open an issue].
 * *Pull requests* — whether it's a bug fix, a new feature, or documentation improvements.
 
-You can find wado on https://github.com/hpehl/wado[GitHub] and https://crates.io/crates/wado[crates.io]. Give it a try, and let me know what you think!
+You can find wado on https://github.com/hpehl/wado[GitHub] and https://crates.io/crates/wado[crates.io]. Give it a try, and let us know what you think!
