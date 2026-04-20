@@ -135,6 +135,8 @@
     padding: 1.5rem;
     color: var(--wildfly-teal);
     background: linear-gradient(135deg, $teal-gradient-light-start, $teal-gradient-light-end);
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 
     h4 {
       margin: 0 0 1rem 0;

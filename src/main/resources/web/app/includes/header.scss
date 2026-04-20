@@ -29,6 +29,7 @@ $nav-height: 70px;
 .homepage .navigation {
   background-color: $nav-bg-light;
   border-bottom: none;
+  padding: 0 2rem;
 
   &:hover {
     background-color: $nav-bg-hover;
