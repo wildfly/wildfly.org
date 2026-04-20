@@ -50,9 +50,10 @@
 }
 
 .version-row {
-  background-color: $blue;
+  background-color: rgba(50, 77, 92, 0.4);
   margin: 3rem 0;
   padding: 1rem;
+  border-radius: var(--border-radius);
 
   &:first-of-type {
     .version-name { border-bottom: 3px solid $white; }
@@ -113,10 +114,10 @@
     width: auto;
   }
   thead th, tbody td {
-    padding: 1px;
+    padding: 0.5rem 0.75rem;
   }
   tbody tr:not(:first-of-type):not(:last-of-type) {
-    border-bottom: 1px solid $dark-blue;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   }
   .version-name {
     text-align: left;

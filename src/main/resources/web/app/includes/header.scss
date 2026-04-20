@@ -15,7 +15,14 @@ $nav-height: 70px;
   background-color: rgba(30, 46, 55, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition: background-color 0.2s ease;
+  transition: transform 0.3s ease, background-color 0.2s ease;
+
+  // Auto-hide on mobile when scrolling down
+  &.nav-hidden {
+    @media only screen and (max-width: $nav-breakpoint) {
+      transform: translateY(-100%);
+    }
+  }
 }
 
 // Clear navbar on homepage
