@@ -20,6 +20,9 @@ $dark-yellow: #90792E;
 $dark-blue: #1E2E37;
 $dark-teal: #2A9D89;
 
+// Secondary/accent colors
+$bg-secondary: #2a3f4d;
+
 // Basic colors
 $black : #000000;
 $white : #FFFFFF;
@@ -30,9 +33,45 @@ $gray-2 : #555555;
 $gray-3 : #333333;
 $gray-4 : #222222;
 
-
 // Alternative spelling
 $grey-1 : #AAAAAA;
 $grey-2 : #555555;
 $grey-3 : #333333;
 $grey-4 : #222222;
+
+// Transparent color variations
+// Navigation backgrounds
+$nav-bg: rgba($dark-blue, 0.92);
+$nav-bg-light: rgba($dark-blue, 0.15);
+$nav-bg-hover: rgba($dark-blue, 0.5);
+
+// Border colors
+$border-light: rgba($white, 0.08);
+$border-lighter: rgba($white, 0.05);
+$border-medium: rgba($white, 0.15);
+
+// Teal variations
+$teal-gradient-start: rgba($teal, 0.95);
+$teal-gradient-end: rgba($teal, 0.85);
+$teal-gradient-light-start: rgba($teal, 0.1);
+$teal-gradient-light-end: rgba($teal, 0.05);
+$teal-bg-subtle: rgba($teal, 0.12);
+$teal-border-subtle: rgba($teal, 0.2);
+
+// Color gradients for callouts
+$red-gradient-start: rgba($red, 0.95);
+$red-gradient-end: rgba($red, 0.85);
+$orange-gradient-start: rgba($orange, 0.95);
+$orange-gradient-end: rgba($orange, 0.85);
+$yellow-gradient-start: rgba($yellow, 0.95);
+$yellow-gradient-end: rgba($yellow, 0.85);
+$yellow-hover-bg: rgba($yellow, 0.15);
+
+// Other transparent variations
+$white-overlay: rgba($white, 0.1);
+$white-overlay-light: rgba($white, 0.05);
+$white-separator: rgba($white, 0.2);
+
+// Footer gradient colors
+$footer-gradient-start: rgba($gray-4, 0.95);
+$footer-gradient-end: rgba($gray-4, 1);

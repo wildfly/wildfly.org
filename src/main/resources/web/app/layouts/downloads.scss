@@ -50,7 +50,7 @@
 }
 
 .version-row {
-  background-color: rgba(50, 77, 92, 0.4);
+  background-color: rgba($blue, 0.4);
   margin: 3rem 0;
   padding: 1rem;
   border-radius: var(--border-radius);
@@ -117,7 +117,7 @@
     padding: 0.5rem 0.75rem;
   }
   tbody tr:not(:first-of-type):not(:last-of-type) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid $border-medium;
   }
   .version-name {
     text-align: left;

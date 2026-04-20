@@ -3,8 +3,8 @@
 // It does not contain the YAML front matter and has no corresponding output file in the built site.
 
 .project-footer {
-  background: linear-gradient(180deg, rgba(34, 34, 34, 0.95) 0%, rgba(34, 34, 34, 1) 100%);
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, $footer-gradient-start 0%, $footer-gradient-end 100%);
+  border-top: 2px solid $white-overlay;
   padding-top: 3rem;
 
   .logo-wrapper {
@@ -110,11 +110,11 @@
 }
 
 .footer-section {
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 2px solid $white-overlay;
   margin-bottom: 3rem;
   padding: 1rem 0;
   @media screen and (max-width: 480px) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid $white-overlay-light;
     margin-bottom: 1.5rem;
   }
 }

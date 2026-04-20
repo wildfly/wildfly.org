@@ -21,7 +21,7 @@
   text-align: center;
   padding-bottom: 5rem;
   &:not(:last-of-type){
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid $white-overlay;
   }
 }
 
@@ -59,7 +59,7 @@
       transition: transform 0.3s ease;
     }
     &:hover {
-      background-color: rgba(255, 255, 255, 0.05);
+      background-color: $white-overlay-light;
       transform: translateY(-4px);
       &:before {
         transform: scale(0.95);
@@ -129,12 +129,12 @@
     font-family: var(--font-body);
   }
   &.red {
-    background: linear-gradient(135deg, rgba(222, 92, 73, 0.95) 0%, rgba(222, 92, 73, 0.85) 100%);
+    background: linear-gradient(135deg, $red-gradient-start 0%, $red-gradient-end 100%);
     strong { color: var(--wildfly-yellow); }
     &:before { background-color: var(--wildfly-yellow); }
   }
   &.yellow {
-    background: linear-gradient(135deg, rgba(255, 239, 159, 0.95) 0%, rgba(255, 239, 159, 0.85) 100%);
+    background: linear-gradient(135deg, $yellow-gradient-start 0%, $yellow-gradient-end 100%);
     color: var(--wildfly-dark-blue);
     h2, p {
       color: var(--wildfly-dark-blue);
@@ -143,12 +143,12 @@
     &:before { background-color: var(--wildfly-red); }
   }
   &.teal {
-    background: linear-gradient(135deg, rgba(70, 178, 157, 0.95) 0%, rgba(70, 178, 157, 0.85) 100%);
+    background: linear-gradient(135deg, $teal-gradient-start 0%, $teal-gradient-end 100%);
     strong { color: var(--wildfly-dark-blue); }
     &:before { background-color: var(--wildfly-dark-blue); }
   }
   &.orange {
-    background: linear-gradient(135deg, rgba(227, 123, 64, 0.95) 0%, rgba(227, 123, 64, 0.85) 100%);
+    background: linear-gradient(135deg, $orange-gradient-start 0%, $orange-gradient-end 100%);
     strong { color: var(--wildfly-dark-blue); }
     &:before { background-color: var(--wildfly-dark-blue); }
   }

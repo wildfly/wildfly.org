@@ -12,9 +12,9 @@ $nav-height: 70px;
   position: sticky;
   top: 0;
   z-index: 1000;
-  background-color: rgba(30, 46, 55, 0.92);
+  background-color: $nav-bg;
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid $border-light;
   transition: transform 0.3s ease, background-color 0.2s ease;
 
   // Auto-hide on mobile when scrolling down
@@ -27,11 +27,11 @@ $nav-height: 70px;
 
 // Clear navbar on homepage
 .homepage .navigation {
-  background-color: rgba(30, 46, 55, 0.15);
+  background-color: $nav-bg-light;
   border-bottom: none;
 
   &:hover {
-    background-color: rgba(30, 46, 55, 0.5);
+    background-color: $nav-bg-hover;
   }
 }
 
