@@ -1,12 +1,16 @@
 @use "../colors" as *;
 
 .wildfly-downloads {
+  padding-bottom: 4rem;
+
   h1 {
     text-align: center;
+    margin-bottom: 2rem;
   }
 
   .download-ctas {
     text-align: center;
+    margin-bottom: 2rem;
     @media screen and (max-width: 768px) {
       a.button-cta {
         display: block;

@@ -1,8 +1,11 @@
 @use "../colors" as *;
 
 .wildfly-contributors {
+  padding-bottom: 4rem;
+
   h1 {
     text-align: center;
+    margin-bottom: 2rem;
   }
 }
 
