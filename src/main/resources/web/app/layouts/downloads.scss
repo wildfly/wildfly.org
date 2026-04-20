@@ -3,12 +3,16 @@
 // It does not contain the YAML front matter and has no corresponding output file in the built site.
 
 .wildfly-downloads {
+  padding-bottom: 4rem;
+
   h1 {
     text-align: center;
+    margin-bottom: 2rem;
   }
 
   .download-ctas {
     text-align: center;
+    margin-bottom: 2rem;
     @media screen and (max-width: 768px) {
       a.button-cta {
         display: block;

@@ -3,12 +3,12 @@
 
 // Post page
 .post-page {
-  padding-bottom: 6rem;
+  padding-bottom: 4rem;
 }
 
 // Getting Started page
 .getstarted-page {
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
 }
 
 // Error page
@@ -32,13 +32,18 @@
 
 // About page
 .about-page {
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
+
+  h1 {
+    margin-bottom: 2rem;
+  }
+
   .page-subtitle {
     color: $teal;
     border-top: 2px solid $teal;
     border-bottom: 2px solid $teal;
     padding: 2rem 0;
-    margin: 4rem 0 0 0;
+    margin: 2rem 0 3rem 0;
     strong {
       color: $teal;
     }
@@ -47,21 +52,31 @@
   .sec-title-yellow,
   .sec-title-red,
   .sec-title-blue {
+    margin-bottom: 3rem;
     h2 {
       text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    p {
+      padding: 0 1.5rem 1.5rem 1.5rem;
     }
   }
 }
 
 // Security page
 .security-page {
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
+
+  h1 {
+    margin-bottom: 2rem;
+  }
+
   .page-subtitle {
     color: $teal;
     border-top: 2px solid $teal;
     border-bottom: 2px solid $teal;
     padding: 2rem 0;
-    margin: 4rem 0 0 0;
+    margin: 2rem 0 3rem 0;
     strong {
       color: $teal;
     }
@@ -70,33 +85,46 @@
   .sec-title-yellow,
   .sec-title-red,
   .sec-title-blue {
+    margin-bottom: 3rem;
     h2 {
       text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    p {
+      padding: 0 1.5rem 1.5rem 1.5rem;
     }
   }
 }
 
 // Contribute page
 .contribute-page {
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
+
+  h1 {
+    margin-bottom: 2rem;
+  }
+
   .page-subtitle {
     color: $red;
     border-top: 2px solid $red;
     border-bottom: 2px solid $red;
     padding: 2rem 0;
-    margin-top: 4rem;
+    margin: 2rem 0 3rem 0;
     strong {
       color: $red;
     }
   }
   .contribute-item {
     text-align: center;
-    margin: 1rem;
+    margin: 1.5rem 1rem;
     h3 {
       margin-bottom: 1rem;
     }
     p {
       margin-top: 1rem;
+    }
+    img {
+      margin-bottom: 1rem;
     }
   }
   @media screen and (max-width: 480px) {

@@ -1,21 +1,39 @@
 .news-page {
-  margin-bottom: 4rem;
+  padding-bottom: 4rem;
+
+  h1.title {
+    margin-bottom: 1.5rem;
+  }
   .news-list-item {
     margin-bottom: 3rem;
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-md);
+    border: 2px solid rgba($teal, 0.3);
     transition: all 0.3s ease;
+    background: rgba($bg-secondary, 0.3);
 
     &:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
+      border-color: rgba($teal, 0.5);
     }
 
     p {
       margin: 0;
       padding: 1.5rem;
-      background: rgba($bg-secondary, 0.5);
+    }
+
+    > .grid__item:last-child {
+      padding: 1rem 1.5rem 1.5rem 1.5rem;
+    }
+
+    .byline {
+      padding: 0 1.5rem;
+    }
+
+    .share-page {
+      padding: 0 1.5rem;
     }
 
     .post-title {
@@ -148,7 +166,6 @@
       margin-top: auto;
       font-weight: 600;
       color: inherit;
-      padding-top: 0.5rem;
     }
   }
 }
