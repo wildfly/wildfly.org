@@ -95,14 +95,49 @@ wado also supports domain mode. Start a domain controller:
 wado dc start 39
 ----
 
-Then connect a host controller to it:
+Then connect two host controllers to it:
 
 [source,bash]
 ----
-wado hc start 39
+wado hc start 2x39
 ----
 
 wado takes care of the networking between them. This makes it straightforward to set up domain topologies that would otherwise require quite a bit of manual configuration.
+
+=== Topology
+
+For more complex setups, you can define a complete domain topology in a YAML file and launch it with a single command:
+
+[source,yaml]
+----
+name: my-topology
+version: 39
+hosts:
+  - name: dc
+    domain-controller: true
+  - name: host1
+    servers:
+      - name: server-one
+        group: main-server-group
+        auto-start: true
+      - name: server-two
+        group: main-server-group
+        offset: 100
+  - name: host2
+    version: 38
+    servers:
+      - name: server-one
+        group: main-server-group
+----
+
+Then start the entire topology:
+
+[source,bash]
+----
+wado topology start my-topology.yaml
+----
+
+This creates the domain controller and all host controllers with the specified servers, server groups, and port offsets — all wired together automatically.
 
 == Customization
 
@@ -171,7 +206,6 @@ wado images
 
 wado is open source and contributions are welcome! There are several areas where help would be appreciated:
 
-* *Topology support* — a https://github.com/hpehl/wado#topology[planned feature] to define and launch multi-host domain topologies from a YAML file. This is not yet implemented and would be a great area to contribute.
 * *Bug reports and feature requests* — if you use wado and run into issues or have ideas, please https://github.com/hpehl/wado/issues[open an issue].
 * *Pull requests* — whether it's a bug fix, a new feature, or documentation improvements.
 
