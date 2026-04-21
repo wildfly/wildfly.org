@@ -122,7 +122,6 @@ hosts:
         auto-start: true
       - name: server-two
         group: main-server-group
-        offset: 100
   - name: host2
     version: 38
     servers:
