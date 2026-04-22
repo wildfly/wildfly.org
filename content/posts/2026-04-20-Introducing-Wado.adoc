@@ -118,15 +118,13 @@ hosts:
   - name: host1
     servers:
       - name: server-one
-        group: main-server-group
         auto-start: true
       - name: server-two
-        group: main-server-group
+        group: other-server-group
   - name: host2
     version: 38
     servers:
       - name: server-one
-        group: main-server-group
 ----
 
 Then start the entire topology:
