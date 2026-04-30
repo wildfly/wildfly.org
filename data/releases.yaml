@@ -73,7 +73,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://github.com/wildfly/wildfly/releases/tag/untagged-8ea95f295f51d1d77111
+          url: /news/2026/04/30/WildFly40-beta-released/
 - version: 39.0.1.Final
   version_shortname: 39.0.1.Final
   date: 2026-02-12

@@ -1,0 +1,42 @@
+---
+layout: post
+title:  "New WildFly 40 Beta release"
+aliases: [/news/2026/04/30/WildFly40Beta-released/]
+date:   2026-04-30
+tags:   announcement release
+author: darranl
+description: WildFly 40 Beta is now available for download.
+---
+
+I am excited to announce the release of *WildFly 40 Beta 1*, this release has taken
+is a little longer than expected, but we hope you appreciate the changes it brings.
+
+In our previous releases we have been adding our EE 11 implementations to the WildFly
+Preview distribution, we have now brought our EE 11 integration into the default
+`WildFly Distribution`. This means that you can now use the latest EE 11 features
+in your applications without needing to switch to a separate distribution.
+
+At the same time, we understand many of you are invested in your EE10 installations,
+so we have you covered with a new `WildFly EE10 Distribution` available from the
+downloads page.
+
+On the security front many users have been asking for an integration with Hashicorp Vault,
+and we are pleased to announce that this is also available for WildFly 40 in the form of a
+feature pack. Please visit the link:https://wildfly-security.github.io/wildfly-elytron/blog/the-hashicorp-vault-integration-is-available-for-provisioning-with-wildfly-40-beta/[blog post] for more details on how to get started with this integration.
+
+These are just a couple of the highlights with many more changes made to WildFly. Preparing
+the release notes GitHub tells me over 30 people contributed to this release and that does
+not include all of the people working on the components that make WildFly possible so we
+thank everyone for your contributions.
+
+We encourage you to explore the full list of changes in the official  link:https://github.com/wildfly/wildfly/releases/tag/40.0.0.Beta1[release notes].
+
+== How to Get Involved
+
+This is a *beta release*, so we don't recommend it for production environments. Your feedback is crucial to help us identify and fix issues before the final release.
+
+* **Download WildFly 40 Beta 1** from link:https://wildfly.org/downloads[https://wildfly.org/downloads] or provision a WildFly 40 Beta 1 server using a tool like the link:https://docs.wildfly.org/wildfly-maven-plugin/[wildfly-maven-plugin]
+* **Report a bug** or enhancement request on our link:https://issues.redhat.com/browse/WFLY[issue tracker]
+* **Ask a question** link:https://groups.google.com/forum/#!forum/wildfly[Google Group] or reach us on link:https://wildfly.zulipchat.com/[Zulip].
+
+We look forward to hearing your feedback and working together to make WildFly 40 the best release yet!
