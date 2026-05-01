@@ -73,7 +73,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: /news/2026/04/30/WildFly40-beta-released/
+          url: /news/2026/05/01/New-WildFly-40-Beta-release/
 - version: 39.0.1.Final
   version_shortname: 39.0.1.Final
   date: 2026-02-12
