@@ -1,0 +1,209 @@
+---
+layout: post
+title: "Introducing wado - WildFly Admin Containers"
+date: 2026-04-20
+tags: wildfly containers tooling
+author: hpehl
+description: Introducing wado, a command-line tool for building and running WildFly containers across multiple versions and operation modes.
+---
+
+If you've ever needed to test WildFly across multiple versions, you know the drill: write docker commands by hand, calculate port offsets so containers don't collide, come up with consistent naming, and repeat for every version you care about. When I'm working on the https://hal.github.io/[HAL management console], I regularly need to spin up five or more WildFly versions side by side to verify that changes work across releases. That's a lot of repetitive container plumbing.
+
+I built https://github.com/hpehl/wado[wado] (**W**ildFly **ad**min c**o**ntainers) to take care of all that. It's a command-line tool written in Rust that builds and runs WildFly containers with sensible defaults for naming, ports, and credentials — so you can focus on the actual work.
+
+== Installation
+
+wado is available via Homebrew or Cargo:
+
+[source,bash]
+----
+brew install hpehl/tap/wado
+----
+
+or
+
+[source,bash]
+----
+cargo install wado
+----
+
+Prebuilt binaries for macOS, Linux, and Windows are also available on the https://github.com/hpehl/wado/releases[releases page].
+
+== Quick Start
+
+Start a WildFly 39 standalone server:
+
+[source,bash]
+----
+wado start 39
+----
+
+That's it. wado pulls the image from https://quay.io/organization/wado[quay.io/wado], creates a container named `wado-sa-390`, and publishes HTTP on port `8390` and management on port `9390`. A default admin user and allowed origins for local development are already configured.
+
+See what's running:
+
+[source,bash]
+----
+wado ps
+----
+
+Open the management console in your browser:
+
+[source,bash]
+----
+wado console 39
+----
+
+Or connect the CLI:
+
+[source,bash]
+----
+wado cli 39
+----
+
+Stop everything:
+
+[source,bash]
+----
+wado stop 39
+----
+
+== Version Expressions
+
+Where wado really shines is when you need multiple versions at once. Version expressions support ranges, multipliers, and enumerations:
+
+[source,bash]
+----
+# Start WildFly 36 through 39
+wado start 36..39
+
+# Start three instances of WildFly 39
+wado start 3x39
+
+# Mix and match
+wado start 28,30..32,2x37
+----
+
+Each container gets a unique name and non-colliding ports automatically. No more mental arithmetic. The full grammar is described as a https://github.com/hpehl/wado#versions[BNF] in the README. See https://github.com/hpehl/wildfly-container-versions?tab=readme-ov-file#supported-versions[supported versions] for the complete list of available WildFly versions. As soon as a new WildFly version gets released, wado will be updated.
+
+== Domain Mode
+
+wado also supports domain mode. Start a domain controller:
+
+[source,bash]
+----
+wado dc start 39
+----
+
+Then connect two host controllers to it:
+
+[source,bash]
+----
+wado hc start 2x39
+----
+
+wado takes care of the networking between them. This makes it straightforward to set up domain topologies that would otherwise require quite a bit of manual configuration.
+
+=== Topology
+
+For more complex setups, you can define a complete domain topology in a YAML file and launch it with a single command:
+
+[source,yaml]
+----
+name: my-topology
+version: 39
+hosts:
+  - name: dc
+    domain-controller: true
+  - name: host1
+    servers:
+      - name: server-one
+        auto-start: true
+      - name: server-two
+        group: other-server-group
+  - name: host2
+    version: 38
+    servers:
+      - name: server-one
+----
+
+Then start the entire topology:
+
+[source,bash]
+----
+wado topology start my-topology.yaml
+----
+
+This creates the domain controller and all host controllers with the specified servers, server groups, and port offsets — all wired together automatically.
+
+== Customization
+
+All three modes — standalone, domain controller, and host controller — support further customization.
+
+=== Bootstrap Operations
+
+Use `--operations` to run management operations when the server starts. For example, to change the root log level to `DEBUG`:
+
+[source,bash]
+----
+wado start 39 \
+  --operations /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=DEBUG)
+----
+
+=== Server Configuration
+
+Domain and host controllers support the `--server` flag to define servers with server groups, port offsets, and auto-start:
+
+[source,bash]
+----
+wado dc start 39 \
+  --server server-one:main-server-group:start \
+  --server server-two:other-server-group:200
+----
+
+=== WildFly Parameters
+
+You can pass parameters directly to the WildFly server using `--`. For example, to use a different server configuration:
+
+[source,bash]
+----
+wado start 39 -- --server-config=standalone-microprofile.xml
+----
+
+== Dev Containers
+
+If you're a WildFly contributor working on the server itself or the HAL console, wado can build containers directly from source:
+
+[source,bash]
+----
+wado build dev
+wado start dev
+----
+
+This clones the WildFly and HAL repositories, builds them, and creates a container image with your local changes. Dev containers use ports `8000` and `9000`.
+
+Dev container images are built and pushed to quay.io by a nightly CI job, so they always reflect the latest state of the WildFly and HAL main branches. When you start a dev container, wado automatically pulls the latest image before starting it.
+
+== Images
+
+wado uses prebuilt container images hosted at https://quay.io/organization/wado[quay.io/wado]. These images are based on the official WildFly images but come preconfigured for development and testing:
+
+* Default admin credentials
+* Allowed origins for localhost development (ports 1234, 8888, 9090)
+* Access for the https://hal.github.io/console/[online HAL console]
+
+You can list the images available locally:
+
+[source,bash]
+----
+wado images
+----
+
+== Get Involved
+
+wado is open source and contributions are welcome! There are several areas where help would be appreciated:
+
+* *Bug reports and feature requests* — if you use wado and run into issues or have ideas, please https://github.com/hpehl/wado/issues[open an issue].
+* *Pull requests* — whether it's a bug fix, a new feature, or documentation improvements.
+
+You can find wado on https://github.com/hpehl/wado[GitHub] and https://crates.io/crates/wado[crates.io]. Give it a try, and let us know what you think!
