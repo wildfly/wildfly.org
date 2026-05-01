@@ -3,26 +3,74 @@
 // It does not contain the YAML front matter and has no corresponding output file in the built site.
 
 @import "colors";
-@import url('https://fonts.googleapis.com/css?family=PT+Mono|Titillium+Web:200,400,700');
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:wght@300;400;500;600;700&family=Red+Hat+Display:wght@300;400;600;700&family=PT+Mono&display=swap');
+
+// Modern CSS Variables for theming
+:root {
+  // WildFly Brand Colors - Enhanced palette
+  --wildfly-red: #{$red};
+  --wildfly-orange: #{$orange};
+  --wildfly-yellow: #{$yellow};
+  --wildfly-blue: #{$blue};
+  --wildfly-teal: #{$teal};
+
+  --wildfly-dark-red: #{$dark-red};
+  --wildfly-dark-orange: #{$dark-orange};
+  --wildfly-dark-yellow: #{$dark-yellow};
+  --wildfly-dark-blue: #{$dark-blue};
+  --wildfly-dark-teal: #{$dark-teal};
+
+  // Enhanced color palette
+  --bg-primary: #{$dark-blue};
+  --bg-secondary: #{$bg-secondary};
+  --bg-accent: #f8f9fa;
+  --text-primary: #{$white};
+  --text-secondary: #f0f2f5;
+  --text-muted: #c5cdd5;
+
+  // Typography
+  --font-heading: 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Red Hat Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'PT Mono', monospace;
+
+  // Spacing
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4rem;
+
+  // Borders & Shadows
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.23);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
 
 html,
 body {
   font-size: 100%;
-  font-weight: 100;
-  background-color: $dark-blue;
+  font-weight: 400;
+  background-color: var(--bg-primary);
 }
 
 body {
   margin: 0;
-  font-family: 'Titillium Web', sans-serif;
-  color: $white;
-  line-height: 1rem;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 div.content {
-  padding: 0 13rem;
-  @media screen and (max-width: 1170px) { padding: 0 6rem; }
-  @media screen and (max-width: 480px) { padding: 0 2rem; }
+  padding: 0 8rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  @media screen and (max-width: 1170px) { padding: 0 4rem; }
+  @media screen and (max-width: 768px) { padding: 0 3rem; }
+  @media screen and (max-width: 480px) { padding: 0 1.5rem; }
 }
 
 .hide {
@@ -52,57 +100,75 @@ div.content {
   }
 }
 
-h1,h2,h3,h4,h5,h6,p {
-  color: $white;
-  margin: 2rem 0;
+h1,h2,h3,h4,h5,h6 {
+  color: var(--text-primary);
+  margin: 0 0 1.5rem 0;
+  font-family: var(--font-heading);
+}
+
+p {
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem 0;
 }
 
 h1 {
-  font-size: 6rem;
-  line-height: 6rem;
+  font-size: 4.5rem;
+  line-height: 1.1;
   font-weight: 200;
+  letter-spacing: -0.01em;
+  padding-top: 0.5em;
+  margin-bottom: 2rem;
   @media screen and (max-width: 768px) {
-    font-size: 3rem;
-    line-height: 3rem;    
+    font-size: 2.75rem;
+    line-height: 1.2;
   }
 }
 
 h2 {
-  font-size: 2.5rem;
-  line-height: 3rem;
-  font-weight: 100;
+  font-size: 2.25rem;
+  line-height: 1.2;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
   @media screen and (max-width: 768px) {
-    font-size: 2rem;
-    line-height: 2rem;    
+    font-size: 1.85rem;
+    line-height: 1.3;
   }
 }
 
 h3 {
-  font-size: 2rem;
-  line-height: 2rem;
-  font-weight: 100;
+  font-size: 1.75rem;
+  line-height: 1.3;
+  font-weight: 400;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
   @media screen and (max-width: 768px) {
-    font-size: 1rem;
-    line-height: 1rem;    
+    font-size: 1.4rem;
+    line-height: 1.4;
   }
 }
 
 h4 {
-  font-size: 1.5rem;
-  line-height: 1.75rem;
-  font-weight: 400;
+  font-size: 1.35rem;
+  line-height: 1.4;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
   @media screen and (max-width: 768px) {
-    font-size: .75rem;
-    line-height: .75rem;    
+    font-size: 1.15rem;
+    line-height: 1.4;
   }
 }
 
 p {
   font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 100;
+  line-height: 1.65;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
   &.light {
-    color: $white;
+    color: var(--text-primary);
   }
 }
 
@@ -117,64 +183,95 @@ img.avatar {
 }
 
 a {
-  line-height: 1.5rem;
-  font-weight: 400;
-  color: $yellow;
+  line-height: 1.6;
+  font-weight: 500;
+  color: var(--wildfly-yellow);
   cursor: pointer;
-  strong { color: $yellow; }
-  &.light-background{ color: $teal; }
+  text-decoration: none;
+  transition: color 0.2s ease;
+  strong { color: var(--wildfly-yellow); }
+  &.light-background { color: var(--wildfly-teal); }
+  &:hover {
+    color: var(--wildfly-dark-yellow);
+    text-decoration: underline;
+  }
 }
 
 a.button-cta {
+  display: inline-block;
   text-align: center;
-  color: $dark-blue;
-  background-color: $yellow;
-  border: 2px solid $yellow;
+  color: var(--wildfly-dark-blue);
+  background-color: var(--wildfly-yellow);
+  border: 2px solid var(--wildfly-yellow);
   text-transform: uppercase;
   text-decoration: none;
-  margin: .5rem;
-  padding: 12px 40px;
+  margin: 0.5rem;
+  padding: 0.875rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   white-space: nowrap;
-  line-height: 3.5;
-  transition: background .2s ease-in 0s;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
   &:hover, &:active, &:focus {
-    background-color: $dark-yellow;
-    border-color: $dark-yellow;
-    color: $yellow;
+    background-color: var(--wildfly-dark-yellow);
+    border-color: var(--wildfly-dark-yellow);
+    color: var(--wildfly-yellow);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
   }
   @media screen and (max-width: 768px) {
-    line-height: 1.5;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
   }
 }
 
 a.button-cta.secondary {
-  background: none;
-  border: 2px solid $yellow;
-  color: $yellow;
+  background: transparent;
+  border: 2px solid var(--wildfly-yellow);
+  color: var(--wildfly-yellow);
   &:hover, &:active, &:focus {
-    background-color: $dark-yellow;
-    border-color: $dark-yellow;
-    color: $yellow;
+    background-color: $yellow-hover-bg;
+    border-color: var(--wildfly-yellow);
+    color: var(--wildfly-yellow);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
   }
 }
 
 .hljs {
-  color: $black;
-  background: $yellow;
+  background: #1a2530;
+  border-radius: var(--border-radius);
+  padding: 1.5rem !important;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow-sm);
 }
 
 code {
-  font-family: "PT Mono",monospace;
-  background-color: $yellow;
-  color: $black;
+  font-family: var(--font-mono);
+  background-color: $teal-bg-subtle;
+  color: #5ee6ca;
   overflow: auto;
-  padding: 0 2px;
+  padding: 0.2rem 0.5rem;
   border-radius: 4px;
+  font-size: 0.9em;
+  border: 1px solid $teal-border-subtle;
 }
 
-
 pre {
-  padding: .5rem 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #1a2530;
+  border-radius: var(--border-radius);
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+  code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+  }
 }
 
 hr {
@@ -184,13 +281,55 @@ hr {
 
 img { max-width: 100%; }
 
+// Copy button styles
+.btn-copy {
+    background-color: transparent !important;
+    border: transparent !important;
+    color: $yellow;
+    cursor: pointer;
+    float: right;
+}
+
+.copy-text {
+    .btn-copy {
+        background-color: transparent !important;
+        border: transparent !important;
+        color: $yellow;
+        cursor: pointer;
+        float: none !important;
+    }
+}
+
+.btn-copy:hover {
+    color: $orange !important;
+}
+
+/* Avoid different line-heights when the button is used */
+.inline-btn-copy {
+    margin-top: 0;
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+// clipboard for code blocks
+pre.highlight {
+    .btn-copy {
+        display: block;
+        margin-top: 0;
+        padding-left: 0.5em;
+        margin-bottom: 0;
+    }
+}
+
 .logo-wrapper {
   display: inline-block;
   max-width: 13.5rem;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 .wf-logo {
   width: 100%;
+  height: auto;
 }
 
 .sec-title-teal h2 {
@@ -208,34 +347,50 @@ img { max-width: 100%; }
   color: $white;
   padding: 1rem;
 }
-.sec-title-bluw h2 {
+.sec-title-blue h2 {
   background-color: $blue;
   color: $white;
   padding: 1rem;
 }
 
-table {
-  border-spacing: 1px;
+table:not(.version-table table) {
+  border-spacing: 0;
+  width: 100%;
+  border-collapse: separate;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 
   thead th, tbody td {
-    padding: .5rem 1rem;
+    padding: 1rem 1.5rem;
   }
 
   thead th {
-    background-color: $teal;
-    color: $white;
-    padding: .5rem 1rem;
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    font-weight: 400;
+    background-color: var(--wildfly-teal);
+    color: var(--text-primary);
+    padding: 1rem 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    font-weight: 600;
     text-align: left;
+    letter-spacing: 0.01em;
   }
   tbody tr {
+    transition: background-color 0.2s ease;
     &:nth-child(even) {
-      background-color: $blue;
+      background-color: rgba($blue, 0.5);
     }
-    td p {
-       margin: 0;
+    &:nth-child(odd) {
+      background-color: rgba($bg-secondary, 0.3);
+    }
+    &:hover {
+      background-color: rgba($teal, 0.15);
+    }
+    td {
+      border-top: 1px solid $border-lighter;
+      p {
+        margin: 0;
+      }
     }
   }
 }
@@ -267,14 +422,21 @@ table {
   }
 }
 
-.paginator-btns a {
-  margin: 1rem 0;
-  &:first-of-type {
-    margin-right: calc(100% - 372px);
-  }
+.paginator-btns {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2rem 0;
+
   @media screen and (max-width: 768px) {
-    display: block;
-    width: 100%;
+    flex-direction: column;
+    align-items: center;
+
+    a.button-cta {
+      max-width: 250px;
+      padding: 0.625rem 1.5rem;
+      font-size: 0.875rem;
+    }
   }
 }
 

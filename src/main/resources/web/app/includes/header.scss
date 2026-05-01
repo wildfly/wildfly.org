@@ -8,7 +8,32 @@ $nav-height: 70px;
 
 // Outer navigation wrapper
 .navigation {
-  height: $nav-height;
+  min-height: $nav-height;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: $nav-bg;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid $border-light;
+  transition: transform 0.3s ease, background-color 0.2s ease;
+
+  // Auto-hide on mobile when scrolling down
+  &.nav-hidden {
+    @media only screen and (max-width: $nav-breakpoint) {
+      transform: translateY(-100%);
+    }
+  }
+}
+
+// Clear navbar on homepage
+.homepage .navigation {
+  background-color: $nav-bg-light;
+  border-bottom: none;
+  padding: 0 2rem;
+
+  &:hover {
+    background-color: $nav-bg-hover;
+  }
 }
 
 // Container with no padding for navbar
@@ -18,10 +43,10 @@ $nav-height: 70px;
   display: inline;
 }
 
-// Navigation 
+// Navigation
 nav {
   float: right;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
   ul {
     list-style: none;
     margin: 0;
@@ -32,13 +57,21 @@ nav {
       a,
       a:visited {
         display: block;
-        padding: 0 20px;
-        line-height: $nav-height;
-        font-size: 1.5rem;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        font-weight: 400;
+        font-family: var(--font-heading);
         text-decoration: none;
-        color: $white;
+        color: var(--text-primary);
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: var(--wildfly-yellow);
+          text-decoration: none;
+        }
+
         &.active {
-          color: $yellow;
+          color: var(--wildfly-yellow);
           font-weight: 700;
         }
       }
@@ -49,13 +82,10 @@ nav {
 nav ul.nav-list {
   .button-cta.secondary {
     line-height: 1.3;
-    padding: .4rem 1rem;
-    margin-top: 1rem;
+    padding: 0.5rem 1.25rem;
+    margin-top: 0.5rem;
     text-transform: none;
-  }
-  li a {
-    font-size: 1.1rem;
-    padding: 0 10px;
+    font-size: 0.95rem;
   }
 }
 
@@ -65,14 +95,14 @@ nav ul.nav-list {
 .nav-mobile {
   display: none;
   position: absolute;
-  top: 2rem;
+  top: 1.25rem;
   right: 2rem;
   height: $nav-height;
   width: $nav-height;
 }
 @media only screen and (max-width: $nav-breakpoint) {
   .navigation {
-    padding-top: 2rem;
+    padding-top: 1rem;
     padding-right: 2rem;
   }
   .nav-mobile {
@@ -82,13 +112,14 @@ nav ul.nav-list {
   .logo-wrapper {
     display: block;
     margin: 0 auto;
-    padding-top: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
   nav {
     width: 16rem;
     padding-top: 0;
     .nav-list {
-      background-color: $yellow;
+      background-color: var(--wildfly-yellow);
       position: relative;
       left: 100px;
       top: -80px;
@@ -110,9 +141,10 @@ nav ul.nav-list {
         a:visited {
           padding: 15px;
           line-height: 20px;
-          color: $dark-blue;
+          color: var(--wildfly-dark-blue);
+          font-family: var(--font-heading);
           &.active {
-            color: $dark-blue;
+            color: var(--wildfly-dark-blue);
             font-weight: 700;
           }
         }
@@ -139,7 +171,7 @@ nav ul.nav-list {
     border-radius: 1px;
     height: 5px;
     width: 35px;
-    background: $white;
+    background: var(--text-primary);
     position: absolute;
     display: block;
     content: '';

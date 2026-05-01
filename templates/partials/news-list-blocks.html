@@ -4,26 +4,26 @@
   </div>
   {#for post in site.collections.posts}
     {#if post_index < 8}
-      <div class="news-block-item grid__item width-3-12">
+      {#let pageUrl = post.data.external_link.or(post.url.path)}
+      <a href="{pageUrl}" {#if post.data.containsKey('external_link')}target="_blank"{/if} class="news-block-item grid__item width-3-12 news-card-link">
         <div class="post-title grid__item">
-          <h4><a href="{post.data.external_link ?: post.url}" {#if post.data.containsKey('external_link')}target="_blank"{/if}>{post.title}</a></h4>
-        </div>
-        <p class="byline">By {cdi:authors.buildAuthorList(post).join(",")} | {post.date.format('LLLL d, YYYY')}</p>
-        {#if post.data.containsKey('synopsis')}
-          <p>{post.data.synopsis.stripHtml}</p>
-        {#else}
-          <p>{site.pageContent(post).stripHtml.wordLimit(75).raw}</p>
-        {/if}
-        {#let pageUrl = post.data.external_link.or(post.url.path)}
-        <a href="{pageUrl}" {#if post.data.containsKey('external_link')}target="_blank"{/if}>
-          {#if pageUrl.contains('youtube')}
-          Watch Video >
+          <h4>{post.title}</h4>
+          <p class="byline">By {cdi:authors.buildAuthorList(post).join(",")} | {post.date.format('LLLL d, YYYY')}</p>
+          {#if post.data.containsKey('synopsis')}
+            <p class="description">{post.data.synopsis.stripHtml}</p>
           {#else}
-          Read More >
+            <p class="description">{site.pageContent(post).stripHtml.wordLimit(75).raw}</p>
           {/if}
-        </a>
-        {/let}
-      </div>
+          <span class="read-more-link">
+            {#if pageUrl.contains('youtube')}
+            Watch Video >
+            {#else}
+            Read More >
+            {/if}
+          </span>
+        </div>
+      </a>
+      {/let}
     {/if}
   {/for}
 </div>

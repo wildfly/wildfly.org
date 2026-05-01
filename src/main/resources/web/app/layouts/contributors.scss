@@ -3,8 +3,11 @@
 // It does not contain the YAML front matter and has no corresponding output file in the built site.
 
 .wildfly-contributors {
+  padding-bottom: 4rem;
+
   h1 {
     text-align: center;
+    margin-bottom: 2rem;
   }
 }
 

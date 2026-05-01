@@ -3,12 +3,16 @@
 // It does not contain the YAML front matter and has no corresponding output file in the built site.
 
 .wildfly-downloads {
+  padding-bottom: 4rem;
+
   h1 {
     text-align: center;
+    margin-bottom: 2rem;
   }
 
   .download-ctas {
     text-align: center;
+    margin-bottom: 2rem;
     @media screen and (max-width: 768px) {
       a.button-cta {
         display: block;
@@ -50,9 +54,10 @@
 }
 
 .version-row {
-  background-color: $blue;
+  background-color: rgba($blue, 0.4);
   margin: 3rem 0;
   padding: 1rem;
+  border-radius: var(--border-radius);
 
   &:first-of-type {
     .version-name { border-bottom: 3px solid $white; }
@@ -113,10 +118,10 @@
     width: auto;
   }
   thead th, tbody td {
-    padding: 1px;
+    padding: 0.5rem 0.75rem;
   }
   tbody tr:not(:first-of-type):not(:last-of-type) {
-    border-bottom: 1px solid $dark-blue;
+    border-bottom: 1px solid $border-medium;
   }
   .version-name {
     text-align: left;

@@ -1,11 +1,16 @@
 .conference {
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
+
+  h1 {
+    margin-bottom: 2rem;
+  }
+
   .page-subtitle {
     color: $teal;
     border-top: 2px solid $teal;
     border-bottom: 2px solid $teal;
     padding: 2rem 0;
-    margin: 4rem 0 0 0;
+    margin: 2rem 0 3rem 0;
     strong {
       color: $teal;
     }
@@ -62,7 +67,7 @@
   }
 
   .c-session-other {
-    background-color: rgba(50, 77, 92, 0.5);
+    background-color: rgba($blue, 0.5);
   }
 
   .c-session-blue {
