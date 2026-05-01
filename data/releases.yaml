@@ -1,6 +1,6 @@
 - version: 40.0.0.Beta1
   version_shortname: 40 Beta1
-  date: 2026-04-30
+  date: 2026-05-01
   qualifier: Beta
   gpg_key: ed25519/E85C11F6
   link:

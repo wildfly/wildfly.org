@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "New WildFly 40 Beta release"
-aliases: [/news/2026/04/30/WildFly40Beta-released/]
-date:   2026-04-30
+aliases: [/news/2026/05/01/WildFly40Beta-released/]
+date:   2026-05-01
 tags:   announcement release
 author: darranl
 description: WildFly 40 Beta is now available for download.
