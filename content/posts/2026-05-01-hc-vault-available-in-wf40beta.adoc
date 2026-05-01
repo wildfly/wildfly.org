@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  'The HashiCorp Vault integration is available for provisioning with WildFly 40 Beta'
-date:   2026-04-30
+date:   2026-05-01
 tags:   wildfly hashicorp vault expression resolver
 synopsis: The blog post discusses new HashiCorp Vault integration that is available for provisioning in WildFly 40 Beta.
 author: dvilkola
