@@ -396,20 +396,38 @@ table:not(.version-table table) {
 }
 
 .admonitionblock.note, .note {
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
   tbody .icon {
     background-color: $teal;
+    padding: 1rem;
+    vertical-align: middle;
+    text-align: center;
+    width: 1%;
+    white-space: nowrap;
   }
   tbody .content {
     background-color: $blue;
+    padding: 1rem 1.5rem;
+    width: 100%;
   }
 }
 
 .admonitionblock.warning, .warning {
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
   tbody .icon {
     background-color: $orange;
+    padding: 1rem;
+    vertical-align: middle;
+    text-align: center;
+    width: 1%;
+    white-space: nowrap;
   }
   tbody .content {
     background-color: $blue;
+    padding: 1rem 1.5rem;
+    width: 100%;
   }
 }
 

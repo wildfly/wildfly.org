@@ -15,12 +15,12 @@ paginate:
     <a href="{site.url('feed.xml')}"><i class="fas fa-rss-square"></i></a>
   </div>
 
-  <div class="grid__item width-10-12 width-12-12-m">
+  <div class="grid__item width-12-12 width-12-12-m">
     <a href="{site.url('releases')}" class="button-cta secondary">Release Announcements</a>
   </div>
 
 
-  <div class="grid__item width-10-12 width-12-12-m">
+  <div class="grid__item width-12-12 width-12-12-m">
       {#for post in site.collections.posts.paginated(page.paginator)}
       <div class="news-list-item grid-wrapper">
         <div class="post-title grid__item width-12-12">

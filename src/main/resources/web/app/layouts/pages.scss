@@ -1,5 +1,5 @@
-// Consolidated styles for simple page layouts
-// This file combines styles from multiple small layout files
+@use "../grid" as *;
+@use "../colors" as *;
 
 // Post page
 .post-page {

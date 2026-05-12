@@ -50,7 +50,7 @@
 
 </head>
 
-<body class="{#if page.url.path == '/'}homepage{/if}">
+<body class="{page.data('bodyClass') ?: ''}">
   <div class="content">
     {#include partials/header.html /}
     {#insert /}

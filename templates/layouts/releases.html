@@ -11,7 +11,7 @@ layout: base
   </div>
 
 
-  <div class="grid__item width-10-12 width-12-12-m">
+  <div class="grid__item width-12-12 width-12-12-m">
       {#for post in site.collections.posts}
       {#if post.data.tags.or("").contains('release') and post.data.tags.or("").contains('announcement')}
       <div class="news-list-item grid-wrapper">
