@@ -1,3 +1,6 @@
+@use "../colors" as *;
+@use "../grid" as *;
+
 .conference {
   padding-bottom: 3rem;
   .page-subtitle {
