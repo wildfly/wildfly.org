@@ -30,7 +30,7 @@ layout: base
           {#if post.data.containsKey('synopsis')}
             <p>{post.data.synopsis}</p>
           {#else}
-            <p>{site.pageContent(post).stripHtml.wordLimit(75)}</p>
+            <p>{site.pageContent(post).stripHtml.wordLimit(75).raw}</p>
           {/if}
         </div>
         <div class="grid__item width-12-12">
@@ -46,5 +46,3 @@ layout: base
 
   <div class="grid__item width-2-12"></div>
 </div>
-
-
