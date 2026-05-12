@@ -115,6 +115,10 @@ categories:
   - category: Security
     cat-id: security
     guides:
+      - title: Configure OIDC Manually with the Elytron Subsystem
+        url: /guides/security-oidc-elytron-manual
+        description: How to configure OpenID Connect manually via the Elytron subsystem for advanced control of the configuration.
+        keywords: Security, OpenID Connect, OIDC, Elytron, manual configuration
       - title: Securing WildFly Apps with Keycloak on OpenShift
         url: /guides/security-oidc-openshift
         description: Learn how to secure applications deployed to WildFly on OpenShift with the Keycloak OpenID provider.
