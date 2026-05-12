@@ -1,0 +1,270 @@
+---
+layout: guide
+---
+= Using the WildFly EE 10 Feature-pack
+:summary: Learn how to continue using EE 10 with WildFly 40 and later.
+:includedir: /templates
+:prerequisites-time: 10
+:wildfly-version: 40.0.0.Final
+
+Starting with WildFly 40, the default WildFly distribution provides EE 11 APIs and implementations.
+ If your applications use the EE 10 version, you can continue to run them on WildFly by using the new 
+ *WildFly EE 10 feature-pack* and its associated distribution and BOMs.
+
+In this guide, you will learn how to:
+
+* Download the WildFly EE 10 distribution archive
+* Provision a WildFly server with EE 10 support using the `wildfly-maven-plugin`
+* Use the EE 10 BOMs in your application's `pom.xml`
+* Use the WildFly EE 10 container images
+
+== Downloading the WildFly EE 10 Distribution
+
+If you prefer to download a pre-built WildFly server with EE 10 support, the *WildFly EE 10 Distribution* is available from the https://wildfly.org/downloads[WildFly Downloads, window=_blank] page.
+
+This distribution is a full WildFly server pre-configured with EE 10 APIs and implementations. You can use it as a **drop-in replacement for the standard WildFly distribution if your applications rely on EE 10**.
+
+Download and unzip the archive, then start the server:
+
+[source,bash,subs="normal"]
+----
+unzip wildfly-ee-10-{wildfly-version}.zip
+cd wildfly-ee-10-{wildfly-version}
+./bin/standalone.sh
+----
+
+You can then deploy your EE 10 applications to this server as you would with any version of WildFly.
+
+== Provisioning WildFly with the EE 10 Feature-Pack
+
+If you use the `wildfly-maven-plugin` to provision WildFly, you need to update its configuration to use the EE 10 feature-pack instead of the default one.
+
+The EE 10 feature-pack Maven coordinates are:
+
+[cols="1,1"]
+|===
+| Group ID | `org.wildfly`
+| Artifact ID | `wildfly-ee-10-feature-pack`
+|===
+
+=== Using &lt;feature-packs&gt; configuration
+
+You can configure the `wildfly-maven-plugin` to provision WildFly with the EE 10 feature-pack by specifying it explicitly in the `feature-packs` configuration
+**before the existing `org.wildfly:wildfly-galleon-pack` feature-pack**:
+
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-ee-10-feature-pack</artifactId>
+                <version>{wildfly-version}</version>
+            </feature-pack>
+            <feature-pack>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-galleon-pack</artifactId>
+                <version>{wildfly-version}</version>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            [...]
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+IMPORTANT: The order of the <feature-pack> elements is significant: the `org.wildfly:wildfly-ee-10-feature-pack` feature-pack must be listed **before** the `org.wildfly:wildfly-galleon-pack` feature-pack.
+
+As an alternative to the Maven coordinate `org.wildfly:wildfly-ee-10-feature-pack:${wildfly.version}`, you can also use the
+feature-pack location `wildfly-ee-10@maven(org.jboss.universe:community-universe)` that resolves to the latest version of the EE 10 feature-pack from the WildFly community universe.
+
+=== Using WildFly Glow discovery
+
+If you use https://docs.wildfly.org/wildfly-glow/[WildFly Glow, window=_blank] to automatically discover the Galleon layers needed by your application, you can specify the EE 10 feature-pack in the `discover-provisioning-info` configuration with the `server-variant` property set to `ee-10`:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <discover-provisioning-info>
+            <version>${version.wildfly.bom}</version>
+            <server-variant>ee-10</server-variant>   
+        </discover-provisioning-info>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+=== Using a WildFly Channel
+
+You can also use the WildFly EE 10 channel to resolve the feature-pack version. The channel manifest coordinates are `org.wildfly.channels:wildfly-compat-ee-10` and it must be configured **instead of the `org.wildfly.channels:wildfly` channel**:
+
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <channels>
+            <channel>
+                <manifest>
+                    <groupId>org.wildfly.channels</groupId>
+                    <artifactId>wildfly-compat-ee-10</artifactId>
+                </manifest>
+            </channel>
+        </channels>
+        <feature-packs>
+            <feature-pack>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-ee-10-feature-pack</artifactId>
+            </feature-pack>
+            <feature-pack>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-galleon-pack</artifactId>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            [...]
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+[IMPORTANT]
+---
+The order of the <feature-pack> elements is significant: the `org.wildfly:wildfly-ee-10-feature-pack` feature-pack must be listed **before** the `org.wildfly:wildfly-galleon-pack` feature-pack.
+---
+
+== Using the EE 10 BOMs
+
+Starting with WildFly 40, the existing `org.wildfly.bom:wildfly-ee` and `org.wildfly.bom:wildfly-ee-with-tools` BOMs provide EE 11 dependencies.
+
+To continue using EE 10 dependencies, update your `pom.xml` to use the EE 10 BOMs instead:
+
+[cols="1,1"]
+|===
+| EE 11 BOM (default) | EE 10 BOM
+
+| `org.wildfly.bom:wildfly-ee`
+| `org.wildfly.bom:wildfly-ee-10`
+
+| `org.wildfly.bom:wildfly-ee-with-tools`
+| `org.wildfly.bom:wildfly-ee-10-with-tools`
+|===
+
+For example, if your `pom.xml` currently imports the `wildfly-ee` BOM:
+
+[source,xml]
+----
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.wildfly.bom</groupId>
+            <artifactId>wildfly-ee</artifactId>
+            <version>${version.wildfly}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+----
+
+Update it to use the EE 10 BOM:
+
+[source,xml]
+----
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.wildfly.bom</groupId>
+            <artifactId>wildfly-ee-10</artifactId>
+            <version>${version.wildfly}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+----
+
+Similarly, if you use `wildfly-ee-with-tools`, replace it with `wildfly-ee-10-with-tools`.
+
+== Container Images
+
+The standard WildFly container images are available from the `quay.io/wildfly/wildfly` images (see the https://docs.wildfly.org/wildfly-container/[WildFly Container Image documentation, window=_blank] for details). Starting with WildFly 40, these images provide the default EE 11 distribution.
+
+To run the EE 10 distribution in a container, use the dedicated `quay.io/wildfly/wildfly-ee-10` container images.
+
+=== Image Tags
+
+The EE 10 container images are available with the following tags:
+
+[cols="1,2"]
+|===
+| Tag | Description
+
+| `{wildfly-version}-jdk17`
+| WildFly {wildfly-version} EE 10 Distribution on JDK 17
+
+| `{wildfly-version}-jdk21`
+| WildFly {wildfly-version} EE 10 Distributionon JDK 21
+
+| `latest-jdk17`
+| Latest WildFly EE 10 Distribution  on JDK 17
+
+| `latest-jdk21`
+| Latest WildFly EE 10 Distribution on JDK 21
+
+| `latest`
+| Latest WildFly EE 10 Distribution on latest TLS JDK.
+|===
+
+For example, to run the latest WildFly EE 10 distribution on JDK 21:
+
+[source,bash]
+----
+podman run -p 8080:8080 quay.io/wildfly/wildfly-ee-10:latest-jdk21
+----
+
+NOTE: Instead of using the `latest` tag, we recommend using a floating tag with the JDK version (e.g. `latest-jdk21`) to guarantee the use of the same JDK version across WildFly releases.
+
+== What's next?
+
+The WildFly EE 10 feature-pack is intended to ease the transition from EE 10 to EE 11 for your applications.
+It is planned to be available for a limited number of WildFly releases, so we encourage you to start planning your migration to EE 11.
+
+[[references]]
+== References
+
+* https://wildfly.org/downloads[WildFly Downloads, window=_blank]
+* https://docs.wildfly.org/wildfly-maven-plugin/[WildFly Maven Plugin, window=_blank]
+* https://docs.wildfly.org/wildfly-glow/[WildFly Glow, window=_blank]
+* https://docs.wildfly.org/wildfly-container/[WildFly Container Images, window=_blank] 
