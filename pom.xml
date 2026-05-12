@@ -17,6 +17,7 @@
         <version.compiler-plugin>3.14.0</version.compiler-plugin>
         <version.quarkus-roq>2.1.1</version.quarkus-roq>
         <version.quarkus.platform>3.35.2</version.quarkus.platform>
+        <version.quarkus-web-bundler>2.3.1</version.quarkus-web-bundler>
         <version.surefire-plugin>3.5.2</version.surefire-plugin>
     </properties>
 
@@ -33,6 +34,10 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkiverse.roq</groupId>
             <artifactId>quarkus-roq</artifactId>
@@ -58,10 +63,34 @@
             <artifactId>quarkus-roq-plugin-tagging</artifactId>
             <version>${version.quarkus-roq}</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.roq</groupId>
+            <artifactId>quarkus-roq-plugin-sitemap</artifactId>
+            <version>${version.quarkus-roq}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.web-bundler</groupId>
+            <artifactId>quarkus-web-bundler</artifactId>
+            <version>${version.quarkus-web-bundler}</version>
+        </dependency>
 
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
+            <groupId>org.mvnpm</groupId>
+            <artifactId>highlight.js</artifactId>
+            <version>11.11.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mvnpm</groupId>
+            <artifactId>highlightjs-copy</artifactId>
+            <version>1.0.6</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mvnpm.at.fortawesome</groupId>
+            <artifactId>fontawesome-free</artifactId>
+            <version>7.2.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -72,11 +101,6 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.quarkiverse.roq</groupId>
-            <artifactId>quarkus-roq-plugin-sitemap</artifactId>
-            <version>${version.quarkus-roq}</version>
-        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit</artifactId>

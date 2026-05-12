@@ -16,7 +16,7 @@
     categories = document.querySelectorAll('.guide-category');
 
     if (!searchInput) {
-      console.warn('Guides search input not found');
+      // console.warn('Guides search input not found');
       return;
     }
 
