@@ -2,7 +2,7 @@
 // It lies in <source>/_sass, just waiting to be imported.
 // It does not contain the YAML front matter and has no corresponding output file in the built site.
 
-@import "colors";
+@use "colors" as *;
 @import url('https://fonts.googleapis.com/css?family=PT+Mono|Titillium+Web:200,400,700');
 
 html,

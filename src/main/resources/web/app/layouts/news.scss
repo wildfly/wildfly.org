@@ -1,3 +1,6 @@
+@use "../colors" as *;
+@use "../grid" as *;
+
 .news-page {
   margin-bottom: 3rem;
   .news-list-item {
