@@ -36,10 +36,13 @@ layout: base
         <div class="grid__item width-3-12 news-block-item" data-guide-title="{group.title}" data-guide-keywords="{#for guide in group.guides}{#if !guide_isFirst && guide.keywords}, {/if}{guide.keywords ?: ''}{/for}">
             <div class="post-title">
                 <h4>{group.title}</h4>
-                {#for guide in group.guides}
                 <div class="description">
-                    <a href="{site.url(guide.url)}">{guide.description}</a></div>
-                {/for}
+                    <ul>
+                        {#for guide in group.guides}
+                        <li><a href="{site.url(guide.url)}">{guide.description}</a></li>
+                        {/for}
+                    </ul>
+                </div>
             </div>
         </div>
         {/for}

@@ -1,5 +1,6 @@
 ---
 layout: base
+bodyClass: homepage
 ---
 
 {#let latestIndex=cdi:metadata.current_release_index latestRelease=cdi:releases.list.get(0)}
@@ -38,10 +39,6 @@ layout: base
           <a target="_blank" href="https://docs.wildfly.org" class="docs">Documentation</a>
           <a href="{cdi:metadata.forum_url}" class="forums" target="_blank">Forums</a>
         </div>
-      </div>
-
-      <div class="grid__item width-12-12 home-section">
-        <img class="home-img" src="{site.url('assets/img/homepage/homepage-screenshot.png')}" />
       </div>
 
       <div class="grid__item width-12-12 home-section">

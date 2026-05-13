@@ -1,14 +1,18 @@
 @use "../colors" as *;
 
 .events {
-  padding-bottom: 3rem;
+  padding-bottom: 4rem;
+
+  h1 {
+    margin-bottom: 2rem;
+  }
 
   .page-subtitle {
     color: $teal;
     border-top: 2px solid $teal;
     border-bottom: 2px solid $teal;
     padding: 2rem 0;
-    margin: 4rem 0 0 0;
+    margin: 2rem 0 3rem 0;
 
     strong {
       color: $teal;
@@ -35,10 +39,14 @@
   grid-column: span 2;
   order: unset;
   padding-left: 2rem;
+  position: sticky;
+  top: 2rem;
+  align-self: start;
   @media screen and (max-width: 768px) {
     padding-left: 0;
     grid-column: span 12;
     order: -1;
+    position: static;
   }
 
   h3 {
