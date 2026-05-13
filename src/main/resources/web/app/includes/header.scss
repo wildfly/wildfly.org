@@ -153,8 +153,17 @@ nav ul.nav-list {
   }
 }
 
+@media only screen and (max-width: $nav-breakpoint) {
+  nav ul.open { display: block; }
+}
+
 @media screen and (min-width: $nav-breakpoint) {
   .nav-list { display: block !important; }
+}
+
+.nav-dropdown {
+  display: none;
+  &.show { display: block; }
 }
 
 #nav-toggle {
