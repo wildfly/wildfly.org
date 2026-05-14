@@ -8,7 +8,7 @@ author: gaol
 description: Learn about Vertx configuration in WildFly Preview 35
 ---
 
-I'm excited to announce the integration of the link:https://github.com/wildfly-extras/wildfly-vertx-feature-pack[WildFly Vertx Feature Pack, window=_blank] into WildFly Preview from WildFly 35 Beta release. This feature pack introduces Vertx configuration capabilities through the WildFly management model, making it easier to manage and integrate Vertx with existing WildFly subsystems.
+I'm excited to announce the integration of the link:https://github.com/wildfly-extras/wildfly-vertx-feature-pack[WildFly Vertx Feature-Pack, window=_blank] into WildFly Preview from WildFly 35 Beta release. This feature-pack introduces Vertx configuration capabilities through the WildFly management model, making it easier to manage and integrate Vertx with existing WildFly subsystems.
 
 NOTE: In the 35 release, the vertx subsystem is only available in WildFly Preview, and not in standard WildFly. It is provided at the link:https://docs.wildfly.org/34/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank], which is enabled out-of-the-box in WildFly Preview.
 
@@ -18,8 +18,8 @@ link:https://github.com/eclipse-vertx/vert.x/[Eclipse Vert.x, window=_blank] is 
 
 Currently, Vertx instances have been used by `opentelemetry` and `microprofile-reactive-messaging-smallrye` subsystems within WildFly to provide features powered by vertx components underneath, but there was no central mechanism to configure them.
 
-== Key Features of the WildFly Vertx Feature Pack
-This feature pack provides centralized configuration and management of the Vertx instance, so administrators now have a unified way to define and manage the Vertx instance.
+== Key Features of the WildFly Vertx Feature-Pack
+This feature-pack provides centralized configuration and management of the Vertx instance, so administrators now have a unified way to define and manage the Vertx instance.
 
 Following the recommendation from the Vert.x team, it is good to have a single Vertx instance for everything, which ensures optimal efficiency and simplicity.
 

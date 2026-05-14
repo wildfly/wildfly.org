@@ -403,7 +403,7 @@ Now we should be ready to start our application and interact with the database. 
 mvn clean package
 ----
 
-Notice how WildFly Glow gives us information about the feature packs and Galleon layers discovered. It also provides some hints about required environment variables:
+Notice how WildFly Glow gives us information about the feature-packs and Galleon layers discovered. It also provides some hints about required environment variables:
 
 [source,bash]
 ----

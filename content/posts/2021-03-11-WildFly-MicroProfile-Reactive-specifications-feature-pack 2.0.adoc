@@ -1,17 +1,17 @@
 ---
 layout: post
-title:  "MicroProfile Reactive Messaging in WildFly 23, and WildFly MicroProfile Reactive Specifications Feature Pack 2.0.0.Final"
+title:  "MicroProfile Reactive Messaging in WildFly 23, and WildFly MicroProfile Reactive Specifications Feature-Pack 2.0.0.Final"
 aliases: [/news/2021/03/11/WildFly-MicroProfile-Reactive-specifications-feature-pack-2.0]
 date:   2021-03-11 12:00:00 -0000
 tags:   wildfly galleon microprofile reactive
 author: kkhan
-description: MicroProfile Reactive Messaging in WildFly 23, and WildFly MicroProfile Reactive Specifications Feature Pack 2.0.0.Final
+description: MicroProfile Reactive Messaging in WildFly 23, and WildFly MicroProfile Reactive Specifications Feature-Pack 2.0.0.Final
 ---
 
-I am pleased to announce the 2.0.0.Final release of the MicroProfile Reactive Specifications Feature Pack for WildFly. Between
-the link:https://www.wildfly.org/news/2020/11/05/WildFly-MicroProfile-Reactive-specifications-feature-pack-1.0/[1.0.0.Final release] and the link:https://www.wildfly.org/news/2021/03/11/WildFly23-Final-Released/[WildFly 23.0.0.Final] release, we pulled the core of what the feature pack contained into WildFly.
+I am pleased to announce the 2.0.0.Final release of the MicroProfile Reactive Specifications Feature-Pack for WildFly. Between
+the link:https://www.wildfly.org/news/2020/11/05/WildFly-MicroProfile-Reactive-specifications-feature-pack-1.0/[1.0.0.Final release] and the link:https://www.wildfly.org/news/2021/03/11/WildFly23-Final-Released/[WildFly 23.0.0.Final] release, we pulled the core of what the feature-pack contained into WildFly.
 
-WildFly now contains these Galleon layers which used to live in the 1.0.x stream of the feature pack:
+WildFly now contains these Galleon layers which used to live in the 1.0.x stream of the feature-pack:
 
 * `microprofile-reactive-messaging` - Provides the link:https://github.com/eclipse/microprofile-reactive-messaging/releases[MicroProfile Reactive Messaging 1.0] functionality - this is a framework for building event-driven, data streaming and event sourcing applications using CDI. The streams, or channels, can be backed by a variety of messaging technologies.
 ** `microprofile-reactive-messaging-kafka` - The include the connector for Kafka in WildFly, in the  layer
@@ -21,17 +21,17 @@ The WildFly 23.0.0.Final zip available from our link:https://www.wildfly.org/dow
 
 Additionally there are sections about these subsystems in our Admin Guide (link:https://docs.wildfly.org/23/Admin_Guide.html#MicroProfile_Reactive_Streams_Operators_SmallRye[Reactive Streams Operators]/link:https://docs.wildfly.org/23/Admin_Guide.html#MicroProfile_Reactive_Messaging_SmallRye[Reactive Messaging]).
 
-== The Feature Pack
-As before to use the feature pack you will need to use Galleon to provision a server, as pointed out in the feature pack link:https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack[README]. That README contains more details of what is contained, but in summary it contains Galleon layers to provide the following functionality:
+== The Feature-Pack
+As before to use the feature-pack you will need to use Galleon to provision a server, as pointed out in the feature-pack link:https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack[README]. That README contains more details of what is contained, but in summary it contains Galleon layers to provide the following functionality:
 
 * link:https://github.com/eclipse/microprofile-context-propagation/releases[MicroProfile Context Propagation 1.0] functionality.
 * Additional Reactive Messaging connectors for:
 ** AMQP
 ** MQTT
 
-We decided to remove RxJava2 support of context propagation for the feature pack since that caused some problems under the hood. RxJava2 is not a supported API for user applications in WildFly (although we use it for somem internal functionality). If you have the need to process streams, please use the MicroProfile Reactive Streams Operators API instead.
+We decided to remove RxJava2 support of context propagation for the feature-pack since that caused some problems under the hood. RxJava2 is not a supported API for user applications in WildFly (although we use it for somem internal functionality). If you have the need to process streams, please use the MicroProfile Reactive Streams Operators API instead.
 
-Note that the 2.0.x series of the feature pack will only work with WildFly 23.
+Note that the 2.0.x series of the feature-pack will only work with WildFly 23.
 
 For earlier WildFly versions, use the 1.0.x releases. The present latest release on that stream, 1.0.2, works with WildFly 21 and WildFly 22.
 
@@ -41,7 +41,7 @@ It is worth pointing out that we're strictly staying with what version 1.0 of th
 
 
 == What is coming up?
-Once the MicroProfile Reactive Messaging 2.0 specification is released and the other reactive specifications, MicroProfile Reactive Streams Operators and MicroProfile Context Propagation, are finalised, we will start work on integrating them into a future (as yet to be determined) WildFly version. With the current information, the feature pack then mainly becomes a place for the connectors we don't want in WildFly yet.
+Once the MicroProfile Reactive Messaging 2.0 specification is released and the other reactive specifications, MicroProfile Reactive Streams Operators and MicroProfile Context Propagation, are finalised, we will start work on integrating them into a future (as yet to be determined) WildFly version. With the current information, the feature-pack then mainly becomes a place for the connectors we don't want in WildFly yet.
 
 == Feedback
-We're keen to hear your feedback! Please raise any issues found with the feature pack at https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/issues. And for the parts in WildFly, raise issues at https://issues.redhat.com, in the WFLY project (using 'MP Reactive Messaging' as the component).
+We're keen to hear your feedback! Please raise any issues found with the feature-pack at https://github.com/wildfly-extras/wildfly-mp-reactive-feature-pack/issues. And for the parts in WildFly, raise issues at https://issues.redhat.com, in the WFLY project (using 'MP Reactive Messaging' as the component).

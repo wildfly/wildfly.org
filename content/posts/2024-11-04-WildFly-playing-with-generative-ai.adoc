@@ -5,19 +5,19 @@ aliases: [/news/2024/11/04/WildFly-playing-with-generative-ai]
 date:   2024-11-04
 tags: generative-ai rag wildfly
 author: ehsavoie
-description: How to try the Generative AI feature pack with WildFly
+description: How to try the Generative AI feature-pack with WildFly
 ---
 
-This blog post provides information on how to use the AI Galleon Feature pack to write generative AI applications.
+This blog post provides information on how to use the AI Galleon Feature-Pack to write generative AI applications.
 
-Please note that this feature pack is currently a proof of concept and is not ready for production.
+Please note that this feature-pack is currently a proof of concept and is not ready for production.
 
 You can access the release https://github.com/wildfly-extras/wildfly-ai-feature-pack/releases/tag/0.1.0[*org.wildfly:wildfly-ai-galleon-pack:0.1.0*, window=_blank] to follow the examples provided here.
 
 
-== What's in this feature pack ?
+== What's in this feature-pack ?
 
-This feature pack is work in progress so we will only cover what is already available as of today.
+This feature-pack is work in progress so we will only cover what is already available as of today.
 It relies on configuring and exposing https://github.com/langchain4j[LangChain4J, window=_blank] via https://github.com/smallrye/smallrye-llm[smallrye-llm, window=_blank] to your application.
 It provides a way to inject some basic elements to make creating a Retrieval-Augmented Generation (RAG) application easy.
 It helps by configuring and providing all the required elements for such an application.
@@ -40,7 +40,7 @@ image::ai/rag.png[RAG]
 
 ==== RAG with LangChain4j
 
-The current feature pack provides a basic integration with the library LangChain4J. That means that currently we are exposing the LangChain4J API to the application.
+The current feature-pack provides a basic integration with the library LangChain4J. That means that currently we are exposing the LangChain4J API to the application.
 So it provides:
 
 * `dev.langchain4j.model.embedding.EmbeddingModel`
@@ -52,13 +52,13 @@ So you can configure instances of these objects via the WildFly management API t
 
 We also support partially LangChain4J https://docs.langchain4j.dev/tutorials/ai-services/[*AI Services*, window=_blank] using https://github.com/smallrye/smallrye-llm/blob/0.0.1/smallrye-llm-langchain4j-core/src/main/java/io/smallrye/llm/spi/RegisterAIService.java[RegisterAIService, window=_blank] from https://github.com/smallrye/smallrye-llm[smallrye-llm, window=_blank]. Please note that this will change in the future as this project is quite new.
 
-== The feature pack
+== The feature-pack
 
-The feature pack is composed of a subsystem and a CDI extension. It supports several layers based on what you are trying to acheive. The list is not exhaustive and may vary in the future.
+The feature-pack is composed of a subsystem and a CDI extension. It supports several layers based on what you are trying to acheive. The list is not exhaustive and may vary in the future.
 
 ==== The layers
 
-This feature pack provides several layers to choose from when provisioning your server:
+This feature-pack provides several layers to choose from when provisioning your server:
 
 * Support for chat models to interact with a LLM via `ChatModelLanguage`:
 ** `mistral-ai-chat-model`: provides integration with https://mistral.ai/[Mistral AI, window=_blank]
@@ -83,7 +83,7 @@ This feature pack provides several layers to choose from when provisioning your 
 
 The layers will provide the required management resources, operations and modules.
 
-==== Provisioning the feature pack
+==== Provisioning the feature-pack
 
 For example:
 
@@ -347,8 +347,8 @@ If you look into the server log file you will see the effective prompt sent to t
 
 == Going further
 
-This feature pack is currently just a proof of concept and is quite limited.
+This feature-pack is currently just a proof of concept and is quite limited.
 If you look at the code you can easily tweak it to try several scenarios like using a Weaviate Embedding Store with metadata.
 Also you can try https://openai.com/[OpenAI, window=_blank] or https://groq.com[Groq, window=_blank] instead of Ollama.
 
-All the source code of the feature pack is available on https://github.com/wildfly-extras/wildfly-ai-feature-pack[Github, window=_blank] and can be improved by extending the components that may be of use.
+All the source code of the feature-pack is available on https://github.com/wildfly-extras/wildfly-ai-feature-pack[Github, window=_blank] and can be improved by extending the components that may be of use.

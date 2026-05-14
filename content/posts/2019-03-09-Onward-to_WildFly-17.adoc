@@ -19,7 +19,7 @@ A major focus will be on making WildFly as easy and productive as possible to us
  * Creation of an link:https://coreos.com/blog/introducing-operators.html[Operator] to help automate best practices for deploying and managing a WildFly-based application on Kubernetes and OpenShift. Work on this has just link:http://lists.jboss.org/pipermail/wildfly-dev/2019-March/006798.html[kicked off]; we'd love to have your participation!
  * Continuation of our efforts to link:http://wildfly.org/news/2019/03/01/Galleon_Openshift/[use Galleon to make WildFly a truly "cloud native" application server]. This will involve a number of areas, including:
  ** Further development and greater testing of the link:http://docs.wildfly.org/16/Admin_Guide.html#Galleon_Provisioning[Galleon layers provided by WildFly].
- ** Enhancements to the Galleon tooling for creating feature packs.
+ ** Enhancements to the Galleon tooling for creating feature-packs.
  ** Fleshing out the image build processes.
  * Adding an link:https://launch.openshift.io/launch/[openshift.io launcher] for WildFly and enhancing it as best practices for cloud-native application development evolve.
  * Improved support for offloading session caching to an external Infinispan caching service by using a link:https://issues.redhat.com/browse/WFLY-7719[HotRod-based distributed session manager].
@@ -53,7 +53,7 @@ Future Work
 
 I regularly hear from community members asking about MicroProfile.  Last year we added subsystems to bring support of MicroProfile Config, Health, Metrics and OpenTracing.  The overall focus there was on "observability" of WildFly, particular in the cloud. These subsystems were oriented toward allowing monitoring and management tooling to observe the behavior of WildFly servers. The MicroProfile specs were a good choice because observers want to work in a standardized way.
 
-As this year continues we'll think about adding support for some other MicroProfile specifications, perhaps as new subsystems within the main WildFly codebase, or perhaps via new projects in the link:https://github.com/wildfly-extras[WildFly Extras organization] along with a link:http://docs.wildfly.org/galleon/#_feature_packs[Galleon feature pack] and a link:https://docs.wildfly.org/galleon/#_layers[Galleon layer] to allow easy integration into a WildFly installation.
+As this year continues we'll think about adding support for some other MicroProfile specifications, perhaps as new subsystems within the main WildFly codebase, or perhaps via new projects in the link:https://github.com/wildfly-extras[WildFly Extras organization] along with a link:http://docs.wildfly.org/galleon/#_feature_packs[Galleon feature-pack] and a link:https://docs.wildfly.org/galleon/#_layers[Galleon layer] to allow easy integration into a WildFly installation.
 
 I suspect anything on this would be in WildFly 18 or later.
 

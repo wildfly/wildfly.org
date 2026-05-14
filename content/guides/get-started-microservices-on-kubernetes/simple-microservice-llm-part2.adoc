@@ -254,7 +254,7 @@ NOTE: if you get *"dev.langchain4j.exception.HttpException: {"error":"model requ
 
 * link:https://www.wildfly.org/news/2024/11/04/WildFly-playing-with-generative-ai/["Playing with Generative AI with WildFly", window="_blank"]: contains a Retrieval-Augmented Generation (RAG) example application
 * link:https://www.youtube.com/watch?v=d8IExBP7rxw&t=11425s["WildFly Mini Conference March 2025", window="_blank"]: check the last track which is about link:https://modelcontextprotocol.io/introduction[MCP, window="_blank"]
-* link:https://www.wildfly.org/news/2025/02/10/Glowing-with-AI/["Making WildFly Glow with Intelligence", window="_blank"]: see how to use link:https://docs.wildfly.org/wildfly-glow/["Glow", window="_blank"] to find what feature packs and layers your deployment needs to be available on WildFly
+* link:https://www.wildfly.org/news/2025/02/10/Glowing-with-AI/["Making WildFly Glow with Intelligence", window="_blank"]: see how to use link:https://docs.wildfly.org/wildfly-glow/["Glow", window="_blank"] to find what feature-packs and layers your deployment needs to be available on WildFly
 * link:https://www.youtube.com/watch?v=crSKeeBsXoE["WildFly AI - monitor and troubleshoot a WildFly server with the WildFly chatbot", window="_blank"]
 
 [[references]]

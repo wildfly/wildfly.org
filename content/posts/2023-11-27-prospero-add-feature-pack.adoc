@@ -1,11 +1,11 @@
 ---
 layout: post
-title:  "Installing additional feature packs in WildFly"
+title:  "Installing additional feature-packs in WildFly"
 aliases: [/news/2023/11/27/prospero-add-feature-pack]
 date:   2023-11-27
 tags:   prospero galleon wildfly
 author: spyrkob
-description: Using Prospero to install additional feature packs in existing WildFly servers.
+description: Using Prospero to install additional feature-packs in existing WildFly servers.
 ---
 
 == Introduction
@@ -16,16 +16,16 @@ Prospero to modify an existing server and extends its capabilities by adding a M
 
 For the purpose of this article, we assume the existing server has been installed from a downloaded WildFly zip archive. However the process works 
 for servers installed using Prospero. In such case, simply skip the <<Registering WildFly server with Prospero>> section and start with 
-<<Creating feature pack channel>> section.
+<<Creating feature-pack channel>> section.
 
-== Additional feature packs for WildFly
+== Additional feature-packs for WildFly
 
-Galleon feature packs provide a mechanism to extend WildFly server capabilities. An example of feature packs contributed by the WildFly community are 
+Galleon feature-packs provide a mechanism to extend WildFly server capabilities. An example of feature-packs contributed by the WildFly community are 
 https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack], and
 https://github.com/wildfly-extras/wildfly-myfaces-feature-pack[wildfly-myfaces-galleon-pack]. The first one can be used to add support for a database, 
 while the latter can replace default JSF implementation with MyFaces.
 
-The additional feature packs can be installed in existing servers either using https://docs.wildfly.org/galleon/[Galleon] or 
+The additional feature-packs can be installed in existing servers either using https://docs.wildfly.org/galleon/[Galleon] or 
 https://github.com/wildfly-extras/prospero[Prospero] tools.
 
 == Prerequisites
@@ -50,7 +50,7 @@ cd /tmp/prospero-1.2.0.Final
 
 == Registering WildFly server with Prospero
 
-The first step to install additional feature packs in an existing WildFly server, is to subscribe the server to WildFly channels.
+The first step to install additional feature-packs in an existing WildFly server, is to subscribe the server to WildFly channels.
 This allows Prospero to apply updates for WildFly and modify the installation.
 
 [,bash]
@@ -86,9 +86,9 @@ Server /tmp/wildfly-30.0.0.Final is subscribed to following channels:
     url: https://maven.repository.redhat.com/ga/
 ----
 
-== Creating feature pack channel
+== Creating feature-pack channel
 
-All additional feature packs installed on top of WildFly have to be registered in a channel. We're going to create a new manifest for this.
+All additional feature-packs installed on top of WildFly have to be registered in a channel. We're going to create a new manifest for this.
 
 [,bash]
 ----
@@ -123,12 +123,12 @@ Finally to install the MariaDB database driver from wildfly-datasource-galleon-p
   --dir /tmp/wildfly-30.0.0.Final
 ----
 
-After running the command, you will be asked to confirm the changes, and the feature pack will be downloaded and installed.
+After running the command, you will be asked to confirm the changes, and the feature-pack will be downloaded and installed.
 
 [source]
 ----
-Installing feature pack `org.wildfly:wildfly-datasources-galleon-pack` in server `/tmp/wildfly-30.0.0.Final`
-Continue adding the feature pack? [y/N]:y
+Installing feature-pack `org.wildfly:wildfly-datasources-galleon-pack` in server `/tmp/wildfly-30.0.0.Final`
+Continue adding the feature-pack? [y/N]:y
 Applying changes
 
 Feature-packs resolved.
@@ -207,7 +207,7 @@ Before starting the server with the new datasource, we need to provide the Maria
 added to the server configuration as WildFly system properties, or as OS environment variables. For the purpose of this article, we will assume that 
 the MariaDB database called `testdb` is available on `localhost:3306` and is secured using `test/password` credentials.
 
-The detailed description of available configuration options can be found in the datasource feature pack documentation, 
+The detailed description of available configuration options can be found in the datasource feature-pack documentation, 
 eg. https://github.com/wildfly-extras/wildfly-datasources-galleon-pack/blob/main/doc/mariadb/README.md#required-configuration[MariaDB configuration].
 Managing WildFly system properties is described in the https://docs.wildfly.org/30/Admin_Guide.html#properties[WildFly Admin Guide]
 
@@ -256,18 +256,18 @@ Looking at the startup logs, we can see that `mariadb` driver and a new data sou
 
 == Conclusion
 
-In this article, we learned how to use Prospero to extend WildFly server with additional capabilities using feature packs.
+In this article, we learned how to use Prospero to extend WildFly server with additional capabilities using feature-packs.
 
 In particular we used https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] to install 
-and update a MariaDB datasource, but the same technique can be used to install other feature packs contributed by the community.
+and update a MariaDB datasource, but the same technique can be used to install other feature-packs contributed by the community.
 
-If you want to learn more about Prospero or available feature packs, please take a look at the GitHub projects below:
+If you want to learn more about Prospero or available feature-packs, please take a look at the GitHub projects below:
 
 * https://github.com/wildfly-extras/prospero
 * https://github.com/wildfly-extras/wildfly-datasources-galleon-pack
 * https://github.com/wildfly-extras/wildfly-myfaces-feature-pack
 
-If you would like to learn more about extending WildFly using feature packs, please take a looke at:
+If you would like to learn more about extending WildFly using feature-packs, please take a looke at:
 
 * https://docs.wildfly.org/galleon-plugins/#_building_a_custom_feature_pack_example
 * https://docs.wildfly.org/galleon/ 

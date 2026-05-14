@@ -124,7 +124,7 @@
       fingerprint: DE29 C9E8 063D 635C 6C00 B8FA 7B2E 5A9F A517 708B
 - contributor: ehsavoie
   name: "Emmanuel Hugonnet"  
-  bio: "Emmanuel works at IBM on WildFly Messaging integration. He currently works on the WildFly AI feature pack and support for Eclipse Che."
+  bio: "Emmanuel works at IBM on WildFly Messaging integration. He currently works on the WildFly AI feature-pack and support for Eclipse Che."
   github: ehsavoie
   signing:
     - id: rsa2048/EDB2EE81

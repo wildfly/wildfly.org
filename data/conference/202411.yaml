@@ -95,7 +95,7 @@ agenda:
     end: "17:40"
     type: talk
     abstract: >
-      Learn how to use the new WildFly AI Feature Pack to build an AI-powered application. In this presentation we will see how we can configure WildFly to a Large Language Model and build a Retrieval Augmented Application using CDI to inject all the pieces we need.
+      Learn how to use the new WildFly AI Feature-Pack to build an AI-powered application. In this presentation we will see how we can configure WildFly to a Large Language Model and build a Retrieval Augmented Application using CDI to inject all the pieces we need.
     speaker:
       - name: ehsavoie
         bio: "Emmanuel works at Red Hat on the messaging subsystem and on the developer experience."

@@ -138,7 +138,7 @@ By virtue of implementing `io.grpc.BindableService`,
 
 The previous snippet can be used to set up a free standing gRPC server,
 but we’re here to talk about the new gRPC subsystem in WildFly. It is
-packaged in the form of a galleon feature pack, and it can be installed
+packaged in the form of a galleon feature-pack, and it can be installed
 in WildFly as follows
 
 [source,bash]
@@ -147,7 +147,7 @@ in WildFly as follows
    galleon.sh install org.wildfly.extras.grpc:wildfly-grpc-feature-pack:0.1.0.Final --layers=grpc --dir=wildfly
 ----
 
-An instance of WildFly with the grpc feature pack will recognize any
+An instance of WildFly with the grpc feature-pack will recognize any
 deployment with one or more instances of `io.grpc.BindableService`, will
 install them all, and will start listening on a port which defaults to
 9555.

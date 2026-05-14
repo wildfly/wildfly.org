@@ -23,7 +23,7 @@ As discussed in the link:https://wildfly.org/news/2019/02/27/WildFly16-Final-Rel
 
 If you want to follow along with the examples, link:https://github.com/wildfly/galleon/releases[download the latest Galleon command line tool], unzip it and add the bin dir to your PATH.
 
-=== Feature Packs and Channels
+=== Feature-Packs and Channels
 
 The simplest command to install the latest version of WildFly into the directory _my-wildfly_ is to call:
 
@@ -34,8 +34,8 @@ $ galleon.sh install wildfly:current --dir=my-wildfly
 
 Most of that command is self-explanatory, but what about the `wildfly:current` part? That's a _feature-pack location_ or _FPL_. An FPL has a link:https://docs.wildfly.org/galleon/#_feature_pack_location[rich possible syntax], but most commonly you'll see something simple like `wildfly:current`. This consists of two parts:
 
-* `wildfly` -- the name of the feature pack
-* `current` -- the name of a _channel_ from which the feature pack should be consumed. A channel represents a source of backward compatible releases. A feature pack may be available over numerous channels, with different channels restricting which versions of the channel are available.  The `current` channel for WildFly feature packs includes all versions.
+* `wildfly` -- the name of the feature-pack
+* `current` -- the name of a _channel_ from which the feature-pack should be consumed. A channel represents a source of backward compatible releases. A feature-pack may be available over numerous channels, with different channels restricting which versions of the channel are available.  The `current` channel for WildFly feature-packs includes all versions.
 
 Use the `list-feature-packs` command to see what packs and channels are available:
 
@@ -53,7 +53,7 @@ wildfly-servlet current/final  17.0.1.Final
 wildfly-servlet 17.0/final     17.0.1.Final
 ----
 
-Feature packs for `wildfly`, `wildfly-core` and `wildfly-servlet` are available, with `wildfly-core` and `wildfly-servlet` providing subsets of the traditional functionality of the WildFly application server.  There are two channels for each, the `current` channel, which will have the latest release available, regardless of major/minor version, and then the `17.0` and `9.0` channels for `wildfly`/`wildfly-servlet` and `wildfly-core` respectively. The `final` in the _Update Channel_ column for each channel indicates that the default link:https://docs.wildfly.org/galleon/#_frequency[frequency] for the channel is final releases. This means that unless instructed otherwise by the user the Galleon tool when looking for releases from the channel will limit itself to final releases.
+Feature-packs for `wildfly`, `wildfly-core` and `wildfly-servlet` are available, with `wildfly-core` and `wildfly-servlet` providing subsets of the traditional functionality of the WildFly application server.  There are two channels for each, the `current` channel, which will have the latest release available, regardless of major/minor version, and then the `17.0` and `9.0` channels for `wildfly`/`wildfly-servlet` and `wildfly-core` respectively. The `final` in the _Update Channel_ column for each channel indicates that the default link:https://docs.wildfly.org/galleon/#_frequency[frequency] for the channel is final releases. This means that unless instructed otherwise by the user the Galleon tool when looking for releases from the channel will limit itself to final releases.
 
 When provisioning a new server to which you anticipate applying updates when new versions come out, it's good to consider which channel you want, as that will become the default place the Galleon tool looks for future updates. When doing an update you can specify the channel to use, but if you don't do that, the channel associated with the installation will be used. So, if you don't want your WildFly 17 installation accidentally updated to WildFly 18, use the `17.0` channel.
 
@@ -66,7 +66,7 @@ This blog is about updating an installation to 17.0.1.Final, so first we want to
 $ galleon.sh install wildfly:17.0#17.0.0.Final --dir=my-wildfly --layers=cloud-profile,core-server,core-tools
 ----
 
-Note the `#17.0.0.Final` in the FPL. I included this because by default Galleon would install the latest final version in the channel, i.e. 17.0.1.Final. Since this post is about _updating_ to 17.0.1 I didn't want to start there, so I added a specific feature pack version to the FPL. Normally you wouldn't need to include that when provisioning a server.
+Note the `#17.0.0.Final` in the FPL. I included this because by default Galleon would install the latest final version in the channel, i.e. 17.0.1.Final. Since this post is about _updating_ to 17.0.1 I didn't want to start there, so I added a specific feature-pack version to the FPL. Normally you wouldn't need to include that when provisioning a server.
 
 The `get-info` command tells us the status of the installation:
 
@@ -151,7 +151,7 @@ Product Build        Update Channel
 wildfly 17.0.0.Final 17.0
 ----
 
-Finally, same as with the `install` command, you can provide the FPL of the feature pack to update. (Its dependencies will also be updated.) This can be useful, for example, if an installation was associated with the `current` channel but you want to be sure to only update to a WildFly 17 release.
+Finally, same as with the `install` command, you can provide the FPL of the feature-pack to update. (Its dependencies will also be updated.) This can be useful, for example, if an installation was associated with the `current` channel but you want to be sure to only update to a WildFly 17 release.
 
 [source,options="nowrap"]
 ----

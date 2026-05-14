@@ -23,7 +23,7 @@ We have done a lot of reorganisation of both projects so they are more modular.
 Also, following some upgrades to our internal infrastructure, we are now able to deploy the artifacts to https://central.sonatype.com/search?namespace=org.wildfly.a2a[Maven Central] under the `org.wildfly.a2a` groupId.
 
 Aside from that the major new features are the inclusion of the transports introduced in version 0.3.0 of the A2A Protocol specification:
-* [`gRPC`] - This relies on the https://github.com/wildfly-extras/wildfly-grpc-feature-pack[WildFly gRPC Feature Pack].
+* [`gRPC`] - This relies on the https://github.com/wildfly-extras/wildfly-grpc-feature-pack[WildFly gRPC Feature-Pack].
 * [`HTTP+JSON`] - Also referred to as `REST`.
 
 We pass the TCK for both these new transports, as well as the original `JSON-RPC` transport.
@@ -42,7 +42,7 @@ Note that the simple example is more of a "Hello world" type application focused
 
 Once you have packaged your application, see the examples in the https://github.com/a2aproject/a2a-java/tree/main/examples/helloworld[A2A Java SDK] repository, and the https://github.com/a2aproject/a2a-samples/tree/main/samples/java/agents[Java samples in the a2a-samples] repository for how to actually implement agents that communicate with each other.
 
-You can then, for example, try to replace one of those agents with one running on WildFly. To help with integrating LLMs in WildFly applications, we have the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature Pack] which leverages https://github.com/langchain4j/langchain4j/[Langchain4j] to interact with the LLM.
+You can then, for example, try to replace one of those agents with one running on WildFly. To help with integrating LLMs in WildFly applications, we have the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature-Pack] which leverages https://github.com/langchain4j/langchain4j/[Langchain4j] to interact with the LLM.
 
 For more background information about the A2A Java SDK, and the A2A Java SDK for Jakarta, see our previous blog posts. Note that the blog posts are written using various versions of the SDK, so you will likely need to make some adjustments.
 

@@ -68,7 +68,7 @@ Beginning with WildFly 25 there will be some significant changes coming in WildF
 * Removal of the core management security realms from the standard configurations, with Elytron subsystem resources used instead.
 * Removal of the Picketlink extension and the subsystems it provides.
 * Potentially the Picketbox libraries will no longer be available, making the legacy security subsystem and core management security realms unavailable altogether on a server.
-* Unrelated to security, "legacy feature packs" (which use a provisioning technology that predates Galleon) will no longer be distributed.
+* Unrelated to security, "legacy feature-packs" (which use a provisioning technology that predates Galleon) will no longer be distributed.
 
 We're also evaluating changes in domain mode to limit the set of older version Host Controllers a current Domain Controller must be able to support, reducing the set to some of the more recent WildFly versions.
 

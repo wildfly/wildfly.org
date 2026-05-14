@@ -4,11 +4,11 @@ title:  "Building your First A2A Agent"
 date:   2025-08-07
 tags:   generative-ai a2a agent wildfly
 author: ehsavoie
-description: How to create an interoperable A2A agent in WildFly using the A2A Java SDK and the AI Feature Pack.
+description: How to create an interoperable A2A agent in WildFly using the A2A Java SDK and the AI Feature-Pack.
 ---
 The new https://a2aprotocol.ai/[Agent2Agent (A2A) Protocol] establishes an open standard for universal interoperability, allowing AI agents built by different vendors or on separate frameworks to communicate and collaborate effectively. By providing a standardized method for exchanging information and coordinating actions, A2A empowers businesses to create a unified, multi-agent ecosystem that breaks down data silos and automates complex workflows across their entire enterprise.The specifications of this protocol are available https://github.com/a2aproject/A2A[online], and you can find SDKs for different languages and tools on the https://github.com/a2aproject[A2A Github Organization]. You can watch this https://www.youtube.com/watch?v=Fbr_Solax1w[introduction to the Agent2Agent Protocol].
 
-This article guides you through building your first A2A-enabled agent in WildFly. We will leverage the https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta[A2A Java SDK for Jakarta Servers] (providing Jakarta EE integration for the https://github.com/a2aproject/a2a-java[A2A Java SDK]) and the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature Pack] to create a powerful, LLM-powered agent. This agent is compliant with version *0.2.5* of the A2A specifications and uses a simple https://modelcontextprotocol.io/[Model Context Protocol] tool written in Python.
+This article guides you through building your first A2A-enabled agent in WildFly. We will leverage the https://github.com/wildfly-extras/a2a-java-sdk-server-jakarta[A2A Java SDK for Jakarta Servers] (providing Jakarta EE integration for the https://github.com/a2aproject/a2a-java[A2A Java SDK]) and the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature-Pack] to create a powerful, LLM-powered agent. This agent is compliant with version *0.2.5* of the A2A specifications and uses a simple https://modelcontextprotocol.io/[Model Context Protocol] tool written in Python.
 
 == Prerequisites
 

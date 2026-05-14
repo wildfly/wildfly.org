@@ -20,9 +20,9 @@ Let's have a look at what's new.
 
 === Provisioning and Managing WildFly
 
-* It is now possible to use a link:https://issues.redhat.com/browse/KEYCLOAK-14953[Galleon feature pack provided by Keycloak] to link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFLY-13706-keycloak-feature-pack.adoc[install the Keycloak client adapters for WildFly] into your WildFly installation, instead of having to unzip content manually into your installation and update your config using the CLI. These Keycloak adapters allow you to secure deployments using OpenID Connect.
+* It is now possible to use a link:https://issues.redhat.com/browse/KEYCLOAK-14953[Galleon feature-pack provided by Keycloak] to link:https://github.com/wildfly/wildfly-proposals/blob/master/elytron/WFLY-13706-keycloak-feature-pack.adoc[install the Keycloak client adapters for WildFly] into your WildFly installation, instead of having to unzip content manually into your installation and update your config using the CLI. These Keycloak adapters allow you to secure deployments using OpenID Connect.
 * A new link:https://github.com/wildfly/wildfly-proposals/blob/master/clustering/web/WFLY-13150_Galleon_layer_distributable_web_local_cache.adoc[web-passivation Galleon layer] is available. Use it to provision the Distributable Web subsystem configured with a local web container cache.
-* New link:https://issues.redhat.com/browse/WFLY-14151[base health] and link:https://issues.redhat.com/browse/WFLY-14108[base metrics] subsystems are available. These provide a foundation for updated versions of the corresponding 'microprofile-health-smallrye' and 'microprofile-metrics-smallrye' subsystems. They also allow users who don't need the custom deployment-specific health and metrics information provided by Eclipse MicroProfile Health and Metrics to still get general server health and metrics information via the management endpoint without needing to include the MicroProfile Health and Metrics libraries in their server installation.  This is discussed further in the Feature Pack Changes section below.
+* New link:https://issues.redhat.com/browse/WFLY-14151[base health] and link:https://issues.redhat.com/browse/WFLY-14108[base metrics] subsystems are available. These provide a foundation for updated versions of the corresponding 'microprofile-health-smallrye' and 'microprofile-metrics-smallrye' subsystems. They also allow users who don't need the custom deployment-specific health and metrics information provided by Eclipse MicroProfile Health and Metrics to still get general server health and metrics information via the management endpoint without needing to include the MicroProfile Health and Metrics libraries in their server installation.  This is discussed further in the Feature-pack Changes section below.
 * If the `--read-only-server-config` startup param is used, the server will now run link:https://github.com/wildfly/wildfly-proposals/blob/master/ee/WFCORE-4135_Support_for_%20read_only_server_config_dir.adoc[even if the configuration directory is read-only]. This allows non-writable storage to be mounted as the configuration directory.
 * The high-level CLI `command` command has been enhanced to link:https://github.com/wildfly/wildfly-proposals/blob/master/cli/WFCORE-5009-Evolve-generic-command.adoc[allow creation of commands for existing resources].
 
@@ -42,19 +42,19 @@ As I link:https://www.wildfly.org/news/2020/11/12/Jakarta-EE-9-with-WildFly-Prev
 
 EE 9 is primarily about implementing the necessary change in the Jakarta EE APIs from the javax.* package namespace to the jakarta.* namespace. This is a big change that is going to take a while to percolate through the EE ecosystem, e.g. for the many projects that compile against the EE APIs to provide versions that use jakarta.*. While this happens we want to continue to deliver new features and fixes to our community, so the primary WildFly distribution will continue to provide the EE 8 APIs.
 
-=== EE 9 Via Bytecode Transformation and the 'wildfly-preview' Galleon Feature Pack
+=== EE 9 Via Bytecode Transformation and the 'wildfly-preview' Galleon Feature-Pack
 
 The large majority of the libraries included in WildFly Preview that were compiled against EE APIs were based on the javax.* EE 8 APIs. This includes the libraries produced from WildFly's own code base and by WildFly Core. But the EE APIs libraries available in the WildFly Preview runtime all use the jakarta.* packages. How can this work?
 
-The solution we've come up with for this is to provide a new 'wildfly-preview' Galleon feature pack, in addition to the standard 'wildfly' feature pack. (Recall that any WildFly server installation, including the ones that are zipped up and made available for download here, is produced by telling Galleon tooling to provision from a feature pack.) The 'wildfly-preview' feature pack differs from the standard 'wildfly' one in a number of ways, with the key ones relevant to EE 9 being:
+The solution we've come up with for this is to provide a new 'wildfly-preview' Galleon feature-pack, in addition to the standard 'wildfly' feature-pack. (Recall that any WildFly server installation, including the ones that are zipped up and made available for download here, is produced by telling Galleon tooling to provision from a feature-pack.) The 'wildfly-preview' feature-pack differs from the standard 'wildfly' one in a number of ways, with the key ones relevant to EE 9 being:
 
 * Where suitable EE 9 spec API jars were available from Eclipse, those were used instead of the EE 8 spec jars used in standard WildFly.
 * Where suitable 'native' EE 9 implementation libraries (i.e. ones compiled against jakarta.*) were available, those were used. This includes Weld, Hibernate Validator, Mojarra, Yasson, Jakarta EL and Jakarta JSON.
-* Any libraries that were using EE 8 APIs were detected and instructions were incorporated in the feature pack telling Galleon to do _byte code transformation of that library whenever it provisions a server using the feature pack_.
+* Any libraries that were using EE 8 APIs were detected and instructions were incorporated in the feature-pack telling Galleon to do _byte code transformation of that library whenever it provisions a server using the feature-pack_.
 
 The last item is the key point. When Galleon provisions a 'wildfly-preview' server by pulling jars down from maven, it knows that some artifacts were compiled against EE 8 javax.* packages. So it bytecode transforms those jars to alter references to EE 8 packages in the class file constant tables to change from javax.* to jakarta.*. The transformation goes beyond simple package renames; a number of other known differences between EE 8 and EE 9 are handled. Thanks to the link:https://projects.eclipse.org/projects/technology.transformer[Eclipse Transformer] project for their work on the underlying transformation tool.
 
-You can use the Galleon CLI tool to provision a server from the wildfly-preview feature pack yourself:
+You can use the Galleon CLI tool to provision a server from the wildfly-preview feature-pack yourself:
 
 [source,bash]
 ----
@@ -77,25 +77,25 @@ A WildFly Preview server, when it reads in deployment content to store in the co
 
 In the long run I feel it's better for users if they either convert their application source to EE 9 APIs, or use build-time tooling that we and the rest of the Jakarta community will work to provide to do transformation at build time.  But some applications just can't be changed, so the server-side solution we're using can handle those cases.
 
-== Feature Pack Changes
+== Feature-Pack Changes
 
-The WildFly server is provisioned using five Galleon feature packs. The composition of these feature packs has changed somewhat in WildFly 22.
+The WildFly server is provisioned using five Galleon feature-packs. The composition of these feature-packs has changed somewhat in WildFly 22.
 
-The five feature packs are:
+The five feature-packs are:
 
 * `wildfly-core` -- provides the functionality provided by the link:https://github.com/wildfly/wildfly-core[WildFly Core] project.
 * `wildfly-servlet` -- depends on wildfly-core and adds the functionality needed for the "Servlet-Only Distribution" you can find for each WildFly release on the link:https://www.wildfly.org/downloads/[download page].
 * `wildfly-ee` -- depends on wildfly-servlet and adds the functionality needed for a full EE appserver, plus other long-standing appserver functionality like clustering support.
-* `wildfly` -- depends on wildfly-ee and adds Eclipse MicroProfile functionality. This is the feature pack used to provision the standard WildFly distribution found on the link:https://www.wildfly.org/downloads/[download page], and is the feature pack that we expect most users who provision their own server or bootable jar to use.
+* `wildfly` -- depends on wildfly-ee and adds Eclipse MicroProfile functionality. This is the feature-pack used to provision the standard WildFly distribution found on the link:https://www.wildfly.org/downloads/[download page], and is the feature-pack that we expect most users who provision their own server or bootable jar to use.
 * `wildfly-preview` -- depends on wildfly-core and adds all other functionality needed for the WildFly Preview distribution.
 
-In WildFly 22 we corrected a conceptual problem in WildFly 21 and earlier where the 'wildfly-ee' feature pack was including five MicroProfile specifications: Config, Health, Metrics, OpenTracing and Rest Client. We want the support for the faster moving, more-open-to-breaking-changes MicroProfile specs to only come from the top level 'wildfly' feature pack. So in WildFly 22 we moved that functionality out of 'wildfly-ee' and into 'wildfly'. People only using only 'wildfly-ee' to provision will no longer have access to those specifications.
+In WildFly 22 we corrected a conceptual problem in WildFly 21 and earlier where the 'wildfly-ee' feature-pack was including five MicroProfile specifications: Config, Health, Metrics, OpenTracing and Rest Client. We want the support for the faster moving, more-open-to-breaking-changes MicroProfile specs to only come from the top level 'wildfly' feature-pack. So in WildFly 22 we moved that functionality out of 'wildfly-ee' and into 'wildfly'. People only using only 'wildfly-ee' to provision will no longer have access to those specifications.
 
-We do want 'wildfly-ee' users to be able to continue to use the WildFly management interface to do server health and readiness checks and to get JVM and container metrics in Prometheus format. To support this we have added new link:https://issues.redhat.com/browse/WFLY-14151[base health] and link:https://issues.redhat.com/browse/WFLY-14108[base metrics] subsystems to wildfly-ee. These subsystems do not provide any sort of API to deployments; e.g. you can't use them to provide your own health checks or metrics in your application code. If you want that you should use the 'wildfly' feature pack and the MicroProfile Health and Metrics subsystems.
+We do want 'wildfly-ee' users to be able to continue to use the WildFly management interface to do server health and readiness checks and to get JVM and container metrics in Prometheus format. To support this we have added new link:https://issues.redhat.com/browse/WFLY-14151[base health] and link:https://issues.redhat.com/browse/WFLY-14108[base metrics] subsystems to wildfly-ee. These subsystems do not provide any sort of API to deployments; e.g. you can't use them to provide your own health checks or metrics in your application code. If you want that you should use the 'wildfly' feature-pack and the MicroProfile Health and Metrics subsystems.
 
 The MicroProfile Health and Metrics subsystems now require the presence in the config of the base health and base metrics subsystems. Users migrating from WildFly 21 or earlier should add these new extensions/subsystems to their configuration.
 
-We anticipate further evolution in these feature packs in WildFly 23. In particular, it is likely the 'wildfly-ee' feature pack will no longer _depend on_ 'wildfly-servlet' or transitively on 'wildfly-core'. Instead it will directly provide the content currently provided by those feature packs.
+We anticipate further evolution in these feature-packs in WildFly 23. In particular, it is likely the 'wildfly-ee' feature-pack will no longer _depend on_ 'wildfly-servlet' or transitively on 'wildfly-core'. Instead it will directly provide the content currently provided by those feature-packs.
 
 == Standards Support
 

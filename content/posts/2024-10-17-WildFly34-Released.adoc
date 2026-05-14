@@ -207,7 +207,7 @@ Please note that WildFly runs in classpath mode.
 [[incompatibilities]]
 == Incompatible Changes
 
-We changed the Maven artifactId of the `org.wildfly.bom:wildfly-microprofile` user BOM to `org.wildfly.bom:wildfly-expansion`, so users of this BOM will need to update their poms. This BOM is intended to help developers develop applications that can run in a server provisioned using the `wildfly` feature pack, but which can't run in a server only using its `wildfly-ee` feature pack dependency. (The `org.wildfly.bom:wildfly-ee` BOM is used for the `wildfly-ee` feature pack dependencies.) For a while now the additional functionality in the `wildfly` feature pack has gone beyond MicroProfile, to include things like Micrometer, so we've updated to the more general 'expansion' term that we use to describe this feature pack.
+We changed the Maven artifactId of the `org.wildfly.bom:wildfly-microprofile` user BOM to `org.wildfly.bom:wildfly-expansion`, so users of this BOM will need to update their poms. This BOM is intended to help developers develop applications that can run in a server provisioned using the `wildfly` feature-pack, but which can't run in a server only using its `wildfly-ee` feature-pack dependency. (The `org.wildfly.bom:wildfly-ee` BOM is used for the `wildfly-ee` feature-pack dependencies.) For a while now the additional functionality in the `wildfly` feature-pack has gone beyond MicroProfile, to include things like Micrometer, so we've updated to the more general 'expansion' term that we use to describe this feature-pack.
 
 == Release Notes
 

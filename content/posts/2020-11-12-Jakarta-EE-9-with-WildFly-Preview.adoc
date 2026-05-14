@@ -19,26 +19,26 @@ As I discussed in my link:https://www.wildfly.org/news/2020/06/23/WildFly-and-Ja
 
 But, we want the community to begin to look at EE 9, so we decided to produce a new distribution of WildFly, which we're calling WildFly Preview. With WildFly 22 Alpha1 we're providing the first download of WildFly Preview.
 
-=== EE 9 Via Bytecode Transformation and the 'wildfly-preview' Galleon Feature Pack
+=== EE 9 Via Bytecode Transformation and the 'wildfly-preview' Galleon Feature-Pack
 
 The large majority of the libraries included in WildFly Preview that were compiled against EE APIs were based on the javax.* EE 8 APIs. This includes the libraries produced from WildFly's own code base and by WildFly Core.  But the EE APIs libraries available in the WildFly Preview runtime all use the jakarta.* packages. How can this work?
 
-The solution we've come up with for this is to provide a new 'wildfly-preview' Galleon feature pack, in addition to the standard 'wildfly' feature pack. (Recall that any WildFly server installation, including the ones that are zipped up and made available for download here, is produced by telling Galleon tooling to provision from a feature pack.) The 'wildfly-preview' feature pack differs from the standard 'wildfly' one in a number of ways, with the key ones relevant to EE 9 being:
+The solution we've come up with for this is to provide a new 'wildfly-preview' Galleon feature-pack, in addition to the standard 'wildfly' feature-pack. (Recall that any WildFly server installation, including the ones that are zipped up and made available for download here, is produced by telling Galleon tooling to provision from a feature-pack.) The 'wildfly-preview' feature-pack differs from the standard 'wildfly' one in a number of ways, with the key ones relevant to EE 9 being:
 
 * Where suitable EE 9 spec API jars were available from Eclipse, those were used instead of the EE 8 spec jars used in standard WildFly.
 * Where suitable 'native' EE 9 implementation libraries (i.e. ones compiled against jakarta.*) were available, those were used. This includes Weld, Hibernate Validator, Mojarra, Yasson, Jakarta EL and Jakarta JSON.
-* Any libraries that were using EE 8 APIs were detected and instructions were incorporated in the feature pack telling Galleon to do _byte code transformation of that library whenever it provisions a server using the feature pack_.
+* Any libraries that were using EE 8 APIs were detected and instructions were incorporated in the feature-pack telling Galleon to do _byte code transformation of that library whenever it provisions a server using the feature-pack_.
 
 The last item is the key point. When Galleon provisions a 'wildfly-preview' server by pulling jars down from maven, it knows that some artifacts were compiled against EE 8 javax.* packages. So it bytecode transforms those jars to alter references to EE 8 packages in the class file constant tables to change from javax.* to jakarta.*. The transformation goes beyond simple package renames; a number of other known differences between EE 8 and EE 9 are handled. We owe a great deal of thanks to B.J. Hargrave and the community behind the link:https://projects.eclipse.org/projects/technology.transformer[Eclipse Transformer] project for their work on the underlying transformation tool.
 
-You can use the Galleon CLI tool to provision a server from the wildfly-preview feature pack yourself:
+You can use the Galleon CLI tool to provision a server from the wildfly-preview feature-pack yourself:
 
 [source,bash]
 ----
 galleon.sh install wildfly-preview:current#22.0.0.Alpha1 --dir=my-wildfly-server
 ----
 
-Note the use of 'wildfly-preview' instead of 'wildfly'. Because this release is an alpha, Galleon won't try to install it by default if you don't give it explicit instructions to do so. So I include the '#22.0.0.Alpha1' in the feature pack location string. Another way to do this is to explicitly state that an alpha feature pack frequency is acceptable:
+Note the use of 'wildfly-preview' instead of 'wildfly'. Because this release is an alpha, Galleon won't try to install it by default if you don't give it explicit instructions to do so. So I include the '#22.0.0.Alpha1' in the feature-pack location string. Another way to do this is to explicitly state that an alpha feature-pack frequency is acceptable:
 
 [source,bash]
 ----

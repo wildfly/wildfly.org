@@ -26,7 +26,7 @@ Jakarta MVC:: We have added a preview stability extension and subsystem for http
 
 Vert.x extension:: We have added a preview stability extension and subsystem for https://vertx.io[Vert.x, window="_blank"] to configure and share the Vert.x instance within WildFly server for other subsystems which need it.
 
-WildFly AI:: We have created a https://github.com/wildfly-extras/wildfly-ai-feature-pack[Feature pack, window="_blank"] for Generative AI that simplifies the integration of AI in WildFly applications.
+WildFly AI:: We have created a https://github.com/wildfly-extras/wildfly-ai-feature-pack[Feature-Pack, window="_blank"] for Generative AI that simplifies the integration of AI in WildFly applications.
 
 Overall, more than 300 feature, enhancement and bug issues were resolved in our main code by more than 60 contributors, and if you include task and component upgrade issues we resolved over 700. This is not counting all the work done in the components integrated in WildFly.
 

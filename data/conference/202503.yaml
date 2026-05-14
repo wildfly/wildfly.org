@@ -94,7 +94,7 @@ agenda:
         url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20in.20a.20Vendor-Neutral.20Foundation/with/507327701"
       - title: "Feedback"
         url: "https://forms.gle/yuzMPgpLDyFYFWPy9"
-  - title: "WildFly AI Feature Pack: Deploying an MCP server"
+  - title: "WildFly AI Feature-Pack: Deploying an MCP server"
     start: "17:00"
     end: "17:45"
     type: talk
@@ -112,7 +112,7 @@ agenda:
         url: "https://www.youtube.com/live/d8IExBP7rxw?t=10904s"
       - title: "Slides (WildFly MCP Server)"
         url: "https://www.wildfly.org/assets/conference/202503-mcp-server.pdf"
-      - title: "Slides (WildFly AI Feature Pack)"
+      - title: "Slides (WildFly AI Feature-Pack)"
         url: "https://www.wildfly.org/assets/conference/202503-ai-fp.pdf"
       - title: "Chat"
         url: "https://wildfly.zulipchat.com/#narrow/channel/492672-Mar-2025-Mini-Conference/topic/Thread.3A.20WildFly.20AI.20Feature.20Pack.3A.20deploying.20an.20.20MCP.20server/with/507327790"

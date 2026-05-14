@@ -8,7 +8,7 @@ author: bstansberry
 description: WildFly 37 Final is now available for download.
 ---
 
-I'm pleased to announce that the new WildFly and WildFly Preview 37.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature packs for WildFly 37 are available in https://repository.jboss.org/nexus/[ the JBoss Maven repository, window=_blank].
+I'm pleased to announce that the new WildFly and WildFly Preview 37.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature-packs for WildFly 37 are available in https://repository.jboss.org/nexus/[ the JBoss Maven repository, window=_blank].
 
 NOTE: We expect it will be another day before the 37 artifacts are available in Maven Central.
 
