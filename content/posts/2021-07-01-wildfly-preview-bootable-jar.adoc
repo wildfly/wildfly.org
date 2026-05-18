@@ -64,7 +64,7 @@ There are 2 important lines in the code snippet:
 <feature-pack-location>wildfly-preview@maven(org.jboss.universe:community-universe)</feature-pack-location>
 ----
 
-This line means that we will use the `wildfly-preview` feature pack to install and provision the WildFly Server so that it runs with Jakarta EE 9.1. If we had specify instead `wildfly@maven(...)`, we would have install a regular WildFly server to run with Jakarta EE 8.
+This line means that we will use the `wildfly-preview` feature-pack to install and provision the WildFly Server so that it runs with Jakarta EE 9.1. If we had specify instead `wildfly@maven(...)`, we would have install a regular WildFly server to run with Jakarta EE 8.
 
 
 [source,xml]
@@ -202,7 +202,7 @@ $ curl -L $(oc get route helloworld-rs -o jsonpath="{.spec.host}")/rest/json
 
 In this article, we presented the steps to run an existing Jakarta EE 8 application on WildFly EE 9.1 Preview. We were able to run the application locally and on OpenShift.
 
-The first step was to use WildFly Bootable Jar to bundle the application and uses the `wildfly-preview` feature pack to install the server with EE 9.1
+The first step was to use WildFly Bootable Jar to bundle the application and uses the `wildfly-preview` feature-pack to install the server with EE 9.1
 
 The second step was to configure JKube to be able to deploy the application with OpenShift.
 

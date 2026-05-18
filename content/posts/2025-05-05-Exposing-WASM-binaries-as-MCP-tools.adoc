@@ -8,7 +8,7 @@ description: How to expose WebAssembly binaries as Model Context Protocol (MCP) 
 ---
 
 https://webassembly.org/[WebAssembly] (WASM) has emerged as a powerful technology for running high-performance code in various environments. In this article, we'll explore how to expose WASM binaries as  https://modelcontextprotocol.io/[Model Context Protocol] (MCP) tools in WildFly.
-With https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature Pack] 0.5.0 we have introduced a new subsystem to expose WASM https://wasi.dev/[WebAssembly System Interface] (WASI) binaries via CDI, and since we also support MCP tools declaration via CDI, just exposing those binaries as MCP tools was a small step forward.
+With https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature-Pack] 0.5.0 we have introduced a new subsystem to expose WASM https://wasi.dev/[WebAssembly System Interface] (WASI) binaries via CDI, and since we also support MCP tools declaration via CDI, just exposing those binaries as MCP tools was a small step forward.
 
 == What are MCP tools?
 

@@ -43,7 +43,7 @@ Feature-packs resolved.
 Packages installed.
 JBoss modules installed.
 Configurations generated.
-Feature pack installed.
+Feature-pack installed.
 ======= ============ ==============
 Product Build        Update Channel
 ======= ============ ==============

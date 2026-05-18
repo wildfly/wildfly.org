@@ -91,9 +91,9 @@ deploy:
 == Stability Levels for OpenShift Deployment
 The WildFly server now includes different stability levels, that can be associated with functionality. Users can use the `--stability` argument when staring the WildFly server. Depending on the value of the stability levels, different features are available. You can learn more about stability levels https://docs.wildfly.org/32/Admin_Guide.html#Feature_stability_levels[here].
 
-The `scope` attribute under the `elytron-oidc-client` subsystem is a `preview` level feature, which means in order to access its functionality, the server's stability level must be set to `preview`. When applications are deployed to OpenShift, the WildFly Cloud Galleon Feature Pack is used to provision a server. Therefore, in order to use the scope attribute, we need to provision the server at the `preview` stability level. This is why we have added the environment variable named *SERVER_ARGS* with a value of *--stability=preview*, which specifies that the provisioned server should be started at the `preview` stability level. For more information about the server's stability levels, please refer to https://docs.wildfly.org/32/Admin_Guide.html#Feature_stability_levels[WildFly Docs].
+The `scope` attribute under the `elytron-oidc-client` subsystem is a `preview` level feature, which means in order to access its functionality, the server's stability level must be set to `preview`. When applications are deployed to OpenShift, the WildFly Cloud Galleon Feature-Pack is used to provision a server. Therefore, in order to use the scope attribute, we need to provision the server at the `preview` stability level. This is why we have added the environment variable named *SERVER_ARGS* with a value of *--stability=preview*, which specifies that the provisioned server should be started at the `preview` stability level. For more information about the server's stability levels, please refer to https://docs.wildfly.org/32/Admin_Guide.html#Feature_stability_levels[WildFly Docs].
 
-Additionally, we have used the `stability` galleon option to specify the stability level used by the feature pack when deploying the application using the tags below:
+Additionally, we have used the `stability` galleon option to specify the stability level used by the feature-pack when deploying the application using the tags below:
 [source,bash]
 ----
     <galleon-options>
@@ -167,7 +167,7 @@ Notice that it contains an openshift profile. A profile in Maven lets you create
 
 <1> *wildfly-maven-plugin* provisions a WildFly server with the specified layers with our application deployed.Version *7.0.0.Beta2* or later must be used to allow for stability levels.
 <2> *elytron-oidc-client* automatically adds the native OIDC client subsystem to our WildFly installation.
-<3> *stability-level* for the feature pack is set to *preview* since we are making use of a preview level feature.
+<3> *stability-level* for the feature-pack is set to *preview* since we are making use of a preview level feature.
 
 Examine the https://github.com/wildfly-security-incubator/elytron-examples/blob/main/elytron-oidc-client-scope/src/main/webapp/WEB-INF/oidc.json[oidc.json] file, which is used to configure the OIDC client.
 [source,json,options="nowrap"]

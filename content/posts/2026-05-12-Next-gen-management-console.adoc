@@ -93,7 +93,7 @@ There are several ways to get started with halOP — pick whichever works best f
 
 === Bundled with WildFly
 
-halOP can be added to WildFly using the Galleon feature pack `org.jboss.hal:hal-op-feature-pack`, which is available on https://central.sonatype.com/artifact/org.jboss.hal/hal-op-feature-pack[Maven Central,window="_blank"].
+halOP can be added to WildFly using the Galleon feature-pack `org.jboss.hal:hal-op-feature-pack`, which is available on https://central.sonatype.com/artifact/org.jboss.hal/hal-op-feature-pack[Maven Central,window="_blank"].
 To provision a WildFly server with halOP, use the Galleon CLI:
 
 [source,shell]

@@ -68,7 +68,7 @@ You will extend the sample application you created in link:/guides/get-started-m
 The link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[wildfly-ai-feature-pack, window="_blank"] will:
 
 * add the necessary link:https://docs.langchain4j.dev[LangChain4J, window="_blank"] modules to the server (= the necessary dependencies to work with the model of choice)
-* add the configuration related to the model of choice; e.g. when using the `<layer>ollama-chat-model</layer>`, the feature pack would configure the server to connect to an external *Ollama* service
+* add the configuration related to the model of choice; e.g. when using the `<layer>ollama-chat-model</layer>`, the feature-pack would configure the server to connect to an external *Ollama* service
 
 === pom.xml
 

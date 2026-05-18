@@ -51,11 +51,11 @@ _web.xml_ file:
 </plugin>
 ----
 +
-The *feature-pack-location* is an expression used to resolve feature-pack artifacts from the remote repository. The feature-packs determine the WildFly version in use. Using a feature pack location has some advantages when you are interested in an automatic version resolution.
+The *feature-pack-location* is an expression used to resolve feature-pack artifacts from the remote repository. The feature-packs determine the WildFly version in use. Using a feature-pack location has some advantages when you are interested in an automatic version resolution.
 +
 [NOTE]
 ====
-If you are more comfortable by using maven GAVs, the above *feature-pack-location* can be replaced by the equivalent feature pack:
+If you are more comfortable by using maven GAVs, the above *feature-pack-location* can be replaced by the equivalent feature-pack:
 
 
 ----

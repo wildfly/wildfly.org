@@ -8,7 +8,7 @@ author: bstansberry
 description: WildFly 36 Final is now available for download.
 ---
 
-I'm pleased to announce that the new WildFly and WildFly Preview 36.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature packs for WildFly 36 are available in Maven.
+I'm pleased to announce that the new WildFly and WildFly Preview 36.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature-packs for WildFly 36 are available in Maven.
 
 [[new_and_notable]]
 == New and Notable
@@ -16,7 +16,7 @@ I'm pleased to announce that the new WildFly and WildFly Preview 36.0.0.Final re
 This quarter we had some exciting innovation outside the main appserver itself:
 
 * You can now link:https://docs.wildfly.org/wildfly-proposals/user-experience/jbang.html[run a WildFly application from JBang, window=_blank]. To learn more about this feature, please read the link:https://docs.wildfly.org/wildfly-glow/#jbang[JBang integration section, window=_blank] in the WildGly Glow documentation. This feature is provided at the link:https://docs.wildfly.org/36/Admin_Guide.html#Feature_stability_levels[`experimental` stability level, window=_blank].
-* The link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank] evolved rapidly during the quarter. Learn more by checking out Emmanuel Hugonnet's talks at last month's link:https://www.wildfly.org/events/wmc-202503.html[WildFly Mini Conference, window=_blank] or at link:https://www.youtube.com/watch?v=eeNxNVeQaS0[JDConf, window=_blank]. This feature pack is currently link:https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[incubating, window=_blank] and will likely continue to change rapidly.
+* The link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature-pack, window=_blank] evolved rapidly during the quarter. Learn more by checking out Emmanuel Hugonnet's talks at last month's link:https://www.wildfly.org/events/wmc-202503.html[WildFly Mini Conference, window=_blank] or at link:https://www.youtube.com/watch?v=eeNxNVeQaS0[JDConf, window=_blank]. This feature-pack is currently link:https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[incubating, window=_blank] and will likely continue to change rapidly.
 
 Of course, there's new stuff in the main appserver as well:
 
@@ -26,7 +26,7 @@ Of course, there's new stuff in the main appserver as well:
 * The `undertow` subsystem now allows https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-20476_ajp-listener_allowed_attr_pattern_community.html[configuring the AJP listener to accept custom AJP request headers]. This feature is provided at the link:https://docs.wildfly.org/36/Admin_Guide.html#Feature_stability_levels[`community` stability level, window=_blank]. Previously this had been supported at `preview` stability. The promotion to `community` stability means this feature is now available out of the box in standard WildFly.
 * Within the WildFly Preview distribution we also https://github.com/wildfly/wildfly/pull/18706[upgraded to a beta of Hibernate ORM 7 and an alpha of Hibernate Search 8, window=_blank].
 
-Finally, we did some long overdue improvements to the link:https://docs.wildfly.org[main landing page for our docs, window=_blank]. We plan to continue improving there, particularly by giving greater emphasis to the growing ecosystem of Galleon feature packs that WildFly provides. Your feedback is very much wanted!
+Finally, we did some long overdue improvements to the link:https://docs.wildfly.org[main landing page for our docs, window=_blank]. We plan to continue improving there, particularly by giving greater emphasis to the growing ecosystem of Galleon feature-packs that WildFly provides. Your feedback is very much wanted!
 
 == Supported Specifications
 
@@ -93,7 +93,7 @@ link:https://github.com/jasondlee[Jason Lee, window=_blank] slew the dragon of P
 
 link:https://github.com/jmesnil[Jeff Mesnil, window=_blank] showed great innovative initiative by driving the new ability to https://github.com/wildfly/wildfly-proposals/issues/688[run a source-only WildFly application, window=_blank] using https://www.jbang.dev/[JBang, window=_blank]. Thank you, Jeff!
 
-Same for link:https://github.com/ehsavoie[Emmanuel Hugonnet, window=_blank], who is on fire with new improvements to the incubating link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank]. Go Emmanuel!
+Same for link:https://github.com/ehsavoie[Emmanuel Hugonnet, window=_blank], who is on fire with new improvements to the incubating link:https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature-pack, window=_blank]. Go Emmanuel!
 
 == Release Notes
 

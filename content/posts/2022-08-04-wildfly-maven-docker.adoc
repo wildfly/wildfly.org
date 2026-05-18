@@ -104,7 +104,7 @@ We can add it to the `<build>` section of application's `pom.xml` to provision W
 </plugin>
 ----
 
-If we run again `mvn clean package`, the `wildfly-maven-plugin` will provision WildFly using its feature pack. 
+If we run again `mvn clean package`, the `wildfly-maven-plugin` will provision WildFly using its feature-pack. 
 Once maven is finished, there will be a `target/server` directory that contains _WildFly and the application deployment_.
 This means that you can directly run WildFly from this directory with the application deployed in it:
 
@@ -248,23 +248,23 @@ Adding Undertow Filters for CORS
 
 With the ability to run CLI scripts when WildFly is provisioned, you are in total control of the configuration of WildFly.
 
-## Feature Packs
+## Feature-Packs
 
-WildFly uses feature packs as the building blocks to provision the server.
+WildFly uses feature-packs as the building blocks to provision the server.
 
-The most important feature pack is WildFly's own feature pack: `org.wildfly:wildfly-galleon-pack:26.1.1.Final` to control the installation of WildFly itself.
+The most important feature-pack is WildFly's own feature-pack: `org.wildfly:wildfly-galleon-pack:26.1.1.Final` to control the installation of WildFly itself.
 
-We are also providing additional feature packs to provide additional capabilities to WildFly.
+We are also providing additional feature-packs to provide additional capabilities to WildFly.
 It is out of scope of this article to list all of them but let's discuss two interesting ones:
 
 * The https://github.com/wildfly-extras/wildfly-cloud-galleon-pack[wildfly-cloud-galleon-pack] provides a set of additional features allowing you to configure a WildFly server to work on the cloud. It adapts WildFly to run on orchestration platforms in an optimized way. In particular, it automatically routes server logs to the console, it provisions the `health` subsystem to monitor the server health with healthiness probes, etc.
-* The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] provides JDBC drivers and datasources for various databases. If you include this feature pack, you only need to specify the layer corresponding to the databases you want to use (e.g. `postgresql-datasource`). You then only need to specify a few environment variables (e.g. DB URL and credentials) at runtime to connect to the database when WildFly is running.
+* The https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-datasources-galleon-pack] provides JDBC drivers and datasources for various databases. If you include this feature-pack, you only need to specify the layer corresponding to the databases you want to use (e.g. `postgresql-datasource`). You then only need to specify a few environment variables (e.g. DB URL and credentials) at runtime to connect to the database when WildFly is running.
 
 ## Conclusion
 
 The `wildfly-maven-plugin` is currently at version 4.0.0.Beta2 with a Final release planned for WildFly 27.
 It builds on top of the experience we gained from the Bootable Jar and provides a compelling architecture to control the full runtime (WildFly + the application deployments) from the application's `pom.xml`.
-The full customization of WildFly (using feature packs, packaging scripts, etc.) is controlled by the developer so that the runtime fits the user's application.
+The full customization of WildFly (using feature-packs, packaging scripts, etc.) is controlled by the developer so that the runtime fits the user's application.
 
 Creating a container image from this provisioned server is then just a matter of putting it in a runtime image that contains OpenJDK to run the application.
 

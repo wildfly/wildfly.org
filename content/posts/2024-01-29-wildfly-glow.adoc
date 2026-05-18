@@ -131,7 +131,7 @@ WildFly Glow discovers and advertises the WildFly env variables usable to config
 
 * Identify missing datasources and suggest datasources that you can use to connect to databases.
 
-==== Knowledge of extra Feature-packs
+==== Knowledge of extra Feature-Packs
 
 A centralized knowledge (located in the https://github.com/wildfly/wildfly-galleon-feature-packs[wildfly-galleon-feature-packs] github project) 
 of extra Galleon feature-packs compatible with WildFly. The WildFly features defined in these extra feature-packs 
@@ -161,7 +161,7 @@ WildFly Glow is used from provisioning tooling: the WildFly Glow command line to
 
 Java classes and file descriptors located in your deployments are scanned to identify the required set of galleon layers. 
 
-* It leverages Galleon provisioning artifacts (Feature-packs and Layers).
+* It leverages Galleon provisioning artifacts (Feature-Packs and Layers).
 * It relies on rules included in each Galleon Layer.
 ** Rules capture the content expected inside the deployment for the layer to be required.
 ** Rules express the High Availability capability of a layer.

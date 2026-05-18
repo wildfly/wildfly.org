@@ -8,21 +8,21 @@ synopsis: How to use WildFly Glow to provision a Generative AI WildFly server.
 author: ehsavoie
 ---
 
-In WildFly 35 Beta, WildFly Glow has also received a new feature to https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[introduce spaces to structure discovered Galleon feature-packs, window=_blank], this allows feature packs to be grouped into spaces such as an incubating space to reflect the stability of the feature pack and to allow users to select which spaces they want to use.
+In WildFly 35 Beta, WildFly Glow has also received a new feature to https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[introduce spaces to structure discovered Galleon feature-packs, window=_blank], this allows feature-packs to be grouped into spaces such as an incubating space to reflect the stability of the feature-pack and to allow users to select which spaces they want to use.
 
-One of the first feature pack to take advantage of that is the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature Pack] using the new *incubating* space.
+One of the first feature-pack to take advantage of that is the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI Feature-Pack] using the new *incubating* space.
 
 In this article I will show you how you can take advantage of this to provision a Generative AI server.
 
-== WildFly AI Feature Pack
+== WildFly AI Feature-Pack
 
-Since my first article the WildFly AI Feature Pack has evolved quite a bit. Of course we are following https://docs.langchain4j.dev/[LangChain4J] and https://github.com/smallrye/smallrye-llm[smallrye-llm] evolutions.
+Since my first article the WildFly AI Feature-Pack has evolved quite a bit. Of course we are following https://docs.langchain4j.dev/[LangChain4J] and https://github.com/smallrye/smallrye-llm[smallrye-llm] evolutions.
 
 We have also added support for streaming tokens making the interaction lot more lively. Now, it is providing OpenTelemetry support to track your LLM usage and integrating with WildFly Glow to provide a default configuration on provisioning a lot easier.
 
 Let's dive into this new feature.
 
-== WildFly AI Feature Pack layers
+== WildFly AI Feature-Pack layers
 
 Currently the feature-pack provides 18 Galleon layers that build upon each other :
 
@@ -135,7 +135,7 @@ But using WildFly Glow we can make that way simpler:
 </plugin>
 ----
 
-AS you can see we are using the _discoverProvisioningInfo_ element to define which version of WildFly server we want to start from. AS you can see we have added an incubating  _space_ which enables the discovery of the WildFly AI Feature Pack.
+AS you can see we are using the _discoverProvisioningInfo_ element to define which version of WildFly server we want to start from. AS you can see we have added an incubating  _space_ which enables the discovery of the WildFly AI Feature-Pack.
 
 Now when we run Apache Maven we can see the following traces :
 
@@ -150,7 +150,7 @@ As you can see, Glow discovered the use of the following LLMs:
 How did Glow found those ?
 
 
-== How Glow works under the hood for the WildFly AI Feature Pack ?
+== How Glow works under the hood for the WildFly AI Feature-Pack ?
 
 Here is where the magic is happening :
 
@@ -206,4 +206,4 @@ Of course, similar rules exist for the embedding models and embedding store.
 
 == In conclusion
 
-As you could see, developping a Generative AI application using WildFly Glow and the WildFly AI Feature Pack is, as Duke Nukem used to say, a piece of cake.
+As you could see, developping a Generative AI application using WildFly Glow and the WildFly AI Feature-Pack is, as Duke Nukem used to say, a piece of cake.

@@ -12,7 +12,7 @@ Recently I needed to configure a WildFly server to use a PostgreSQL datasource f
 
 * https://github.com/jberet/jberet-examples/pull/8[jberet-examples / add postgresql based repository example #8]
 
-From the above pull request, we can see that the `wildfly-datasources-galleon-pack` feature packfootnote:[https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-extras/wildfly-datasources-galleon-pack]] is added into the plugin configuration:
+From the above pull request, we can see that the `wildfly-datasources-galleon-pack` feature-packfootnote:[https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[wildfly-extras/wildfly-datasources-galleon-pack]] is added into the plugin configuration:
 
 [source,xml]
 ----
@@ -30,7 +30,7 @@ And this layer is used:
 </layers>
 ----
 
-The above layer will just add the PostgreSQL driver into the provisioned WildFly server, and it won’t add any datasource by default. If I run the provisioned server with the above feature pack and layer added into the configuration with the following command in the example:
+The above layer will just add the PostgreSQL driver into the provisioned WildFly server, and it won’t add any datasource by default. If I run the provisioned server with the above feature-pack and layer added into the configuration with the following command in the example:
 
 [source,bash]
 ----
@@ -45,7 +45,7 @@ I can see from the server log that the PostgreSQL driver is enabled during the s
 22:11:00,631 INFO  [org.jboss.as.connector.deployers.jdbc] (MSC service thread 1-6) WFLYJCA0018: Started Driver service with driver-name = postgresql
 ----
 
-So the feature pack and the layer will prepare the provisioned WildFly server to connect to the PostgreSQL driver, and then we can configure the datasource in the server. In the above example, there are scripts that will add the PostgreSQL datasourcefootnote:[https://github.com/jberet/jberet-examples/blob/main/deployment/add-postgresql-ds.cli]:
+So the feature-pack and the layer will prepare the provisioned WildFly server to connect to the PostgreSQL driver, and then we can configure the datasource in the server. In the above example, there are scripts that will add the PostgreSQL datasourcefootnote:[https://github.com/jberet/jberet-examples/blob/main/deployment/add-postgresql-ds.cli]:
 
 [source,txt]
 ----

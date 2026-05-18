@@ -18,7 +18,7 @@ This year’s conference will focus on key topics shaping the future of WildFly 
 * *WildFly Day One Operations with Ansible Automation* – Discover best practices for deploying and managing WildFly with Ansible.
 * *Everything about Jakarta EE TCKs in twenty minutes* – A concise session covering the essentials of Jakarta EE compatibility testing.
 * *WildFly in a Vendor-Neutral Foundation* – Exploring the ecosystem and collaboration opportunities for WildFly.
-* *WildFly AI Feature Pack: Deploying an MCP Server* – Learn how the WildFly AI Feature Pack enables intelligent middleware capabilities and enhances application deployments with AI-driven optimizations.
+* *WildFly AI Feature-Pack: Deploying an MCP Server* – Learn how the WildFly AI Feature-Pack enables intelligent middleware capabilities and enhances application deployments with AI-driven optimizations.
 
 ==== 📅 Date: Tuesday, March 25, 2025
 ==== ⏰ Time: 14:00 - 18:00 UTC

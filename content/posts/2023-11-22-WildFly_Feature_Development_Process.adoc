@@ -59,7 +59,7 @@ Some details on the stability levels:
 * *Experimental* -- This level would be for real bleeding edge stuff. No WildFly distribution zip/tar would enable this level by default.
 * *Preview* -- This would be the level for features at a sufficient level to be available by default[1] in WildFly Preview, but not in standard WildFly.
 * *Community*-- This would be the level for features at a sufficient level to be available by default in standard WildFly.
-* *Default* -- Features at this level have gone through additional vetting to ensure they are suitable for the long-term compatibility expectations of the feature pack that provides them. (See <<Relationship to Feature Packs>> for more on this.)
+* *Default* -- Features at this level have gone through additional vetting to ensure they are suitable for the long-term compatibility expectations of the feature-pack that provides them. (See <<Relationship to Feature-Packs>> for more on this.)
 
 [1] Note that ‘available by default’ could but often wouldn’t mean ‘enabled by default’, i.e. turned on in a standard OOTB configuration. It just means a user could turn it on if they so choose using the current configuration mechanisms.
 
@@ -77,31 +77,31 @@ Some details on the feature aspects:
 
 Note that it is likely that the set of rows in the table will need expansion, e.g. to capture requirements for things like the HAL web console, cloud images, tooling like WildFly Glow etc.
 
-== Relationship to Feature Packs
+== Relationship to Feature-Packs
 
-The main WildFly code base produces three different feature packs, and the main reason there are three and not just one relates to some of the same stability/long-term compatibility concepts that are a key part of the feature development process I’m hoping we create. It’s important that we think carefully about how the feature development process relates to the feature packs, so to help with that I want to talk a bit about how feature packs are meant to work.
+The main WildFly code base produces three different feature-packs, and the main reason there are three and not just one relates to some of the same stability/long-term compatibility concepts that are a key part of the feature development process I’m hoping we create. It’s important that we think carefully about how the feature development process relates to the feature-packs, so to help with that I want to talk a bit about how feature-packs are meant to work.
 
-Ideally for any feature pack, the documentation of that feature pack would include somewhere ‘lifecycle’ information that can help users decide if the feature pack is suitable for their needs. This would cover key elements like:
+Ideally for any feature-pack, the documentation of that feature-pack would include somewhere ‘lifecycle’ information that can help users decide if the feature-pack is suitable for their needs. This would cover key elements like:
 
-* The basic scope of the feature pack.
-* A likely release cadence for the feature pack.
-* The expected long-term maintainability and compatibility for the feature pack.
+* The basic scope of the feature-pack.
+* A likely release cadence for the feature-pack.
+* The expected long-term maintainability and compatibility for the feature-pack.
 
-Different expectations for those key elements are prime reasons for creating a new feature pack versus adding functionality to an existing one, or for choosing one feature pack over another for a feature.
+Different expectations for those key elements are prime reasons for creating a new feature-pack versus adding functionality to an existing one, or for choosing one feature-pack over another for a feature.
 
-Honestly, the WildFly project does a poor job of documenting these things for its feature packs, which is my fault, and is why I need to write some of this in this already looooong post! Anyway…
+Honestly, the WildFly project does a poor job of documenting these things for its feature-packs, which is my fault, and is why I need to write some of this in this already looooong post! Anyway…
 
-WildFly produces three feature packs from its main repository. All share the same expected release cadence (currently a new feature release roughly quarterly and one bug fix release about a month after a feature release.) The scope of all three is similar and broad -- they provide functionality to run in, manage or act as a client to an application server process. Their primary differences relate to long-term maintainability and compatibility:
+WildFly produces three feature-packs from its main repository. All share the same expected release cadence (currently a new feature release roughly quarterly and one bug fix release about a month after a feature release.) The scope of all three is similar and broad -- they provide functionality to run in, manage or act as a client to an application server process. Their primary differences relate to long-term maintainability and compatibility:
 
-* *wildfly-ee* -- We don’t talk about this feature pack a lot, often treating it as an internal detail and not producing any downloadable zip/tar built solely using it, but it’s an important piece of our ecosystem.  The defining characteristic of this feature pack is that it integrates technologies where we have the highest confidence in our ability to provide them in a largely compatible way for many years. We’re not perfect about this, we made some mistakes in the early iterations of this feature pack, and we can and will break compatibility if necessary. But we try not to and try to give advance warning if we will. For example, this feature pack provides the Elytron security layer, which was introduced as a replacement for the Picketbox security layer many years before we removed support for the Picketbox layer.
-* *wildfly* -- This feature pack depends upon wildfly-ee and adds functionality in addition to what’s in wildfly-ee. The traditional standard WildFly server zip is built using this feature pack. The primary reason we put things in this feature pack instead of wildfly-ee is because what we’re integrating is more likely to change in incompatible ways over a relatively short time period. For example, MicroProfile specifications are comfortable introducing breaking changes on an annual basis, making them not a great fit for wildfly-ee. The observability space, particularly metrics and tracing, is evolving rapidly, so our Micrometer and OpenTelemetry extensions are not in wildfly-ee.
-* *wildfly-preview* -- This feature pack is all about the fact that it provides no long term guarantees and can change significantly from release.
+* *wildfly-ee* -- We don’t talk about this feature-pack a lot, often treating it as an internal detail and not producing any downloadable zip/tar built solely using it, but it’s an important piece of our ecosystem.  The defining characteristic of this feature-pack is that it integrates technologies where we have the highest confidence in our ability to provide them in a largely compatible way for many years. We’re not perfect about this, we made some mistakes in the early iterations of this feature-pack, and we can and will break compatibility if necessary. But we try not to and try to give advance warning if we will. For example, this feature-pack provides the Elytron security layer, which was introduced as a replacement for the Picketbox security layer many years before we removed support for the Picketbox layer.
+* *wildfly* -- This feature-pack depends upon wildfly-ee and adds functionality in addition to what’s in wildfly-ee. The traditional standard WildFly server zip is built using this feature-pack. The primary reason we put things in this feature-pack instead of wildfly-ee is because what we’re integrating is more likely to change in incompatible ways over a relatively short time period. For example, MicroProfile specifications are comfortable introducing breaking changes on an annual basis, making them not a great fit for wildfly-ee. The observability space, particularly metrics and tracing, is evolving rapidly, so our Micrometer and OpenTelemetry extensions are not in wildfly-ee.
+* *wildfly-preview* -- This feature-pack is all about the fact that it provides no long term guarantees and can change significantly from release.
 
 We need to think more about how feature stability levels relate to this, but here are a few thoughts:
 
-* Just because a user wants to use a particular preview or experimental level feature doesn’t mean they want to use an entire preview level feature pack like wildfly-preview. In other words, there is a use case for preview or experimental features in standard WildFly.
+* Just because a user wants to use a particular preview or experimental level feature doesn’t mean they want to use an entire preview level feature-pack like wildfly-preview. In other words, there is a use case for preview or experimental features in standard WildFly.
 On the other hand, we can use WildFly Preview to showcase functionality whose scope is not tied to a particular reasonably scoped ‘feature’. Using it for EE 9 is an obvious example. Not having an embedded messaging broker in the OOTB configs is not a ‘feature’. IOW there is a use case for WildFly Preview even if standard WildFly has preview features.
-* What we mean by the ‘Community’ and ‘Default’ levels is “relative to” the generally expected long-term maintainability and compatibility level of the feature pack that provides it. In other words, just because a feature provided by the wildfly feature pack has been vetted as suitable for the ‘Default’ level doesn’t mean it comes with higher expectations than the feature pack as a whole. If we provide a specification, and we integrate it in a way that is highly stable and very well tested, but then the spec changes in a year in a significantly incompatible way, then we may have to as well.
+* What we mean by the ‘Community’ and ‘Default’ levels is “relative to” the generally expected long-term maintainability and compatibility level of the feature-pack that provides it. In other words, just because a feature provided by the wildfly feature-pack has been vetted as suitable for the ‘Default’ level doesn’t mean it comes with higher expectations than the feature-pack as a whole. If we provide a specification, and we integrate it in a way that is highly stable and very well tested, but then the spec changes in a year in a significantly incompatible way, then we may have to as well.
 
 
 == Next Steps

@@ -35,7 +35,7 @@ There's plenty of new things beyond MicroProfile area as well, though:
 
 * WildFly Preview has  a new link:https://docs.wildfly.org/wildfly-proposals/microprofile/WFLY-19954_Preview_Support_vertx_feature_pack.html[`vertx` subsystem and Galleon layer, window=_blank], intended to give user's greater control over the configuration of Vert.x instances running in the server. This feature is provided at the link:https://docs.wildfly.org/34/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
 
-* WildFly Glow has also received a new feature to https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[introduce spaces to structure discovered Galleon feature-packs, window=_blank], this allows feature packs to be grouped into spaces such as an incubating space to reflect the stability of the feature pack and to allow users to select which spaces they want to use.
+* WildFly Glow has also received a new feature to https://docs.wildfly.org/wildfly-proposals/wf-galleon/WFLY-19855_glow_spaces.html[introduce spaces to structure discovered Galleon feature-packs, window=_blank], this allows feature-packs to be grouped into spaces such as an incubating space to reflect the stability of the feature-pack and to allow users to select which spaces they want to use.
 
 For further details please see the detailed https://github.com/wildfly/wildfly/releases/tag/35.0.0.Beta1[35.0.0.Beta1 Release Notes, window=_blank] in GitHub.
 

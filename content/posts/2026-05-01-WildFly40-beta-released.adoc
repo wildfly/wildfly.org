@@ -22,7 +22,7 @@ downloads page.
 
 On the security front many users have been asking for an integration with Hashicorp Vault,
 and we are pleased to announce that this is also available for WildFly 40 in the form of a
-feature pack. Please visit the link:https://wildfly-security.github.io/wildfly-elytron/blog/the-hashicorp-vault-integration-is-available-for-provisioning-with-wildfly-40-beta/[blog post] for more details on how to get started with this integration.
+feature-pack. Please visit the link:https://wildfly-security.github.io/wildfly-elytron/blog/the-hashicorp-vault-integration-is-available-for-provisioning-with-wildfly-40-beta/[blog post] for more details on how to get started with this integration.
 
 These are just a couple of the highlights with many more changes made to WildFly. Preparing
 the release notes GitHub tells me over 30 people contributed to this release and that does

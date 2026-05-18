@@ -100,14 +100,14 @@ As I link:https://www.wildfly.org/news/2020/11/12/Jakarta-EE-9-with-WildFly-Prev
 
 EE 9 is primarily about implementing the necessary change in the Jakarta EE APIs from the javax.* package namespace to the jakarta.* namespace. This is a big change that is going to take a while to percolate through the EE ecosystem, e.g. for the many projects that compile against the EE APIs to provide versions that use jakarta.*. While this happens we want to continue to deliver new features and fixes to our community, so the primary WildFly distribution will continue to provide the EE 8 APIs.
 
-== Feature Pack Changes
+== Feature-Pack Changes
 
-WildFly users can use Galleon feature packs to link:https://docs.wildfly.org/23/Galleon_Guide.html[provision a server] or link:https://docs.wildfly.org/23/Bootable_Guide.html[build a bootable jar]. The WildFly project produces five different feature packs: `wildfly-core`, `wildfly-servlet`, `wildfly-ee`, `wildfly` and `wildfly-preview`. The composition of these feature packs has changed somewhat in WildFly 23, in that the `wildfly-ee` feature pack no longer _depends on_ `wildfly-servlet` or (transitively) `wildfly-core`. Instead it directly incorporates the same content that was previously made available via a dependency relationship. For most users, this subtle difference should have no impact. However, there are some cases where it might:
+WildFly users can use Galleon feature-packs to link:https://docs.wildfly.org/23/Galleon_Guide.html[provision a server] or link:https://docs.wildfly.org/23/Bootable_Guide.html[build a bootable jar]. The WildFly project produces five different feature-packs: `wildfly-core`, `wildfly-servlet`, `wildfly-ee`, `wildfly` and `wildfly-preview`. The composition of these feature-packs has changed somewhat in WildFly 23, in that the `wildfly-ee` feature-pack no longer _depends on_ `wildfly-servlet` or (transitively) `wildfly-core`. Instead it directly incorporates the same content that was previously made available via a dependency relationship. For most users, this subtle difference should have no impact. However, there are some cases where it might:
 
-* If you are producing your own feature pack that depends on `wildfly` or `wildfly-ee` you may need to adjust your pom.xml and wildfly-feature-pack-build.xml to remove any dependency on wildfly-servlet and wildfly-core.
-* If your build uses another feature pack that depends on the `wildfly` or `wildfly-ee` feature packs, you should wait to upgrade to WildFly 23 until a release of that feature pack that depends on the WildFly 23 packs is available. A commonly used example of this is the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[`org.wildfly:wildfly-datasources-galleon-pack`] feature pack. Users of that feature pack should move to the 1.2.3.Final release that came out today.
+* If you are producing your own feature-pack that depends on `wildfly` or `wildfly-ee` you may need to adjust your pom.xml and wildfly-feature-pack-build.xml to remove any dependency on wildfly-servlet and wildfly-core.
+* If your build uses another feature-pack that depends on the `wildfly` or `wildfly-ee` feature-packs, you should wait to upgrade to WildFly 23 until a release of that feature-pack that depends on the WildFly 23 packs is available. A commonly used example of this is the link:https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[`org.wildfly:wildfly-datasources-galleon-pack`] feature-pack. Users of that feature-pack should move to the 1.2.3.Final release that came out today.
 
-The WildFly project still produces the `wildfly-core` and `wildfly-servlet` feature packs for those who wish to use them, although they may be discontinued at some point.
+The WildFly project still produces the `wildfly-core` and `wildfly-servlet` feature-packs for those who wish to use them, although they may be discontinued at some point.
 
 
 == Standards Support

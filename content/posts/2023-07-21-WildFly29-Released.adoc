@@ -16,8 +16,8 @@ During the WildFly 29 development cycle the WildFly contributors were heavily fo
 
 
 * It is now possible to link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFLY-15260_oidc_management_console.adoc#wfly-15260-securing-the-management-console-with-oidc[secure the management console with WildFly's native support for OpenID Connect].
-* You can use Galleon to link:https://docs.wildfly.org/29/WildFly_Elytron_Security.html#Keycloak_SAML_Integration[add Keycloak's SAML adapter to your WildFly installation] using the new Keycloak SAML Adapter feature pack.
-* You can use Galleon to link:https://docs.wildfly.org/29/Admin_Guide.html#installing-a-new-jsf-implementation-via-feature-pack[add MyFaces 4 support to your WildFly installation] using the 1.0.0.*Beta1* release of the new link:https://github.com/wildfly-extras/wildfly-myfaces-feature-pack[WildFly MyFaces feature pack]. (Note that the feature pack is still a Beta.)
+* You can use Galleon to link:https://docs.wildfly.org/29/WildFly_Elytron_Security.html#Keycloak_SAML_Integration[add Keycloak's SAML adapter to your WildFly installation] using the new Keycloak SAML Adapter feature-pack.
+* You can use Galleon to link:https://docs.wildfly.org/29/Admin_Guide.html#installing-a-new-jsf-implementation-via-feature-pack[add MyFaces 4 support to your WildFly installation] using the 1.0.0.*Beta1* release of the new link:https://github.com/wildfly-extras/wildfly-myfaces-feature-pack[WildFly MyFaces feature-pack]. (Note that the feature-pack is still a Beta.)
 * The `elytron` subsystem's new Distributed Realm attribute `ignore-unavailable-realms` enables a user to link:https://github.com/wildfly/wildfly-proposals/blob/main/elytron/WFCORE-5740-ability-to-ignore-unavailable-realms-for-a-distributed-realm.adoc#wfcore-5740-add-the-ability-to-ignore-unavailable-realms-for-a-distributed-realm[switch to ignoring unavailable realms during search and continue searching in subsequent realms].
 
 

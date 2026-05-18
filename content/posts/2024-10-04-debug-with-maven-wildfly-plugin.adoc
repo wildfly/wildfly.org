@@ -68,7 +68,7 @@ The `wildfly-maven-plugin` configuration in the above `pom.xml` looks like this:
 </plugin>
 ----
 
-In the above configuration, the `feature-packs` section specifies the feature packs to be used by the provisioned server(there is no default feature pack that would be used if this wasn't set), and the `channels` section is using the `jberet-channel-manifest` channel to override the `batch-jberet` module to be used in the provisioned server. Please note that you need to use the `channels` with the `feature-packs` together. Here are the properties used by the configuration:
+In the above configuration, the `feature-packs` section specifies the feature-packs to be used by the provisioned server(there is no default feature-pack that would be used if this wasn't set), and the `channels` section is using the `jberet-channel-manifest` channel to override the `batch-jberet` module to be used in the provisioned server. Please note that you need to use the `channels` with the `feature-packs` together. Here are the properties used by the configuration:
 
 [source,xml]
 ----
