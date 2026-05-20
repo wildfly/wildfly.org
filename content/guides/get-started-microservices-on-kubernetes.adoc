@@ -10,7 +10,7 @@ include::../../templates/partials/guides/titles.adoc[]
 
 === Intro
 
-In this series, you'll learn HOW-TO to build applications using some of the most common link:https://jakarta.ee/[Jakarta EE, window="_blank"] specifications (e.g. Jakarta REST services, Jakarta Persistence, Jakarta Messaging, etc.) and run them on link:https://kubernetes.io/[Kubernetes, window="_blank"].
+In this series, you'll learn HOW-TO to build applications using some of the most common link:https://jakarta.ee/[Jakarta, window="_blank"] specifications (e.g. Jakarta REST services, Jakarta Persistence, Jakarta Messaging, etc.) and run them on link:https://kubernetes.io/[Kubernetes, window="_blank"].
 
 At some point, we'll go even further and use some link:https://microprofile.io/[MicroProfile, window="_blank"] specifications (e.g. Rest Client invoking a Jakarta REST service in another application).
 

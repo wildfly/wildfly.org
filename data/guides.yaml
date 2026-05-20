@@ -4,8 +4,8 @@ categories:
     guides:
       - title: Getting Started with WildFly
         url: /get-started
-        description: Build and run a Jakarta EE application with WildFly in a few minutes
-        keywords: Getting-Started, quickstart, quick start, Jakarta EE, Get Started
+        description: Build and run an EE application with WildFly in a few minutes
+        keywords: Getting-Started, quickstart, quick start, Jakarta, EE, Get Started
       - title: Prototyping with JBang
         url: /guides/prototyping-with-jbang
         description: Use JBang to prototype simple WildFly applications from a single source file.
@@ -19,8 +19,8 @@ categories:
         keywords: Automation, Deploying, Ansible
       - title: Testing with Arquillian and JUnit 5
         url: /guides/testing-arquillian-junit5
-        description: Learn how to write JUnit 5 tests using Arquillian for Jakarta EE based applications.
-        keywords: Testing, Arquillian, JUnit 5, JUnit, Jakarta EE, Automation
+        description: Learn how to write JUnit 5 tests using Arquillian for EE based applications.
+        keywords: Testing, Arquillian, JUnit 5, JUnit, Jakarta, EE, Automation
   - category: Cloud / Containerization
     cat-id: cloud-containerization
     groups:

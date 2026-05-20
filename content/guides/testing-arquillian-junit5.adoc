@@ -79,7 +79,7 @@ You then need a minimum of the following dependencies.
 ----
 
 In this section we will work on writing a test for our application. We will assume here you already have experience
-writing Jakarta EE applications for WildFly. For the purpose of this test, we will use the
+writing EE applications for WildFly. For the purpose of this test, we will use the
 https://docs.wildfly.org/wildfly-maven-plugin[wildfly-maven-plugin] to provision a server for testing.
 
 == Configure POM for Provisioning
@@ -133,7 +133,7 @@ https://docs.wildfly.org/wildfly-maven-plugin[wildfly-maven-plugin] to provision
 </build>
 ----
 
-The above configuration will provision a server based with Jakarta EE Core Profile specifications, Jakarta Persistence,
+The above configuration will provision a server based with EE Core Profile specifications, Jakarta Persistence,
 Jakarta Transactions and the default H2 data source. The layers can be removed to provision a full WildFly server.
 
 The provisioning is bound to the `process-test-resources` phase. This is the last phase before the `test` phase which

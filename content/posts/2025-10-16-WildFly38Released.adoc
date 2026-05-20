@@ -24,7 +24,7 @@ In the main server, the biggest new thing in WildFly 38 is support for the https
 
 === WildFly Preview
 
-In WildFly Preview, something I encourage users to try out is the implementation of link:https://issues.redhat.com/browse/WFLY-19554[Jakarta EE 11 JPA and CDI integration, window=_blank]. Jakarta EE 11 includes link:https://jakarta.ee/specifications/platform/11/jakarta-platform-spec-11.0#a441[requirements, window=_blank] that implementations expose as CDI beans instances of a number of Jakarta Persistence types, including `EntityManager` and `EntityManagerFactory`. This makes possible injection of those types into other beans using `@Inject`. Jakarta is aiming to make the EE platform more CDI-centric; this is a step in that direction.
+In WildFly Preview, something I encourage users to try out is the implementation of link:https://issues.redhat.com/browse/WFLY-19554[EE 11 JPA and CDI integration, window=_blank]. EE 11 includes link:https://jakarta.ee/specifications/platform/11/jakarta-platform-spec-11.0#a441[requirements, window=_blank] that implementations expose as CDI beans instances of a number of Jakarta Persistence types, including `EntityManager` and `EntityManagerFactory`. This makes possible injection of those types into other beans using `@Inject`. Jakarta is aiming to make the EE platform more CDI-centric; this is a step in that direction.
 
 === Provisioning and documentation
 
@@ -35,7 +35,7 @@ Feature-packs that are used to provision WildFly now link:http://docs.wildfly.or
 
 == Supported Specifications
 
-=== Jakarta EE
+=== Jakarta
 
 Standard WildFly 38 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
 
@@ -43,13 +43,13 @@ Evidence supporting our certification is available in the link:https://github.co
 [cols=",",options="header"]
 |=======================================================================
 |Specification |Compatibility Evidence
-.2+.<| Jakarta EE 10 Full Platform
+.2+.<| EE 10 Full Platform
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
-.2+.<|  Jakarta EE 10 Web Profile
+.2+.<| EE 10 Web Profile
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
-.2+.<| Jakarta EE 10 Core Profile
+.2+.<| EE 10 Core Profile
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_38.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
 |=======================================================================
@@ -65,13 +65,13 @@ link:https://github.com/wildfly/certifications/blob/MP7.1/WildFly_38.0.0.Final/m
 [[preview-ee11]]
 === WildFly Preview and EE 11
 
-Since the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we have been using WildFly Preview to provide a look at what we're doing for Jakarta EE 11 support.  We continued to make progress on this during the WildFly 38 cycle, particularly in the aforementioned Jakarta Persistence + CDI integration and in updates to our Jakarta Authorization implementation.
+Since the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we have been using WildFly Preview to provide a look at what we're doing for EE 11 support.  We continued to make progress on this during the WildFly 38 cycle, particularly in the aforementioned Jakarta Persistence + CDI integration and in updates to our Jakarta Authorization implementation.
 
 However, for a number of specifications that made changes for EE 11 we are still offering the EE 10 implementation. Our goal is shift those to the EE 11 implementation in WildFly Preview 39.
 
 The link:https://jakarta.ee/specifications/coreprofile/11/[EE 11 Core Profile specification, window=_blank] went GA last November and WildFly Preview 38 supports that profile.
 
-The Jakarta EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] and link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] went GA earlier this summer. We are working on completing our implementation of these in WildFly Preview, for eventual incorporation in standard WildFly.
+The EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] and link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] went GA earlier this summer. We are working on completing our implementation of these in WildFly Preview, for eventual incorporation in standard WildFly.
 
 Full details on the EE specification versions provided by WildFly Preview can be found in https://docs.wildfly.org/38/WildFly_and_WildFly_Preview.html#ee-11-support-in-wildfly-preview[the WildFly 38 documentation, window=_blank].
 
@@ -84,7 +84,7 @@ Our recommendation of SE 21 over SE 17 is solely because as a general principle 
 
 While we recommend using SE 21 or SE 17, I do believe WildFly runs well on *SE 25*, which is the most recent LTS release, released last month. By runs well, I mean the main WildFly testsuite runs with no more than a few  link:https://issues.redhat.com/issues/?filter=12481560[failures in areas not expected to be commonly used, window=_blank]. As of the date of this release announcement there were *no such issues*. We want developers who are trying to evaluate what SE 25 means for their applications to be able to look to WildFly as a useful development platform.
 
-Since SE 25 is an LTS release, we aim in a future WildFly version to include it in the list of recommended SE releases. To do this there is further qualifying to be done, beyond the good WildFly testsuite results we are seeing today. We're working to validate the SE 25 compatibility of key components we include in WildFly, and we'll try and use the Jakarta EE 11 TCK as a further set tests of how well we run on SE 25. (The EE 11 TCK was not written for SE 25, so we'll see how feasible this is. Using the EE 10 TCK to help qualify SE 21 worked well.)
+Since SE 25 is an LTS release, we aim in a future WildFly version to include it in the list of recommended SE releases. To do this there is further qualifying to be done, beyond the good WildFly testsuite results we are seeing today. We're working to validate the SE 25 compatibility of key components we include in WildFly, and we'll try and use the EE 11 TCK as a further set tests of how well we run on SE 25. (The EE 11 TCK was not written for SE 25, so we'll see how feasible this is. Using the EE 10 TCK to help qualify SE 21 worked well.)
 
 Please note that WildFly runs in classpath mode.
 
