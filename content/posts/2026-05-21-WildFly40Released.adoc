@@ -1,0 +1,220 @@
+---
+layout: post
+title:  "WildFly 40 is released!"
+aliases: [/news/2026/05/21/WildFly40Released]
+date:   2026-05-21
+tags:   announcement release
+author: bstansberry
+description: WildFly 40 Final is now available.
+---
+
+It's taken longer than our normal three months, but I'm _thrilled_ to announce that the new WildFly, WildFly EE 10 and WildFly Preview 40.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature-packs for 40 are available in https://central.sonatype.com/[Maven Central, window=_blank].
+
+[[new_and_notable]]
+== New and Notable
+
+Here's what's new:
+
+* **Support for EE 11** -- The standard WildFly distributions and feature-packs, the ones most people use, now provide the EE 11 APIs! For more on this, see the <<ee_11_support,EE 11 Support>> section below.
+* **New WildFly EE 10 variant** -- Since standard WildFly has moved on to EE 11, we've introduced, for a limited time only, a new WildFly EE 10 variant of the server, one that continues to provide the EE 10 APIs. For more on this, see the <<wildfly_ee_10,New WildFly EE 10 Variant>> section below.
+* **Hashicorp Vault** -- On the security front many users have been asking for an integration with Hashicorp Vault, and we are excited to announce that this is available in the form of a link:https://docs.wildfly.org/wildfly-proposals/elytron/ELY-1897-HashiCorp-Vault-Integration.html[new feature-pack, window=_blank]. Please visit Diana Křepinská's link:https://wildfly-security.github.io/wildfly-elytron/blog/the-hashicorp-vault-integration-is-available-for-provisioning-with-wildfly-40-beta/[blog post, window=_blank] for more details on how to get started with this integration. This feature is provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`community` stability level, window=_blank].
+* **Logout support for OIDC** -- WildFly now supports link:https://docs.wildfly.org/wildfly-proposals/elytron/WFLY-19314-oidc-logout-support.html[logging out of an application secured with OIDC, window=_blank] using `RP-Initiated Logout`, `Front-Channel Logout`, and `Back-Channel Logout`. This feature is provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`preview` stability level, window=_blank].
+* **Brute force authentication attack mitigation** -- Starting from WildFly 39.0.1 by default all security realms are link:https://docs.wildfly.org/wildfly-proposals/elytron/WFCORE-7192-brute-force-mitigation.html[wrapped by a new utility to add brute force protection to help mitigate against brute force attacks, window=_blank]. After 10 consecutive failed authentication attempts an identity will be disabled for 15 minutes. This feature is provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
+* **Prospero update to a specific version** -- Users of the link:https://github.com/wildfly/prospero/blob/main/README.md[Prospero provisioning tool, window=_blank] and link:https://github.com/wildfly/wildfly-channel/blob/main/doc/spec.adoc[WildFly Channels, window=_blank] can now use Prospero to link:https://docs.wildfly.org/wildfly-proposals/provisioning/Prospero_update_to_version.html[perform an update/downgrade of their server installation, window=_blank] to an arbitrary version of a WildFly channel. This feature is provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
+
+[NOTE]
+====
+We're hoping to expand the visibility of the Prospero tool and WildFly Channels over the next year.
+====
+
+We promoted a number of existing features to a higher stability level, making them newly available in servers that are limited to that stability level:
+
+* In WildFly 32, we added support for an `SSLContext` that can https://docs.wildfly.org/wildfly-proposals/elytron/WFLY-13762_ssl_context_based_on_peer_info.html[dynamically delegate to different SSL contexts based on destination's host and port, window=_blank]. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
+* In WildFly 33, the `undertow` subsystem began supporting https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-15452_ajp-listener_allowed_attr_pattern.html[configuring the AJP listener to accept custom AJP request headers, window=_blank]. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
+* In WildFly 33, the `undertow` subsystem begin supporting configuring the reverse proxy handler to https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-14255_Make_resuseXForwarded_and_rewriteHost_configurable.html[reuse and append to any `X-Forwarded` HTTP headers and to rewrite the `Host` header, window=_blank]. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
+* In WildFly 35, we added link:https://docs.wildfly.org/wildfly-proposals/ee/WFLY-19776_Jakarta_Data_in_standard_WildFly.html[support for Jakarta Data 1.0, window=_blank] to standard WildFly. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`community` stability level, window=_blank].
+
+We've also updated a wide range of dependencies to their latest versions, improving performance, stability, and security.
+Besides the many components updated due to the move from EE 10 to EE 11, notable upgrades include:
+
+* **Apache Artemis 2.53**, addressing CVE-2026-32642
+* **Hibernate 7.3.2**
+* **Jackson 2.21.1**, addressing CVE-2026-29062
+* **Micrometer 1.16**
+* **Netty 4.1.133**, addressing numerous CVEs
+* **Undertow 2.4.0**, addressing CVE-2026-28367, CVE-2026-28368 and CVE-2026-28369
+* **Vert.x 4.5.24**, addressing CVE-2026-1002
+* **WildFly Elytron 2.9.0 and Elytron Web 4.2.0**
+* **WildFly Glow 2.0.0**
+* **WildFly OpenSSL 2.3.0**
+
+[[ee_11_support]]
+=== EE 11 Support
+
+After incubating it in WildFly Preview since WildFly Preview 32, with WildFly 40 we've moved standard WildFly to link:https://jakarta.ee/release/11/[EE 11, window=_blank].
+
+The key improvements in EE 11 are:
+
+* Support for the repository pattern in your data persistence tier with link:https://jakarta.ee/specifications/data/1.0/[Jakarta Data, window=_blank], in WildFly's case backed by link:https://hibernate.org/repositories/[Hibernate Data Repositories, window=_blank].
+* Many improvements in link:https://gavinking.substack.com/p/a-summary-of-jakarta-persistence[Jakarta Persistence 3.2, window=_blank].
+* Support for virtual threads in Jakarta Concurrency services, when running on Java SE 21 and later.
+
+[WARNING]
+====
+Although Jakarta Concurrency supports virtual threads on SE 21 or later, if you wish to use them we strongly recommend using SE 25. Java SE continues to improve its implementation of virtual threads, with SE 24's delivery of link:https://openjdk.org/jeps/491[JEP 491, window=_blank] being particularly important.
+====
+
+[NOTE]
+====
+EE 11 removed a number of specifications in the XML and Webservices area from the EE platform. However, those specifications still exist as standalone Jakarta specifications, and WildFly continues to support them. This includes continuing to have the subsystems that provide them present in our out-of-the-box configuration files.
+====
+
+[[wildfly_ee_10]]
+=== New WildFly EE 10 Variant
+
+While for most applications moving to EE 11 should be straightforward, we recognize that users may want some time to complete their migration after standard WildFly first introduces support. But, they still want the bug fixes and non-EE-specific features that come with keeping up with the latest release.
+
+To help support these users, we've introduced a new `wildfly-ee-10` feature-pack (Maven GAV `org.wildfly:wildfly-ee-10-feature-pack:40.0.0.Final`) along with pre-built server zips and tars that use it.
+
+If you are using pre-built server zips or tars, the WildFly EE 10 files are available from https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank] right next to the standard WildFly ones.
+
+The new feature-pack is an alternative to the `wildfly-ee` feature-pack that has long provided most of the functionality in a standard WildFly installation. In WildFly 40 the `wildfly-ee` feature-pack has moved on to providing EE 11, while the new `wildfly-ee-10` feature-pack still provides EE 10. Non-EE-specific functionality is common between the two feature-packs.
+
+Most WildFly users who use our Galleon tooling for provisioning a server use the `wildfly` feature-pack, which implicitly depends on `wildfly-ee` and adds "expansion" functionality, like MicroProfile, to it. If you use the `wildfly` feature-pack you get `wildfly-ee` without needing to explicitly declare.
+
+You can still use the `wildfly` feature-pack with `wildfly-ee-10`; you just additionally need to _declare explicitly_ in your provisioning configuration the `wildfly-ee-10` feature-pack. This lets the tooling know you want to use the alternative to the default `wildfly-ee`.
+
+For more on this, please see:
+
+* Our new link:/guides/wildfly-ee-10-feature-pack[Using the WildFly EE 10 Feature-pack, window=_blank] step-by-step guide to using WildFly EE 10.
+* The link:https://docs.wildfly.org/40/Different_Flavors_of_WildFly.html[Different Flavors of WildFly, window=_blank] document, which delves more deeply into the differences between standard WildFly, WildFly EE 10 and WildFly Preview.
+* The link:https://docs.wildfly.org/40/WildFly_Maven_Plugin_Guide.html[WildFly Maven Plugin Guide, window=_blank] which explains more about how to use WildFly EE 10 when configuring provisioning in your `pom.xml`.
+* The link:https://docs.wildfly.org/40/Galleon_Guide.html[Galleon Provisioning Guide, window=_blank], for those who use the Galleon CLI tool to provision.
+
+
+[IMPORTANT]
+====
+WildFly EE 10 is a *temporary* addition to the set of WildFly variants. We plan to produce a WildFly EE 10 variant for 40.0.0.Final, 40.0.1.Final, 41.0.0.Final and 41.0.1.Final. We expect to *discontinue the variant with WildFly 42*, which is planned for the fall of 2026.
+====
+
+== Supported Specifications
+
+=== Jakarta
+
+**Standard WildFly** 40 supports the EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/11/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/11/[Core Profile, window=_blank]. WildFly is EE 11 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
+
+Evidence demonstrating our compatibility is available in the link:https://github.com/wildfly/certifications/tree/EE11[WildFly Certifications, window=_blank] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 11 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_40.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_40.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<|  Jakarta EE 11 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_40.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_40.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<| Jakarta EE 11 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_40.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_40.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+|=======================================================================
+
+
+**WildFly EE 10** 40 supports the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly EE 10 is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
+
+Evidence demonstrating our compatibility is available in the link:https://github.com/wildfly/certifications/tree/EE10[WildFly Certifications, window=_blank] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| Jakarta EE 10 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_40.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_40.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<|  Jakarta EE 10 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_40.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_40.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<| Jakarta EE 10 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_40.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_40.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+|=======================================================================
+
+
+=== MicroProfile
+
+WildFly 40 supports the https://microprofile.io/2025/06/17/microprofile-7-1-released/[MicroProfile Platform 7.1, window=_blank] specifications, along with several other MicroProfile specifications that are not part of the MicroProfile Platform. The full listing is available in the link:https://docs.wildfly.org/40/Getting_Started_Guide.html[Getting Started Guide, window=_blank].
+
+link:https://github.com/wildfly/certifications/blob/MP7.1/WildFly_40.0.0.Final/microprofile-7.1/microprofile-7.1-full-certification.adoc[Compatibility evidence, window=_blank] for the specifications that are part of MicroProfile 7.1 can be found in the WildFly Certifications repository on GitHub.
+
+
+[[preview-standards]]
+=== WildFly Preview
+
+Beginning with the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we used WildFly Preview to provide an early look at our evolving support for EE 11. With WildFly 40 that work is completed, and standard WildFly now supports EE 11.
+
+Therefore, for the 40 release, standard WildFly and WildFly Preview are providing implementations of the same set of standards, although there other differences between the two, as outlined in the link:https://docs.wildfly.org/40/Different_Flavors_of_WildFly.html[Different Flavors of WildFly, window=_blank] document.
+
+Beginning with WildFly Preview 41, we expect to begin bringing early milestone releases of EE 12 APIs and implementations into WildFly Preview.
+
+[IMPORTANT]
+====
+The WildFly project makes no claims about the compatibility of WildFly Preview with the Jakarta and MicroProfile specifications it implements.
+====
+
+
+== Java SE Support
+
+Our recommendation is that you run **standard** WildFly 40 and WildFly Preview 40 on **Java SE 25**, since that is the latest LTS JDK release. This is a change from WildFly 39, where we recommended SE 21. We've changed our recommendation because we have completed the full set of testing we like to do before recommending a particular SE version.
+
+For **WildFly EE 10** our recommendation is that you run on **Java SE 21**. This is not because of any significant issues we are aware of with running on SE 25, other than if you run with the Java `SecurityManager` enabled. SE 25 does not support enabling the `SecurityManager`. We recommend SE 21 because part of our qualification criteria for recommending a particular SE version is getting acceptable results when running the EE TCKs using that version. The EE 10 specifications require support for the `SecurityManager` in some contexts, and the EE 10 TCKs are written assuming the `SecurityManager` can be enabled. As a result, we haven't gotten useful information when running the EE 10 TCKs on SE 25.
+
+[NOTE]
+====
+_We do not claim to be compatible with EE 11 on SE 25_. We are satisfied with what we see when running the TCKs on SE 25, so we are comfortable making SE 25 our recommended SE version for standard WildFly 40. However, if running WildFly on an SE version where it passes the EE TCKs is important to you, we suggest using SE 21 or 17.
+====
+
+All three WildFly 40 variants -- standard WildFly, WildFly EE 10 and WildFly Preview -- are heavily tested and run well on Java 25, 21 and 17.
+
+Our recommendation of a later SE version over SE 21 or SE 17 is solely because as a general principle we recommend being on later LTS releases, not because of any problems with WildFly on the other supported LTS versions.
+
+While we recommend using LTS releases outside of development environments, we believe WildFly runs well on *SE 26*, which is the most recent non-LTS release, released this March. By runs well, I mean the main WildFly https://ci.wildfly.org/project.html?projectId=WF_MainNightlyJobs[nightly testsuite jobs, window=_blank] produce results equivalent to what we see with SE 17, SE 21 and SE 25. We want developers who are trying to evaluate what SE 26 means for their applications to be able to look to WildFly as a useful development platform.
+
+Please note that WildFly runs in classpath mode.
+
+[WARNING]
+====
+It is likely that WildFly will withdraw support for SE 17 in some release in the next year. Certainly not in WildFly 41, though. We recommend that users on SE 17 migrate their workloads so SE 21 or 25.
+====
+
+[[incompatibilities]]
+== Incompatible Changes
+
+There are some incompatible changes in WildFly 40 that may affect some users:
+
+* A standard WildFly or WildFly Preview server will fail to start if the Java `SecurityManager` is enabled, regardless of whether the underlying Java SE version still supports the `SecurityManager`. The EE 11 specifications do not require the `SecurityManager` and many libraries WildFly integrates to provide EE 11 support have removed logic that allow them to work properly with the SM enabled. So, since we cannot function correctly with the SM enabled, we abort the server boot.
+* Apache Artemis changed the Maven groupId for its artifacts from `org.apache.activemq` to `org.apached.artemis`. This may impact users relying on our boms for dependency management.
+* As part of the move to EE 11, standard WildFly removed support for EE ManagedBeans, an old EE programming model using the `@ManagedBean` annotation that has long been superseded by CDI. If you are impacted by this, please let us know. There is some _possibility_ these could still be supported if there is real world demand. Note that these are still supported in WildFly EE 10.
+
+[[contributors]]
+== New and Noteworthy Contributors
+
+WildFly gets great contributions from so many people. Time to thank a few of them!
+
+Rhuan Hianc provided some outstanding information regarding link:https://wildfly.zulipchat.com/#narrow/channel/196266-wildfly-user/topic/High.20memory.20consumption.20migrating.20from.20WildFly.2024.20to.2037/with/570737008[high memory consumption seen when migrating from WildFly 24, window=_blank]. This led to some significant improvements in the handling of deployments using Jakarta Enterprise Beans.
+
+link:https://github.com/jamezp[James Perkins, window=_blank] and  link:https://github.com/scottmarlow[Scott Marlow, window=_blank] were tireless in their work enabling WildFly to pass the EE 11 TCKs. Get some well deserved rest, guys!
+
+link:https://github.com/skyllarr[Diana Křepinská, window=_blank], link:https://github.com/luck3y[Ken Wills, window=_blank], link:https://github.com/honza-kasik[Honza Kašík, window=_blank], link:https://github.com/darranl[Darran Lofthouse, window=_blank] and link:https://github.com/jasondlee[Jason Lee, window=_blank] delivered Hashicorp Vault integration via the new vault feature-pack.
+
+link:https://github.com/rsearls[Rebecca Searls, window=_blank], as a parting gift before heading off into retirement, brought us the OIDC logout support feature. Enjoy your retirement, Rebecca, and thank you for your many years of contributions to WildFly!
+
+link:https://github.com/darranl[Darran Lofthouse, window=_blank] does everything, plus goes to meetings. ;-) This time that everything includes lots of efforts for the three previous items, plus bringing our EE 11 implementations of Jakarta Authentication, Jakarta Authorization and Jakarta Security. Thank you, Darran!
+
+== Release Notes
+
+The full WildFly 40 release notes are link:https://github.com/wildfly/wildfly/releases/tag/40.0.0.Final[available in GitHub, window=_blank].  Issues fixed in the underlying WildFly Core 32.0.0 release are listed in the link:https://redhat.atlassian.net/projects/WFCORE/versions/104895/tab/release-report-all-issues[WildFly Core JIRA, window=_blank].
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://redhat.atlassian.net/jira/software/c/projects/WFLY/summary[JIRA, window=_blank].
+
+Phew! That was a lot to write!
+
+Best regards,
+
+Brian
