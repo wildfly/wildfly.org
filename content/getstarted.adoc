@@ -6,11 +6,11 @@ link: /get-started/
 
 :qute:
 
-== Build and run a Jakarta EE application with WildFly in a few minutes.
+== Build and run an EE application with WildFly in a few minutes.
 
 === Step 0. Install Java & Maven
 
-You need Java (at least version `17`, and preferably `21`) and Maven installed on your machine to create a Maven project that contains the source code of the Jakarta EE application.
+You need Java (at least version `17`, and preferably `21`) and Maven installed on your machine to create a Maven project that contains the source code of the EE application.
 
 You can verify they are installed by executing the commands:
 
@@ -22,7 +22,7 @@ mvn -version
 
 === Step 1. Create the Application
 
-You can create the Jakarta EE application as a Maven project by executing the commands:
+You can create the EE application as a Maven project by executing the commands:
 
 [source,bash]
 ----
@@ -47,7 +47,7 @@ cd getting-started
 mvn package verify
 ----
 
-This Maven command compiles the Jakarta EE application, provisions WildFly, deploys the application into WildFly and
+This Maven command compiles the EE application, provisions WildFly, deploys the application into WildFly and
 runs integration tests against it.
 When this command is finished, you have a fully functional, tested application running on  WildFly.
 

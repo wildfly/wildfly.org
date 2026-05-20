@@ -20,7 +20,7 @@ Here's what's new:
 ** WildFly now supports https://docs.wildfly.org/wildfly-proposals/clustering/infinispan/WFLY-20918_Add_max-idle_based_eviction_configuration_for_distributable_HttpSessions_SFSBs_Timers.html[idle time-based eviction for distributable HttpSessions, Stateful EJBs, and EJB Timers, window=_blank]. This provides administrators with more flexible resource management options, which is particularly useful when distributed state objects have highly variable sizes. The new configuration allows eviction based on how long a state object has been idle, complementing the existing count-based eviction mechanism.
 * **Jakarta RESTful Web Services**: A new attribute, `resteasy-original-webapplicationexception-behavior` has been https://docs.wildfly.org/wildfly-proposals/jaxrs/WFLY-14559-new-attributes.html[added to the `jaxrs` subsystem, window=_blank]. It was previously only available by configuring the equivalent context parameter at a deployment level. Configuring this at the subsystem level will apply it to all deployments, unless the deployment itself explicitly sets the parameter.
 * **Java EE 11 Integration:** In WildFly Preview, we've  updated our implementations of Jakarta Authentication, Jakarta Concurrency, Jakarta Security, Jakarta Servlet, and Jakarta Websockets.
-* **Galleon provisioning**: Our Galleon tooling has https://docs.wildfly.org/wildfly-proposals/provisioning/WFLY-21122-WildFly-Feature_pack-Family.html[added preview capabilities, window=_blank] that will make it possible for users who want to use a feature-pack to choose which of a compatible set of dependency feature-packs to use. There's no practical end-user benefit to this __yet__, but it will be helpful in the future as the feature-packs we produce make use of this capability. A typical example will be letting users of something like the https://github.com/wildfly-extras/wildfly-ai-feature-pack[AI feature-pack, window=_blank] choose which "base" feature-pack that provides Jakarta EE to use -- `wildfly-ee`, `wildlfy-preview` or a planned `wildfly-ee-10`.
+* **Galleon provisioning**: Our Galleon tooling has https://docs.wildfly.org/wildfly-proposals/provisioning/WFLY-21122-WildFly-Feature_pack-Family.html[added preview capabilities, window=_blank] that will make it possible for users who want to use a feature-pack to choose which of a compatible set of dependency feature-packs to use. There's no practical end-user benefit to this __yet__, but it will be helpful in the future as the feature-packs we produce make use of this capability. A typical example will be letting users of something like the https://github.com/wildfly-extras/wildfly-ai-feature-pack[AI feature-pack, window=_blank] choose which "base" feature-pack that provides EE to use -- `wildfly-ee`, `wildlfy-preview` or a planned `wildfly-ee-10`.
 ** _Note_: If you plan to develop a feature-pack that depends on WildFly 39, be sure to use WildFly Galleon Plugins 8.1.0 or later. We always recommend you use the same Galleon plugin version that WildFly used to build its own feature-packs.
 * **Component Upgrades:** We've updated a wide range of dependencies to their latest versions, improving performance, stability, and security. Notable upgrades include:
 ** **Jackson 2.20**
@@ -35,7 +35,7 @@ Here's what's new:
 
 == Supported Specifications
 
-=== Jakarta EE
+=== Jakarta
 
 Standard WildFly 39 is a compatible implementation of the EE 10 link:https://jakarta.ee/specifications/platform/10/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/10/[Core Profile, window=_blank]. WildFly is EE 10 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
 
@@ -43,13 +43,13 @@ Evidence supporting our certification is available in the link:https://github.co
 [cols=",",options="header"]
 |=======================================================================
 |Specification |Compatibility Evidence
-.2+.<| Jakarta EE 10 Full Platform
+.2+.<| EE 10 Full Platform
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
-.2+.<|  Jakarta EE 10 Web Profile
+.2+.<| EE 10 Web Profile
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
-.2+.<| Jakarta EE 10 Core Profile
+.2+.<| EE 10 Core Profile
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
 | link:https://github.com/wildfly/certifications/blob/EE10/WildFly_39.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
 |=======================================================================
@@ -65,11 +65,11 @@ link:https://github.com/wildfly/certifications/blob/MP7.1/WildFly_39.0.0.Final/m
 [[preview-ee11]]
 === WildFly Preview and EE 11
 
-Since the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we have been using WildFly Preview to provide a look at what we're doing for Jakarta EE 11 support.  We continued to make progress on this during the WildFly 39 cycle, with new integrations of implementations of Jakarta Authentication, Jakarta Concurrency, Jakarta Security, Jakarta Servlet and Jakarta Websocket.
+Since the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we have been using WildFly Preview to provide a look at what we're doing for EE 11 support.  We continued to make progress on this during the WildFly 39 cycle, with new integrations of implementations of Jakarta Authentication, Jakarta Concurrency, Jakarta Security, Jakarta Servlet and Jakarta Websocket.
 
 For Jakarta Pages we are still offering the EE 10 implementation. Our goal is shift to the EE 11 implementation in WildFly Preview 40.
 
-The Jakarta EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] and link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] went GA last summer. We are working on completing our implementation of these in WildFly Preview, for eventual incorporation in standard WildFly.
+The EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] and link:https://jakarta.ee/specifications/webprofile/10/[Web Profile, window=_blank] went GA last summer. We are working on completing our implementation of these in WildFly Preview, for eventual incorporation in standard WildFly.
 
 Full details on the EE specification versions provided by WildFly Preview can be found in https://docs.wildfly.org/39/WildFly_and_WildFly_Preview.html#ee-11-support-in-wildfly-preview[the WildFly 39 documentation, window=_blank].
 
@@ -82,7 +82,7 @@ Our recommendation of SE 21 over SE 17 is solely because as a general principle 
 
 While we recommend using SE 21 or SE 17, we believe WildFly runs well on *SE 25*, which is the most recent LTS release, released last September. By runs well, I mean the main WildFly https://ci.wildfly.org/project.html?projectId=WF_MainNightlyJobs[nightly testsuite jobs, window=_blank] produce results equivalent to what we see with SE 17 and SE 21. We want developers who are trying to evaluate what SE 25 means for their applications to be able to look to WildFly as a useful development platform.
 
-Since SE 25 is an LTS release, we aim in a future WildFly version to include it in the list of recommended SE releases. To do this there is further qualifying work to be done, beyond the good WildFly testsuite results we are seeing today. We're working to https://docs.google.com/spreadsheets/d/1Un8Q1suq2Y8Aqa490p5EHr3rLtgSKc5pMSn76FUAiUI/edit?gid=0#gid=0[validate the SE 25 compatibility of key components, window=_blank] we include in WildFly, and we're using the Jakarta EE 11 TCK as a further set of tests of how well we run on SE 25. (The EE 11 TCK was not written for SE 25, so there may be some tests that won't work on it. However, using the EE 10 TCK to help qualify SE 21 worked well.) In both of these areas we made good progress during the WildFly 39 development period.
+Since SE 25 is an LTS release, we aim in a future WildFly version to include it in the list of recommended SE releases. To do this there is further qualifying work to be done, beyond the good WildFly testsuite results we are seeing today. We're working to https://docs.google.com/spreadsheets/d/1Un8Q1suq2Y8Aqa490p5EHr3rLtgSKc5pMSn76FUAiUI/edit?gid=0#gid=0[validate the SE 25 compatibility of key components, window=_blank] we include in WildFly, and we're using the EE 11 TCK as a further set of tests of how well we run on SE 25. (The EE 11 TCK was not written for SE 25, so there may be some tests that won't work on it. However, using the EE 10 TCK to help qualify SE 21 worked well.) In both of these areas we made good progress during the WildFly 39 development period.
 
 Please note that WildFly runs in classpath mode.
 

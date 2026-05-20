@@ -60,16 +60,16 @@ drwxr-xr-x. 1 fburzigo fburzigo    16 May 23 13:51 src
 ----
 
 This is all we need for now, feel free to inspect the POM and see how the WildFly Maven Archetype provided a ready-to-use
-configuration which will allow for us to leverage Jakarta EE components, like for instance the Jakarta REST API implementation:
+configuration which will allow for us to leverage EE components, like for instance the Jakarta REST API implementation:
 
 [source,xml]
 ----
 <dependencyManagement>
         <dependencies>
-            <!-- JBoss distributes a complete set of Jakarta EE APIs including
+            <!-- JBoss distributes a complete set of EE APIs including
                 a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
                 a collection) of artifacts. We use this here so that we always get the correct
-                versions of artifacts (you can read this as the WildFly stack of the Jakarta EE APIs,
+                versions of artifacts (you can read this as the WildFly stack of the EE APIs,
                 with some extras tools for your project, such as Arquillian for testing) -->
             <dependency>
                 <groupId>org.wildfly.bom</groupId>

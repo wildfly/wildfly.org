@@ -15,7 +15,7 @@ We're excited to announce the release of *WildFly 38 Beta 1*! This version conta
 
 This release focuses heavily on component upgrades, MicroProfile 7.1 support, and enhancements to the WildFly Preview distribution. Here's a quick rundown of the highlights:
 
-* **Java EE 11 Integration:** A key new feature is the implementation of link:https://issues.redhat.com/browse/WFLY-19554[Jakarta EE 11 JPA and CDI integration] in WildFly Preview, bringing us closer to full support for the latest Jakarta EE specifications.
+* **Java EE 11 Integration:** A key new feature is the implementation of link:https://issues.redhat.com/browse/WFLY-19554[EE 11 JPA and CDI integration] in WildFly Preview, bringing us closer to full support for the latest Jakarta specifications.
 * **MicroProfile 7.1:** WildFly 38 Beta 1 supports the *MicroProfile 7.1* specifications, including an update to the latest versions of MicroProfile OpenAPI and MicroProfile Telemetry. This upgrade ensures that developers can leverage the newest features and improvements in the MicroProfile ecosystem.
 * **Component Upgrades:** We've updated a wide range of dependencies to their latest versions, improving performance, stability, and security. Notable upgrades include:
  ** **Hibernate ORM 6.6.29.Final** (and 7.1.1.Final in WildFly Preview)

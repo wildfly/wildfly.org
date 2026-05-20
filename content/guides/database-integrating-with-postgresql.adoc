@@ -72,7 +72,7 @@ rm src/test/java/org/wildfly/examples/BookStoreServiceIT.java
 
 === pom.xml
 
-==== Jakarta EE dependencies:
+==== Jakarta dependencies:
 
 Add the following dependencies to the `pom.xml` file:
 
