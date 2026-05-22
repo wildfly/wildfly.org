@@ -69,6 +69,13 @@ categories:
             keywords: Microservices, Kubernetes, AI, LLM, Integration, Docker, REST, Jakarta REST, Container Image, Cloud, Containerization, cloud-containerization
           - description: Run the Container Image on Kubernetes
             url: /guides/get-started-microservices-on-kubernetes/simple-microservice-llm-part2
+  - category: Compatibility
+    cat-id: compatibility
+    guides:
+      - title: Using the WildFly EE 10 Feature-pack
+        url: /guides/wildfly-ee-10-feature-pack
+        description: Learn how to continue using Jakarta EE 10 with WildFly 40 and later.
+        keywords: Compatibility
   - category: Datasources
     cat-id: datasources
     guides:
@@ -163,5 +170,3 @@ categories:
         url: /guides/security-credential-store-enc-exp
         description: How to set up encrypted expressions and use it to replace clear-text sensitive information.
         keywords: Security, Credential Stores, Encrypted Expressions
-
-
