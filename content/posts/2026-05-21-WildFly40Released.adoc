@@ -189,7 +189,7 @@ It is likely that WildFly will withdraw support for SE 17 in some release in the
 There are some incompatible changes in WildFly 40 that may affect some users:
 
 * A standard WildFly or WildFly Preview server will fail to start if the Java `SecurityManager` is enabled, regardless of whether the underlying Java SE version still supports the `SecurityManager`. The EE 11 specifications do not require the `SecurityManager` and many libraries WildFly integrates to provide EE 11 support have removed logic that allow them to work properly with the SM enabled. So, since we cannot function correctly with the SM enabled, we abort the server boot.
-* Apache Artemis changed the Maven groupId for its artifacts from `org.apache.activemq` to `org.apached.artemis`. This may impact users relying on our boms for dependency management.
+* Apache Artemis changed the Maven groupId for its artifacts from `org.apache.activemq` to `org.apache.artemis`. This may impact users relying on our boms for dependency management.
 * As part of the move to EE 11, standard WildFly removed support for EE ManagedBeans, an old EE programming model using the `@ManagedBean` annotation that has long been superseded by CDI. If you are impacted by this, please let us know. There is some _possibility_ these could still be supported if there is real world demand. Note that these are still supported in WildFly EE 10.
 
 [[contributors]]
