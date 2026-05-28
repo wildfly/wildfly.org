@@ -57,11 +57,10 @@ The key improvements in EE 11 are:
 
 * Support for the repository pattern in your data persistence tier with link:https://jakarta.ee/specifications/data/1.0/[Jakarta Data, window=_blank], in WildFly's case backed by link:https://hibernate.org/repositories/[Hibernate Data Repositories, window=_blank].
 * Many improvements in link:https://gavinking.substack.com/p/a-summary-of-jakarta-persistence[Jakarta Persistence 3.2, window=_blank].
-* Support for virtual threads in Jakarta Concurrency services, when running on Java SE 21 and later.
 
-[WARNING]
+[NOTE]
 ====
-Although Jakarta Concurrency supports virtual threads on SE 21 or later, if you wish to use them we strongly recommend using SE 25. Java SE continues to improve its implementation of virtual threads, with SE 24's delivery of link:https://openjdk.org/jeps/491[JEP 491, window=_blank] being particularly important.
+In the original version of this post I stated that standard WildFly 40 supports the use of virtual threads in Jakarta Concurrency services. This is incorrect. Support for virtual threads is an optional feature in Jakarta Concurrency 3.1, the spec version included in EE 11 and supported by standard WildFly. But we do not yet support their use in WildFly. My apologies for getting this wrong.
 ====
 
 [NOTE]
