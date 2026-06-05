@@ -157,7 +157,7 @@ The following table lists the various Jakarta EE technologies offered by WildFly
 Notes:
 
 . [[note1]]This Jakarta EE 10 technology is not part of EE 11 but is still provided by WildFly.
-. [[note2]]Jakarta MVC is not of the Jakarta EE Platform or the Web or Core Profile
+. [[note2]]Jakarta MVC is not part of the Jakarta EE Platform or the Web or Core Profile
 
 Please try all of this out and give us your feedback while we finish up WildFly 32 Final!
 

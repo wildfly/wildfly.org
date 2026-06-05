@@ -186,7 +186,7 @@ Notes:
 
 . [[note1]]This Jakarta EE 10 technology is not part of EE 11 but is still provided by WildFly.
 . [[note2]]Jakarta Data is a new specification in EE 11.
-. [[note3]]Jakarta MVC is not of the Jakarta EE Platform or the Web or Core Profile.
+. [[note3]]Jakarta MVC is not part of the Jakarta EE Platform or the Web or Core Profile.
 
 == Java SE Support
 
