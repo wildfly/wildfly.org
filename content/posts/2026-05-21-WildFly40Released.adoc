@@ -8,7 +8,7 @@ author: bstansberry
 description: WildFly 40 Final is now available.
 ---
 
-It's taken longer than our normal three months, but I'm _thrilled_ to announce that the new WildFly, WildFly EE 10 and WildFly Preview 40.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank], The Galleon feature-packs for 40 are available in https://central.sonatype.com/[Maven Central, window=_blank].
+It's taken longer than our normal three months, but I'm _thrilled_ to announce that the new WildFly, WildFly EE 10 and WildFly Preview 40.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank]. The Galleon feature-packs for WildFly 40 are available in https://central.sonatype.com/[Maven Central, window=_blank].
 
 [[new_and_notable]]
 == New and Notable
@@ -31,7 +31,7 @@ We promoted a number of existing features to a higher stability level, making th
 
 * In WildFly 32, we added support for an `SSLContext` that can https://docs.wildfly.org/wildfly-proposals/elytron/WFLY-13762_ssl_context_based_on_peer_info.html[dynamically delegate to different SSL contexts based on destination's host and port, window=_blank]. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
 * In WildFly 33, the `undertow` subsystem began supporting https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-15452_ajp-listener_allowed_attr_pattern.html[configuring the AJP listener to accept custom AJP request headers, window=_blank]. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
-* In WildFly 33, the `undertow` subsystem begin supporting configuring the reverse proxy handler to https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-14255_Make_resuseXForwarded_and_rewriteHost_configurable.html[reuse and append to any `X-Forwarded` HTTP headers and to rewrite the `Host` header, window=_blank]. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
+* In WildFly 33, the `undertow` subsystem began supporting configuring the reverse proxy handler to https://docs.wildfly.org/wildfly-proposals/undertow/WFLY-14255_Make_resuseXForwarded_and_rewriteHost_configurable.html[reuse and append to any `X-Forwarded` HTTP headers and to rewrite the `Host` header, window=_blank]. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`default` stability level, window=_blank].
 * In WildFly 35, we added link:https://docs.wildfly.org/wildfly-proposals/ee/WFLY-19776_Jakarta_Data_in_standard_WildFly.html[support for Jakarta Data 1.0, window=_blank] to standard WildFly. This feature is now provided at the link:https://docs.wildfly.org/40/Admin_Guide.html#Feature_stability_levels[`community` stability level, window=_blank].
 
 We've also updated a wide range of dependencies to their latest versions, improving performance, stability, and security.
@@ -148,7 +148,7 @@ link:https://github.com/wildfly/certifications/blob/MP7.1/WildFly_40.0.0.Final/m
 
 Beginning with the https://www.wildfly.org/news/2024/04/25/WildFly32-Released/[WildFly 32 release, window=_blank], we used WildFly Preview to provide an early look at our evolving support for EE 11. With WildFly 40 that work is completed, and standard WildFly now supports EE 11.
 
-Therefore, for the 40 release, standard WildFly and WildFly Preview are providing implementations of the same set of standards, although there other differences between the two, as outlined in the link:https://docs.wildfly.org/40/Different_Flavors_of_WildFly.html[Different Flavors of WildFly, window=_blank] document.
+Therefore, for the 40 release, standard WildFly and WildFly Preview are providing implementations of the same set of standards, although there are other differences between the two, as outlined in the link:https://docs.wildfly.org/40/Different_Flavors_of_WildFly.html[Different Flavors of WildFly, window=_blank] document.
 
 Beginning with WildFly Preview 41, we expect to begin bringing early milestone releases of EE 12 APIs and implementations into WildFly Preview.
 
@@ -179,7 +179,7 @@ Please note that WildFly runs in classpath mode.
 
 [WARNING]
 ====
-It is likely that WildFly will withdraw support for SE 17 in some release in the next year. Certainly not in WildFly 41, though. We recommend that users on SE 17 migrate their workloads so SE 21 or 25.
+It is likely that WildFly will withdraw support for SE 17 in some release in the next year. Certainly not in WildFly 41, though. We recommend that users on SE 17 migrate their workloads to SE 21 or 25.
 ====
 
 [[incompatibilities]]
