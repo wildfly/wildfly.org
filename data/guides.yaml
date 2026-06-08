@@ -174,3 +174,10 @@ categories:
         url: /guides/security-credential-store-enc-exp
         description: How to set up encrypted expressions and use it to replace clear-text sensitive information.
         keywords: Security, Credential Stores, Encrypted Expressions
+  - category: AI
+    cat-id: ai
+    guides:
+    - title: LangChain4j AI Services in WildFly
+      url: /guides/langchain-ai-chat-bot
+      description: Create a simple AI assistant using LangChain4j-cdi in WildFly
+      keywords: LangChain4j-cdi, langchain4j, AI, Chatbot, Ollama, RAG, LLM, AI services
