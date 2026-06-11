@@ -1,0 +1,69 @@
+---
+layout: post
+title:  "A2A Jakarta 1.0.0.CR1 is released!"
+date:   2026-06-11
+tags:   announcement release generative-ai a2a agent wildfly
+author: kkhan
+description: A2A Jakarta 1.0.0.CR1 is released.
+---
+
+I am pleased to announce the https://github.com/wildfly-extras/a2a-jakarta/releases/tag/v1.0.0.CR1[1.0.0.CR1 release] of A2A Jakarta (formerly the A2A Java SDK for Jakarta).
+
+This release supports https://a2a-protocol.org/latest/specification/[version 1.0 of the A2A Protocol Specification] and is built on top of a2a-java https://github.com/a2aproject/a2a-java/releases/tag/v1.0.0.Final[1.0.0.Final], whose highlights are covered in its https://quarkus.io/blog/a2a-java-sdk-1-0-0-final-released/[release announcement].
+
+This post also covers the highlights from the https://github.com/a2aproject/a2a-java/releases/tag/1.0.0.Beta1[1.0.0.Beta1] release, which did not have its own announcement.
+
+== New Repository Name and Coordinates
+
+The repository has been renamed from `wildfly-extras/a2a-java-sdk-server-jakarta` to https://github.com/wildfly-extras/a2a-jakarta[`wildfly-extras/a2a-jakarta`]. Alongside this, the Maven artifact IDs and Java package names have been simplified:
+
+* **Artifact IDs** now use the `a2a-jakarta-` prefix instead of `a2a-java-sdk-jakarta-`. For example, `a2a-java-sdk-jakarta-jsonrpc` becomes `a2a-jakarta-jsonrpc`.
+* **Java packages** now use `org.wildfly.a2a.jakarta` as the root package.
+* The **groupId** remains `org.wildfly.a2a`.
+
+If you are upgrading from a previous release, you will need to update your Maven dependencies and Java imports accordingly. For example, to use the JSON-RPC module:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.wildfly.a2a</groupId>
+    <artifactId>a2a-jakarta-jsonrpc</artifactId>
+    <version>1.0.0.CR1</version>
+</dependency>
+----
+
+== v0.3 Protocol Compatibility Layer
+
+The headline feature of this release is a compatibility layer for version 0.3 of the A2A Protocol. As the protocol evolved from v0.3 to v1.0, there were significant breaking changes. The compatibility layer lets you support v0.3 clients without maintaining a separate codebase.
+
+The key design principle is that you only need a **single `AgentExecutor` implementation**. The compatibility layer intercepts incoming v0.3 requests, converts them to v1.0 format, and delegates to your existing executor. This means you write your agent logic once against the v1.0 API, and v0.3 support comes for free.
+
+There are three deployment modes:
+
+=== Standalone v0.3
+
+If you need to deploy an application that only speaks v0.3, use the `compat-0.3` modules instead of the v1.0 ones. The dependency names follow the same pattern with a `compat-0.3` prefix:
+
+* `org.wildfly.a2a:a2a-jakarta-compat-0.3-jsonrpc` and `a2a-jakarta-compat-0.3-jsonrpc-web` for JSON-RPC
+* `org.wildfly.a2a:a2a-jakarta-compat-0.3-grpc` for gRPC
+* `org.wildfly.a2a:a2a-jakarta-compat-0.3-rest` and `a2a-jakarta-compat-0.3-rest-web` for REST
+
+=== Multiversion (v0.3 + v1.0)
+
+The most interesting mode is serving both protocol versions from the same deployment. To do this, you add the v0.3 compat dependencies alongside your v1.0 ones, plus the multiversion dispatching modules (`a2a-jakarta-compat-0.3-multiversion-jsonrpc` and `a2a-jakarta-compat-0.3-multiversion-rest`). These modules register JAX-RS resources that inspect incoming requests and route them to the correct protocol handler — v0.3 requests go through the compatibility conversion layer while v1.0 requests are handled directly. You can see how the project's own TCK sets this up with a Maven profile in the https://github.com/wildfly-extras/a2a-jakarta/blob/v1.0.0.CR1/tck/pom.xml[tck/pom.xml].
+
+As with the other modes, only a single `AgentExecutor` is needed. The one additional requirement is that you provide agent cards for both protocol versions — typically one is your "real" card and the other is either a stub or derived from it. See the https://github.com/wildfly-extras/a2a-jakarta/blob/v1.0.0.CR1/README.md#multiversion-v03--v10[README] for detailed instructions and examples.
+
+=== Agent Card Compatibility
+
+When serving both protocol versions, the v1.0 `AgentCard` is what clients receive. To ensure v0.3 clients can parse it, the card needs some backward-compatibility fields. You can either set these manually or use the `Compat03Fields.addCompat03FieldsIfAvailable()` utility method.
+
+== Other Highlights
+
+* **a2a-java 1.0.0.Final** — We are now aligned with the final release of the upstream https://github.com/a2aproject/a2a-java[a2a-java] SDK.
+* **gRPC Feature Pack 0.2.0** — Upgraded to the latest https://github.com/wildfly-extras/wildfly-grpc-feature-pack[WildFly gRPC Feature Pack].
+* **WildFly 40** — The TCK now runs on WildFly 40.
+* **CI on Windows** — The CI pipeline now runs on both Linux and Windows.
+
+== Get Involved
+If you have any issues with the project, please open an https://github.com/wildfly-extras/a2a-jakarta/issues[issue]. Also, https://github.com/wildfly-extras/a2a-jakarta/pulls[pull requests] are welcome!
