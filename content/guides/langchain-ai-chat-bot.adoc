@@ -1,0 +1,896 @@
+---
+layout: guide
+---
+= WildFly Guide: LangChain4j AI Services in WildFly
+:summary:
+
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
+:prerequisites-time: 30
+
+In this guide, we will learn how to create a simple AI assistant using LangChain4j-cdi in WildFly. This example is inspired by the official LangChain4j-cdi examples available at https://github.com/langchain4j/langchain4j-cdi/tree/main/examples[LangChain4j-cdi examples, window=_blank].
+
+The guide is divided into two main sections:
+
+1. Create simple Chatbot assistant: We will create a simple chatbot application that exposes tools to an LLM to retrieve information and cancel bookings. We will use Ollama as the LLM provider running on our local machine, configure the application using MicroProfile Config, and add resilience with MicroProfile Fault Tolerance.
+2. Retrieval-Augmented Generation (RAG) system: We will provide the LLM with information from our rent-a-car company documents.
+
+The source code of the application developed in this guide is available at https://github.com/wildfly-extras/guides/tree/main/wildfly-car-booking-chat-bot[wildfly-car-booking-chat-bot, window=_blank].
+
+include::../../templates/partials/guides/prerequisites.adoc[]
+* Ollama installed and running with the `ollama serve` command. You can follow the instructions at https://docs.ollama.com/linux[Ollama installation guide, window=_blank] to install Ollama on your machine.
+
+== A Simple Chat Bot example
+
+=== Project Setup
+Scaffold a new project using the WildFly Getting Started Archetype:
+
+[source,bash,subs="normal"]
+----
+mvn archetype:generate \
+    -DarchetypeGroupId=org.wildfly.archetype \
+    -DarchetypeArtifactId=wildfly-getting-started-archetype \
+    -DarchetypeVersion=40.0.0.Final \
+    -DdefaultClassPrefix=CarBooking \
+    -DartifactId=wildfly-car-booking-chat-bot \
+    -Dversion=1.0.0 \
+    -DinteractiveMode=false
+----
+
+Remove the classes created by the archetype that we are not going to use in this demo:
+
+[source,bash,subs="normal"]
+----
+$ cd wildfly-car-booking-chat-bot
+wildfly-car-booking-chat-bot $ rm src/main/java/org/wildfly/examples/CarBookingEndpoint.java
+wildfly-car-booking-chat-bot $ rm src/main/java/org/wildfly/examples/CarBookingService.java
+wildfly-car-booking-chat-bot $ rm -rf src/test
+----
+
+Let's start with the basic POM configuration and dependencies. We are going to use LangChain4j as the core library to talk to the LLM, LangChain4j-cdi to easily integrate LangChain4j into our CDI application, and the WildFly Maven plugin to provision a WildFly server with the required layers to run our application.
+
+Add the following properties to control the LangChain4j and LangChain4j-cdi versions:
+
+[source,xml]
+----
+<version.langchain4j>1.16.1</version.langchain4j>
+<version.langchain4j-cdi>1.3.2</version.langchain4j-cdi>
+----
+
+Replace the `dependencyManagement` section with the following content:
+
+[source,xml]
+----
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.wildfly.bom</groupId>
+            <artifactId>wildfly-expansion</artifactId>
+            <version>${version.wildfly.bom}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-bom</artifactId>
+            <version>${version.langchain4j}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+----
+
+This configures the expected WildFly and LangChain4j BOMs. At the time of writing, there is no BOM for LangChain4j-cdi, so we add the dependencies directly with their versions. Replace the `dependencies` section with the following:
+
+[source,xml]
+----
+<dependencies>
+    <!-- LangChain4j dependencies -->
+    <dependency>
+        <groupId>dev.langchain4j</groupId>
+        <artifactId>langchain4j-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>dev.langchain4j</groupId>
+        <artifactId>langchain4j-ollama</artifactId>
+    </dependency>
+
+    <!-- LangChain4j-cdi dependencies -->
+    <dependency>
+        <groupId>dev.langchain4j.cdi</groupId>
+        <artifactId>langchain4j-cdi-core</artifactId>
+        <version>${version.langchain4j-cdi}</version>
+    </dependency>
+    <dependency>
+        <groupId>dev.langchain4j.cdi</groupId>
+        <artifactId>langchain4j-cdi-portable-ext</artifactId>
+        <version>${version.langchain4j-cdi}</version>
+    </dependency>
+    <dependency>
+        <groupId>dev.langchain4j.cdi.mp</groupId>
+        <artifactId>langchain4j-cdi-config</artifactId>
+        <version>${version.langchain4j-cdi}</version>
+    </dependency>
+    <dependency>
+        <groupId>dev.langchain4j.cdi.mp</groupId>
+        <artifactId>langchain4j-cdi-fault-tolerance</artifactId>
+        <version>${version.langchain4j-cdi}</version>
+    </dependency>
+
+    <!-- WildFly provided dependencies -->
+    <dependency>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.microprofile.config</groupId>
+        <artifactId>microprofile-config-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.microprofile.fault-tolerance</groupId>
+        <artifactId>microprofile-fault-tolerance-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+----
+
+We are not going to use Glow for this example. Update the WildFly Maven plugin configuration as follows to provision our WildFly server. The cloud-server layer already includes MicroProfile Config, so we only add the fault tolerance layer:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:${version.wildfly.bom}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>cloud-server</layer>
+            <layer>microprofile-fault-tolerance</layer>
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+=== Creating the Chat Bot Application classes and Jakarta RESTful Web Service application
+
+Our application simulates a rent-a-car company named "Miles of Smiles" that wants to provide a chatbot to its customers. Our domain entities are `Booking` and `Customer`. Create them in the `src/main/java/org/wildfly/examples/` directory with the following content:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import java.time.LocalDate;
+
+/** Represents a car rental booking. */
+public record Booking(
+        String bookingNumber,
+        LocalDate start,
+        LocalDate end,
+        Customer customer,
+        boolean canceled,
+        String carModel) {}
+----
+
+[source,java]
+----
+package org.wildfly.examples;
+
+/** Represents a car rental customer. */
+public record Customer(String name, String surname) {}
+----
+
+The `CarBookingRepository` class is our database access layer keeping an in-memory hash map with the data of our company:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class CarBookingRepository {
+    private static final Map<String, Booking> BOOKINGS = new HashMap<>();
+
+    static {
+        BOOKINGS.put(
+                "123-456",
+                new Booking(
+                        "123-456",
+                        LocalDate.now().plusDays(1),
+                        LocalDate.now().plusDays(7),
+                        new Customer("James", "Bond"),
+                        false,
+                        "Aston Martin")); // Not cancelable: too late
+        BOOKINGS.put(
+                "234-567",
+                new Booking(
+                        "234-567",
+                        LocalDate.now().plusDays(10),
+                        LocalDate.now().plusDays(12),
+                        new Customer("James", "Bond"),
+                        false,
+                        "Renault")); // Not cancelable: too short
+        BOOKINGS.put(
+                "345-678",
+                new Booking(
+                        "345-678",
+                        LocalDate.now().plusDays(14),
+                        LocalDate.now().plusDays(20),
+                        new Customer("James", "Bond"),
+                        false,
+                        "Porsche")); // Cancelable
+    }
+
+    public Booking findBookingByNumberAndCustomer(String bookingNumber, Customer customer) {
+        Booking booking = findBookingByNumber(bookingNumber);
+        if (booking == null || !booking.customer().equals(customer)) {
+            throw new BookingException("Booking not found for booking number: " + bookingNumber + " and customer: " + customer.name() + " " + customer.surname());
+        }
+        return booking;
+    }
+
+    public List<Booking> findBookingByCustomer(Customer customer) {
+        return BOOKINGS.values().stream()
+                .filter(booking -> booking.customer().equals(customer))
+                .collect(Collectors.toList());
+    }
+
+    public Booking findBookingByNumber(String bookingNumber) {
+        return BOOKINGS.get(bookingNumber);
+    }
+
+    public void saveBooking(Booking booking) {
+        BOOKINGS.put(booking.bookingNumber(), booking);
+    }
+}
+----
+This class uses an application Exception named `BookingException` that we need to create as follows:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+public class BookingException extends RuntimeException {
+
+    public BookingException(String message) {
+        super(message);
+    }
+}
+----
+
+The chatbot will be exposed to client applications as a JAX-RS (Jakarta RESTful Web Services) web service under `localhost:8080/car-booking`. Update the JAX-RS `CarBookingApplication` application to reflect the base path as follows:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+
+@ApplicationPath("/car-booking")
+public class CarBookingApplication extends Application {}
+----
+
+=== LangChain4j AI service and tools to interact with the LLM
+
+LangChain4j-cdi provides a portable extension to easily integrate LangChain4j into our CDI applications using annotations. The chatbot uses a LangChain4j https://docs.langchain4j.dev/tutorials/ai-services[AI service, window=_blank] to manage the conversation with the LLM. Behind the scenes, LangChain4j will manage the react loop and provide the LLM with the tools we expose.
+
+To do so, we need to create an interface annotated with `@RegisterAIService`:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import java.time.temporal.ChronoUnit;
+
+import dev.langchain4j.cdi.spi.RegisterAIService;
+import dev.langchain4j.service.SystemMessage;
+import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
+
+@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
+@RegisterAIService(
+        chatModelName = "chat-model",
+        chatMemoryName = "chat-memory",
+        tools = CarBookingService.class
+)
+public interface CarBookingAIService {
+
+    @SystemMessage("""
+            You are a customer support agent of a car rental company named 'Miles of Smiles'.
+            Before providing information about booking or canceling a booking, you MUST always check:
+            booking number, customer name and surname.
+
+            You should not answer to any request not related to car booking or Miles of Smiles company general information.
+            When a customer wants to cancel a booking, you must check his name and the Miles of Smiles cancellation policy first.
+
+            Any cancellation request must comply with cancellation policy both for the delay and the duration.
+
+            Today is {{current_date}}.
+            """)
+    @Timeout(unit = ChronoUnit.MINUTES, value = 5)
+    @Retry(maxRetries = 2)
+    @Fallback(fallbackMethod = "fallback")
+    String chat(String question);
+
+    default String fallback(String question) {
+        return "Sorry, I'm having trouble processing your request at the moment. Please try again later.";
+    }
+}
+----
+With the `@RegisterAIService` annotation, we specify the name of the chat model and the chat memory. Our chatbot needs to remember who the current user is, so we need to provide a memory mechanism to track the current conversation. Both pieces are configured later using MicroProfile Config.
+
+We have also added some MicroProfile Fault Tolerance annotations to make our chatbot more resilient.
+
+The LLM needs access to some tools to interact with our application. These tools are defined in the `CarBookingService` class as follows:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+import dev.langchain4j.agent.tool.Tool;
+
+@ApplicationScoped
+public class CarBookingService {
+    private static final Logger LOGGER = Logger.getLogger(CarBookingService.class.getName());
+
+    @Inject
+    CarBookingRepository repository;
+
+    @Tool("Get booking details given a booking number and customer name and surname")
+    public Booking getBookingDetails(String bookingNumber, String name, String surname) {
+        LOGGER.info("DEMO: Calling Tool-getBookingDetails: " + bookingNumber + " and customer: " + name + " " + surname);
+        return repository.findBookingByNumberAndCustomer(bookingNumber, new Customer(name, surname));
+    }
+
+    @Tool("Get all booking ids for a customer given his name and surname")
+    public List<String> getBookingsForCustomer(String name, String surname) {
+        LOGGER.info("DEMO: Calling Tool-getBookingsForCustomer: " + name + " " + surname);
+        return repository.findBookingByCustomer(new Customer(name, surname))
+                .stream()
+                .map(Booking::bookingNumber)
+                .collect(Collectors.toList());
+    }
+
+    @Tool("Cancel a booking given its booking number and customer name and surname")
+    public Booking cancelBooking(String bookingNumber, String name, String surname) {
+        LOGGER.info("DEMO: Calling Tool-cancelBooking " + bookingNumber + " for customer: " + name + " " + surname);
+
+        Booking booking = repository.findBookingByNumberAndCustomer(bookingNumber, new Customer(name, surname));
+
+        if (booking.canceled()) throw new BookingException("Booking with number " + bookingNumber + " is already canceled.");
+
+        checkCancelPolicy(booking);
+
+        Booking canceledBooking = new Booking(booking.bookingNumber(), booking.start(), booking.end(), booking.customer(), true, booking.carModel());
+        repository.saveBooking(canceledBooking);
+
+        return canceledBooking;
+    }
+
+    public void checkCancelPolicy(Booking booking) {
+        // Reservations can be canceled up to 7 days prior to the start of the booking period
+        if (LocalDate.now().plusDays(7).isAfter(booking.start())) {
+            throw new BookingException("Booking with number " + booking.bookingNumber() + " cannot be canceled less than 7 days before the start of the booking period.");
+        }
+        // If the booking period is less than 3 days, cancellations are not permitted.
+        if (booking.end().isBefore(booking.start().plusDays(3))) {
+            throw new BookingException("Booking with number " + booking.bookingNumber() + " cannot be canceled because the booking period is less than 3 days.");
+        }
+    }
+}
+----
+
+The three methods annotated with `@Tool` will be bound to the LLM toolbox. The LLM will invoke them whenever it considers it necessary to answer a question. For example, if the user asks "What is the status of my booking with number 123-456?", the LLM will call the `getBookingDetails` method with the corresponding parameters to retrieve that booking's information. The descriptions in the `@Tool` annotation together with the arguments the decorated method accepts are passed behind the scenes by LangChain4j to the LLM to make it understand when and how to use each tool.
+
+Now that we have the AI service and the tools defined, we need to expose the AI service as a REST endpoint so that clients can interact with it. Create the `ChatBotResource` with the following content:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+@ApplicationScoped
+@Path("/chat")
+public class ChatBotResource {
+    private static final Logger LOGGER = Logger.getLogger(ChatBotResource.class.getName());
+
+    @Inject
+    CarBookingAIService aiService;
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response chatWithAssistant(@QueryParam("question") String question) {
+        try {
+            return Response.ok(aiService.chat(question))
+                    .build();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while chatting with assistant for question: " + question, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("My failure reason is:\n\n" + e.getMessage())
+                    .build();
+        }
+    }
+}
+----
+
+In order to invoke the chatbot, we only need to use the `aiService.chat()` method. For simplicity, we are not using streaming responses in this example, but LangChain4j and Jakarta EE can be combined to provide streaming responses for a better client experience.
+
+=== Configure and Run the Application
+
+This demo uses MicroProfile Config to configure the AI services. An alternative method is to use the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank]. In that case, the configuration can be done directly in the server management model and stored in the `standalone.xml` configuration file.
+
+Using MicroProfile Config, you will get per-application configuration on the server, whereas by using https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank] you will get a global configuration integrated in the server management model.
+
+Create the `src/main/resources/META-INF/microprofile-config.properties` file with the following content:
+
+[source,properties,subs="normal"]
+----
+# OllamaChatModel - connects to Ollama server
+dev.langchain4j.cdi.plugin.chat-model.class=dev.langchain4j.model.ollama.OllamaChatModel
+dev.langchain4j.cdi.plugin.chat-model.config.base-url=http://localhost:11434
+dev.langchain4j.cdi.plugin.chat-model.config.model-name=qwen3.5:4b
+dev.langchain4j.cdi.plugin.chat-model.config.temperature=0.2
+dev.langchain4j.cdi.plugin.chat-model.config.topP=0.9
+dev.langchain4j.cdi.plugin.chat-model.config.log-requests=false
+dev.langchain4j.cdi.plugin.chat-model.config.log-responses=false
+
+# MessageWindowChatMemory - keeps last N messages
+dev.langchain4j.cdi.plugin.chat-memory.class=dev.langchain4j.memory.chat.MessageWindowChatMemory
+dev.langchain4j.cdi.plugin.chat-memory.scope=jakarta.enterprise.context.ApplicationScoped
+dev.langchain4j.cdi.plugin.chat-memory.config.maxMessages=10
+----
+
+We configure the https://docs.langchain4j.dev/tutorials/chat-and-language-models[Chat Model, window=_blank] (OllamaChatModel in this case) and the https://docs.langchain4j.dev/tutorials/chat-memory[Chat Memory, window=_blank] (MessageWindowChatMemory in this case) LangChain4j objects that our AI service needs.
+
+We have chosen `qwen3.5:4b` as the LLM model for this demo. You can choose any other model available in your local Ollama server, but take into account that smaller models with fewer parameters will provide less accurate responses. The only requirement is that the model you are using must support function calling in order to invoke the tools the application exposes to the LLM.
+
+You can also change the `chat-model` configuration to point to any other LLM provider supported by LangChain4j, for example, an OpenAI model. In that case, you will need to provide the corresponding configuration properties plus the required dependencies in the `pom.xml` file.
+
+The temperature and topP (nucleus sampling) are set to 0.2 and 0.9 respectively to favor more consistent and accurate responses; this is a chatbot, and we don't want it to be too creative.
+
+The log-requests and log-responses properties are set to `false` to avoid polluting the console with too many logs. Enabling them will allow you to debug and see what messages are sent and received between the application and the LLM.
+
+With this configuration, we are all set to do our first test. Let's now start the Ollama server, build the application, and start the server.
+
+NOTE: Before starting the server, make sure the model you are using in the above configuration is already pulled and available in your local Ollama server. After starting your Ollama server, you can check the available models with the `ollama list` command and pull a model with the `ollama pull <model-name>` command.
+
+Start the Ollama server with the following command:
+
+[source,bash,subs="normal"]
+----
+$ ollama serve
+----
+
+In another terminal, build the application and start WildFly with the following commands:
+
+[source,bash,subs="normal"]
+----
+wildfly-car-booking-chat-bot $ mvn clean package
+wildfly-car-booking-chat-bot $ ./target/server/bin/standalone.sh
+----
+
+The chatbot is available at `http://localhost:8080/car-booking/chat` and accepts questions related to car rental bookings, company policies and more.
+
+Try asking for example:
+
+- "Hello, how can you help me?"
+- "My name is James and my surname is Bond, please list my bookings"
+- "What is the cancellation policy?"
+- "Cancel my booking number 123-456"
+- "What are the available car brands I can book?"
+
+[source,shell]
+----
+$ curl "http://localhost:8080/car-booking/chat?question=Hello,+how+can+you+help+me?"
+Hello! I'm here to help you with your Miles of Smiles car rental booking. I can assist you with:
+
+- **Getting booking details** - If you have a booking number and your name, I can look up your reservation information
+- **Finding all your bookings** - I can retrieve all booking IDs associated with your name
+- **Canceling bookings** - I can help you cancel a reservation, but I'll need to check your name and the cancellation policy first
+
+To get started, could you please provide me with your **first name** and **last name**? This will help me assist you with any booking-related requests you might have.
+----
+[source,shell]
+----
+$ curl "http://localhost:8080/car-booking/chat?question=My+name+is+James+and+my+surname+is+Bond,+please+list+my+bookings"
+I have successfully retrieved the booking IDs for James Bond. Here are your current bookings:
+
+1. **Booking ID:** 345-678
+2. **Booking ID:** 234-567
+3. **Booking ID:** 123-456
+
+Would you like to get the details for any of these bookings or proceed with a cancellation? If so, please let me know which booking number you are interested in.
+----
+[source,shell]
+----
+$ curl "http://localhost:8080/car-booking/chat?question=What+is+the+cancellation+policy?"
+
+I don't have access to the specific Miles of Smiles cancellation policy details in my current system. However, I can help you with the cancellation process if you provide me with your booking number and name.
+
+To proceed with a cancellation, I'll need:
+- Your **booking number** (from the three bookings listed above: 345-678, 234-567, or 123-456)
+- Your **name** (James Bond)
+
+Once you provide the booking number, I can check the booking details and assist you with the cancellation. Would you like to proceed with canceling any of your bookings?%
+----
+That sounds good. Although we configured in our system prompt that the chatbot should check the cancellation policy before canceling any booking, this policy information is not something the LLM knows from its training data. We will provide the LLM with this information in our next section using RAG.
+
+[source,shell]
+----
+$ curl "http://localhost:8080/car-booking/chat?question=Cancel+my+booking+number+123-456"
+I understand you'd like to cancel booking **123-456**, but I need to inform you that **this booking cannot be canceled**.
+
+Here's why:
+
+**Booking Details:**
+- **Start Date:** 2026-06-09 (tomorrow)
+- **End Date:** 2026-06-15
+- **Car Model:** Aston Martin
+- **Customer:** James Bond
+
+**Cancellation Policy:**
+According to the Miles of Smiles cancellation policy, bookings can only be canceled if they are at least **7 days before the start of the booking period**.
+
+Since your booking starts tomorrow (2026-06-09), it falls outside the 7-day cancellation window. The cancellation request is being made on 2026-06-08, which is only 1 day before the booking starts.
+
+**Your Options:**
+1. **Check your other bookings** (345-678 or 234-567) to see if they might be eligible for cancellation
+2. **Contact Miles of Smiles directly** for any special circumstances that might apply
+3. **Proceed with any other assistance** you need
+
+Would you like me to check the details of your other bookings to see if they might be eligible for cancellation?
+----
+Notice now that the LLM has learnt something about the cancellation policy and is able to apply it to the specific booking details. This is because our tooling threw an exception with a short explanation about why this booking cannot be cancelled. In this case, the LLM was able to interpret that exception and use that information to answer the user question. This is not deterministic, so you might see different responses in different runs, but it is a good example of how the LLM can learn from the tools and use that information in the conversation.
+
+Finally, notice also the logs on the server console; they show how the tools are being invoked by the LLM:
+
+[source,bash,subs="normal"]
+----
+13:54:09,851 INFO  [org.wildfly.examples.CarBookingService] (default task-2) DEMO: Calling Tool-getBookingsForCustomer: James Bond
+13:58:49,639 INFO  [org.wildfly.examples.CarBookingService] (default task-2) DEMO: Calling Tool-getBookingDetails: 123-456 and customer: James Bond
+13:58:55,482 INFO  [org.wildfly.examples.CarBookingService] (default task-2) DEMO: Calling Tool-cancelBooking 123-456 for customer: James Bond
+
+----
+
+=== Adding custom company documentation using RAG (Retrieval-Augmented Generation)
+
+We want our chatbot to also answer questions based on company-specific, up-to-date, and private data rather than its LLM training data alone or chat conversation. We are now going to implement a simple RAG (Retrieval-Augmented Generation) system to provide the LLM with specific information.
+
+Create the following text files in the `company-docs` directory with the following content:
+
+`./company-docs/company-overview.txt`:
+[source, txt]
+----
+Miles of Smiles - Company Overview
+
+Miles of Smiles is an international car rental company operating across 40 countries in Europe, the Americas, and Asia.
+
+Workforce: The company employs 500 people worldwide.
+
+Fleet: Miles of Smiles manages a fleet of 1,000 vehicles. 10% of the fleet is fully electric, reflecting the company's commitment to sustainable mobility.
+
+Customer Satisfaction: Miles of Smiles holds a 99% customer satisfaction rating.
+----
+
+`./company-docs/available-car-brands.txt`:
+[source, txt]
+----
+Miles of Smiles - Available Car Brands
+
+Miles of Smiles offers a selection of 9 car brands ranging from mainstream to luxury, including fully electric options.
+
+Luxury: Aston Martin, Porsche
+Premium: BMW, DS, Mercedes
+Mainstream: Renault, Peugeot, Toyota
+Electric: Tesla
+----
+
+`./company-docs/terms-of-use.txt`:
+[source, txt]
+----
+Miles of Smiles Car Rental Services Terms of Use
+
+1. Introduction
+These Terms of Service (“Terms”) govern the access or use by you, an individual, from within any country in the world, of applications, websites, content, products, and services (“Services”) made available by Miles of Smiles Car Rental Services, a company registered in the United States of America.
+
+2. The Services
+Miles of Smiles rents out vehicles to the end user. We reserve the right to temporarily or permanently discontinue the Services at any time and are not liable for any modification, suspension or discontinuation of the Services.
+
+3. Bookings
+3.1 Users may make a booking through our website or mobile application.
+3.2 You must provide accurate, current and complete information during the reservation process. You are responsible for all charges incurred under your account.
+3.3 All bookings are subject to vehicle availability.
+
+4. Cancellation Policy
+4.1 Reservations lasting less than three days cannot be cancelled
+4.2 Reservations can be cancelled up to 7 days prior to the start of the booking period.
+
+5. Use of Vehicle
+5.1 All cars rented from Miles of Smiles must not be used:
+for any illegal purpose or in connection with any criminal offense.
+for teaching someone to drive.
+in any race, rally or contest.
+while under the influence of alcohol or drugs.
+
+6. Liability
+6.1 Users will be held liable for any damage, loss, or theft that occurs during the rental period.
+6.2 We do not accept liability for any indirect or consequential loss, damage, or expense including but not limited to loss of profits.
+
+7. Governing Law
+These terms will be governed by and construed in accordance with the laws of the United States of America, and any disputes relating to these terms will be subject to the exclusive jurisdiction of the courts of United States.
+
+8. Changes to These Terms
+We may revise these terms of use at any time by amending this page. You are expected to check this page from time to time to take notice of any changes we made.
+
+9. Acceptance of These Terms
+By using the Services, you acknowledge that you have read and understand these Terms and agree to be bound by them.
+If you do not agree to these Terms, please do not use or access our Services.
+----
+
+RAG in LangChain4j works by converting documents into numerical vectors (embeddings) and storing them in an embedding store. When the user asks a question, the system finds the most relevant document chunks and includes them in the prompt sent to the LLM.
+
+To set this up, we need two things: the embedding infrastructure (an embedding model to transform text into vectors and an embedding store to store them), and an ingestor that loads and indexes our documents at application startup, or more probably, in an external system that periodically ingests this information.
+
+Add the following dependency to the `pom.xml` file to bring in the embedding model and the in-memory embedding store:
+
+[source,xml]
+----
+<!-- RAG dependencies -->
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
+</dependency>
+----
+
+The `AllMiniLmL6V2EmbeddingModel` is a lightweight ONNX-based embedding model that runs locally inside the application.
+
+Create the `EmbeddingsProducers` class at `src/main/java/org/wildfly/examples/EmbeddingsProducers.java` to produce the embedding model and the embedding store as CDI beans:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
+import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+
+@ApplicationScoped
+public class EmbeddingsProducers {
+
+    @Produces
+    @ApplicationScoped
+    public EmbeddingModel embeddingModel() {
+        return new AllMiniLmL6V2EmbeddingModel();
+    }
+
+    @Produces
+    @ApplicationScoped
+    public InMemoryEmbeddingStore<TextSegment> embeddingStore() {
+        return new InMemoryEmbeddingStore<>();
+    }
+}
+----
+
+Now create the `DocRagIngestor` class at `src/main/java/org/wildfly/examples/DocRagIngestor.java` to load the documents:
+
+[source,java]
+----
+package org.wildfly.examples;
+
+import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.loadDocuments;
+
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.parser.TextDocumentParser;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import java.io.File;
+import java.util.List;
+import java.util.logging.Logger;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+@ApplicationScoped
+public class DocRagIngestor {
+
+    private static final Logger LOGGER = Logger.getLogger(DocRagIngestor.class.getName());
+
+    @Inject
+    EmbeddingModel embeddingModel;
+
+    @Inject
+    EmbeddingStore<TextSegment> embeddingStore;
+
+    @Inject
+    @ConfigProperty(name = "app.docs-for-rag.dir")
+    private File docs;
+
+    private List<Document> loadDocs() {
+        return loadDocuments(docs.getPath(), new TextDocumentParser());
+    }
+
+    public void ingest(@Observes @Initialized(ApplicationScoped.class) Object pointless) {
+
+        long start = System.currentTimeMillis();
+
+        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+                .documentSplitter(DocumentSplitters.recursive(300, 30))
+                .embeddingModel(embeddingModel)
+                .embeddingStore(embeddingStore)
+                .build();
+
+        List<Document> docs = loadDocs();
+        ingestor.ingest(docs);
+
+        LOGGER.info(String.format(
+                "DEMO %d documents ingested in %d msec", docs.size(), System.currentTimeMillis() - start));
+    }
+}
+----
+This class loads the company documents from a configurable directory and creates the https://docs.langchain4j.dev/apidocs/dev/langchain4j/store/embedding/EmbeddingStoreIngestor.html[EmbeddingStoreIngestor, window=_blank] for ingesting the documents. It uses our `EmbeddingModel` to compute the vectors and the `EmbeddingStore` to store them. The ingestor is configured with a document splitter that splits the documents into chunks of 300 characters with a 30-character overlap.
+
+Once we have our `EmbeddingStore` with the documents indexed, we need to configure a content retriever that will retrieve the most relevant document chunks for each user question and provide them to the LLM as context.
+
+Add the following properties to the `microprofile-config.properties` file to configure the https://docs.langchain4j.dev/apidocs/dev/langchain4j/rag/content/retriever/EmbeddingStoreContentRetriever.html[EmbeddingStoreContentRetriever, window=_blank] retriever and tell the `DocRagIngestor` where to find the company documents:
+
+[source,properties]
+----
+# RAG - path to company documents
+app.docs-for-rag.dir=company-docs
+
+# EmbeddingStoreContentRetriever - retrieves relevant documents from an embedding store
+dev.langchain4j.cdi.plugin.doc-retriever.class=dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever
+dev.langchain4j.cdi.plugin.doc-retriever.config.embeddingStore=lookup:@default
+dev.langchain4j.cdi.plugin.doc-retriever.config.embeddingModel=lookup:@default
+dev.langchain4j.cdi.plugin.doc-retriever.config.maxResults=5
+dev.langchain4j.cdi.plugin.doc-retriever.config.minScore=0.6
+----
+The `lookup:@default` syntax tells LangChain4j-cdi to resolve these from the CDI default beans. The `maxResults` and `minScore` parameters control how many document chunks are retrieved (at most 5) and the minimum similarity threshold (0.6) to filter out irrelevant results.
+
+Finally, we need to wire the content retriever into our AI service. Update the `@RegisterAIService` annotation in the `CarBookingAIService` interface to add the `contentRetrieverName` parameter:
+
+[source,java]
+----
+@RegisterAIService(
+        chatModelName = "chat-model",
+        chatMemoryName = "chat-memory",
+        tools = CarBookingService.class,
+        contentRetrieverName = "doc-retriever"
+)
+----
+
+Rebuild and restart the application, and you can now ask the chatbot questions about the company. For example:
+
+- "What is the cancellation policy?"
+- "What are the available car brands I can book?"
+
+[source,shell]
+----
+$ curl "http://localhost:8080/car-booking/chat?question=What+is+the+cancellation+policy?"
+Based on the Miles of Smiles cancellation policy, here are the key points:
+
+**Cancellation Policy:**
+
+1. **Reservations lasting less than three days cannot be cancelled** - This means short-term rentals under 3 days are not eligible for cancellation.
+
+2. **Reservations can be cancelled up to 7 days prior to the start of the booking period** - To cancel a reservation, you must do so at least 7 days before your rental period begins.
+
+**Additional Terms:**
+
+- By using the Miles of Smiles Services, you acknowledge that you have read and understand these Terms and agree to be bound by them.
+- Users will be held liable for any damage, loss, or theft that occurs during the rental period.
+- We do not accept liability for any indirect or consequential loss, damage, or expense.
+
+If you have a specific booking you'd like to cancel, I'll need your booking number and customer name/surname to check the details and assist you further.
+----
+
+[source,shell]
+----
+$ curl "http://localhost:8080/car-booking/chat?question=What+are+the+available+car+brands+I+can+book?"
+Based on the Miles of Smiles car rental services, here are the available car brands you can book:
+
+**Luxury:**
+- Aston Martin
+- Porsche
+
+**Premium:**
+- BMW
+- DS
+- Mercedes
+
+**Mainstream:**
+- Renault
+- Peugeot
+- Toyota
+
+**Electric:**
+- Tesla
+
+**Fleet Overview:**
+- Miles of Smiles manages a fleet of 1,000 vehicles
+- 10% of the fleet is fully electric (100 vehicles)
+- The company operates across 40 countries in Europe, the Americas, and Asia
+
+**Important Usage Terms:**
+- All cars rented must not be used for illegal purposes or criminal offenses
+- Cars cannot be used for teaching someone to drive
+- No racing, rallies, or contests are permitted
+- Vehicles cannot be used while under the influence of alcohol or drugs
+
+If you'd like to book a vehicle, I'll need your booking number and customer name/surname to assist you further.
+----
+
+// Always keep a what's next? section to let the user know what could be achieved next
+== What's next?
+
+This is just a simple demo of what can be achieved by combining LangChain4j and Jakarta EE. Check the LangChain4j documentation for more advanced use cases and features, such as:
+
+* Using streaming responses to provide a better experience to the users
+* Use a different embedding store to be able to manage larger document collections and have a more scalable RAG system
+* Use a separate chat memory for each user and a persistent chat memory store to offload the chat memory to an external cache or database
+
+// Always add this section last to link to any relevant content
+[[references]]
+== References
+
+* https://docs.langchain4j.dev/intro[LangChain4j documentation, window=_blank]
+* https://github.com/langchain4j/langchain4j-cdi[LangChain4j CDI Integration, window=_blank]
+
+
+
+
