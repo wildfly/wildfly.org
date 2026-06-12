@@ -159,10 +159,7 @@ You can also use the WildFly EE 10 channel to resolve the feature-pack version. 
 </plugin>
 ----
 
-[IMPORTANT]
----
-The order of the <feature-pack> elements is significant: the `org.wildfly:wildfly-ee-10-feature-pack` feature-pack must be listed **before** the `org.wildfly:wildfly-galleon-pack` feature-pack.
----
+IMPORTANT: The order of the <feature-pack> elements is significant: the `org.wildfly:wildfly-ee-10-feature-pack` feature-pack must be listed **before** the `org.wildfly:wildfly-galleon-pack` feature-pack.
 
 == Using the EE 10 BOMs
 
