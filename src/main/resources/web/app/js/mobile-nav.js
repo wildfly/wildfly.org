@@ -33,9 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('scroll', () => {
     if (window.innerWidth <= 1024) {
+      const menuOpen = navToggle?.classList.contains('active');
       const scrollTop = window.scrollY;
 
-      if (scrollTop > lastScrollTop + scrollThreshold && scrollTop > 100) {
+      if (!menuOpen && scrollTop > lastScrollTop + scrollThreshold && scrollTop > 100) {
         document.querySelector('.navigation')?.classList.add('nav-hidden');
       } else if (scrollTop < lastScrollTop - scrollThreshold) {
         document.querySelector('.navigation')?.classList.remove('nav-hidden');
