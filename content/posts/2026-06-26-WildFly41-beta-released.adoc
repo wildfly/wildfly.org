@@ -10,7 +10,7 @@ description: WildFly 41 Beta is now available for download.
 
 I am pleased to announce that the WildFly 41 Beta release is now available and ready for download.
 
-We normally have a three month interval between our Beta release but due to the delays releasing
+We normally have a three month interval between our Beta releases but due to the delays releasing
 WildFly 40 Beta this time we had less than two months. I am pleased to confirm we have the following
 features and promotions in this release:
 
