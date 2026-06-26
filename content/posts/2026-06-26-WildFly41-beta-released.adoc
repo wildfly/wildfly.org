@@ -1,0 +1,52 @@
+---
+layout: post
+title:  "New WildFly 41 Beta release"
+aliases: [/news/2026/06/26/WildFly41Beta-released/]
+date:   2026-06-26
+tags:   announcement release
+author: darranl
+description: WildFly 41 Beta is now available for download.
+---
+
+I am pleased to announce that the WildFly 41 Beta release is now available and ready for download.
+
+We normally have a three month interval between our Beta releases but due to the delays releasing
+WildFly 40 Beta this time we had less than two months. I am pleased to confirm we have the following
+features and promotions in this release:
+
+
+https://redhat.atlassian.net/browse/WFLY-17742[WFLY-17742] [Default] Support Transactions during WildFly’s graceful shutdown
+
+https://redhat.atlassian.net/browse/WFLY-19496[WFLY-19496] [Community] Promote OIDC scope attribute from Preview to community stability level
+
+https://redhat.atlassian.net/browse/WFLY-20037[WFLY-20037] [Community] Promote ability to specify that the OIDC Authentication Request should include request and request_uri parameters to community stability level
+
+https://redhat.atlassian.net/browse/WFLY-20810[WFLY-20810] WildFly Maven Plugin, bootable JAR packaging for the cloud
+
+https://redhat.atlassian.net/browse/WFLY-21473[WFLY-21473] [Default] Promote "TLS support to JGroups TCP transport"
+
+https://redhat.atlassian.net/browse/WFLY-21989[WFLY-21989] [DEFAULT] Promote OIDC Logout to default stability
+
+
+These features are a small representation of the changes, many more changes made to WildFly. Preparing
+the release notes GitHub tells me 28 people contributed to this release and that does not include all
+of the people working on the components that make WildFly possible so we thank everyone for your contributions.
+
+I would also like to thank the following first time contributors this release:
+
+* https://github.com/aidentZhang[@aidentZhang] made their first contribution in https://github.com/wildfly/wildfly/pull/20107[#20107]
+* https://github.com/christosderetzis[@christosderetzis] made their first contribution in https://github.com/wildfly/wildfly/pull/20096[#20096]
+* https://github.com/xfocus3[@xfocus3] made their first contribution in https://github.com/wildfly/wildfly/pull/20158[#20158]
+* https://github.com/NiasSt90[@NiasSt90] made their first contribution in https://github.com/wildfly/wildfly/pull/20130[#20130]
+
+We encourage you to explore the full list of changes in the official  link:https://github.com/wildfly/wildfly/releases/tag/41.0.0.Beta1[release notes].
+
+== How to Get Involved
+
+This is a *beta release*, so we don't recommend it for production environments. Your feedback is crucial to help us identify and fix issues before the final release.
+
+* **Download WildFly 41 Beta 1** from link:https://wildfly.org/downloads[https://wildfly.org/downloads] or provision a WildFly 41 Beta 1 server using a tool like the link:https://docs.wildfly.org/wildfly-maven-plugin/[wildfly-maven-plugin]
+* **Report a bug** or enhancement request on our link:https://issues.redhat.com/browse/WFLY[issue tracker]
+* **Ask a question** link:https://groups.google.com/forum/#!forum/wildfly[Google Group] or reach us on link:https://wildfly.zulipchat.com/[Zulip].
+
+We look forward to hearing your feedback and working together to complete WildFly 41 Final.
