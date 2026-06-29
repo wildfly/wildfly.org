@@ -15,6 +15,7 @@ $content-width: 1000px;
   backdrop-filter: blur(8px);
   border-bottom: 1px solid $border-light;
   transition: transform 0.3s ease, background-color 0.2s ease;
+  overflow: hidden;
 
   // Auto-hide on mobile when scrolling down
   &.nav-hidden {
@@ -101,6 +102,7 @@ nav ul.nav-list {
 }
 @media only screen and (max-width: $nav-breakpoint) {
   .navigation {
+    overflow: visible;
     padding-top: 1rem;
     padding-right: 2rem;
   }
@@ -119,14 +121,14 @@ nav ul.nav-list {
     padding-top: 0;
     .nav-list {
       background-color: var(--wildfly-yellow);
-      position: relative;
-      left: 100px;
-      top: -80px;
+      position: absolute;
+      right: 0;
+      top: 0;
       padding: 3rem 1rem 1rem 1rem;
       border-top-right-radius: 30px;
       border-bottom-left-radius: 30px;
       @media screen and (max-width: 468px) {
-        left: 50px;
+        right: 0;
       }
       .button-cta.secondary {
         display: none;
