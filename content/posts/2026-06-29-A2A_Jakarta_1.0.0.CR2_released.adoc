@@ -1,0 +1,35 @@
+---
+layout: post
+title:  "A2A Jakarta 1.0.0.CR2 is released!"
+date:   2026-06-29
+tags:   announcement release generative-ai a2a agent wildfly
+author: kkhan
+description: A2A Jakarta 1.0.0.CR2 is released.
+---
+
+I am happy to announce the https://github.com/wildfly-extras/a2a-jakarta/releases/tag/v1.0.0.CR2[1.0.0.CR2 release] of https://github.com/wildfly-extras/a2a-jakarta[A2A Jakarta].
+
+This release upgrades to https://github.com/a2aproject/a2a-java/releases/tag/v1.1.0.Final[a2a-java 1.1.0.Final] and includes several improvements of its own.
+
+== a2a-java 1.1.0.Final
+
+The headline feature of a2a-java 1.1.0.Final is a new **Task Authorization SPI** (`TaskAuthorizationProvider`) that enables per-user task authorization — particularly useful for multi-tenant deployments. It also includes several bug fixes such as disabling HTML escaping in protobuf JSON serialization, CDI request context handling improvements, and more. See the https://a2aproject.github.io/a2a-java/posts/a2a-java-sdk-1-1-0-final-released/[a2a-java 1.1.0.Final release announcement] for full details.
+
+== Task Authorization Tests
+
+Building on the new Task Authorization SPI from a2a-java, this release adds comprehensive authorization integration tests across all transports (JSON-RPC, REST, and gRPC), including v0.3 compatibility and multiversion variants.
+
+== Simplified Multiversion Routing
+
+The multiversion routing architecture has been significantly simplified. Six `-web` and `multiversion-` modules have been replaced with `@PreMatching` filters in `http-common` that discover `A2AVersionProvider` beans via CDI and rewrite request URIs to version-prefixed internal paths. This makes the module structure cleaner and reduces the number of dependencies needed for multiversion deployments.
+
+== Hardened HTTP Common Module
+
+The `http-common` module has been hardened with RFC 8259-compliant JSON escaping for control characters, improved charset handling and exception chaining, deterministic version ordering, and unit tests for all filters and version resolution.
+
+== ITK Module
+
+A new ITK (Interoperability Test Kit) module has been added for cross-SDK interoperability testing, helping to ensure that A2A Jakarta works correctly with other A2A implementations.
+
+== Get Involved
+If you have any issues with the project, please open an https://github.com/wildfly-extras/a2a-jakarta/issues[issue]. Also, https://github.com/wildfly-extras/a2a-jakarta/pulls[pull requests] are welcome!
