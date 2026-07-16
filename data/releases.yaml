@@ -73,7 +73,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://github.com/wildfly/wildfly/releases/tag/41.0.0.Final
+          url: https://wildfly.org/news/2026/07/16/WildFly41Released/
 - version: 41.0.0.Beta1
   version_shortname: 41 Beta1
   date: 2026-06-26
