@@ -17,7 +17,7 @@ The [Roq the basics](https://iamroq.com/docs/basics/) Roq documentation page nic
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/wildfly/wildfly.org/blob/master/contribute.md) for details on how to build the site and contribute changes.
+Please read [CONTRIBUTING.md](https://github.com/wildfly/wildfly.org/blob/main/CONTRIBUTING.md) for details on how to build the site and contribute changes.
 
 ## License
 
