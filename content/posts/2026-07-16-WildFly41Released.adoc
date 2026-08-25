@@ -95,14 +95,14 @@ Evidence demonstrating our compatibility is available in the link:https://github
 |=======================================================================
 |Specification |Compatibility Evidence
 .2+.<| EE 10 Full Platform
-| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_41.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
-| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_41.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_41.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_41.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
 .2+.<|  EE 10 Web Profile
-| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_41.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
-| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_41.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_41.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_41.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
 .2+.<| EE 10 Core Profile
-| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_41.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
-| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_41.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_41.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE10/WildFly_EE_10_41.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
 |=======================================================================
 
 
