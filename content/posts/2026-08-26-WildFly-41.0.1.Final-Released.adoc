@@ -1,0 +1,22 @@
+---
+layout: post
+title: "WildFly 41.0.1 is released!"
+aliases: [/news/2026/08/26/WildFly4101Released]
+date: 2026-08-26
+tags: announcement release
+synopsis: WildFly 41.0.1.Final is now available for download.
+author: darranl
+---
+
+WildFly 41.0.1.Final is now available link:https://wildfly.org/downloads[for download].
+
+The full release notes are link:https://github.com/wildfly/wildfly/releases/tag/41.0.1.Final[available in GitHub, window=_blank].
+
+A number of the fixes and component upgrades in this release were to address vulnerabilities so we would also like to draw the following to your attention to the following changes:
+
+* https://redhat.atlassian.net/browse/WFCORE-7670[WFCORE-7670] -- We have added a significant deny-list to our OOTB JEPS 290 global filter (i.e. set at boot via -Djdk.serialFilter.). The filter setting can be seen in the bin/jdk.serialFilter file. If your application needs to deserialize types denied by this filter you may need to ????. Typical deserialization use cases include handling remote EJB invocations, reading JMS ObjectMessages and serializing and deserializing session content for passivation to disk or a remote Infinispan cluster or for replication using Infinispan.
+* This release also includes an updated version of Apache CXF which supports blocking decoupled WS-Addressing destinations as a mitigation to reduce the server side request forgery (SSRF) risk, to preserve backwards compatibility this is disabled by default but the blocking can be enabled by setting the system property `org.jboss.ws.cxf.decoupledEndpointEnabled=false`.
+
+Provide any feedback in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://issues.redhat.com/projects/WFLY/summary[JIRA, window=_blank].
+
+Enjoy!
