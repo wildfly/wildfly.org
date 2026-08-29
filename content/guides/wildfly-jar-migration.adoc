@@ -1,0 +1,673 @@
+---
+layout: guide
+---
+= Migrating from WildFly JAR Maven Plugin to WildFly Maven Plugin
+:summary: Learn how to migrate from WildFly JAR Maven Plugin to WildFly Maven Plugin to build a WildFly Bootable JAR.
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
+:prerequisites-time: 10
+:wildfly-version: 40.0.0.Final
+:cloud-version: 9.2.3.Final
+:bootable-maven-plugin-version: 13.0.0.Final
+:wildfly-maven-plugin-version: 6.0.0.Final
+
+In this guide, you will learn how to migrate from WildFly JAR Maven Plugin to WildFly Maven Plugin to build a WildFly Bootable JAR.
+
+include::../../templates/partials/guides/prerequisites.adoc[]
+
+== Background
+
+The WildFly JAR Maven Plugin was originally introduced to create bootable JARs (self-contained executable JARs containing WildFly and your application). 
+Starting with version 5.0, the *WildFly Maven Plugin* consolidated this functionality, making the separate JAR plugin unnecessary.
+
+=== Why Migrate?
+
+* *Single Plugin*: Consolidates provisioning, deployment, and bootable JAR creation into one plugin
+* *Active Development*: The WildFly Maven Plugin is the actively maintained solution
+* *Future Features*: New features and improvements are being added to the WildFly Maven Plugin
+* *Deprecation*: The WildFly JAR Maven Plugin is deprecated and may be removed in future releases
+
+== Plugin Differences: WildFly JAR Maven Plugin vs WildFly Maven Plugin
+
+[cols="1,2,2",options="header"]
+|===
+|Aspect |WildFly JAR Maven Plugin |WildFly Maven Plugin
+
+|*Artifact ID*
+|`wildfly-jar-maven-plugin`
+|`wildfly-maven-plugin`
+
+|*Goals*
+|`wildfly-jar:package`, `wildfly-jar:start`
+|`wildfly:package`, `wildfly:start-jar`
+
+|*Enable Bootable JAR*
+|Implicit (plugin purpose)
+|`<bootable-jar>true</bootable-jar>`
+
+|*Single feature-pack location*
+|`<feature-pack-location>{feature-pack location}</feature-pack-location>`
+|`<feature-packs><feature-pack><location>{feature-pack location}</location></feature-pack></feature-packs>`
+
+|*Cloud Support*
+|`<cloud/>` element
+|`wildfly-cloud-galleon-pack` feature-pack
+
+|*Hollow JAR*
+|`<hollow-jar>true</hollow-jar>`
+|`<skip-deployment>true</skip-deployment>`
+
+|*Output JAR Name*
+|`<output-file-name>`
+|`<bootable-jar-name>`
+
+|*Deployment in the root context*
+|`<context-root>true</context-root>` (the default)
+|`<name>ROOT.war</name>`
+
+|*CLI Scripts*
+|`<cli-sessions>`
+|`<packaging-scripts>`
+
+|*Galleon Options*
+|`<plugin-options>`
+|`<galleon-options>`
+
+|*Offline Mode*
+|`<offline>`
+|`<offline-provisioning>`
+
+|*Log Time*
+|`<log-time>`
+|`<log-provisioning-time>`
+
+|*Record State*
+|`<record-state>`
+|`<record-provisioning-state>`
+
+|*Extra Content*
+|`<extra-server-content-dirs>`
+|`<extra-server-content-dirs>` (same)
+|===
+
+== Migration Steps
+
+=== Step 1: Update Plugin Coordinates
+
+*Before* (WildFly JAR Maven Plugin):
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>{bootable-maven-plugin-version}</version>
+    <configuration>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+*After* (WildFly Maven Plugin):
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>{wildfly-maven-plugin-version}</version>
+    <configuration>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+=== Step 2: Enable Bootable JAR Mode
+
+Add `<bootable-jar>true</bootable-jar>` to enable bootable JAR packaging.
+
+*Before*:
+[source,xml,subs="normal"]
+----
+<configuration>
+    <feature-pack-location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</feature-pack-location>
+    <layers>
+        <layer>jaxrs-server</layer>
+        <layer>microprofile-platform</layer>
+    </layers>
+    <plugin-options>
+        <jboss-fork-embedded>true</jboss-fork-embedded>
+    </plugin-options>
+</configuration>
+----
+
+*After*:
+[source,xml,subs="normal"]
+----
+<configuration>
+    <bootable-jar>true</bootable-jar>
+    <feature-packs>
+        <feature-pack>
+            <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+        </feature-pack>
+    </feature-packs>
+    <layers>
+        <layer>jaxrs-server</layer>
+        <layer>microprofile-platform</layer>
+    </layers>
+    <galleon-options>
+        <jboss-fork-embedded>true</jboss-fork-embedded>
+    </galleon-options>
+</configuration>
+----
+
+NOTE: The `<feature-pack-location>` element as to be replaced by a nested location in the array of feature-packs.
+
+=== Step 3: Migrate the deployment in the root context
+
+This was the default with WildFly JAR Maven Plugin.
+
+*Before*:
+[source,xml,subs="normal"]
+----
+<configuration>
+    <feature-packs>
+        <feature-pack>
+            <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+        </feature-pack>
+    </feature-packs>
+    <layers>
+        <layer>jaxrs-server</layer>
+        <layer>microprofile-platform</layer>
+    </layers>
+    <plugin-options>
+        <jboss-fork-embedded>true</jboss-fork-embedded>
+    </plugin-options>
+</configuration>
+----
+
+*After*:
+[source,xml,subs="normal"]
+----
+<configuration>
+    <bootable-jar>true</bootable-jar>
+    <feature-packs>
+        <feature-pack>
+            <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+        </feature-pack>
+    </feature-packs>
+    <layers>
+        <layer>jaxrs-server</layer>
+        <layer>microprofile-platform</layer>
+    </layers>
+    <galleon-options>
+        <jboss-fork-embedded>true</jboss-fork-embedded>
+    </galleon-options>
+    <name>ROOT.war</name>
+</configuration>
+----
+
+=== Step 4: Migrate Cloud Configuration (If Used)
+
+If you use the `<cloud/>` element, replace it with the WildFly cloud feature-pack:
+
+*Remove*:
+[source,xml]
+----
+<cloud/>
+----
+
+*Add to feature-packs*:
+[source,xml,subs="normal"]
+----
+<feature-pack>
+    <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{cloud-version}</location>
+</feature-pack>
+----
+
+==== What the Cloud Feature Pack Provides
+
+Using the cloud feature-pack is identical to the `<cloud/>` element usage.
+When building a WildFly bootable JAR with the `wildfly-cloud-galleon-pack`, the following capabilities are provisioned:
+
+. *Health Monitoring*: Automatic inclusion of the health subsystem, enabling liveness and readiness probes for container orchestration platforms (Kubernetes, OpenShift)
+. *Console Logging*: Server logs are automatically routed to the console for easier monitoring in containerized environments
+. *Cloud-Optimized Layer Adjustments*: Automatic modification of WildFly Galleon layers to ensure compatibility with cloud execution environments
+. *Boot-Time Cloud Configuration*: Special cloud-specific configuration applied at boot time to optimize for cloud deployment
+
+For more details, see the https://docs.wildfly.org/wildfly-cloud-galleon-pack/[WildFly Cloud Feature Pack documentation].
+
+=== Step 5: Rename CLI scripts configuration (If used)
+
+The CLI execution configuration has more extensive renaming:
+
+*WildFly JAR Maven Plugin*:
+[source,xml]
+----
+<cli-sessions>
+    <cli-session>
+        <script-files>
+            <script>configure.cli</script>
+        </script-files>
+    </cli-session>
+</cli-sessions>
+----
+
+*WildFly Maven Plugin*:
+[source,xml]
+----
+<packaging-scripts>
+    <packaging-script>
+        <scripts>
+            <script>configure.cli</script>
+        </scripts>
+    </packaging-script>
+</packaging-scripts>
+----
+
+Element name changes:
+
+* `<cli-sessions>` → `<packaging-scripts>`
+* `<cli-session>` → `<packaging-script>`
+* `<script-files>` → `<scripts>`
+
+=== Step 6: Rename Other Parameters (If Used)
+
+If you use any of these optional parameters, rename them:
+
+[cols="1,1",options="header"]
+|===
+|Old Parameter |New Parameter
+
+|`<output-file-name>`
+|`<bootable-jar-name>`
+
+|`<offline>`
+|`<offline-provisioning>`
+
+|`<log-time>`
+|`<log-provisioning-time>`
+
+|`<record-state>`
+|`<record-provisioning-state>`
+
+|`<hollow-jar>`
+|`<skip-deployment>`
+|===
+
+NOTE: The default value for the Bootable JAR file name changed from `${project.build.finalName}-bootable.jar` 
+to `${project.artifactId}-bootable.jar`. If you need to keep the old naming convention:
+
+[source,xml]
+----
+<configuration>
+    <bootable-jar-name>${project.build.finalName}-bootable.jar</bootable-jar-name>
+</configuration>
+----
+
+=== Step 7: Update Maven Goals
+
+The goal prefix changed from `wildfly-jar` to `wildfly`.
+To start a bootable JAR uses the `wildfly:start-jar` goal.
+Update your build commands to use the new goal prefixes.
+
+*Before*:
+[source,bash]
+----
+mvn wildfly-jar:package
+mvn wildfly-jar:run
+mvn wildfly-jar:dev
+mvn wildfly-jar:start
+mvn wildfly-jar:shutdown
+----
+
+*After*:
+[source,bash]
+----
+mvn wildfly:package
+mvn wildfly:run
+mvn wildfly:dev
+mvn wildfly:start-jar
+mvn wildfly:shutdown
+----
+
+== Complete Examples
+
+=== Example 1: Simple JAX-RS Application
+
+*Before* (wildfly-jar-maven-plugin):
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>{bootable-maven-plugin-version}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+*After* (wildfly-maven-plugin):
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>{wildfly-maven-plugin-version}</version>
+    <configuration>
+        <bootable-jar>true</bootable-jar>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+=== Example 2: Hollow JAR (Server Only, No Deployment)
+
+*Before*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>{bootable-maven-plugin-version}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+        <hollow-jar>true</hollow-jar>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+*After*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>{wildfly-maven-plugin-version}</version>
+    <configuration>
+        <bootable-jar>true</bootable-jar>
+        <skip-deployment>true</skip-deployment>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+=== Example 3: Custom Bootable JAR Output Name and root context
+
+*Before*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>{bootable-maven-plugin-version}</version>
+    <configuration>
+        <output-file-name>my-custom-server.jar</output-file-name>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+*After*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>{wildfly-maven-plugin-version}</version>
+    <configuration>
+        <bootable-jar>true</bootable-jar>
+        <bootable-jar-name>my-custom-server.jar</bootable-jar-name>
+        <name>ROOT.war</name>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+=== Example 4: Cloud Migration Example
+
+This example shows a migration with cloud support:
+
+*Before*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>{bootable-maven-plugin-version}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+        <cloud/>
+        <plugin-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </plugin-options>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+*After*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>{wildfly-maven-plugin-version}</version>
+    <configuration>
+        <bootable-jar>true</bootable-jar>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+            <feature-pack>
+                <location>org.wildfly.cloud:wildfly-cloud-galleon-pack:{cloud-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+        </layers>
+        <galleon-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </galleon-options>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+=== Example 5: Application with CLI Configuration
+
+*Before*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>{bootable-maven-plugin-version}</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+            <layer>microprofile-platform</layer>
+        </layers>
+        <cli-sessions>
+            <cli-session>
+                <script-files>
+                    <script>configure.cli</script>
+                </script-files>
+            </cli-session>
+        </cli-sessions>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+*After*:
+[source,xml,subs="normal"]
+----
+<plugin>
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-maven-plugin</artifactId>
+    <version>{wildfly-maven-plugin-version}</version>
+    <configuration>
+        <bootable-jar>true</bootable-jar>
+        <feature-packs>
+            <feature-pack>
+                <location>org.wildfly:wildfly-galleon-pack:{wildfly-version}</location>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <layer>jaxrs-server</layer>
+            <layer>microprofile-platform</layer>
+        </layers>
+        <packaging-scripts>
+            <packaging-script>
+                <scripts>
+                    <script>configure.cli</script>
+                </scripts>
+            </packaging-script>
+        </packaging-scripts>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+----
+
+== What's next?
+
+To benefit from new provisioning features, you should migrate to the WildFly Maven Plugin. 
+For example, producing a Bootable JAR using https://docs.wildfly.org/wildfly-glow/[WildFly Glow] is only available in the WildFly Maven Plugin.
+
+== Resources
+
+* https://docs.wildfly.org/wildfly-maven-plugin/[WildFly Maven Plugin Documentation]
+* https://docs.wildfly.org/bootablejar/[WildFly Bootable JAR Guide]
+* https://docs.wildfly.org/wildfly-cloud-galleon-pack/[WildFly Cloud Feature Pack Documentation]
