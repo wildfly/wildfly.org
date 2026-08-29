@@ -273,3 +273,8 @@
   name: "Lin Gao"
   location: "Beijing"
   occupation: "Senior Software Engineer"
+- id: "feme"
+  name: "Ohifeme Unuigboje"
+  location: "Lowell, Ma"
+  bio: "Software Engineer intern"
+  avatar: "feme.jpg"
