@@ -8,3 +8,6 @@ forum_url: "https://groups.google.com/forum/#!forum/wildfly"
 # is released, but we still want to advertise the newest minor or major.
 current_release_index: 0
 show_teaser: false
+latest_feature_release: 41
+next_feature_release: 42
+next_feature_release_date: October 2026
