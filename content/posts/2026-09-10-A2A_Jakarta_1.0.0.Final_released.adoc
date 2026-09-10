@@ -1,0 +1,37 @@
+---
+layout: post
+title:  "A2A Jakarta 1.0.0.Final is released!"
+date:   2026-09-10
+tags:   announcement release generative-ai a2a agent wildfly
+author: kkhan
+description: A2A Jakarta 1.0.0.Final is released.
+---
+
+I am pleased to announce the https://github.com/wildfly-extras/a2a-jakarta/releases/tag/v1.0.0.Final[1.0.0.Final release] of https://github.com/wildfly-extras/a2a-jakarta[A2A Jakarta], the Jakarta integration for the https://github.com/a2aproject/a2a-java[A2A Java SDK].
+
+A2A Jakarta supports version https://a2a-protocol.org/latest/specification/[1.0 of the A2A Protocol Specification] and provides Jakarta integrations for the JSON-RPC, gRPC, and HTTP+JSON/REST transports. It also includes a compatibility layer for version 0.3 of the protocol, allowing v0.3 and v1.0 clients to be served by the same deployment.
+
+== Aligned with a2a-java 1.3.2.Final
+
+This release is built on https://github.com/a2aproject/a2a-java/releases/tag/1.3.2.Final[a2a-java 1.3.2.Final]. Since the previous A2A Jakarta release, the a2a-java SDK has introduced:
+
+* **Multi-tenancy support**, allowing an agent to provide different `AgentCard` and `AgentExecutor` implementations for different tenants.
+* An authorization model that **fails closed by default**, together with additional security hardening such as authorization checks when accessing referenced tasks.
+* **Stream lifecycle management** and deeper immutability for protocol types.
+* Several **protocol-compliance and transport fixes**.
+
+See the https://a2aproject.github.io/a2a-java/posts/a2a-java-sdk-1-3-0-final-released/[a2a-java 1.3.0.Final announcement] and the https://a2aproject.github.io/a2a-java/posts/a2a-java-sdk-1-2-0-final-released/[1.2.0.Final announcement] for more details on the upstream changes.
+
+A2A Jakarta exposes the multi-tenancy support across all three transports, with integration tests for JSON-RPC, REST, and gRPC. The release also includes fixes for streamed events, REST interoperability, and the handling of internal error messages.
+
+== Enterprise example
+
+The new https://github.com/wildfly-extras/a2a-jakarta/tree/v1.0.0.Final/examples/enterprise[enterprise example] demonstrates how to run an A2A agent across two WildFly nodes. It uses JPA-backed task and push-notification stores together with a Kafka-backed replicated queue manager, showing how task state and live events can be shared between nodes in a load-balanced deployment. The stores and queue manager are provided by a2a-java.
+
+The release has been tested with https://www.wildfly.org/news/2026/08/27/WildFly-41.0.1.Final-is-released/[WildFly 41.0.1.Final].
+
+== Looking ahead
+
+A2A Jakarta is intended to make the A2A Java SDK available to applications running on Jakarta-compatible servers, including WildFly, Tomcat, Jetty, and Open Liberty. For WildFly users, we are working towards a `wildfly-a2a-feature-pack` that will package the A2A Jakarta integration, the a2a-java SDK, and their runtime dependencies in a more convenient form. We will share more details when that work is ready.
+
+For more information, see the https://github.com/wildfly-extras/a2a-jakarta[project repository] and its https://github.com/wildfly-extras/a2a-jakarta/blob/v1.0.0.Final/README.md[README]. If you have any issues with the project, please open an https://github.com/wildfly-extras/a2a-jakarta/issues[issue]. Pull requests are welcome!
