@@ -74,7 +74,7 @@ This command installs the jaxrs and cdi layers of the latest released version
 of WildFly (wildfly:current argument) into the my-wildfly-server directory specified
 in the --dir argument. The my-wildfly-server directory will contain only the artifacts needed to run your application.
 
-Here’s a  list of commonly used layers. You can find a complete list of wildfly
+Here’s a  list of commonly used layers. You can find a complete list of WildFly
 layers in the link:http://docs.wildfly.org/16/Admin_Guide.html#defined-galleon-layers[WildFly Admin Guide]
 
 * __web-server__: Servlet container
@@ -292,7 +292,7 @@ overall technique may change in the future.
 Galleon has a concept called the *feature-pack*. The WildFly feature-pack is retrieved
 when installation occurs. A feature-pack (a zip file) contains features, configurations,
 layers, and content such as modules and scripts. Features are used to assemble a WildFly
-configuration. We have been using the Galleon FeaturePack Creator API to build a
+configuration. We have been using the Galleon Feature-Pack Creator API to build a
 link:https://github.com/jfdenise/galleon-openshift/tree/master/PostGreDriver[PostgreSQL
 feature-pack] that extends the standalone.xml configuration with a driver and contains the
 postgresql driver jar file packaged as a JBoss Module module.

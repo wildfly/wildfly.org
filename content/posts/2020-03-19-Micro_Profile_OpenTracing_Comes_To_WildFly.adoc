@@ -93,8 +93,8 @@ This application is a simple JAXRS endpoint producing XML or JSON and failing ra
 git clone git@github.com:ehsavoie/opentracing-demo.git
 cd opentracing-demo
 mvn clean install
-cp target/opentracing-demo.war $WILDFLY_HOME/standalone/deployments
-$WILDFLY_HOME/bin/standalone.sh
+cp target/opentracing-demo.war $JBOSS_HOME/standalone/deployments
+$JBOSS_HOME/bin/standalone.sh
 --
 
 Now, you can navigate to link:http://localhost:8080/opentracing-demo[http://localhost:8080/opentracing-demo] to access the deployed application. Generate a few traces by clicking on the links several times. _Note that in order to demonstrate error traces the application deliberately throws exceptions randomly, so don't be surprised if some requests fail._

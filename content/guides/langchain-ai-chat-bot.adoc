@@ -463,9 +463,9 @@ In order to invoke the Chatbot, we only need to use the `aiService.chat()` metho
 
 === Configure and Run the Application
 
-This demo uses MicroProfile Config to configure the AI services. An alternative method is to use the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank]. In that case, the configuration can be done directly in the server management model and stored in the `standalone.xml` configuration file.
+This demo uses MicroProfile Config to configure the AI services. An alternative method is to use the https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature-pack, window=_blank]. In that case, the configuration can be done directly in the server management model and stored in the `standalone.xml` configuration file.
 
-Using MicroProfile Config, you will get per-application configuration on the server, whereas by using https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature pack, window=_blank] you will get a global configuration integrated in the server management model.
+Using MicroProfile Config, you will get per-application configuration on the server, whereas by using https://github.com/wildfly-extras/wildfly-ai-feature-pack[WildFly AI feature-pack, window=_blank] you will get a global configuration integrated in the server management model.
 
 Create the `src/main/resources/META-INF/microprofile-config.properties` file with the following content:
 

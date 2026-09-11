@@ -18,7 +18,7 @@ It does not aim to run the full testsuite from https://github.com/wildfly/wildfl
 * being able to connect to Kafka provided by the https://strimzi.io[Strimzi] operator
 * that we are able to execute CLI command and REST calls on a server running on a pod
 
-It is still a proof of concept, but is something we're actively working on, so expect to see this grow and evolve as we identify more things we want to test. Once things are more settled we will move it over to the main wildfly organisation in GitHub.
+It is still a proof of concept, but is something we're actively working on, so expect to see this grow and evolve as we identify more things we want to test. Once things are more settled we will move it over to the main WildFly organisation in GitHub.
 
 On the Java side, we are currently using https://dekorate.io[Dekorate] as our underlying framework, but are evaluating other alternatives. There are helpers to be able to connect to the correct pods running the application from the tests. More could be done to make the experience smoother. This will be done once we decide which framework to invest in. Also, it is quite flexible when it comes to the underlying framework, so we will be able to switch tests to something else in steps - it does not all need to be done in one go.
 
