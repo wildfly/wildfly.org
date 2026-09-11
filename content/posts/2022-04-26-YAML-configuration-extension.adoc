@@ -26,9 +26,9 @@ You need to create the following file: *META-INF/services/org.jboss.as.controlle
 
 [source,options="nowrap"]
 ----
-mkdir -p $WILDFLY_HOME/modules/system/layers/base/org/jboss/as/controller/main/dir/META-INF/services/
+mkdir -p $JBOSS_HOME/modules/system/layers/base/org/jboss/as/controller/main/dir/META-INF/services/
 
-echo 'org.jboss.as.controller.persistence.yaml.YamlConfigurationExtension' > $WILDFLY_HOME/modules/system/layers/base/org/jboss/as/controller/main/dir/META-INF/services/org.jboss.as.controller.persistence.ConfigurationExtension
+echo 'org.jboss.as.controller.persistence.yaml.YamlConfigurationExtension' > $JBOSS_HOME/modules/system/layers/base/org/jboss/as/controller/main/dir/META-INF/services/org.jboss.as.controller.persistence.ConfigurationExtension
 ----
 
 == Writting the YAML ==

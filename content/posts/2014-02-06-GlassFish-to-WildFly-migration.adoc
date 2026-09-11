@@ -23,11 +23,11 @@ You will notice in the coming sections that server configuration is definitely n
 
 ## Installing WildFly 8
 
-The installation is very straightforward. Download the latest installation package from [http://www.wildfly.org/downloads/](http://www.wildfly.org/downloads/) and unzip it in a place you can easily remember. We will leave it to your decision about the best location to install it because it depends on the operating system, the server configuration and personal preferences. We refer to the location you chose to unzip WildFly as `WILDFLY_HOME`.
+The installation is very straightforward. Download the latest installation package from [http://www.wildfly.org/downloads/](http://www.wildfly.org/downloads/) and unzip it in a place you can easily remember. We will leave it to your decision about the best location to install it because it depends on the operating system, the server configuration and personal preferences. We refer to the location you chose to unzip WildFly as `JBOSS_HOME`.
 
 WildFly requires JDK 7 or higher. Before starting WildFly, make sure either the variable `JAVA_HOME` is pointing to a certified JDK 7 installation or `bin` directory of JDK is in the system path.
 
-Go to the folder `WILDFLY_HOME/bin` and execute the command to start WildFly in standalone mode:
+Go to the folder `JBOSS_HOME/bin` and execute the command to start WildFly in standalone mode:
 
     #> ./standalone.sh (Linux)
     #> standalone.bat (Windows)
@@ -42,18 +42,18 @@ Open a web browser and access the url [http://localhost:8080](http://localhost:8
 
 From this point on, we are going to configure WildFly to support Java EE applications. Changes in the configuration reflect in one of these files:
 
-- `WILDFLY_HOME/domain/configuration/domain.xml`: when you have a clustered environment, which usually happens in production, where there is a domain controller and at least two synchronised server instances. This configuration is taken into account when the command `WILDFLY_HOME/bin/domain.sh(.bat)` is executed to start WildFly. In addition, the file `host.xml`, located in the same folder, is used to configure each host that joins the domain.
-- `WILDFLY_HOME/standalone/configuration/standalone.xml`: when you have a single WildFly instance for less demanding applications or for the development environment. This configuration is taken into account when the command `WILDFLY_HOME/bin/standalone.sh(.bat)` is executed to start WildFly.
+- `JBOSS_HOME/domain/configuration/domain.xml`: when you have a clustered environment, which usually happens in production, where there is a domain controller and at least two synchronised server instances. This configuration is taken into account when the command `JBOSS_HOME/bin/domain.sh(.bat)` is executed to start WildFly. In addition, the file `host.xml`, located in the same folder, is used to configure each host that joins the domain.
+- `JBOSS_HOME/standalone/configuration/standalone.xml`: when you have a single WildFly instance for less demanding applications or for the development environment. This configuration is taken into account when the command `JBOSS_HOME/bin/standalone.sh(.bat)` is executed to start WildFly.
 
 We refer to those files simply as ``configuration file'' throughout the text. Be careful when changing those files. Things can stop working just because of a simple distraction. It's recommended to use the command line or the admin console to make sure the XML content is correctly defined. Syntax changes from a version to another may happen sometimes, so it's better to delegate changes to a specialised tool.
 
 ### The Admin Console
 
-You can change the configuration through the administration console or the command line. The console is a web application available at [http://localhost:9990](http://localhost:9990). Unlike GlassFish, it is not accessible by default. We have to create a user in the administration realm to be able to operate the admin console. Therefore, there is no risk of forgetting to protect the admin console. To create one, execute the file `WILDFLY_HOME/bin/add-user.sh(.bat)` and follow the instructions, remembering to note the username and password as they will be needed later.
+You can change the configuration through the administration console or the command line. The console is a web application available at [http://localhost:9990](http://localhost:9990). Unlike GlassFish, it is not accessible by default. We have to create a user in the administration realm to be able to operate the admin console. Therefore, there is no risk of forgetting to protect the admin console. To create one, execute the file `JBOSS_HOME/bin/add-user.sh(.bat)` and follow the instructions, remembering to note the username and password as they will be needed later.
 
 ### The Command Line
 
-All admin operations can be also done through the command line. To activate WildFly command line prompt start WildFly, go to the `WILDFLY_HOME/bin` folder and execute the command:
+All admin operations can be also done through the command line. To activate WildFly command line prompt start WildFly, go to the `JBOSS_HOME/bin` folder and execute the command:
 
     #> jboss-cli.sh(.bat) --connect
 
@@ -95,9 +95,9 @@ In the admin console, go to `Runtime > Server > Manage Deployments` and click on
 
 To create a module:
 
-1. Go to `WILDFLY_HOME/modules/system/layers/base/com` and create the folder `mysql/main`;
+1. Go to `JBOSS_HOME/modules/system/layers/base/com` and create the folder `mysql/main`;
 2. Visit the page [http://dev.mysql.com/downloads/connector/j/](http://dev.mysql.com/downloads/connector/j/) and download MySQL's JDBC Driver;
-3. Unzip the downloaded file and copy the file `mysql-connector-java-5.1.23-bin.jar` to the new folder `WILDFLY_HOME/modules/system/layers/base/com/mysql/main`
+3. Unzip the downloaded file and copy the file `mysql-connector-java-5.1.23-bin.jar` to the new folder `JBOSS_HOME/modules/system/layers/base/com/mysql/main`
 4. create the file `module.xml` in the same folder with the following content:
 
 [source,xml]
@@ -325,7 +325,7 @@ The resulting part made by the command in the configuration file are:
       </authentication>
     </security-domain>
 ----
-The role-group mapping you have in the file `WEB-INF/glassfish-web.xml` should be migrated to the file `app.properties`, where `app` is the name of the security domain, as defined above. Save this file in the folder `WILDFLY_HOME/standalone/configuration` or `WILDFLY_HOME/domain/configuration` to be taken into account.
+The role-group mapping you have in the file `WEB-INF/glassfish-web.xml` should be migrated to the file `app.properties`, where `app` is the name of the security domain, as defined above. Save this file in the folder `JBOSS_HOME/standalone/configuration` or `JBOSS_HOME/domain/configuration` to be taken into account.
 
 The following `glassfish-web.xml` content:
 

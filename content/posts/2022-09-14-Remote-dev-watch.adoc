@@ -53,7 +53,7 @@ $ podman run -p 8080:8080 -p 9990:9990 -it remote-microprofile-config:latest
 
 ### Develop and update this application
 
-Now we need to run the `dev-watch` goal and remotely attach to the Wildfly Management API.
+Now we need to run the `dev-watch` goal and remotely attach to the WildFly Management API.
 For this we need to execute the following command line:
 [source,bash]
 ----
@@ -110,7 +110,7 @@ $ oc create route edge management-remote-microprofile-config-bootable --service=
 
 video::41uzSZsj7Og[youtube,width=560,height=315]
 
-Now we need to run the `dev-watch` goal and remotely attach to the Wildfly Management API.
+Now we need to run the `dev-watch` goal and remotely attach to the WildFly Management API.
 For this we need to execute the following command line:
 
 [source,bash]
