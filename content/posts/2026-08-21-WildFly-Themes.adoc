@@ -1,0 +1,59 @@
+---
+layout: post
+title: "Introducing WildFly Themes — Community-Driven Planning for WildFly"
+date: 2026-08-21
+tags: announcement community
+author: hpehl
+description: WildFly adopts a structured, transparent planning process using themes, goals, and tasks tracked on GitHub.
+---
+
+WildFly has always been a community-driven project, with planning discussions happening across mailing lists, community calls, and contributor conversations. As the project grows and evolves, we wanted to complement that with a more structured way to set direction and make it even easier to participate. Today we're introducing https://github.com/wildfly/themes[WildFly Themes,window="_blank"] — a public planning process that makes it easy to see where WildFly is headed and how you can help shape that direction.
+
+== What Are Themes?
+
+WildFly Themes organize our planning into a simple three-level hierarchy:
+
+*Themes* are broad areas of focus — the big-picture directions the community wants to invest in. Think of them as the answer to "what matters most right now?"
+
+*Goals* are concrete, measurable outcomes within a theme. Each goal describes a specific result we want to achieve, not just an activity.
+
+*Tasks* are the individual pieces of work that move a goal forward. Tasks are where the actual implementation happens.
+
+Everything is tracked in the https://github.com/wildfly/themes[wildfly/themes,window="_blank"] repository using GitHub issues and the https://github.com/orgs/wildfly/projects/10[WildFly Themes project board,window="_blank"]. Goals carry the `goal` label, tasks carry the `task` label and are linked as sub-issues of their parent goal. We use quarterly milestones to provide a rough timeline without over-committing to fixed deadlines.
+
+== CY26: Our Current Cycle
+
+The current planning cycle runs from Q2 2026 through Q1 2027. We've defined two themes for this period:
+
+=== Automation & AI
+
+_Supercharge and guide our own WildFly development & management using automation and AI tools._
+
+This theme is about making WildFly easier to develop, not just easier to use. The goal is to define and implement best practices for developing WildFly itself with the help of modern AI tooling. Tasks include identifying the right AI tools and workflows, building a WildFly skills repository, and creating indexed documentation that serves as effective AI context. We're also planning a public presentation of the skills repository so the broader community can benefit.
+
+=== WildFly Next
+
+_Deliver the next major development of WildFly as a community with a clearly communicated common vision to deliver great software._
+
+This theme focuses on where WildFly is heading technically — specifically WildFly 42 and beyond. There are two goals here:
+
+. *Define the high-level roadmap for WildFly 42+* — We've asked component leads to contribute their roadmaps so we can assemble a coherent picture of what's coming. This includes work across subsystems, the management layer, and the developer experience. For example, the next-generation management console (halOP) has published its own detailed roadmap — see the link:/news/2026/08/21/halOP-0-5-0-Released-Next-Gen-WildFly-Management-Console[halOP 0.5.0 release post] for what's new and what's ahead.
+. *Improve the WildFly release and maintenance workflow* — We're investing in release coordination automation to make our release process smoother and more predictable.
+
+== How to Participate
+
+WildFly Themes is designed for community participation. Here's how you can get involved:
+
+* *Browse the board* — The https://github.com/orgs/wildfly/projects/10[project board,window="_blank"] gives you a visual overview of all themes, goals, and tasks with their current status.
+* *Propose work* — The repository includes issue templates for both goals and tasks. If you see an area where WildFly should invest, open an issue.
+* *Pick up a task* — Browse the open tasks and comment on any that interest you. Many tasks don't require deep WildFly internals knowledge.
+* *Join the conversation* — Discuss themes and goals on https://wildfly.zulipchat.com/[WildFly Zulip,window="_blank"] or the https://groups.google.com/g/wildfly[WildFly forum,window="_blank"].
+* *Attend a community meeting* — We hold bi-weekly WildFly Community meetings where themes, goals, and ongoing work are discussed. Check the https://www.wildfly.org/events/[WildFly calendar,window="_blank"] for the next meeting, or subscribe to the https://calendar.google.com/calendar/ical/wildflyorg%40gmail.com/public/basic.ics[calendar feed,window="_blank"].
+
+We believe that transparent planning leads to better software. WildFly Themes is our way of making sure the community has a clear view of where we're going — and a real voice in getting there.
+
+== Links
+
+* https://github.com/wildfly/themes[WildFly Themes repository,window="_blank"]
+* https://github.com/orgs/wildfly/projects/10[WildFly Themes project board,window="_blank"]
+* https://wildfly.zulipchat.com/[WildFly Zulip,window="_blank"]
