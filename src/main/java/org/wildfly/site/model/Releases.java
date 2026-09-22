@@ -41,10 +41,6 @@ public record Releases(List<Release> list) {
         String gpgKey,
         @JsonProperty("link")
         List<Link> links,
-        /**
-         * Optional Java SE compatibility metadata from release data.
-         * Not invented by the POC: when absent in YAML this remains null for maintainer review.
-         */
         @JsonProperty("java_se")
         JavaSe javaSe
     ) {
@@ -68,8 +64,9 @@ public record Releases(List<Release> list) {
     }
 
     /**
-     * Java SE support fields aligned with in-repo release-announcement vocabulary
+     * Optional Java SE support fields aligned with in-repo release-announcement vocabulary
      * (recommended / supported). Values must come from data/releases.yaml — do not fabricate.
+     * When absent in YAML the Release.javaSe component remains null for maintainer review.
      */
     public record JavaSe(
         String recommended,
