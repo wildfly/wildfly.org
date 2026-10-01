@@ -1,0 +1,177 @@
+---
+layout: post
+title:  "Connecting to WildFly in a Container with JConsole or JMC"
+date:   2026-08-13
+tags:   wildfly containers jmx jmc jconsole
+author: feme
+description: How to connect Java Mission Control or JConsole to a WildFly instance running inside a container.
+---
+
+If your application is deployed on WildFly running in a container and you want to use
+https://www.oracle.com/java/technologies/jdk-mission-control.html[Java Mission Control (JMC)]
+or JConsole for JMX-based profiling and monitoring, there are a few things that need to be
+set up correctly. This post walks through each of those steps.
+
+== Why a local JMX connection won't work
+
+When WildFly runs directly on your machine, JMC and JConsole can connect to it automatically
+using a _local_ JMX connection — no hostname, port, or credentials required. This convenience
+relies on being able to read a file owned by the WildFly process to prove locality.
+
+Neither of those assumptions holds when WildFly is running inside a container:
+
+* The JVM in the container is not a local process from the perspective of the tool on the host.
+* The container filesystem is not accessible to JMC or JConsole running on the host.
+
+A remote JMX connection over WildFly's management HTTP endpoint is required instead.
+
+== Step 1: Add a management user
+
+WildFly's default out-of-the-box configuration supports a custom `LOCAL` authentication scheme
+that lets CLI clients running on the same machine connect without a username or password, by
+demonstrating they can read a file owned by the WildFly process. That scheme doesn't work
+across a container boundary, so you need to create a management user.
+
+On a local WildFly installation, run `add-user.sh` (or `add-user.bat` on Windows) to create
+a management user:
+
+[source,bash]
+----
+$WILDFLY_HOME/bin/add-user.sh
+----
+
+Follow the prompts to create a management user (choose option `a` for a management user when
+asked for the user type).
+
+This updates two files:
+
+* `$WILDFLY_HOME/standalone/configuration/mgmt-users.properties`
+* `$WILDFLY_HOME/standalone/configuration/mgmt-groups.properties`
+
+Copy those two files into your project so they can be baked into your container image.
+
+== Step 2: Build the container image
+
+Add the properties files to your `Dockerfile` (you can substitute `podman` for `docker`
+throughout this post):
+
+[source,dockerfile]
+----
+FROM quay.io/wildfly/wildfly:latest
+COPY --chown=jboss:root mgmt-users.properties $JBOSS_HOME/standalone/configuration/
+COPY --chown=jboss:root mgmt-groups.properties $JBOSS_HOME/standalone/configuration/
+----
+
+Build the image:
+
+[source,bash]
+----
+podman build -t jmx_wildfly:latest .
+----
+
+== Step 3: Run the container with the management port exposed
+
+[source,bash]
+----
+podman run --rm \
+  -p 8080:8080 \
+  -p 127.0.0.1:9990:9990 \
+  --name=jmx_wildfly \
+  jmx_wildfly:latest \
+  /opt/jboss/wildfly/bin/standalone.sh -bmanagement 0.0.0.0
+----
+
+Two things are important here:
+
+* `-p 127.0.0.1:9990:9990` — exposes the management port (9990) to the host so that JMC or
+  JConsole can reach it. Binding only to `127.0.0.1` on the host limits access to local
+  connections, which is a sensible default for development.
+* `-bmanagement 0.0.0.0` — tells WildFly to bind its management interface to all interfaces
+  inside the container. Without this, the management interface binds to `127.0.0.1` inside
+  the container, and traffic arriving from outside the container (even through a port mapping)
+  is not received on the container's loopback interface, so the connection will be refused.
+
+NOTE: The `-bmanagement 0.0.0.0` flag is not needed if your `standalone.xml` already
+configures the management interface to bind to `0.0.0.0`.
+
+== Step 4: Add `jboss-client.jar` to JMC's dropins directory
+
+WildFly uses the JBoss Remoting `remote+http` protocol for its management endpoint. JMC does
+not understand this protocol out of the box. To enable it, copy
+`$WILDFLY_HOME/bin/client/jboss-client.jar` into JMC's `dropins` directory.
+
+The location of the `dropins` directory varies by operating system and JMC version. On macOS
+it is typically:
+
+[source]
+----
+/Applications/JDK Mission Control.app/Contents/Eclipse/dropins/
+----
+
+On Linux, look for a `dropins` directory relative to where you extracted the JMC archive.
+
+After copying the jar, restart JMC.
+
+NOTE: This step is specific to JMC. JConsole uses the `jboss-client.jar` differently — see
+the <<jconsole>> section below.
+
+== Step 5: Connect with JMC
+
+In JMC, go to *File → Connect → Create a new connection*.
+
+In the *JVM Connection* dialog:
+
+. Select *Custom JMX service URL*.
+. Enter the following URL in the *JMX Service URL* field:
++
+[source]
+----
+service:jmx:remote+http://localhost:9990
+----
+. Fill in the *User* and *Password* fields with the credentials you created in Step 1.
+. Click *Connect*.
+
+[[jconsole]]
+== Connecting with JConsole
+
+JConsole can also connect to a WildFly container. The approach is slightly different because
+JConsole doesn't have a dropins mechanism. Instead, you need to add `jboss-client.jar` to
+JConsole's classpath at launch:
+
+[source,bash]
+----
+jconsole -J-Djava.class.path=$JAVA_HOME/lib/jconsole.jar:$WILDFLY_HOME/bin/client/jboss-client.jar
+----
+
+Once JConsole opens, choose *Remote Process* and enter:
+
+[source]
+----
+service:jmx:remote+http://localhost:9990
+----
+
+Provide the management username and password when prompted.
+
+== Notes on JMC version compatibility
+
+There are known issues connecting JMC 9 to WildFly when using the `jboss-client.jar`
+from some WildFly versions. The jar's `MANIFEST.MF` includes attributes that JMC uses for
+integration, and the expected values changed between JMC 8 and JMC 9. If you experience
+connection failures with JMC 9, try an older JMC 8 release or the JMC build from
+https://adoptium.net/jmc/[Adoptium] or https://www.oracle.com/java/technologies/jdk-mission-control.html[Oracle]
+and test with both. If it works for you, please report back on the
+https://groups.google.com/g/wildfly[WildFly Google Group] so the community can track this.
+
+== Get Involved
+
+WildFly is an open source project and welcomes contributions of all kinds — whether that's
+fixing bugs, improving documentation, writing blog posts like this one, or helping other users
+on the https://groups.google.com/g/wildfly[WildFly Google Group].
+
+If you'd like to get started:
+
+* https://www.wildfly.org/contribute/[Contribute to WildFly] — the official contribution guide covers how to build the project, submit patches, and engage with the community.
+* https://github.com/wildfly/wildfly[WildFly on GitHub] — browse the source, open issues, or submit pull requests.
+* https://wildfly.zulipchat.com/[WildFly Zulip Chat] — chat with developers and community members in real time.
+
+We'd love to have you involved!
