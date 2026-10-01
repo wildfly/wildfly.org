@@ -12,8 +12,23 @@ import io.quarkiverse.roq.data.runtime.annotations.DataMapping;
 @DataMapping(value = "releases", parentArray = true)
 public record Releases(List<Release> list) {
     public static int CURRENT_RELEASE_INDEX = 0;
+
+    /**
+     * Minimum WildFly major version included in the support-matrix.json POC (WFLY-18548).
+     */
+    public static final int SUPPORT_MATRIX_MIN_MAJOR = 37;
+
     public Release latest() {
         return list.stream().filter(r -> r.qualifier.equals("Final")).findFirst().orElse(list.get(0));
+    }
+
+    /**
+     * Releases included in the machine-readable support matrix (WildFly 37+).
+     */
+    public List<Release> supportMatrix() {
+        return list.stream()
+                .filter(Release::includedInSupportMatrix)
+                .toList();
     }
 
     public record Release(
@@ -25,7 +40,9 @@ public record Releases(List<Release> list) {
         @JsonProperty("gpg_key")
         String gpgKey,
         @JsonProperty("link")
-        List<Link> links
+        List<Link> links,
+        @JsonProperty("java_se")
+        JavaSe javaSe
     ) {
         public Date releaseDate() throws ParseException {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -36,7 +53,26 @@ public record Releases(List<Release> list) {
         public String majorVersion() {
             return version.split("\\.")[0];
         }
+
+        public int majorVersionNumber() {
+            return Integer.parseInt(majorVersion());
+        }
+
+        public boolean includedInSupportMatrix() {
+            return majorVersionNumber() >= SUPPORT_MATRIX_MIN_MAJOR;
+        }
     }
+
+    /**
+     * Optional Java SE support fields aligned with in-repo release-announcement vocabulary
+     * (recommended / supported). Values must come from data/releases.yaml — do not fabricate.
+     * When absent in YAML the Release.javaSe component remains null for maintainer review.
+     */
+    public record JavaSe(
+        String recommended,
+        List<String> supported
+    ) {}
+
     public record Link(String name,
                        String licence,
                        List<LinkItem> items) {}

@@ -1,0 +1,31 @@
+{
+  "schema": "wildfly.org/support-matrix",
+  "schema_version": 1,
+  "min_wildfly_major": 37,
+  "source": "data/releases.yaml",
+  "note": "POC for WFLY-18548. java_se is taken from optional release.java_se in releases data; null means not yet populated and is left for maintainer review (values are not invented).",
+  "releases": [
+{#for release in cdi:releases.supportMatrix}
+    {
+      "version": "{release.version}",
+      "version_shortname": "{release.versionShortName}",
+      "date": "{release.date}",
+      "qualifier": "{release.qualifier}",
+{#if release.javaSe}
+      "java_se": {
+        "recommended": {#if release.javaSe.recommended}"{release.javaSe.recommended}"{#else}null{/if},
+        "supported": [
+{#if release.javaSe.supported}
+{#for se in release.javaSe.supported}
+          "{se}"{#if se_hasNext},{/if}
+{/for}
+{/if}
+        ]
+      }
+{#else}
+      "java_se": null
+{/if}
+    }{#if release_hasNext},{/if}
+{/for}
+  ]
+}
