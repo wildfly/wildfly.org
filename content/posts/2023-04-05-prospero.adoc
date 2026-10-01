@@ -10,12 +10,12 @@ description: An introduction to the Prospero usage.
 
 `Prospero` is a tool provided by the WildFly community:
 
-* https://github.com/wildfly-extras/prospero[GitHub - wildfly-extras/prospero: Prospero is a tool combining Galleon feature-packs and wildfly-channels to provision and update Wildfly server.]
+* https://github.com/wildfly-extras/prospero[GitHub - wildfly-extras/prospero: Prospero is a tool combining Galleon feature-packs and wildfly-channels to provision and update WildFly server.]
 
 The purpose of the project can be quoted from the README of the above project link:
 
 ____
-Prospero is a tool combining Galleon feature-packs and wildfly-channels to provision and update Wildfly server.
+Prospero is a tool combining Galleon feature-packs and wildfly-channels to provision and update WildFly server.
 ____
 
 Briefly speaking, you can use the tool to do the version management of your WildFly installation.
@@ -169,7 +169,7 @@ The `prospero` tool itself contains help to its usage:
 ➤ ./prospero
 Welcome to prospero CLI!
 
-This tool enables you to provision and manage instances of the Wildfly application server.
+This tool enables you to provision and manage instances of the WildFly application server.
 
 Usage: prospero [-hv] [COMMAND]
 

@@ -480,9 +480,9 @@ You can verify the cluster formation by looking at the log files of any of the t
 …
 ----
 
-=== Using the Ansible collection as an installer for Wildfly
+=== Using the Ansible collection as an installer for WildFly
 
-Last remark: while the collection is designed to be used inside a playbook, you can also use the provided playbook to directly install Wildfly:
+Last remark: while the collection is designed to be used inside a playbook, you can also use the provided playbook to directly install WildFly:
 
 [source, bash]
 ----

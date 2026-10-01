@@ -19,19 +19,19 @@ package manager. The OpenSSL support will search the library path, and use whate
 same applies to MacOS when OpenSSL has been installed using brew (the system default OpenSSL installation is too old).
 
 For windows and for custom OpenSSL locations you need to specify the location via a system property,
-`org.wildfly.openssl.path`. If this is set then Wildfly will search for OpenSSL in the directory specified. If you have
+`org.wildfly.openssl.path`. If this is set then WildFly will search for OpenSSL in the directory specified. If you have
 multiple versions of OpenSSL in the same directory and need to specify the precise file to use you can instead use
 `org.wildfly.openssl.path.ssl` and `org.wildfly.openssl.path.crypto` to specify the path to libssl and libcrypto
 respectively.
 
-As Wildfly uses dynamic linking this should work with any OpenSSL version from 1.0.1 onwards (however for security
+As WildFly uses dynamic linking this should work with any OpenSSL version from 1.0.1 onwards (however for security
 reasons it is recommended to always use the most up to date 1.1.x or 1.0.x version that is available, as older versions
 may have unpatched vulnerabilities).
 
 
-== Setting up Wildfly with Security Realms
+== Setting up WildFly with Security Realms
 
-As Wildfly supports SSL out of the box with dynamically generated self signed certificates all that is required is to
+As WildFly supports SSL out of the box with dynamically generated self signed certificates all that is required is to
 change the protocol in use. Doing this is as simple as running a single command in the CLI:
 
 ----
@@ -48,7 +48,7 @@ You should see the following message in the log that tells you that OpenSSL is i
 09:01:04,150 INFO  [org.wildfly.openssl.SSL] (MSC service thread 1-6) WFOPENSSL0002 OpenSSL Version OpenSSL 1.0.2l  25 May 2017
 ----
 
-== Setting up Wildfly with Elytron
+== Setting up WildFly with Elytron
 
 As Elytron is not used by default there is a little bit more work involved in setting it up. Elytron does not support
 auto generation of SSL certificates, so for the sake of this example I am going to assume that the keystore is

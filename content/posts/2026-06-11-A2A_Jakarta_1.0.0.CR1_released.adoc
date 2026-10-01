@@ -61,7 +61,7 @@ When serving both protocol versions, the v1.0 `AgentCard` is what clients receiv
 == Other Highlights
 
 * **a2a-java 1.0.0.Final** — We are now aligned with the final release of the upstream https://github.com/a2aproject/a2a-java[a2a-java] SDK.
-* **gRPC Feature Pack 0.2.0** — Upgraded to the latest https://github.com/wildfly-extras/wildfly-grpc-feature-pack[WildFly gRPC Feature Pack].
+* **gRPC Feature-Pack 0.2.0** — Upgraded to the latest https://github.com/wildfly-extras/wildfly-grpc-feature-pack[WildFly gRPC Feature-Pack].
 * **WildFly 40** — The TCK now runs on WildFly 40.
 * **CI on Windows** — The CI pipeline now runs on both Linux and Windows.
 

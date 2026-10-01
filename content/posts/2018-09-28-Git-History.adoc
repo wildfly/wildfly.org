@@ -43,7 +43,7 @@ To start using Git you don't have to create the repository, WildFly can do that 
 Just start your server with the following command line:
 [source,bash]
 --
-$ __WILDFLY_HOME__/bin/standalone.sh --git-repo=local --git-branch=my_branch
+$ __JBOSS_HOME__/bin/standalone.sh --git-repo=local --git-branch=my_branch
 --
 
 If a __--git-branch__ parameter is added then the repository will be checked out from the supplied branch. Please note that the branch will not be automatically created and must already exist in the repository. By default, if no parameter is specified, the branch `master` will be used.
@@ -54,7 +54,7 @@ If a __--git-branch__ parameter is added then the repository will be checked out
 To start WildFly with a configuration from a remote Git repository is simple too, just use the following command line:
 [source,bash]
 --
-$ __WILDFLY_HOME__/bin/standalone.sh --git-repo=https://github.com/USER_NAME/wildfly-config.git --git-branch=master
+$ __JBOSS_HOME__/bin/standalone.sh --git-repo=https://github.com/USER_NAME/wildfly-config.git --git-branch=master
 --
 
 [IMPORTANT]
