@@ -112,6 +112,13 @@ categories:
 #      - title: Using MicroProfile LRA
 #        url: /guides/use-microprofile-lra
 #        description: Discover how to use MicroProfile LRA With WildFly.
+  - category: Migration
+    cat-id: migration
+    guides:
+      - title: Migrating from WildFly JAR Maven Plugin to WildFly Maven Plugin
+        url: /guides/wildfly-jar-migration
+        description: Learn how to migrate to the WildFly Maven Plugin to build a Bootable JAR
+        keywords: Migration, Maven, Bootable, Provisioning, Cloud
   - category: Observability
     cat-id: observability
     guides:
