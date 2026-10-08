@@ -1,0 +1,51 @@
+---
+layout: post
+title:  "New WildFly 42 Beta release"
+aliases: [/news/2026/10/08/WildFly42Beta-released/]
+date:   2026-10-08
+tags:   announcement release
+author: bstansberry
+description: WildFly 42 Beta is now available.
+---
+
+I'm happy to announce that the new WildFly and WildFly Preview 42.0.0.Beta1 releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank]. The Galleon feature-packs for WildFly 42 Beta are available in https://central.sonatype.com/[Maven Central, window=_blank].
+
+The release includes a number of new things:
+
+https://redhat.atlassian.net/browse/WFLY-19563[WFLY-19563, window=_blank] Support for use of virtual threads in the Jakarta Concurrency 3.1. implementation.
+
+https://redhat.atlassian.net/browse/WFLY-21526[WFLY-21526, window=_blank] Promotion of "WFLY-20918 Add idle time-based eviction configuration for distributable HttpSessions, SFSBs, Timers" to `default` stability.
+
+https://redhat.atlassian.net/browse/WFCORE-7301[WFCORE-7301, window=_blank] Support for a new attribute on the token-realm to supply a principal-transformer to the realm. This is provided at `community` stability.
+
+We're also unveiling major progress on https://redhat.atlassian.net/browse/WFLY-17851[WFLY-17851, window=_blank] SBOM generation.  A WildFly installation now includes a `sbom.cdz.json.gz` file at the root of the installation that provides CycloneDX format information about the software present in the installation. This file is produced by our Galleon provisioning tooling as part of provisioning the installation, and, for users who use our tooling to provision slimmed servers, its contents are limited to what was actually provisioned, excluding artifacts that are present in a complete WildFly installation but are not in your slimmed installation.
+
+
+We made many other changes to WildFly, including a large number of component upgrades to bring in security vulnerability fixes. AI driven tools are doing a great job of uncovering security vulnerabilities in software, and we are working hard to stay on top of what we're learning.
+
+We encourage you to explore the full list of changes in the official link:https://github.com/wildfly/wildfly/releases/tag/42.0.0.Beta1[release notes, window=_blank].
+
+[NOTE]
+====
+Our 40 and 41 series releases included a https://docs.wildfly.org/41/Different_Flavors_of_WildFly.html[WildFly EE 10 variant, window=_blank] of the server, in addition to our usual standard WildFly and WildFly Preview variants. The 42 series does not provide WildFly EE 10. Our declared intent was always to produce that variant for a short period to help ease the transition to EE 10 by our users, and to then discontinue it.
+====
+
+My thanks to everyone who contributed to this release. GitHub tells me 30 people contributed to the main link:https://github.com/wildfly/wildfly[wildfly/wildfly repository, window=_blank] and that does not include all
+of the people working on the components that make WildFly possible.
+
+I particularly want to thank the following first time contributors for this release:
+
+* https://github.com/skayikci[@skayikci, window=_blank] made their first contribution in https://github.com/wildfly/wildfly/pull/20265[#20265, window=_blank]
+* https://github.com/rafaeldarosagit[@rafaeldarosagit, window=_blank] made their first contribution in https://github.com/wildfly/wildfly/pull/20058[#20058, window=_blank]
+* https://github.com/AnkitKumar-05[@AnkitKumar-05, window=_blank] made their first contribution in https://github.com/wildfly/wildfly/pull/20387[#20387, window=_blank]
+* https://github.com/pamemane[@pamemane, window=_blank] made their first contribution in https://github.com/wildfly/wildfly/pull/20358[#20358, window=_blank]
+
+== How to Get Involved
+
+This is a *beta release*, so we don't recommend it for production environments. Your feedback is crucial to help us identify and fix issues before the final release.
+
+* **Download WildFly 42 Beta 1** from link:https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank] or provision a WildFly 42 Beta 1 server using a tool like the link:https://docs.wildfly.org/wildfly-maven-plugin/[wildfly-maven-plugin, window=_blank]
+* **Report a bug** or enhancement request on our link:https://redhat.atlassian.net/browse/WFLY[issue tracker, window=_blank]
+* **Ask a question** in our link:https://groups.google.com/forum/#!forum/wildfly[Google Group, window=_blank] or reach us on link:https://wildfly.zulipchat.com/[Zulip, window=_blank].
+
+We look forward to hearing your feedback and working together to complete WildFly 42 Final.

@@ -59,7 +59,7 @@
     - name: Release Notes
       items:
         - format: Notes
-          url: https://github.com/wildfly/wildfly/releases/tag/42.0.0.Beta1
+          url: /news/2026/10/08/New-WildFly-42-Beta-release/
 - version: 41.0.1.Final
   version_shortname: 41.0.1.Final
   date: 2026-08-27
