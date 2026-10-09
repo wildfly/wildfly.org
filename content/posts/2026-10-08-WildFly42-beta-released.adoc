@@ -12,14 +12,13 @@ I'm happy to announce that the new WildFly and WildFly Preview 42.0.0.Beta1 rele
 
 The release includes a number of new things:
 
-https://redhat.atlassian.net/browse/WFLY-19563[WFLY-19563, window=_blank] Support for use of virtual threads in the Jakarta Concurrency 3.1. implementation.
+https://redhat.atlassian.net/browse/WFLY-19563[WFLY-19563, window=_blank] Support for use of virtual threads in the Jakarta Concurrency 3.1 implementation.
 
 https://redhat.atlassian.net/browse/WFLY-21526[WFLY-21526, window=_blank] Promotion of "WFLY-20918 Add idle time-based eviction configuration for distributable HttpSessions, SFSBs, Timers" to `default` stability.
 
 https://redhat.atlassian.net/browse/WFCORE-7301[WFCORE-7301, window=_blank] Support for a new attribute on the token-realm to supply a principal-transformer to the realm. This is provided at `community` stability.
 
-We're also unveiling major progress on https://redhat.atlassian.net/browse/WFLY-17851[WFLY-17851, window=_blank] SBOM generation.  A WildFly installation now includes a `sbom.cdz.json.gz` file at the root of the installation that provides CycloneDX format information about the software present in the installation. This file is produced by our Galleon provisioning tooling as part of provisioning the installation, and, for users who use our tooling to provision slimmed servers, its contents are limited to what was actually provisioned, excluding artifacts that are present in a complete WildFly installation but are not in your slimmed installation.
-
+We're also unveiling major progress on https://redhat.atlassian.net/browse/WFLY-17851[WFLY-17851, window=_blank] SBOM generation. A WildFly installation now includes a `sbom.cdx.json.gz` file at the root of the installation that provides CycloneDX format information about the software present in the installation. This file is produced by our Galleon provisioning tooling as part of provisioning the installation, and, for users who use our tooling to provision slimmed servers, its contents are limited to what was actually provisioned, excluding artifacts that are present in a complete WildFly installation but are not in your slimmed installation.
 
 We made many other changes to WildFly, including a large number of component upgrades to bring in security vulnerability fixes. AI driven tools are doing a great job of uncovering security vulnerabilities in software, and we are working hard to stay on top of what we're learning.
 
@@ -27,7 +26,7 @@ We encourage you to explore the full list of changes in the official link:https:
 
 [NOTE]
 ====
-Our 40 and 41 series releases included a https://docs.wildfly.org/41/Different_Flavors_of_WildFly.html[WildFly EE 10 variant, window=_blank] of the server, in addition to our usual standard WildFly and WildFly Preview variants. The 42 series does not provide WildFly EE 10. Our declared intent was always to produce that variant for a short period to help ease the transition to EE 10 by our users, and to then discontinue it.
+Our 40 and 41 series releases included a https://docs.wildfly.org/41/Different_Flavors_of_WildFly.html[WildFly EE 10 variant, window=_blank] of the server, in addition to our usual standard WildFly and WildFly Preview variants. The 42 series does not provide WildFly EE 10. Our declared intent was always to produce that variant for a short period to help ease the transition to EE 11 by our users, and to then discontinue it.
 ====
 
 My thanks to everyone who contributed to this release. GitHub tells me 30 people contributed to the main link:https://github.com/wildfly/wildfly[wildfly/wildfly repository, window=_blank] and that does not include all
