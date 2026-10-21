@@ -28,7 +28,7 @@ A2A Jakarta exposes the multi-tenancy support across all three transports, with 
 
 The new https://github.com/wildfly-extras/a2a-jakarta/tree/v1.0.0.Final/examples/enterprise[enterprise example] demonstrates how to run an A2A agent across two WildFly nodes. It uses JPA-backed task and push-notification stores together with a Kafka-backed replicated queue manager, showing how task state and live events can be shared between nodes in a load-balanced deployment. The stores and queue manager are provided by a2a-java.
 
-The release has been tested with https://www.wildfly.org/news/2026/08/27/WildFly-41.0.1.Final-is-released/[WildFly 41.0.1.Final].
+The release has been tested with https://www.wildfly.org/news/2026/08/27/WildFly-41-0-1-is-released/[WildFly 41.0.1.Final].
 
 == Looking ahead
 
