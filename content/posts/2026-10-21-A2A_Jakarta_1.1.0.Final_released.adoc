@@ -1,0 +1,26 @@
+---
+layout: post
+title:  "A2A Jakarta 1.1.0.Final is released!"
+date:   2026-10-21
+tags:   announcement release generative-ai a2a agent wildfly
+author: kkhan
+description: A2A Jakarta 1.1.0.Final is released.
+---
+
+I am pleased to announce the https://github.com/wildfly-extras/a2a-jakarta/releases/tag/v1.1.0.Final[1.1.0.Final release] of https://github.com/wildfly-extras/a2a-jakarta[A2A Jakarta], the Jakarta integration for the https://github.com/a2aproject/a2a-java[A2A Java SDK].
+
+This release upgrades A2A Jakarta to https://github.com/a2aproject/a2a-java/releases/tag/v1.4.0.Final[a2a-java 1.4.0.Final]. Most of the work in this release comes from that upgrade, together with the corresponding integration changes in A2A Jakarta.
+
+== Aligned with a2a-java 1.4.0.Final
+
+a2a-java 1.4.0.Final includes a range of improvements to the server and client SDKs. These include more robust streaming behaviour, improved handling of task push-notification configuration, fixes for multi-tenancy and agent-card resolution, and REST support for the `application/a2a+json` media type. There are also fixes for gRPC interoperability and task handling.
+
+For a fuller account of the upstream changes, see the https://a2aproject.github.io/a2a-java/posts/a2a-java-sdk-1-4-0-final-released/[a2a-java 1.4.0.Final release announcement] and the https://github.com/a2aproject/a2a-java/releases/tag/v1.4.0.Final[release notes].
+
+== Enterprise deployment example
+
+We have also verified that A2A Jakarta can use the distributed, enterprise-oriented components provided by a2a-java. The https://github.com/wildfly-extras/a2a-jakarta/tree/v1.1.0.Final/examples/enterprise[enterprise example] runs an A2A agent across two WildFly nodes, using JPA-backed task and push-notification stores together with a Kafka-backed replicated queue manager. This allows task state and live events to be shared in a load-balanced deployment.
+
+The original https://quarkus.io/blog/quarkus-a2a-cloud-enhancements/[A2A Java SDK cloud-native enhancements article] explains the purpose of these components and the considerations for running an A2A agent in a distributed environment.
+
+For more information, see the https://github.com/wildfly-extras/a2a-jakarta[project repository] and its https://github.com/wildfly-extras/a2a-jakarta/blob/v1.1.0.Final/README.md[README]. If you have any issues with the project, please open an https://github.com/wildfly-extras/a2a-jakarta/issues[issue]. Pull requests are welcome!
