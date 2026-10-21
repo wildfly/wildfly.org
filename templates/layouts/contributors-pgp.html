@@ -11,6 +11,11 @@ layout: base
         {#for contributor in cdi:ContributorService.contributors}
         {#let author = cdi:authors.byId(contributor.id)}
         <div class="grid__item width-2-12 contributor-row">
+            {#if contributor.signings}
+            {#for signing in contributor.signings}
+            <span class="key-anchor" id="{signing.id}"></span>
+            {/for}
+            {/if}
             <h2 id="{contributor.id}">
                 <a class="anchor" href="#{contributor.id}" style="text-decoration: none;">
                     {#if author and author.avatar}
@@ -43,7 +48,7 @@ layout: base
                     {#else}
                     <tr class="separator">
                     {/if}
-                        <td class="contributor-label" id="{signing.id}">Public Key Id</td>
+                        <td class="contributor-label">Public Key Id</td>
                         <td class="copy-text">{signing.id}</td>
                     </tr>
                     <tr class="{style}">
