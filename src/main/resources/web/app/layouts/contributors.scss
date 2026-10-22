@@ -14,6 +14,11 @@
   margin: 3rem 0;
   padding: 1rem;
 
+  // Block-level, so the anchor sits at the top of the row rather than on the avatar's baseline
+  .key-anchor {
+    display: block;
+  }
+
   h2 {
     display: inline;
   }

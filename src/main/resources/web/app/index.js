@@ -1,4 +1,5 @@
 import './js/mobile-nav';
+import './js/nav-height';
 import './js/guides-search';
 import './js/conference';
 
