@@ -1,0 +1,135 @@
+---
+layout: post
+title:  "WildFly 42 is released!"
+aliases: [/news/2026/10/22/WildFly42Released]
+date:   2026-10-22
+tags:   announcement release
+author: bstansberry
+description: WildFly 42 Final is now available.
+---
+
+I'm happy to announce that the new WildFly and WildFly Preview 42.0.0.Final releases are available for download at https://wildfly.org/downloads[https://wildfly.org/downloads, window=_blank]. The Galleon feature-packs for WildFly 42 are available in https://central.sonatype.com/[Maven Central, window=_blank].
+
+[NOTE]
+====
+For the 40 and 41 releases, we produced a third WildFly variant, https://docs.wildfly.org/41/Different_Flavors_of_WildFly.html#wildfly-ee-10[WildFly EE 10, window=_blank]. That was meant to be a temporary addition to the set of WildFly variants, to give our users more time to migrate to EE 11 following our move to EE 11 in our other WildFly variants. As planned, with the 42 release we have discontinued the WildFly EE 10 variant.
+====
+
+[[new_and_notable]]
+== New and Notable
+
+The 42 release includes a number of new things:
+
+* We now support use of https://redhat.atlassian.net/browse/WFLY-19563[virtual threads in Jakarta Concurrency resources, window=_blank].
+
+* Configuration of  idle-time-based eviction  for distributable HttpSessions, SFSBs, and EJB timers has been https://docs.wildfly.org/wildfly-proposals/clustering/infinispan/WFLY-21526_Promote_idle_time-based_eviction_to_default_stability.html[promoted to `default` stability, window=_blank].
+
+* You can now optionally https://docs.wildfly.org/wildfly-proposals/elytron/WFCORE-7301-expose-a-new-attribute-on-the-token-realm-to-supply-a-principal-transformer-to-the-realm.html[transform the Principal obtained from a JWT when using a `token-realm`, window=_blank] by configuring use of a principal transformer, such as a `case-principal-transformer`, before the Principal is passed to the application being secured. This is provided at `community` stability.
+
+* We've also unveiled major progress on https://redhat.atlassian.net/browse/WFLY-17851[SBOM generation, window=_blank] . A WildFly installation now includes a `sbom.cdx.json.gz` file at the root of the installation that provides CycloneDX format information about the software present in the installation. This file is produced by our Galleon provisioning tooling as part of provisioning the installation. For users who use our tooling to provision slimmed servers, its contents are limited to what was actually provisioned, excluding artifacts that are present in a complete WildFly installation but are not in your slimmed installation.
+
+[NOTE]
+====
+The SBOM feature will undergo further development in future releases, and the format of the SBOM file will continue to evolve. Your input on this feature is most welcome.
+====
+
+We also updated a wide range of dependencies, improving performance, stability, and security. A large number of these upgrades addressed security vulnerabilities. For more on those, please see the https://github.com/wildfly/wildfly/releases/tag/42.0.0.Final[WildFly 42, window=_blank] and https://redhat.atlassian.net/projects/WFCORE/versions/108842/tab/release-report-all-issues?statusCategory=DONE[WildFly Core 34, window=_blank] release notes.
+
+
+== Supported Specifications
+
+=== Jakarta
+
+Standard WildFly 42 supports the EE 11 link:https://jakarta.ee/specifications/platform/11/[Platform, window=_blank] as well as the link:https://jakarta.ee/specifications/webprofile/11/[Web Profile, window=_blank] and the link:https://jakarta.ee/specifications/coreprofile/11/[Core Profile, window=_blank]. WildFly is EE 11 Platform, Web Profile and Core Profile compatible when running on Java SE 17 and Java SE 21.
+
+Evidence demonstrating our compatibility is available in the link:https://github.com/wildfly/certifications/tree/EE11[WildFly Certifications, window=_blank] repository on GitHub:
+[cols=",",options="header"]
+|=======================================================================
+|Specification |Compatibility Evidence
+.2+.<| EE 11 Full Platform
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_42.0.0.Final/jakarta-full-platform-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_42.0.0.Final/jakarta-full-platform-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<|  EE 11 Web Profile
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_42.0.0.Final/jakarta-web-profile-jdk17.adoc#tck-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_42.0.0.Final/jakarta-web-profile-jdk21.adoc#tck-results[SE 21, window=_blank]
+.2+.<| EE 11 Core Profile
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_42.0.0.Final/jakarta-core-jdk17.adoc#jakarta-core-profile-1001-tck-java-se-17-results[SE 17, window=_blank]
+| link:https://github.com/wildfly/certifications/blob/EE11/WildFly_42.0.0.Final/jakarta-core-jdk21.adoc#jakarta-core-profile-1001-tck-java-se-21-results[SE 21, window=_blank]
+|=======================================================================
+
+
+=== MicroProfile
+
+WildFly 42 supports the https://microprofile.io/2025/06/17/microprofile-7-1-released/[MicroProfile Platform 7.1, window=_blank] specifications, along with several other MicroProfile specifications that are not part of the MicroProfile Platform. The full listing is available in the link:https://docs.wildfly.org/42/Getting_Started_Guide.html[Getting Started Guide, window=_blank].
+
+This includes a MicroProfile Config 3.1 implementation, but WildFly 42 does not claim to be a compatible implementation of it, pending resolution of https://github.com/microprofile/microprofile-config/issues/823[TCK Challenge #823, window=_blank]. Because we do not claim MicroProfile Config 3.1 compatibility, we also do not claim overall MicroProfile 7.1 compatibility.
+
+For the MicroProfile 7.1 specifications where WildFly 42 is compatible, link:https://github.com/wildfly/certifications/blob/MP7.1/WildFly_42.0.0.Final/microprofile-7.1/microprofile-7.1-full-certification.adoc[compatibility evidence, window=_blank] can be found in the WildFly Certifications repository on GitHub.
+
+
+[[preview-standards]]
+=== WildFly Preview
+
+With the 42 release, WildFly Preview has taken its first steps toward implementing the upcoming EE 12 specifications. WildFly Preview now provides:
+
+* https://jakarta.ee/specifications/cdi/5.0/[Jakarta Contexts and Dependency Injection 5.0, window=_blank]
+* The `3.1.0-M2` milestone release of the upcoming https://jakarta.ee/specifications/jsonb/3.1/[Jakarata JSON Binding 3.1, window=_blank].
+
+WildFly Preview 42 implements the same version of other standards as standard WildFly.
+
+[IMPORTANT]
+====
+The WildFly project makes no claims about the compatibility of WildFly Preview with the Jakarta and MicroProfile specifications it implements.
+====
+
+
+== Java SE Support
+
+Our recommendation is that you run WildFly and WildFly Preview 42 on **Java SE 25**, since that is the latest LTS JDK release.
+
+[NOTE]
+====
+_We do not claim to be compatible with EE 11 on SE 25_. We are satisfied with what we see when running the TCKs on SE 25, so we are comfortable making SE 25 our recommended SE version for standard WildFly 42. However, if running WildFly on an SE version where it passes the EE TCKs is important to you, we suggest using SE 21 or 17.
+====
+
+Both WildFly 42 variants -- standard WildFly and WildFly Preview -- are heavily tested and run well on Java 25, 21 and 17. Our recommendation of a later SE version over SE 21 or SE 17 is solely because as a general principle we recommend being on later LTS releases, not because of any problems with WildFly on the other supported LTS versions.
+
+While we recommend using LTS releases outside of development environments, we believe WildFly runs well on *SE 27*, which is the most recent non-LTS release, released in September. By runs well, I mean the main WildFly https://ci.wildfly.org/project.html?projectId=WF_MainNightlyJobs[nightly testsuite jobs, window=_blank] produce results equivalent to what we see with SE 17, SE 21 and SE 25. We want developers who are trying to evaluate what SE 27 means for their applications to be able to look to WildFly as a useful development platform.
+
+Please note that WildFly runs in classpath mode.
+
+[WARNING]
+====
+The WildFly project plans to move its baseline Java SE version to SE 21 for next spring's WildFly 44 release. This means the upcoming **WildFly 43.0.0.Final release (and any micros based on it) will be the last releases that will run on SE 17.** We recommend that users on SE 17 migrate their workloads to SE 21 or 25.
+====
+
+[[incompatibilities]]
+== Behavioral Changes
+
+There are some behavioral changes in WildFly 42 that may affect some users:
+
+* WildFly 42's `jgroups` subsystem will log WARN messages if JGroups channels are started without protocols in their protocol stack that provide authentication (e.g. `AUTH`) and encryption (e.g. `ASYM_ENCRYPT` or `SYM_ENCRYPT`). Use of authentication and encryption protocols are important steps in ensuring intra-cluster communications are secure. WildFly's out-of-the-box configuration do not include these protocols, because their use requires installation-specific settings. In the future we may choose to require these protocols to be present and to accept that our out-of-the-box HA configurations will not be able to boot unmodified.
+* The https://github.com/eclipse-ee4j/yasson[Eclipse Yasson, window=_blank] project that WildFly uses internally and includes in our https://central.sonatype.com/artifact/org.wildfly/wildfly-standard-ee-bom/42.0.0.Final[user boms, window=_blank] changed its Maven groupId from `org.eclipse` to `org.eclipse.yasson` in their 3.0.5 release. They set up Maven redirects, so resolution using the old groupId should still work.
+
+
+[[contributors]]
+== New and Noteworthy Contributors
+
+WildFly gets great contributions from so many people. Time to thank a few of them!
+
+* Two of my all-time favorites, https://github.com/aloubyansky[Alexey Loubyansky, window=_blank] and https://github.com/jfdenise[Jean-Francois Denise, window=_blank], did great work on the complex SBOM feature. Everything those two touch turns to gold.
+* https://github.com/Joseluiscruz-hub[Jose Luis Cruz Prieto, window=_blank] stepped up to start us on the path to providing https://github.com/wildfly/wildfly.org/pull/949[more easily discoverable information about what SE releases WildFly supports, window=_blank], and he's looking to do more. Thank you for your first code contribution!
+* https://github.com/AnkitKumar-05[Ankit Kumar, window=_blank] and https://github.com/Tarun-Kumar-Arcot[Tarun Kumar Arcot, window=_blank] made a number of nice improvements to our documentation (as did the tireless https://github.com/rhusar[Rado Husar, window=_blank]). Thank you, and congrats, Tarun, on your first code contribution!
+* https://github.com/emmartins[Eduardo Martins, window=_blank] drove our support for virtual threads in Jakarta Concurrency resources, and also did an update of all of our Quickstarts to use JUnit 6. Great job!
+
+
+== Release Notes
+
+The full WildFly 42 release notes are link:https://github.com/wildfly/wildfly/releases/tag/42.0.0.Final[available in GitHub, window=_blank].  Issues fixed in the underlying WildFly Core 34.0.0 release are listed in the https://redhat.atlassian.net/projects/WFCORE/versions/108842/tab/release-report-all-issues?statusCategory=DONE[WildFly Core JIRA, window=_blank].
+
+Please try it out and give us your feedback, in the link:https://groups.google.com/g/wildfly[WildFly google group, window=_blank], link:https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank] or link:https://redhat.atlassian.net/jira/software/c/projects/WFLY/summary[JIRA, window=_blank].
+
+
+Best regards,
+
+Brian
