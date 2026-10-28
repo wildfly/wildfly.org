@@ -14,7 +14,7 @@ public record Releases(List<Release> list) {
     public static int CURRENT_RELEASE_INDEX = 0;
 
     /**
-     * Minimum WildFly major version included in the support-matrix.json POC (WFLY-18548).
+     * Minimum WildFly major version included in support-matrix.json (WFLY-18250).
      */
     public static final int SUPPORT_MATRIX_MIN_MAJOR = 37;
 
@@ -64,13 +64,22 @@ public record Releases(List<Release> list) {
     }
 
     /**
-     * Optional Java SE support fields aligned with in-repo release-announcement vocabulary
-     * (recommended / supported). Values must come from data/releases.yaml — do not fabricate.
-     * When absent in YAML the Release.javaSe component remains null for maintainer review.
+     * Java SE support is maintained independently for Standard WildFly and WildFly Preview.
+     * An absent entry means that no support data has been recorded for that distribution.
      */
     public record JavaSe(
+        JavaSeSupport standard,
+        JavaSeSupport preview
+    ) {}
+
+    /**
+     * Fully qualified LTS releases, and the recommended member of that list.
+     * Qualifying LTS and non-LTS releases are intentionally not represented yet.
+     * Qualification here does not imply Jakarta EE certification on that Java SE version.
+     */
+    public record JavaSeSupport(
         String recommended,
-        List<String> supported
+        List<String> qualified
     ) {}
 
     public record Link(String name,
