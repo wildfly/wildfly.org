@@ -117,8 +117,14 @@
   signing:
       - id: rsa3072/B1D38A2DCD625601
         key: 14F3D63B2CD5E055730DB060B1D38A2DCD625601
-        link: https://keyserver.ubuntu.com/pks/lookup?search=14f3d63b2cd5e055730db060b1d38a2dcd625601&fingerprint=on&op=index
+        link: https://keyserver.ubuntu.com/pks/lookup?search=B1D38A2DCD625601&fingerprint=on&op=index
         fingerprint: 14F3 D63B 2CD5 E055 730D  B060 B1D3 8A2D CD62 5601
+        invalidated: 2026-11-19
+        invalidated-reason: No longer used
+      - id: rsa4096/4E56E20AC46CDB9E
+        key: 18F15DDE0FC8BE7D18F5200A4E56E20AC46CDB9E
+        fingerprint: 18F1 5DDE 0FC8 BE7D 18F5  200A 4E56 E20A C46C DB9E
+        link: https://keyserver.ubuntu.com/pks/lookup?search=4E56E20AC46CDB9E&fingerprint=on&op=index
 - contributor: jkasik
   name: "Jan Kašík"
   bio: "Jan Kašík works at IBM. He maintains some auxiliary WildFly projects."
