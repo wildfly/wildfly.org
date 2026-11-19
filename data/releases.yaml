@@ -1,4 +1,12 @@
 - version: 42.0.0.Final
+  # Java SE Support: content/posts/2026-10-22-WildFly42Released.adoc
+  java_se:
+    standard:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
+    preview:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
   version_shortname: 42 Final
   date: 2026-10-22
   qualifier: Final
@@ -123,6 +131,14 @@
         - format: Notes
           url: /news/2026/10/08/New-WildFly-42-Beta-release/
 - version: 41.0.1.Final
+  # Java SE Support: content/posts/2026-07-16-WildFly41Released.adoc
+  java_se:
+    standard:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
+    preview:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
   version_shortname: 41.0.1.Final
   date: 2026-08-27
   qualifier: Final
@@ -199,6 +215,14 @@
         - format: Notes
           url: https://redhat.atlassian.net/projects/WFLY/versions/108246/tab/release-report-all-issues
 - version: 41.0.0.Final
+  # Java SE Support: content/posts/2026-07-16-WildFly41Released.adoc
+  java_se:
+    standard:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
+    preview:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
   version_shortname: 41 Final
   date: 2026-07-16
   qualifier: Final
@@ -351,6 +375,14 @@
         - format: Notes
           url: /news/2026/06/26/New-WildFly-41-Beta-release/
 - version: 40.0.1.Final
+  # Java SE Support: content/posts/2026-05-21-WildFly40Released.adoc
+  java_se:
+    standard:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
+    preview:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
   version_shortname: 40.0.1.Final
   date: 2026-06-19
   qualifier: Final
@@ -427,6 +459,14 @@
         - format: Notes
           url: https://github.com/wildfly/wildfly/releases/tag/40.0.1.Final
 - version: 40.0.0.Final
+  # Java SE Support: content/posts/2026-05-21-WildFly40Released.adoc
+  java_se:
+    standard:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
+    preview:
+      recommended: "25"
+      qualified: ["17", "21", "25"]
   version_shortname: 40 Final
   date: 2026-05-21
   qualifier: Final
@@ -503,6 +543,14 @@
         - format: Notes
           url: https://wildfly.org/news/2026/05/21/WildFly40Released/
 - version: 39.0.1.Final
+  # Java SE Support: content/posts/2026-01-16-WildFly39Released.adoc
+  java_se:
+    standard:
+      recommended: "21"
+      qualified: ["17", "21"]
+    preview:
+      recommended: "21"
+      qualified: ["17", "21"]
   version_shortname: 39.0.1.Final
   date: 2026-02-12
   qualifier: Final
@@ -565,6 +613,14 @@
         - format: Notes
           url: /news/2026/02/12/WildFly-39-0-1-is-released/
 - version: 39.0.0.Final
+  # Java SE Support: content/posts/2026-01-16-WildFly39Released.adoc
+  java_se:
+    standard:
+      recommended: "21"
+      qualified: ["17", "21"]
+    preview:
+      recommended: "21"
+      qualified: ["17", "21"]
   version_shortname: 39 Final
   date: 2026-01-16
   qualifier: Final
@@ -627,6 +683,14 @@
         - format: Notes
           url: https://wildfly.org/news/2026/01/16/WildFly39Released/
 - version: 38.0.1.Final
+  # Java SE Support: content/posts/2025-10-16-WildFly38Released.adoc
+  java_se:
+    standard:
+      recommended: "21"
+      qualified: ["17", "21"]
+    preview:
+      recommended: "21"
+      qualified: ["17", "21"]
   version_shortname: 38.0.1.Final
   date: 2025-11-17
   qualifier: Final
@@ -689,6 +753,14 @@
         - format: Notes
           url: https://wildfly.org/news/2025/11/17/WildFly-38-0-1-is-released/
 - version: 38.0.0.Final
+  # Java SE Support: content/posts/2025-10-16-WildFly38Released.adoc
+  java_se:
+    standard:
+      recommended: "21"
+      qualified: ["17", "21"]
+    preview:
+      recommended: "21"
+      qualified: ["17", "21"]
   version_shortname: 38 Final
   date: 2025-10-16
   qualifier: Final
@@ -751,6 +823,14 @@
         - format: Notes
           url: https://wildfly.org/news/2025/10/16/WildFly38Released/
 - version: 37.0.1.Final
+  # Java SE Support: content/posts/2025-08-04-WildFly37Released.adoc
+  java_se:
+    standard:
+      recommended: "21"
+      qualified: ["17", "21"]
+    preview:
+      recommended: "21"
+      qualified: ["17", "21"]
   version_shortname: 37.0.1.Final
   date: 2025-09-04
   qualifier: Final
@@ -813,6 +893,14 @@
         - format: Notes
           url: https://wildfly.org/news/2025/09/04/WildFly3701-Released/
 - version: 37.0.0.Final
+  # Java SE Support: content/posts/2025-08-04-WildFly37Released.adoc
+  java_se:
+    standard:
+      recommended: "21"
+      qualified: ["17", "21"]
+    preview:
+      recommended: "21"
+      qualified: ["17", "21"]
   version_shortname: 37 Final
   date: 2025-08-01
   qualifier: Final
