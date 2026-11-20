@@ -1,0 +1,131 @@
+---
+layout: post
+title:  "WildFly and Java4Shell"
+date:   2026-11-20
+tags:   announcement
+author: bstansberry
+description: WildFly and Java4Shell (CVE-2026-114938).
+---
+
+If your organization uses WildFly, even if you are not responsible for adminstering WildFly instances, please pass this post on to those who are.
+
+We'll update this post as we progress on the plans discussed below.
+
+The Java4Shell flaw is in Java SE’s Base64 decoder, which WildFly uses in its handling of some requests.
+
+== Planned Releases to Address Java4Shell
+
+The flaw is in Java SE, so the fixes the WildFly project can provide are updates to our container images that package Java SE. Our plans for that are as follows:
+
+=== Container Images for Docker/Podman
+
+For Docker and Podman users, WildFly publishes a https://docs.wildfly.org/wildfly-container/[`wildfly` container image, window=_blank] at https://quay.io/repository/wildfly/wildfly[quay.io, window=_blank] that users can use as a base for their own image incorporating their deployment.
+
+We provide variants of the `wildfly` image that run on SE 21 and 25 by layering on top of the https://adoptium.net/installation/containers[`eclipse-temurin` images, window=_blank].
+
+Since our images layer on top of Temurin images, we can't update them by updating an SE binary; we need the full Temurin image to be released. My understanding is Temurin binaries may be available before their images are.
+
+**We will publish updates of the `wildfly` images as soon as we have patched `eclipse-temurin:21-ubi10-minimal` and `eclipse-temurin:25-ubi10-minimal` images.**
+
+The status of Temurin releases can be tracked at their https://github.com/adoptium/temurin/issues/326[November 2026 Release Status, window=_blank] page.
+
+We plan to update the images for the following WildFly releases:
+
+* WildFly 42.0.1, which is in progress and expected to be released next Tuesday, November 24.
+* WildFly 41.0.1
+
+[NOTE]
+====
+WildFly's general https://www.wildfly.org/about/#support-lifecycle[support lifecycle, window=_blank] states that we will produce a single micro bug-fix release for each major, and will not produce further updates once the next major is released. So, normally we would not do further updates for WildFly 41.
+
+_Producing updates for the 41.0.1 images is outside our normal policies and is not something we expect to repeat._
+
+For more on our intentions regarding WildFly 41 maintenance, please see our http://wildfly.org/news/2026/11/20/WildFly-41-Maintenance-Plans/[WildFly 41 Maintenance Plans, window=_blank] post.
+====
+
+[NOTE]
+====
+For WildFly 41.0.1, we published both a `wildfly` container image and a `wildfly-ee-10` image that incorporated the WildFly EE 10 variant. We will update both of these images.
+====
+
+=== OpenShift Images
+
+WildFly provides https://docs.wildfly.org/wildfly-s2i/#_wildfly_ubi10_runtime_image[`wildfly-runtime`, window=_blank] images at https://quay.io/repository/wildfly/wildfly-runtime[quay.io, window=_blank] that serve as a base layer into which a provisioned WildFly installation can be copied, using either https://docs.wildfly.org/wildfly-s2i/#_wildfly_ubi10_s2i_builder_image[Source-to-Image (S2I), window=_blank], our https://docs.wildfly.org/wildfly-charts/[Helm Chart, window=_blank] or your https://github.com/wildfly/wildfly-s2i/tree/main/examples/docker-build[own Docker build, window=_blank].
+
+We provide variants of the `wildfly-runtime` image that package OpenJDK 21 and 25.
+
+**On November 19, 2026, we published updates of the `wildfly-runtime` images that incorporate Java SE releases with the CVE-2026-114938 flaw fixed.**
+
+We also provide a https://quay.io/repository/wildfly/wildfly-s2i[`wildfly-s2i` image, window=_blank] that is used in an https://docs.wildfly.org/wildfly-s2i/#_wildfly_ubi10_s2i_builder_image[S2I workflow, window=_blank]. We provide variants of this image that package OpenJDK 21 and 25.
+
+**On November 19, 2026, we published updates of the `wildfly-s2i` images that incorporate Java SE releases with the CVE-2026-114938 flaw fixed.**
+
+== Am I affected?
+
+Consider a WildFly instance to be at risk when all of these apply:
+
+* It runs an unpatched Java SE build from 17.0.6 onward, including unpatched SE 21 and SE 25 builds.
+
+* Its x86-64 host or virtual machine exposes the `avx512vbmi` CPU feature to Java.
+
+* The running JVM has Base64 intrinsics enabled and has not been limited to AVX2 with `-XX:UseAVX=2`.
+
+On the WildFly host or virtual machine, check the CPU feature:
+
+[source]
+----
+grep -m1 '^flags' /proc/cpuinfo | grep -qw avx512vbmi && echo 'AVX-512 VBMI available'
+----
+
+If this prints nothing, that CPU does not expose AVX-512 VBMI and is not known to be affected by this flaw. On a container platform, run the check on the node that executes the WildFly container.
+
+== Mitigation
+
+If you are not using an image provided by WildFly, update your Java SE installation as soon as a patched update is available. Updates are available for many Java SE variants.
+
+Update your WildFly-provided image as soon as we provide a patched release.
+
+Until you have a patched Java SE available, start each affected JVM with the `-XX:-UseBASE64Intrinsics` flag. This is https://access.redhat.com/security/vulnerabilities/RHSB-2026-018[Red Hat’s preferred interim mitigation, window=_blank]. It disables the vulnerable accelerated Base64 path while retaining other AVX-512 optimizations.
+
+=== Bare metal or virtualized installations
+
+In a non-containerized WildFly installation, the simplest way to set the `-XX:-UseBASE64Intrinsics` flag is by setting the https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html#using-the-jdk_java_options-launcher-environment-variable[JDK_JAVA_OPTIONS environment variable, window=_blank].
+
+[source]
+----
+export JDK_JAVA_OPTIONS="-XX:-UseBASE64Intrinsics"
+$JBOSS_HOME/bin/standalone.sh
+----
+
+Another option is to edit the `JAVA_OPTS` settings in the `bin/standalone.conf` or `bin/domain.conf` files (or, for Windows users, the `.bat` or `.ps1` variants).
+
+=== Docker/Podman installations
+
+For users of our `wildfly` or `wildfly-ee-10` container images, a simple way to add the flag is by setting `JDK_JAVA_OPTIONS` in your Dockerfile or Containerfile:
+
+[source]
+----
+FROM quay.io/wildfly/wildfly
+ENV JDK_JAVA_OPTIONS="-XX:-UseBASE64Intrinsics"
+----
+
+Or, you could set the environment variable when you start the container:
+
+[source]
+----
+podman run -e JDK_JAVA_OPTIONS=-XX:-UseBASE64Intrinsics ....
+----
+
+Finally, you could also create an edited copy of our `bin/standalone.conf` file and copy it to your image's Dockerfile or Containerfile:
+
+[source]
+----
+FROM quay.io/wildfly/wildfly
+COPY standalone.conf $JBOSS_HOME/bin/
+----
+
+If you use the `wildfly-runtime` image as the base image in your own Docker/Podman image you can also use any of the above approaches.
+
+==== S2I
+
+If you are using an image built using the `wildfly-s2i` builder, when you deploy set the `JDK_JAVA_OPTIONS` or the `JAVA_OPTS_APPEND` environment variable to `-XX:-UseBASE64Intrinsics` or add that flag to any existing setting.

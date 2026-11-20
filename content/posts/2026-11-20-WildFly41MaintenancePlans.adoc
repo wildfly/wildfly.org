@@ -1,0 +1,27 @@
+---
+layout: post
+title:  "WildFly 41 Maintenance Plans"
+date:   2026-11-20
+tags:   announcement
+author: bstansberry
+description: WildFly 41 Maintenance Plans.
+---
+
+A number of users have requested that we produce additional WildFly 41 micro releases in order to address security vulnerabilities in libraries used in WildFly 41.
+
+**We do not plan to produce any further WildFly 41 releases.** We certainly won't be producing another WildFly 41 micro in the next couple of months.
+
+WildFly's general https://www.wildfly.org/about/#support-lifecycle[support lifecycle, window=_blank] states that we will produce a single micro bug-fix release for each major, and will not produce further updates once the next major is released. The reason for this is producing a WildFly release, even a micro, requires a major investment of developer time and test infrastructure resources, and our developer community does not have the bandwidth to produce quality releases beyond what we say we will do in our support lifecycle statement.
+
+The key driver for requests that I've seen for WildFly 41 updates is that 41 is the last release that supports EE 10. We're aware that there can be some effort involved in updating an application to a later Jakarta EE version; this is why we produced the https://docs.wildfly.org/41/Different_Flavors_of_WildFly.html#wildfly-ee-10[additional WildFly EE 10 variant, window=_blank] for WildFly 40 and 41.
+
+So, we're sympathetic to the desire for further 41 updates, and we'll keep an open mind about ways we may be helpful. But, honestly, I don't anticipate we'll be doing another 41 micro.
+
+[NOTE]
+====
+As discussed in the http://wildfly.org/news/2026/11/20/WildFly-and-Java4Shell/[WildFly and Java4Shell, window=_blank] post, we do plan to update the WildFly 41.0.1 container images to incorporate versions of Java SE that patch the Java4Shell vulnerability.
+
+_Producing updates for the 41.0.1 images is outside our normal policies and is not something we expect to repeat._
+====
+
+If you are looking for a longer support lifecycle for an EE 10 server based on the WildFly technology stack, Red Hat's https://access.redhat.com/products/red-hat-jboss-enterprise-application-platform/[JBoss Enterprise Application Platform, window=_blank] is an option. Also, WildFly is a Commonhaus Foundation project, and the foundation sponsors the https://www.commonhaus.org/about/ossi.html[Commonhaus Foundation Open Source Sustainability Initiative (OSSI), window=_blank] to recognize organizations that take responsibility for the security and stability of open source software beyond its end-of-life. https://tuxcare.com/blog/tuxcare-becomes-a-commonhaus-silver-sponsor-and-ossi-partner/[TuxCare is an OSSI Partner, window=_blank] and provides https://docs.tuxcare.com/els-for-applications/wildfly/[support for older versions of WildFly, window=_blank].
