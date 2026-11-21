@@ -1,0 +1,430 @@
+---
+layout: guide
+---
+= Tuning Message-Driven Bean Concurrency in WildFly
+:summary: Learn how to tune the MDB for in-order delivery and maximum throughput.
+:includedir: /templates
+include::../../templates/partials/guides/attributes.adoc[]
+// you can override any attributes eg to lengthen the
+// time to complete the guide
+:prerequisites-time: 30
+
+In this guide you will learn how the Apache Artemis JCA resource adapter integrated in WildFly delivers messages to
+Message-Driven Beans (MDBs), which settings decide how many messages an MDB processes in parallel, and what it costs
+to raise them.
+
+You will then find two concrete recipes: how to make an MDB consume messages strictly in order, and how to configure
+an MDB for maximum throughput.
+
+[IMPORTANT]
+--
+This guide is about configuring and tuning an MDB, not about benchmarking one. The throughput figures throughout are
+here to show the *shape* of the behaviour: where a setting starts to matter, where it stops helping, and where it
+begins to hurt. They are not targets to aim for.
+
+They were measured on WildFly 42.0.0.Final with the `standalone-full.xml` profile on a 16-core machine using the
+embedded Artemis broker and with the broker's `address-full-policy` set to `BLOCK` so that messages were never paged to disk.
+Several WildFly defaults are derived from the number of available CPUs, and
+a real `onMessage` behaves nothing like a sleep, so the absolute numbers on your hardware and with your application will differ,
+very possibly by a lot. Use the trends to decide what to change, and measure your own application to decide how far.
+--
+
+include::../../templates/partials/guides/prerequisites.adoc[]
+* A WildFly installation started with the `standalone-full.xml` profile
+
+== The Artemis resource adapter, inbound and outbound connections
+
+The Artemis resource adapter is the JCA adapter that connects WildFly to an Apache Artemis broker, either the
+one embedded in WildFly or a remote one. It is configured by the `pooled-connection-factory` resource in the
+`messaging-activemq` subsystem, which in a default installation is called `activemq-ra`:
+
+[source, bash ,options="nowrap"]
+----
+/subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:read-resource
+----
+
+That single resource configures two independent paths.
+
+Inbound connections::
+Used when *the container delivers* messages to an MDB. When an MDB is deployed, the resource adapter opens connections to
+the broker, registers a consumer on each one, and then delivers messages into the MDB. This path does not use the JCA
+connection pool and is managed by the Artemis resource adapter.
+
+Outbound connections::
+Used when *your code sends/receives* messages. Application code injects or looks up the `java:/JmsXA` or
+`java:jboss/DefaultJMSConnectionFactory` connection factory and creates managed connections, which are from the JCA
+connection pool.
+
+This distinction matters because the two are tuned with completely different settings. Everything in this guide concerns
+the inbound path.
+
+== Setting up the example application
+
+As an example application, this guide uses the https://github.com/wildfly/quickstart/tree/main/helloworld-mdb[helloworld-mdb quickstart, window=_blank],
+which already contains an MDB consuming from a queue, and modifies it step by step.
+
+Clone the quickstarts:
+
+[source, bash ,options="nowrap"]
+----
+git clone https://github.com/wildfly/quickstart.git
+cd quickstart/helloworld-mdb
+----
+
+Start the server with the `standalone-full.xml` profile, as the quickstart's
+https://github.com/wildfly/quickstart/blob/main/helloworld-mdb/README.adoc#start_the_eap_standalone_server[Start the Standalone Server, window=_blank]
+section describes:
+
+[source, bash ,options="nowrap"]
+----
+$WILDFLY_HOME/bin/standalone.sh -c standalone-full.xml
+----
+
+Then build and deploy it, following
+https://github.com/wildfly/quickstart/blob/main/helloworld-mdb/README.adoc#build_and_deploy_the_quickstart[Build and Deploy the Quickstart, window=_blank]:
+
+[source, bash ,options="nowrap"]
+----
+mvn clean package wildfly:deploy
+----
+
+The quickstart creates its destinations from the application itself, with `@JMSDestinationDefinition` annotations on
+`HelloWorldMDBServletClient`, so no CLI configuration is needed to create the queue.
+
+=== Inspecting the queue
+
+Because the queue is defined by the deployment rather than by the server configuration, it is *not* exposed under
+`/subsystem=messaging-activemq/server=default/jms-queue=...`. It lives under the deployment resource instead.
+Connect to the server using the JBoss CLI:
+[source, bash ,options="nowrap"]
+----
+$WILDFLY_HOME/bin/jboss-cli.sh -c
+----
+
+and check the number of consumers on the queue:
+
+[source, bash ,options="nowrap"]
+----
+/deployment=helloworld-mdb.war/subsystem=messaging-activemq/server=default/jms-queue=HelloWorldMDBQueue:read-resource(include-runtime=true)
+----
+
+[source, bash ,options="nowrap"]
+----
+{
+    "outcome" => "success",
+    "result" => {
+        "consumer-count" => 15,
+        "message-count" => 0L,
+        "queue-address" => "jms.queue.HelloWorldMDBQueue",
+        ...
+    }
+}
+----
+
+== The MDB instance pool is not what gives you parallelism
+
+Each invocation of an MDB's `onMessage()` method processes a single message using an instance from the MDB
+instance pool. To maximize throughput, we need to maximize the number of messages processed concurrently by MDB instances.
+The MDB instance pool is configured in the `ejb3` subsystem:
+
+[source, bash ,options="nowrap"]
+----
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:read-resource(include-runtime=true)
+----
+
+[source, bash ,options="nowrap"]
+----
+{
+    "outcome" => "success",
+    "result" => {
+        "derive-size" => "from-cpu-count",
+        "derived-size" => 64,
+        "max-pool-size" => 20,
+        "timeout" => 5L,
+        "timeout-unit" => "MINUTES"
+    }
+}
+----
+
+`derive-size => from-cpu-count` means the effective size is computed as `availableProcessors() * 4`, so `derived-size`
+is 64 on a 16-core machine. (Note that the value set to the `max-pool-size` is ignored here as `derive-size` is set to `from-cpu-count`.)
+
+It is tempting to read that as "my MDB will process up to 64 messages in parallel". *It will not.* `derived-size` is only
+an *upper bound* on how many MDB instances of a single deployed MDB may exist at once. How many messages are actually delivered concurrently is
+decided on the resource adapter side, by the `maxSession` activation config property (default is 15).
+
+The quickstart's `HelloWorldQueueMDB` does not set `maxSession`, so it runs with the default of 15. Add the property to
+`src/main/java/org/jboss/as/quickstarts/mdb/HelloWorldQueueMDB.java` and change it like:
+
+[source, java ,options="nowrap"]
+----
+@MessageDriven(name = "HelloWorldQueueMDB", activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/HELLOWORLDMDBQueue"),
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue"),
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "30")})
+public class HelloWorldQueueMDB implements MessageListener {
+    // ...
+}
+----
+
+`maxSession` is an annotation value, so changing it means rebuilding and redeploying:
+
+[source, bash ,options="nowrap"]
+----
+mvn clean package wildfly:deploy
+----
+
+The broker now reports 30 consumers on the queue:
+
+[source, bash ,options="nowrap"]
+----
+/deployment=helloworld-mdb.war/subsystem=messaging-activemq/server=default/jms-queue=HelloWorldMDBQueue:read-attribute(name=consumer-count)
+----
+
+[source, bash ,options="nowrap"]
+----
+{
+    "outcome" => "success",
+    "result" => 30
+}
+----
+
+This is because `maxSession` defines how many messaging client sessions will be created against the Artemis broker
+where each session creates a single consumer on the queue. This consumer processes one message at a time.
+
+`maxSession` is not the end of the story either. A session can only run `onMessage` while it holds a thread from the
+Artemis client global thread pool, which is sized by `global-client-thread-pool-max-size` in the `messaging-activemq`
+subsystem. That attribute is undefined by default, in which case Artemis applies `8 * availableProcessors()`, so 128
+threads on a 16-core machine. Raise `maxSession` beyond that and the surplus sessions still register consumers on the
+queue, but they have no threads available to execute on and cannot deliver messages; thus, parallelism stops at the
+thread pool size instead.
+
+The practical consequences are:
+
+* Parallelism is not set by any one of these on its own. It is the smallest of three: the `maxSession` activation
+  config property on the MDB, the `derived-size` (or `max-pool-size`) of the bean pool in the `ejb3` subsystem, and
+  `global-client-thread-pool-max-size` in the `messaging-activemq` subsystem.
+* With the defaults you get 15 concurrent invocations, while the bean pool sits at 64 and the client thread pool at
+  128, both mostly idle.
+* To consume faster you must raise `maxSession` and keep the other two at or above it. <<throughput-recipe>> measures
+  what each of the three costs you when it is the one left behind.
+
+=== Setting MDB instance pool and Artemis client thread pool
+
+The bean instance pool requires the `derive-size` attribute to be undefined before the `max-pool-size` setting can take effect:
+
+[source, bash ,options="nowrap"]
+----
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:undefine-attribute(name=derive-size)
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:write-attribute(name=max-pool-size,value=200)
+reload
+----
+
+The new size applies after a reload. To go back to the derived size, undefine `max-pool-size` first, otherwise the server
+rejects the change with `WFLYCTL0105: max-pool-size is invalid in combination with derive-size`.
+
+The Artemis client thread pool is a subsystem-level attribute shared by every MDB and by outbound JMS, and it needs a reload:
+
+[source, bash ,options="nowrap"]
+----
+/subsystem=messaging-activemq:write-attribute(name=global-client-thread-pool-max-size,value=400)
+reload
+----
+
+== What raising `maxSession` costs
+
+Each messaging client session is cheap in CPU terms but not free in resources. By default the `singleConnection`
+activation config property is `false`, so **a separate physical connection to the broker is created for every messaging
+client session**. An MDB with `maxSession=30` therefore holds roughly 30 connections to the broker, on top of a control
+connection for the deployment itself and whatever the server already has open.
+
+So a handful of MDBs with a generous `maxSession` can easily open hundreds of connections to the broker, each with its
+own socket, buffers and session state. On top of that, every session that is actively processing a message holds one
+thread from the Artemis client global thread pool, which is one of the three limits tuned in
+<<throughput-recipe>>.
+
+=== Reducing connections with `singleConnection`
+
+One solution to the high number of connections is to set the `singleConnection` activation config property to `true`,
+which makes all sessions of a single MDB share one physical connection:
+
+[source, java ,options="nowrap"]
+----
+@ActivationConfigProperty(propertyName = "maxSession", propertyValue = "10"),
+@ActivationConfigProperty(propertyName = "singleConnection", propertyValue = "true")
+----
+
+Rebuild and redeploy with `mvn clean package wildfly:deploy` to apply it.
+
+The consumer count is unchanged, and so is parallelism: the MDB still has 10 sessions and still processes 10 messages
+at a time. Only the connection count collapses, from one per session to one for the whole MDB.
+
+=== The trade-off: no load balancing across a remote cluster
+
+The catch is that connection load balancing in Artemis happens *per connection*. The resource adapter
+learns the Artemis cluster topology and picks a node each time it creates a connection. Create one
+connection per session and the sessions spread across the cluster; create only one and they cannot.
+
+With the default (`singleConnection=false`) the sessions are spread across nodes, as the round-robin load balancing
+policy promises; the exact split varies per deployment. With `singleConnection=true` every session of that MDB lands on
+whichever node the single connection reached.
+
+[IMPORTANT]
+--
+Use `singleConnection=true` when you talk to a single broker and want to keep the connection count down. Avoid it when
+consuming from a remote Artemis cluster, because that MDB will then consume from only one node, leaving the rest of the
+cluster unserved by it and relying entirely on message redistribution between cluster nodes to feed it.
+--
+
+== Recipe: consuming messages in order
+
+If an MDB must process messages strictly in order, set `maxSession` to `1`:
+
+[source, java ,options="nowrap"]
+----
+@MessageDriven(name = "HelloWorldQueueMDB", activationConfig = {
+        @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "queue/HELLOWORLDMDBQueue"),
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "jakarta.jms.Queue"),
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "1")})
+public class HelloWorldQueueMDB implements MessageListener { ... }
+----
+
+One session means one consumer, one connection and one message in flight at a time. Confirm it with
+`consumer-count=`, which will report `1`.
+
+Changing just the `mdb-strict-max-pool` to 1 is *not* equivalent. It still creates 15 messaging client sessions,
+which fetch 15 messages from the broker and then queue up on the bean pool, serialising them in
+an unspecified order while holding 15 consumers and 15 connections.
+
+[[throughput-recipe]]
+== Recipe: tuning for maximum throughput
+
+This is the common case: the MDB calls a database, a REST service or another queue, and spends most of its time
+waiting. Three separate settings cap how many messages such an MDB processes at once, and **you get the smallest of
+the three**:
+
+----
+concurrent invocations = min(maxSession, MDB instance pool, Artemis client thread pool)
+throughput             = concurrent invocations / time spent in onMessage
+----
+
+Raising one of them only helps if it was the smallest. That is the whole of this section, and the table below is it
+measured.
+
+The MDB used throughout blocks for 20 ms per message, standing in for the database or REST call a real one makes.
+That choice is the point, not an incidental detail: concurrency only converts into throughput while `onMessage` is
+waiting. If yours returns immediately, none of this tuning applies, see <<fast-onmessage>>.
+
+=== How the three limits interact
+
+[cols="2,2,2,2,2,4", options="header"]
+|===
+| maxSession | MDB instance pool | Client thread pool | Peak concurrent MDB invocations | Throughput (msg/s) | Limiting factor
+
+| 1    | 64 (default) | 128 (default) | 1         | 48     | `maxSession`; strictly sequential, near theoretical limit for 20 ms work in MDB
+| 15 (default) | 64 (default) | 128 (default) | 15        | 739    | `maxSession`; all three at their defaults
+| 100  | 64           | 128           | **64**    | 3,157  | **MDB instance pool**; 36 sessions sit idle
+| 100  | 200          | 128           | 100       | 4,933  | `maxSession`
+| 200  | 200          | 128           | **128**   | 6,490  | **client thread pool**
+| 200  | 200          | 400           | 200       | 9,304  | all three aligned
+| 800  | 800          | 800           | 800       | 37,960 | all three aligned
+| 1600 | 1600         | 1600          | 1600      | 46,040 | **the broker itself**; see <<queue-ceiling>>
+| 2400 | 2400         | 2400          | **1,790** | 54,264 | the broker itself; best throughput, at 61% efficiency
+| 3200 | 3200         | 3200          | **830**   | 31,363 | the broker itself; collapse
+|===
+
+The maximum concurrency is achieved by the smallest of the three settings, every time.
+That is the rule working. Where a row is in bold, one setting was holding the other two back,
+and the extra sessions bought nothing but consumers, connections and memory.
+
+Up to about 800 sessions, throughput follows concurrency almost perfectly: every row lands within 93-99% of the
+theoretical ceiling of 50 messages per second per session that a 20 ms `onMessage` allows. Within that range the
+dial is linear, all the way down to a single session.
+
+Above that the rule comes apart in two stages. At 1600 sessions the MDB is still capable to reach 1600 concurrent invocations at
+peak, but not all of the time as the throughput is only 58% of what that concurrency should deliver. The sessions are
+no longer busy most of the time, as consumers wait for the broker to deliver the next message. By 2400 even the peak
+falls short of the configured value, and beyond it throughput drops outright. Once this starts the peak
+concurrency column flatters the result: the 2400-session row peaks at 1,790 but its throughput implies
+an *average* of only about 1,085 in flight.
+
+Peak throughput therefore lands near 2400 sessions, but it is bought at 61% efficiency, and everything past it is
+loss. The cause lies in the Artemis broker rather than in the resource adapter, and is covered in <<queue-ceiling>>.
+
+[[queue-ceiling]]
+=== Where the rule stops: a single broker becomes the limit
+
+Somewhere between 800 and 1600 sessions in the measurements above, raising all three settings together starts to lose
+its effect, and beyond about 2400 it actively hurts. The sessions are there and the limits are out of the way, yet the
+MDB cannot keep them busy.
+
+The cause is not any of the three settings, but rather a limitation on the Artemis server side. The solution is to stop
+relying on a single Artemis broker to handle everything. Splitting the same total number of sessions across an Artemis
+cluster allows higher throughput to be achieved.
+
+[[fast-onmessage]]
+=== What if `onMessage` is fast?
+
+Everything above assumes `onMessage` blocks. If it returns almost immediately the same dial still works, but it runs
+out of travel much sooner, and only one of the three settings ends up mattering.
+
+Running the same benchmark with the `Thread.sleep(20)` removed:
+
+[cols="2,3,3", options="header"]
+|===
+| maxSession | Peak concurrent MDB invocations | Throughput (msg/s)
+
+| 1   | 1 | 5,000
+| 5   | 5 | 19,000
+| 30  | 6 | 29,000 - 35,000
+| 200 | 7 | 33,000 - 38,000
+| 800 | 7 | 28,000 - 30,000
+|===
+
+Sessions still buy throughput, and plenty of it: going from 1 to 30 is worth six to seven times the messages per
+second. What changes is where it stops. Throughput flattens at around twice the core count rather than climbing into
+the thousands of sessions, and past a few hundred it falls away again. Changing the MDB instance pool
+or the Artemis client thread pool makes no difference here: with concurrency in single figures, neither
+comes close to binding.
+
+So for a trivial or purely CPU-bound `onMessage`, set `maxSession` to roughly `2 * cores`, leave the instance pool
+and the client thread pool alone, and spend the effort elsewhere.
+
+=== Summary recipe
+
+. Check that tuning will help at all. These settings only buy throughput while `onMessage` is waiting; if it returns
+  immediately, see <<fast-onmessage>>. If the messages must be processed in order, stop here and use `maxSession=1`.
+. Work out the concurrency you need: `target throughput × average onMessage time`. At 20 ms per message, 10,000 msg/s
+  needs 200 invocations in flight.
+. Set all three to at least that number: `maxSession` on the MDB, `max-pool-size` of the MDB instance pool, and
+  `global-client-thread-pool-max-size`. The instance pool and the thread pool are shared, so size them against the
+  total across every MDB, and leave the thread pool headroom for outbound JMS.
+. Raise them together. You get the smallest of the three, so lifting one on its own only helps if it was the
+  smallest, and overshooting the other two costs connections, memory and threads for nothing.
+. Budget for what the sessions cost. Each one is a consumer and, by default, its own connection to the broker. When
+  there is only one broker, `singleConnection=true` keeps the consumers and collapses the connections.
+. Re-measure, and watch the concurrency. While it still equals the smallest of the three settings, the next increase will pay off.
+. Once the achieved concurrency falls short of what you configured, the broker rather than the resource adapter is
+  the limit. More sessions will make it worse; spread the load across an Artemis cluster instead.
+
+Applied to the blocking workload above, this takes the default configuration from 739 msg/s to 54,264 msg/s, roughly
+seventy times faster, with no change to the MDB beyond `maxSession`.
+
+== What's next?
+
+Once an MDB consumes at the rate you expect, the next limits are usually broker-side rather than resource-adapter
+side: paging and `max-size-bytes` in address-settings and consumer flow control. For scaling across several brokers, continue with the
+link:messaging-clustering[Configuring Clustered Messaging in WildFly] guide, which also covers how MDB
+connections are load balanced across a cluster.
+
+// Always add this section last to link to any relevant content
+[[references]]
+== References
+
+* https://github.com/wildfly/quickstart/tree/main/helloworld-mdb[WildFly quickstarts: helloworld-mdb, window=_blank]
+* https://activemq.apache.org/components/artemis/documentation/latest/resource-adapter.html[Apache Artemis: JCA Resource Adapter, window=_blank]
+* https://activemq.apache.org/components/artemis/documentation/latest/thread-pooling.html[Apache Artemis: Thread management, window=_blank]
+* https://docs.wildfly.org/{wildfly-version}/Admin_Guide.html#Messaging[WildFly Admin Guide: Messaging, window=_blank]
+* https://docs.redhat.com/en/documentation/red_hat_jboss_enterprise_application_platform/8.1/html-single/configuring_messaging/index[Red Hat JBoss EAP 8.1: Configuring Messaging, window=_blank]
