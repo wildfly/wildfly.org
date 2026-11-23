@@ -11,7 +11,7 @@ If your organization uses WildFly, even if you are not responsible for adminster
 
 We'll update this post as we progress on the plans discussed below.
 
-The Java4Shell flaw is in Java SE’s Base64 decoder, which WildFly uses in its handling of some requests.
+The Java4Shell flaw is in Java SE's Base64 decoder that allows an unauthenticated remote attacker to achieve arbitrary code execution on x64 systems. WildFly uses this Base64 decoder in its handling of some requests.
 
 == Planned Releases to Address Java4Shell
 
@@ -25,14 +25,17 @@ We provide variants of the `wildfly` image that run on SE 21 and 25 by layering 
 
 Since our images layer on top of Temurin images, we can't update them by updating an SE binary; we need the full Temurin image to be released. My understanding is Temurin binaries may be available before their images are.
 
-**We will publish updates of the `wildfly` images as soon as we have patched `eclipse-temurin:21-ubi10-minimal` and `eclipse-temurin:25-ubi10-minimal` images.**
+**On November 23, 2026, we published updates of the `wildfly` images that incorporate Java SE releases with the CVE-2026-114938 flaw fixed.**
 
 The status of Temurin releases can be tracked at their https://github.com/adoptium/temurin/issues/326[November 2026 Release Status, window=_blank] page.
 
-We plan to update the images for the following WildFly releases:
+We updated the images for the following WildFly releases:
 
-* WildFly 42.0.1, which is in progress and expected to be released next Tuesday, November 24.
-* WildFly 41.0.1
+* WildFly 41.0.1 (with the image tags `41.0.1.Final-1-jdk25` and `41.0.1.Final-1-jdk21`)
+* WildFly 42.0.0 (with the image tags `42.0.0.Final-1-jdk25` and `42.0.0.Final-1-jdk21`)
+
+WildFly 42.0.1, which is in progress and expected to be released next Tuesday, November 24 will also publish containers images with fixes for the CVE-2026-114938 flaw
+
 
 [NOTE]
 ====
