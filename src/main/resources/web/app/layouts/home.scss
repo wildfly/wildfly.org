@@ -200,3 +200,123 @@
     }
   }
 }
+
+// Split-screen homepage: main content on the left (2/3), latest news on the right (1/3).
+// Collapses into a single column (news below the main content) on smaller screens.
+.home-split {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 3rem;
+  align-items: start;
+
+  // Tweaks that only apply while the two columns are side by side
+  @media screen and (min-width: 1025px) {
+    // Keep the three icons on one row in the narrower main column
+    .home-split__main .home-icons {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      a {
+        zoom: 0.8;
+        padding: 1rem;
+      }
+    }
+
+    // In the narrower main column the callout title sits above its text
+    .home-split__main .callout {
+      display: block;
+      padding: 2rem;
+      h2, p {
+        float: none;
+        width: 100%;
+        margin: 0 0 1rem 0;
+      }
+      p {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+.home-split__news {
+  padding-top: 2rem;
+
+  @media screen and (max-width: 1024px) {
+    padding-top: 3rem;
+    padding-bottom: 5rem;
+    border-top: 2px solid rgba($white, 0.8);
+  }
+}
+
+.home-news {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .home-news__item {
+    display: block;
+    text-decoration: none;
+    color: var(--wildfly-teal);
+    border: 2px solid var(--wildfly-teal);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem 1.5rem;
+    // Mostly opaque tinted background keeps the text readable over the light parts of the hero image
+    background: rgba($dark-blue, 0.9);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    overflow-wrap: break-word;
+
+    &:hover {
+      text-decoration: none;
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    h4 {
+      margin: 0 0 0.5rem 0;
+      color: inherit;
+      font-size: 1.2rem;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .byline {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin: 0 0 0.5rem 0;
+      font-family: var(--font-body);
+    }
+
+    .description {
+      margin: 0 0 0.5rem 0;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .read-more-link {
+      font-weight: 600;
+      color: inherit;
+    }
+  }
+
+  .home-news__all {
+    align-self: center;
+    margin-top: 1rem;
+  }
+}

@@ -1,0 +1,20 @@
+<div class="home-news">
+  <h3 id="home-news-heading">Latest News</h3>
+  {#for post in site.collections.posts}
+    {#if post_index < 7}
+      {#let pageUrl = post.data.external_link.or(post.url.path)}
+      <a href="{pageUrl}" {#if post.data.containsKey('external_link')}target="_blank"{/if} class="home-news__item">
+        <h4>{post.title}</h4>
+        <p class="byline">By {cdi:authors.buildAuthorList(post).join(", ")} | {post.date.format('LLLL d, YYYY')}</p>
+        {#if post.data.containsKey('synopsis')}
+          <p class="description">{post.data.synopsis.stripHtml}</p>
+        {#else}
+          <p class="description">{site.pageContent(post).stripHtml.wordLimit(40).raw}</p>
+        {/if}
+        <span class="read-more-link">{#if pageUrl.contains('youtube')}Watch Video >{#else}Read More >{/if}</span>
+      </a>
+      {/let}
+    {/if}
+  {/for}
+  <a href="{site.url('news/')}" class="button-cta secondary home-news__all">View all news</a>
+</div>
