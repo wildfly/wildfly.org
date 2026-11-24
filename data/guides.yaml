@@ -98,6 +98,10 @@ categories:
         url: /guides/messaging-high-availability-openshift
         description: Discover how to configure WildFly with AMQ 7 (ActiveMQ Artemis) on OpenShift, using a clustered, high-availability topology for reliable messaging.
         keywords: Messaging, OpenShift, Clustering, High Availability, AMQ 7, ActiveMQ, Artemis
+      - title: Tuning Message-Driven Bean Concurrency in WildFly
+        url: /guides/messaging-mdb-concurrency-tuning
+        description: Learn how the integrated Apache Artemis resource adapter delivers messages to MDBs, why MDB parallelism is the smallest of maxSession, the MDB instance pool and the Artemis client thread pool, and how to tune them for in-order processing or for maximum throughput.
+        keywords: Messaging, MDB, Message-Driven Bean, Resource Adapter, JCA, Apache Artemis, maxSession, singleConnection, Thread Pool, Performance Tuning, Throughput, Concurrency
   - category: MicroProfile
     cat-id: microprofile
     guides:
