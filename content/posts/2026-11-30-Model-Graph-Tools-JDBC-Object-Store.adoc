@@ -1,0 +1,277 @@
+---
+layout: post
+title:  "Ask Your AI Agent: Switching WildFly to the JDBC Object Store with Model Graph Tools"
+date:   2026-11-30
+tags:   management ai cli transactions
+author: hpehl
+description: Use Model Graph Tools and an AI agent to generate a JBoss CLI script that switches the WildFly transaction object store from the file system to a JDBC database.
+---
+
+AI agents are great at writing JBoss CLI scripts. They are also great at inventing attribute names that don't exist, mixing up WildFly versions, and missing the small details that decide whether a change actually works.
+https://model-graph-tools.github.io/[Model Graph Tools,window="_blank"] fix that by giving the agent direct access to WildFly's real management model.
+
+In this post, we'll use Model Graph Tools and Claude Code for a typical task: switching the transaction manager's object store from the file system to a PostgreSQL database.
+You'll ask the agent for a CLI script, see what it looks up in the model, run the script, and check the result.
+
+== Model Graph Tools in a Nutshell
+
+WildFly's management model describes every resource, attribute, and operation: their types, defaults, constraints, which changes need a restart, which capabilities they provide, and much more.
+Model Graph Tools parse this model for every WildFly version since 10, plus feature packs like AI, gRPC, GraphQL, and MyFaces, and store it as a graph.
+
+An MCP server and an agent skill make the graph available to AI agents.
+When you ask a WildFly question, the agent queries the model for the exact version you're targeting instead of relying on what it remembers from training.
+The answers are based on the real model, not on a best guess.
+
+For everything else, like the questions you can ask, how it works under the hood, and the other tools in the ecosystem, head over to the https://model-graph-tools.github.io/[Model Graph Tools website,window="_blank"].
+
+== Prerequisites
+
+To follow along, you need:
+
+* Java 17 or later (Java 25 recommended).
+* The https://docs.wildfly.org/galleon/[Galleon CLI,window="_blank"] (`galleon.sh`) to provision WildFly.
+* https://podman.io/[Podman,window="_blank"] or https://www.docker.com/[Docker,window="_blank"]. Model Graph Tools run the model database in containers, and we'll run PostgreSQL in a container as well.
+* https://nodejs.org/[Node.js,window="_blank"] for the Model Graph Tools MCP server.
+* https://claude.com/claude-code[Claude Code,window="_blank"] with the Model Graph Tools plugin:
++
+[source,bash]
+----
+claude plugin marketplace add https://github.com/model-graph-tools/claude-plugin
+claude plugin install mgt@model-graph-tools
+----
++
+Using a different agent? The https://github.com/model-graph-tools/claude-plugin#other-ai-agents[MCP server,window="_blank"] works with any MCP-compatible client, like Cursor, Windsurf, or Copilot.
+* Basic familiarity with the JBoss CLI.
+
+== Setup
+
+[NOTE]
+====
+Already have a WildFly 42 server and a PostgreSQL database? Skip ahead to <<asking-the-agent>>. You can of course use any existing database. Just adjust the connection URL and credentials below.
+
+Make sure the JDBC driver is installed as a *module*, for example with `module add`. Deploying the driver jar doesn't work for the JDBC object store: the transaction manager needs the datasource while the server boots, but deployments can't be processed before the transaction manager is up. The result is a circular dependency, and the server boots with errors.
+====
+
+=== Provisioning WildFly
+
+We use https://docs.wildfly.org/galleon/[Galleon,window="_blank"] to provision a WildFly 42 server that already contains the PostgreSQL JDBC driver.
+The first command installs WildFly with the layers we need. The second one adds the `postgresql-driver` layer from the https://github.com/wildfly-extras/wildfly-datasources-galleon-pack[WildFly datasources feature pack,window="_blank"]. It installs the driver as a module and registers it as `postgresql`:
+
+[source,bash]
+----
+galleon.sh install org.wildfly:wildfly-galleon-pack:42.0.0.Final \
+  --dir=wildfly --layers=datasources-web-server,management
+galleon.sh install org.wildfly:wildfly-datasources-galleon-pack:11.5.0.Final \
+  --dir=wildfly --layers=postgresql-driver
+----
+
+Then start the server in a separate terminal:
+
+[source,bash]
+----
+./wildfly/bin/standalone.sh
+----
+
+=== PostgreSQL
+
+Next, start PostgreSQL in a container and publish its port. If you use Docker, replace `podman` with `docker`:
+
+[source,bash]
+----
+podman run -d --name postgres -p 5432:5432 \
+  -v pgdata:/var/lib/postgresql \
+  -e POSTGRES_USER=wildfly \
+  -e POSTGRES_PASSWORD=wildfly \
+  -e POSTGRES_DB=wildfly \
+  docker.io/library/postgres:19
+----
+
+=== Credential Store and Datasource
+
+Finally, we create a datasource for the object store.
+Two details matter here:
+
+* The JDBC object store requires a *non-XA datasource with `jta=false`*.
+* Instead of putting the database password in the datasource, we store it in an *Elytron credential store* and reference it with `credential-reference`.
+
+Connect to WildFly with `./wildfly/bin/jboss-cli.sh --connect` and execute these commands:
+
+[source,bash]
+----
+# Create a credential store and add the database password
+/subsystem=elytron/credential-store=tx-cs:add( \
+    path=tx-credentials.cs, \
+    relative-to=jboss.server.config.dir, \
+    create=true, \
+    credential-reference={clear-text=secret})
+/subsystem=elytron/credential-store=tx-cs:add-alias(alias=txlog-db, secret-value=wildfly)
+
+# Create the non-JTA datasource for the object store
+data-source add --name=TxLogDS \
+    --jndi-name=java:jboss/datasources/TxLogDS \
+    --driver-name=postgresql \
+    --connection-url=jdbc:postgresql://localhost:5432/wildfly \
+    --user-name=wildfly \
+    --credential-reference={store=tx-cs, alias=txlog-db} \
+    --jta=false \
+    --use-ccm=false
+/subsystem=datasources/data-source=TxLogDS:test-connection-in-pool
+----
+
+NOTE: The credential store's own password (`secret`) is stored in plain text in the server configuration. For anything beyond a local test, mask it using `bin/elytron-tool.sh mask`.
+
+[[asking-the-agent]]
+== Asking the Agent
+
+Now for the interesting part.
+Start Claude Code and ask:
+
+[source,text]
+----
+/mgt:model Build me a jboss-cli script to change the server from using a file system object store to the JDBC object store.
+----
+
+The `/mgt:model` command makes sure the agent works with the management model.
+If no model graph is running yet, the agent starts one for you. On first use, this includes a download that takes a moment.
+Plain questions about WildFly often trigger the Model Graph Tools skill automatically, but the command removes the guesswork.
+If you want to target a specific version, just say so, for example "...to the JDBC object store on WildFly 42", and the agent uses the model of that version.
+
+Before it writes a single line, the agent looks up what it needs in the model.
+Here's a trimmed excerpt of the tool calls:
+
+[source]
+----
+Skill              mgt:wildfly-model-graph
+list_sources       {}                    → no model graph running
+start_source       identifier=42.0       → "Model graph '42.0' is now running and ready for queries."
+run_cypher         identifier=42.0
+                   MATCH (r:Resource {address:'/subsystem=transactions'})-[:HAS_ATTRIBUTE]->(a:Attribute)
+                   WHERE a.name =~ '.*(jdbc|journal|store|object-store).*'
+                   RETURN a.name, a.type, a.default, a.`restart-required`, a.deprecated, a.description
+find_relationships identifier=42.0 address=/subsystem=transactions scope=attributes
+run_cypher         identifier=42.0
+                   MATCH (r:Resource {address:'/subsystem=datasources/data-source=*'})
+                         -[:PROVIDES|HAS_OPERATION]->(o:Operation {name:'add'})-[:ACCEPTS]->(p:Parameter)
+                   ...
+----
+
+No model graph was running, so the agent started the one for WildFly 42 first.
+Then it queried the attributes of the transactions subsystem, how they depend on each other, and the parameters for adding a datasource.
+From these lookups, the agent learns everything that matters for this change:
+
+* `use-jdbc-store` enables the JDBC store, and `jdbc-store-datasource` takes the *JNDI name* of the datasource.
+* The datasource must be non-XA with `jta=false`, and `jta` defaults to `true`.
+* `use-jdbc-store` requires `jdbc-store-datasource`, and it's an alternative to `use-journal-store` and `use-hornetq-store`. WildFly checks alternatives by whether an attribute is defined, not by its value.
+* All of these attributes are flagged `restart-required: jvm`.
+
+The last point is easy to miss.
+A `reload` is not enough to activate the JDBC store; the server process has to restart.
+Because the agent reads the restart flags straight from the model, it ends the script with `shutdown --restart=true` instead of `reload`.
+
+The first answer also creates a new datasource.
+We already have one, so we refine the request:
+
+[source,text]
+----
+Use the existing datasource TxLogDS instead of creating a new one and save the script as switch-to-jdbc-object-store.cli.
+----
+
+This time we get a script that uses our datasource:
+
+[source,bash]
+----
+# switch-to-jdbc-object-store.cli
+#
+# Switches the transactions subsystem from the file system object store
+# to the JDBC object store, using the existing datasource TxLogDS.
+#
+# Usage:
+#   $JBOSS_HOME/bin/jboss-cli.sh --connect --file=switch-to-jdbc-object-store.cli
+#
+# Prerequisites:
+#   - /subsystem=datasources/data-source=TxLogDS exists and has jta=false
+#     (the JDBC store requires a non-JTA, non-XA datasource).
+#   - Its jndi-name is java:jboss/datasources/TxLogDS. If not, change the
+#     value of jdbc-store-datasource below.
+#   - In-flight transactions have finished and recovery is complete. Records
+#     in the old file-based store are NOT migrated to the database.
+
+# Show the datasource settings in the output so you can check them
+# (fails early if TxLogDS doesn't exist)
+/subsystem=datasources/data-source=TxLogDS:read-attribute(name=jndi-name)
+/subsystem=datasources/data-source=TxLogDS:read-attribute(name=jta)
+
+batch
+# use-jdbc-store can't be used together with use-journal-store or
+# use-hornetq-store. WildFly only checks whether these are defined, not
+# their values, so they must be undefined (not set to false). Their
+# async-io settings depend on them, so undefine those first.
+/subsystem=transactions:undefine-attribute(name=journal-store-enable-async-io)
+/subsystem=transactions:undefine-attribute(name=hornetq-store-enable-async-io)
+/subsystem=transactions:undefine-attribute(name=use-journal-store)
+/subsystem=transactions:undefine-attribute(name=use-hornetq-store)
+
+# use-jdbc-store requires jdbc-store-datasource
+/subsystem=transactions:write-attribute(name=jdbc-store-datasource, value=java:jboss/datasources/TxLogDS)
+/subsystem=transactions:write-attribute(name=use-jdbc-store, value=true)
+
+# Optional: table prefixes (these require use-jdbc-store)
+#/subsystem=transactions:write-attribute(name=jdbc-action-store-table-prefix, value=wf_)
+#/subsystem=transactions:write-attribute(name=jdbc-communication-store-table-prefix, value=wf_)
+#/subsystem=transactions:write-attribute(name=jdbc-state-store-table-prefix, value=wf_)
+run-batch
+
+# These attributes have restart-required=jvm, so a reload isn't enough.
+shutdown --restart=true
+----
+
+Notice how closely the script follows the model.
+It undefines the alternative store types instead of setting them to `false`, and it undefines their `*-enable-async-io` attributes first, because those require the store types.
+It sets `jdbc-store-datasource` before `use-jdbc-store` because of the REQUIRES relation, and it restarts the server instead of reloading it.
+
+Your output will look a bit different.
+AI agents don't produce the same answer twice, but the attribute names, constraints, and restart behavior come from the model, so they are grounded in facts.
+
+WARNING: Treat AI-generated scripts like any other script: read them before running them, and try them on a non-production server first. In one of our test runs, the agent set `use-journal-store=false` instead of undefining it. Since `use-journal-store` is an alternative to `use-jdbc-store`, WildFly rejected the batch and rolled it back.
+
+== Running the Script
+
+WARNING: Existing records in the file system object store are *not* migrated to the database. Make sure there are no in-flight or in-doubt transactions before you switch. Otherwise, they remain stuck in the old store and won't be recovered.
+
+Run the script with the JBoss CLI:
+
+[source,bash]
+----
+./wildfly/bin/jboss-cli.sh --connect --file=switch-to-jdbc-object-store.cli
+----
+
+The changes are applied in a single batch, so either all of them succeed or none do.
+Then the server restarts. `standalone.sh` relaunches the JVM, and the transaction manager comes up with the JDBC object store.
+
+== Verifying the Result
+
+Once the server is back, check the transaction subsystem in the JBoss CLI (`./wildfly/bin/jboss-cli.sh --connect`):
+
+[source,bash]
+----
+/subsystem=transactions:read-attribute(name=use-jdbc-store)
+/subsystem=transactions:read-attribute(name=jdbc-store-datasource)
+----
+
+Then look at the database:
+
+[source,bash]
+----
+podman exec -it postgres psql -U wildfly -d wildfly -c '\dt'
+----
+
+You should see the table `jbosststxtable`.
+The transaction manager creates it when the server starts. Since our script doesn't set any table prefixes, this single table holds the transaction log.
+
+== Wrap-up
+
+With Model Graph Tools, the agent didn't have to guess: it looked up the attributes, their constraints, and their restart requirements in the WildFly 42 model, and it wrote a script that handles the restart correctly.
+The same approach works for any other management task, from adding a datasource or configuring TLS to comparing what changed between two WildFly versions.
+
+Give it a try, and let us know what you think!
+You can find Model Graph Tools on https://github.com/model-graph-tools[GitHub,window="_blank"], and we're happy to hear your feedback on the https://wildfly.zulipchat.com/[WildFly Zulip chat,window="_blank"].
