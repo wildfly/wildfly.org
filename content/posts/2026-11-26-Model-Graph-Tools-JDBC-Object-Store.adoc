@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Ask Your AI Agent: Switching WildFly to the JDBC Object Store with Model Graph Tools"
-date:   2026-11-30
+date:   2026-11-26
 tags:   management ai cli transactions
 author: hpehl
 description: Use Model Graph Tools and an AI agent to generate a JBoss CLI script that switches the WildFly transaction object store from the file system to a JDBC database.
