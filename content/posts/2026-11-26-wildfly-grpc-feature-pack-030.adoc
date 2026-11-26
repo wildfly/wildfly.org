@@ -1,0 +1,39 @@
+---
+layout: post
+title: "WildFly gRPC Feature Pack 0.3.0 is released!"
+date: 2026-11-26
+tags: announcement release grpc
+synopsis: WildFly gRPC Feature Pack 0.3.0 adds CDI integration, multiple deployments, and improved examples and lifecycle handling.
+author: jmesnil
+---
+
+The WildFly gRPC Feature Pack 0.3.0 is now available from Maven Central. It provides gRPC capabilities for WildFly with the `grpc` Galleon layer for deploying gRPC services.
+
+== CDI integration for services and interceptors
+
+This release adds CDI integration for gRPC services and interceptors. gRPC applications can now inject CDI-managed dependencies into these components, making it easier to use the application services already managed by WildFly. Interceptors are also ordered by their `@Priority`, using the standard comparator-based ordering.
+
+== A more streamlined feature pack and examples
+
+There is no longer a separate Preview feature pack: the standard feature pack can now be provisioned on WildFly Preview as well. The feature pack is built against WildFly 42.0.0.Final and gRPC 1.85.1.
+
+The chat example now includes a TamboUI terminal client in place of the JavaFX client. Both the chat and HelloWorld clients are packaged as self-contained JARs, use a consistent `--ssl=<mode>` option, and the chat client reports its connection state. Examples are also built as part of the normal Maven build, without being included in deployments.
+
+== Improved deployment reliability
+
+The 0.3.0 release rejects duplicate gRPC service names across deployments and more reliably unregisters services when an application is undeployed or fails during startup. It also logs any failures encountered while cleaning up gRPC deployment resources.
+
+== Getting started
+
+Add the feature pack to your provisioning configuration with the following coordinates:
+
+[source,xml]
+----
+<feature-pack>
+    <location>org.wildfly.grpc:wildfly-grpc-feature-pack:0.3.0.Final</location>
+</feature-pack>
+----
+
+See the https://wildfly-extras.github.io/wildfly-grpc-feature-pack/[gRPC Feature Pack documentation, window=_blank] for the provided layer and management model. The complete list of changes is available in the https://github.com/wildfly-extras/wildfly-grpc-feature-pack/releases/tag/v0.3.0[0.3.0 release notes, window=_blank].
+
+Please try it out and share your feedback in https://wildfly.zulipchat.com/#narrow/stream/196266-wildfly-user[Zulip, window=_blank]!
