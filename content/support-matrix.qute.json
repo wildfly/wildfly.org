@@ -1,9 +1,9 @@
 {
   "schema": "wildfly.org/support-matrix",
-  "schema_version": 1,
+  "schema_version": 2,
   "min_wildfly_major": 37,
   "source": "data/releases.yaml",
-  "note": "POC for WFLY-18548. java_se is taken from optional release.java_se in releases data; null means not yet populated and is left for maintainer review (values are not invented).",
+  "note": "Java SE support for Standard WildFly and WildFly Preview. Only qualified LTS releases are listed; recommended identifies the preferred qualified release. Null means data has not been recorded, not that a distribution is unsupported. Qualification does not imply Jakarta EE certification.",
   "releases": [
 {#for release in cdi:releases.supportMatrix}
     {
@@ -13,14 +13,36 @@
       "qualifier": "{release.qualifier}",
 {#if release.javaSe}
       "java_se": {
-        "recommended": {#if release.javaSe.recommended}"{release.javaSe.recommended}"{#else}null{/if},
-        "supported": [
-{#if release.javaSe.supported}
-{#for se in release.javaSe.supported}
-          "{se}"{#if se_hasNext},{/if}
+        "standard":
+{#if release.javaSe.standard}
+        {
+          "recommended": {#if release.javaSe.standard.recommended}"{release.javaSe.standard.recommended}"{#else}null{/if},
+          "qualified": [
+{#if release.javaSe.standard.qualified}
+{#for se in release.javaSe.standard.qualified}
+            "{se}"{#if se_hasNext},{/if}
 {/for}
 {/if}
-        ]
+          ]
+        }
+{#else}
+        null
+{/if},
+        "preview":
+{#if release.javaSe.preview}
+        {
+          "recommended": {#if release.javaSe.preview.recommended}"{release.javaSe.preview.recommended}"{#else}null{/if},
+          "qualified": [
+{#if release.javaSe.preview.qualified}
+{#for se in release.javaSe.preview.qualified}
+            "{se}"{#if se_hasNext},{/if}
+{/for}
+{/if}
+          ]
+        }
+{#else}
+        null
+{/if}
       }
 {#else}
       "java_se": null
