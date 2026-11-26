@@ -445,6 +445,10 @@ table:not(.version-table table) {
   }
 }
 
+.imageblock > .title {
+  margin-bottom: 1.5rem;
+}
+
 .paginator-btns {
   display: flex;
   justify-content: space-between;

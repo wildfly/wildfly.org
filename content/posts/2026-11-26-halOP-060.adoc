@@ -1,0 +1,105 @@
+---
+layout: post
+title: "halOP 0.6 Released — Universal Search and Model Catalog"
+date: 2026-11-26
+tags: hal console management release
+author: hpehl
+description: halOP 0.6 brings universal search, a faceted model catalog, and capability cross-references to the next-gen WildFly management console, powered by the optional Model Graph Tools.
+synopsis: halOP 0.6 brings universal search, a faceted model catalog, and capability cross-references to the next-gen WildFly management console, powered by the optional Model Graph Tools.
+---
+
+I'm happy to announce the release of halOP 0.6 — the next milestone of the next-gen WildFly management console. The https://www.wildfly.org/news/2026/09/23/halOP-0-5-0-Released-Next-Gen-WildFly-Management-Console/[0.5.0 announcement] laid out a roadmap, and this release delivers two items from it: *Model Graph Integration* and the *"Jump to" overlay*. Together they change how you find things in the console. Instead of clicking your way through the resource tree, you can now search the entire management model and jump straight to the attribute you're looking for.
+
+The 0.6.x line went through a series of stabilization releases. The latest one, https://github.com/hal/foundation/releases/tag/v0.6.6[0.6.6,window="_blank"], is the version to try.
+
+== Model Graph Tools in Brief
+
+Most of the new features are powered by https://hal.github.io/foundation/model-graph-tools/[Model Graph Tools,window="_blank"] (MGT). MGT is a knowledge base of the complete WildFly management model — every resource, attribute, operation, and capability — matched to a specific WildFly version. It runs as a lightweight container next to your WildFly server, and the console detects it automatically on startup. MGT is entirely optional: without it, the console works as before, and with it, the features below light up.
+
+== Universal Search
+
+Press *Cmd+K* (macOS) or *Ctrl+K* (Windows/Linux) anywhere in the console to open https://hal.github.io/foundation/features/universal-search.html[universal search,window="_blank"]. Type a keyword, and the console searches the management model for matching resources, attributes, operations, and capabilities. Results are grouped by type and show descriptions and resource addresses, so you can pick the right match quickly.
+
+.Universal search for "secure", with results grouped by type
+image::hal/0.6/universal-search-mgt.png[Universal search with model graph results]
+
+If you already know where you want to go, start typing an address with `/`. In address mode, the search completes each segment of the address and resolves wildcards against the connected server, so `/subsystem=datasources/data-source=` offers the data sources that actually exist. Address mode doesn't need MGT and works with any WildFly server.
+
+.Address mode with typeahead completion
+image::hal/0.6/universal-search-address.png[Universal search in address mode]
+
+When you select a result, the console navigates to the resource, scrolls to the matching attribute or operation, and briefly highlights it. No more scanning long forms for the one attribute you searched for.
+
+.The target attribute is highlighted after navigation
+image::hal/0.6/highlight-routing.png[Highlighted attribute after navigation]
+
+== Model Catalog
+
+Universal search is built for jumping to a specific place. The https://hal.github.io/foundation/features/model-catalog.html[model catalog,window="_blank"] is built for exploring. It's a dedicated page with full-text search over the entire management model — resources, attributes, operations, and capabilities in one place.
+
+.Searching the model catalog for "session"
+image::hal/0.6/model-catalog-search.png[Model catalog search results]
+
+Faceted filters let you narrow down the results by stability level, deprecation, data type, unit, access type, storage, restart requirements, and more. Want to see all read-write attributes measured in minutes? Two clicks.
+
+.Attributes filtered by access type and unit
+image::hal/0.6/model-catalog-filtered.png[Model catalog with facet filters]
+
+The catalog describes the full management model, including subsystems that may not be installed on your server. Click *Verify on server* to cross-reference the results with the connected WildFly instance: links to existing resources stay clickable, wildcards are resolved to the actual resource names, and entries that don't exist on your server are shown as plain text.
+
+== More in 0.6
+
+=== Capability References
+
+Capabilities connect resources across subsystems. In the model browser, you can now expand any capability on the *Capabilities* tab to see which attributes reference it, grouped by attribute name. Each entry links to the referencing resource and highlights the attribute — answering _"where is this capability used?"_ with one click. This is especially useful before you change or remove a configuration. Like universal search and the model catalog, this feature uses MGT.
+
+.Capability cross-references in the model browser
+image::hal/0.6/capability-references.png[Expanded capability references]
+
+=== List Attributes with Records
+
+Some attributes hold a list of records, where each record is a flat object with named fields. A good example is `global-modules` in the EE subsystem. The console now shows these attributes as a compact table, with one row per record. In edit mode, you can add, edit, and remove records in a modal form — no raw JSON or CLI commands needed.
+
+.A list of records shown as a table
+image::hal/0.6/list-simple-record-view.png[List attribute with records shown as a table]
+
+=== Cross-Field Validation
+
+Many attributes depend on each other: some require another attribute to be set, others are mutually exclusive. Forms now validate these constraints before anything is sent to the server. The rules aren't hard-coded — they're detected automatically from the `requires` and `alternatives` metadata in the management model.
+
+== What's Next
+
+Here's what's coming in the next releases:
+
+* *More tasks*: The next task is the https://github.com/hal/foundation/issues/415[credential reference task,window="_blank"]. Like the existing statistics task, it lists all matching resources in one view — in this case, every resource with a `credential-reference` attribute — and lets you define or update credential references on many resources in one go.
+* *Specialized UI for more resources*: The generic UI works well for most resources, but some benefit from a tailored experience, such as a dedicated wizard for adding a resource, a custom data view, or custom delete behavior. The https://github.com/hal/foundation/issues/320[resource shell SPI,window="_blank"] makes this possible, and we'll use it for more resources.
+
+Two big features remain before halOP can replace today's management console:
+
+* *Domain mode*: halOP currently supports standalone servers only. https://github.com/hal/foundation/issues/426[Domain mode support,window="_blank"] adds managing hosts, server groups, servers, and profiles in a managed domain.
+* *Role-based access control*: With https://github.com/hal/foundation/issues/427[RBAC support,window="_blank"], the console adapts to the roles of the logged-in user, hiding or disabling everything they aren't allowed to read or change.
+
+== Try It Out
+
+The quickest way to see all new features is to run WildFly, MGT, and halOP side by side. You'll need https://github.com/hpehl/wado[wado,window="_blank"] to start WildFly in a container, the https://hal.github.io/foundation/model-graph-tools/#install-the-cli[mgt CLI,window="_blank"] to start MGT, and https://www.jbang.dev/[JBang,window="_blank"] to run halOP:
+
+[source,bash]
+----
+wado start 42    # WildFly 42 with the management interface on port 9420
+mgt start 42     # MGT for WildFly 42
+jbang hal-op@hal # halOP on http://localhost:9090
+----
+
+Open http://localhost:9090 and connect to `http://localhost:9420`. The MGT indicator in the toolbar shows whether the console has found a matching MGT container. If you skip MGT, you still get the console and address-mode search, but no keyword search, model catalog, or capability references.
+
+For other ways to run halOP — bundled with WildFly, as a container, or as a native binary — see the https://hal.github.io/foundation/editions/halop.html#deployment-modes[deployment modes,window="_blank"].
+
+We'd love to hear what you think! Please share your feedback and ideas at https://github.com/hal/foundation/issues[github.com/hal/foundation/issues,window="_blank"].
+
+== Links
+
+* https://github.com/hal/foundation/releases/tag/v0.6.6[Release 0.6.6,window="_blank"]
+* https://github.com/hal/foundation/releases[All releases,window="_blank"]
+* https://hal.github.io/foundation/[HAL Foundation documentation,window="_blank"]
+* https://hal.github.io/foundation/model-graph-tools/[Model Graph Tools for the console,window="_blank"]
+* https://github.com/hal/foundation[GitHub repository,window="_blank"]
