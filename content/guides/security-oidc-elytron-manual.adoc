@@ -64,6 +64,17 @@ The following steps enable the OIDC mechanism using the *Elytron subsystem*.
 
 This approach requires use of *oidc.json* file (to configure OIDC provider settings) that will be included in your WAR deployment's WEB-INF folder. Inability to use the elytron oidc client subsystem configuration is a limitation of this approach.
 
+[WARNING]
+====
+When configuring OIDC manually through the Elytron subsystem, including when migrating from `elytron-oidc-client` subsystem integration:
+
+* Omit the OIDC `<login-config>` from `WEB-INF/web.xml`. If it contains `<auth-method>OIDC</auth-method>`, remove that login configuration so the mapped HTTP authentication factory can select the mechanism.
+* Remove any matching `secure-deployment` configuration in the `elytron-oidc-client` subsystem that would select OIDC for the application.
+* Retain `WEB-INF/oidc.json`, the configuration listener and module dependency described below, and the application's security constraints.
+====
+
+The `override-deployment-config=true` setting controls mechanism selection by the mapped HTTP authentication factory. It does not prevent the `elytron-oidc-client` subsystem's earlier deployment processing. If that processing is enabled and either the OIDC login configuration or a matching OIDC `secure-deployment` configuration remains, the subsystem activates OIDC integration and assigns a virtual security domain before Undertow resolves the native Elytron `application-security-domain` mapping. Authentication then bypasses the intended Elytron HTTP authentication factory and security domain.
+
 === Reference the security domain in jboss-web.xml
 
 In `WEB-INF/jboss-web.xml`, reference the security domain you created:
